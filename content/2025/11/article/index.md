@@ -1,0 +1,3 @@
+It looks like you've provided a YAML front matter template, commonly used in static site generators like Jekyll or Hugo. This template includes metadata fields such as `title`, `date`, `url`, `draft`, `authors`, `categories`, and `tags`. The `content here` at the end is where the actual content of your article or post would go.
+
+If you need help filling out this template or have any specific questions about using it, feel free to ask!
