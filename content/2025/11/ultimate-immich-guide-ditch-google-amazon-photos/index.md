@@ -14,237 +14,272 @@ tags:
   - "Hardware"
   - "Guides"
 ---
-<article>
+# Knowledge Hub
 
-# ULTIMATE Immich Guide - DITCH Google/Amazon Photos
+# The Ultimate Immich Guide: Ditch Google and Amazon Photos for Good
 
-## Table of Contents
+A vast majority of people with a smartphone are, by default, uploading their most personal pictures to Google, Apple, Amazon—whoever. Personally, I firmly believe companies like this don't need my photos. You can keep that data yourself, and Immich makes it genuinely easy to do so.
 
-1. [Introduction](#1-introduction)
-2. [What is Image?](#2-what-is-image)
-3. [Why Self-Host?](#3-why-self-host)
-4. [Requirements](#4-requirements)
-5. [Installation Steps](#5-installation-steps)
-6. [Configuration](#6-configuration)
-7. [Remote Access](#7-remote-access)
-8. [Bulk Import](#8-bulk-import)
-9. [Backup Strategy](#9-backup-strategy)
-10. [Maintenance](#10-maintenance)
-11. [Advanced Topics](#11-advanced-topics)
-12. [Security Checklist](#12-security-checklist)
-13. [Recap & Next Steps](#13-recap--next-steps)
-14. [Frequently Asked Questions](#14-frequently-asked-questions)
-15. [Further Reading & Community](#15-further-reading--community)
-16. [Final Thoughts](#16-final-thoughts)
+We're going through the entire Docker Compose stack, enabling hardware acceleration for machine learning, configuring all the settings I actually recommend changing, and setting up secure remote access so you can back up photos from anywhere.
 
-## 1. Introduction
+## Why Immich Over the Alternatives
 
-In today's digital age, we're constantly uploading our precious memories to cloud services like Google Photos and Amazon Photos. But what happens when those services change their policies, disappear, or start selling your data? It's time to take control of your own photo library and host it yourself.
+Two things make Immich stand out from other self-hosted photo solutions. First is the feature set—it's remarkably close to what you get from the big cloud providers. You've got a world map with photo locations, a timeline view, face recognition that actually works, albums, sharing capabilities, video transcoding, and smart search. It's incredibly feature-rich software.
 
-This comprehensive guide walks you through setting up **Image**, an open-source alternative to cloud-based photo storage, using Docker Compose. We'll cover everything from installation to advanced features like machine learning-powered smart search, video transcoding, and API integrations.
+Second is the mobile app. Most of those features are accessible right from your phone, and the automatic backup from your camera roll works great. Combining it with NetBird makes backing up your images quick and secure with WireGuard working for us in the background.
 
-Whether you're a tech enthusiast, a privacy-conscious user, or someone looking for a more flexible solution than commercial services, this guide is for you.
+Immich hit stable v2.0 back in October 2025, so the days of "it's still in beta" warnings are behind us. The development pace remains aggressive with updates rolling out regularly, but the core is solid.
 
-## 2. What is Image?
+## Hardware Considerations
 
-Image is a self-hosted photo and video management application built on modern web technologies. It offers features such as:
+I'm not going to spend too much time on hardware specifics because setups vary wildly. For some of the machine learning features, you might want a GPU or at least an Intel processor with Quick Sync. But honestly, those features aren't strictly necessary. For most of us CPU transcoding will be fine.
 
-- Face recognition and tagging
-- Duplicate detection and removal
-- Smart search with metadata and AI-powered tags
-- Video transcoding for web viewing
-- RESTful API for custom integrations
-- Webhooks for automation
-- Support for multiple users and sharing
-- Mobile-responsive web UI
+The main consideration is storage. How much media are you actually going to put on this thing? In my setup, all my personal media sits around 300GB, but with additional family members on the server, everything totals just about a terabyte. And with that we need room to grow so plan accordingly.
 
-Unlike commercial services, Image stores all your data locally and gives you complete control over your photos and videos.
+For reference, my VM runs with 4 cores and 8GB of RAM. The database needs to live on an SSD, this isn't optional. Network shares for the PostgreSQL database will cause corruption and data loss. Your actual photos can live on spinning rust or a NAS share, but keep that database on local SSD storage.
 
-## 3. Why Self-Host?
+## Setting Up Ubuntu Server
 
-Self-hosting your photo library provides several benefits:
+I'm doing this on Ubuntu Server running as a VM on Unraid. You don't have to use Unraid, as TrueNAS, Proxmox, and other solutions work great, or you can install Ubuntu directly on hardware. The process is close to the same regardless.
 
-- **Privacy**: No third-party access to your photos
-- **Control**: You decide how your data is stored and managed
-- **Flexibility**: Customizable features and integrations
-- **Cost-effective**: No monthly subscription fees
-- **Future-proof**: Your data stays with you regardless of service changes
+If you're installing fresh, grab the Ubuntu Server ISO and flash it with Etcher or Rufus depending on your OS. During installation, I typically skip the LVM group option and go with standard partition schemes. There's documentation on LVM if you want to read more about it, but I've never found it necessary for this use case.
 
-## 4. Requirements
+The one thing you absolutely want to enable during setup is the OpenSSH server. Skip all the snap packages, we don't need them.
 
-Before diving into installation, ensure you have:
-
-- A Debian-based Linux distribution (Ubuntu, Debian, etc.)
-- Docker and Docker Compose installed
-- At least 100GB of storage space for your photos
-- A stable internet connection for initial setup
-- Optional: GPU for machine learning acceleration (Intel iGPU, Nvidia, AMD)
-
-## 5. Installation Steps
-
-### Step 1: Install Docker
+Once you're booted in, set a static IP through your router. Check your current IP with:
 
 ```bash
-sudo apt update
-sudo apt install docker.io docker-compose
+ip a
 ```
 
-### Step 2: Clone the Image Repository
+Then navigate to your router's admin panel and assign a fixed IP to this machine or VM. How you do this varies by router, so check your manual if needed. I set mine to `immich.lan` for convenience.
+
+First order of business on any fresh Linux install is to update everything:
 
 ```bash
-git clone https://github.com/juggernaut-io/image.git
-cd image
+sudo apt update && sudo apt upgrade -y
 ```
 
-### Step 3: Create Volume Mounts
+## Installing Docker
 
-Create directories for your photos and configuration:
+Docker's official documentation has a convenience script that handles everything. SSH into your server and run:
 
 ```bash
-mkdir -p /mnt/photos
-mkdir -p /opt/image/config
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
 ```
 
-### Step 4: Configure Environment Variables
+This installs Docker, Docker Compose, and all the dependencies. Next, add your user to the docker group so you don't need sudo for every command:
 
-Edit `docker-compose.yml` to set your photo directory and other preferences.
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
 
-### Step 5: Start the Stack
+That's the bulk of the prerequisites handled.
+
+## The Docker Compose Setup
+
+Immich recommends Docker Compose as the installation method, and I agree. Create a directory and grab the official files:
+
+```bash
+mkdir immich && cd immich
+wget -O docker-compose.yml https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+wget -O .env https://github.com/immich-app/immich/releases/latest/download/example.env
+
+```
+
+Rename the example environment file:
+
+```bash
+mv example.env .env
+
+```
+
+Now edit the environment variables:
+
+```bash
+nano .env
+
+```
+
+The key variables to change:
+
+```bash
+# Where your photos will be stored
+UPLOAD_LOCATION=/mnt/user/images
+
+# Database location - MUST be on SSD
+DB_DATA_LOCATION=./postgres
+
+# Your timezone
+TZ=America/Los_Angeles
+
+# Latest stable version
+IMMICH_VERSION=v2
+
+# Change this to something secure (alphanumeric only)
+DB_PASSWORD=your_secure_password_here
+
+```
+
+For my setup, the upload location points to an Unraid share where my storage array lives. The database stays in the local directory on SSD storage. Adjust these paths for your environment.
+
+## Enabling Hardware Acceleration
+
+If you have Intel Quick Sync, an NVIDIA GPU, or AMD graphics, you can offload transcoding from the CPU. Grab the hardware acceleration config:
+
+```bash
+wget https://github.com/immich-app/immich/releases/latest/download/hwaccel.transcoding.yml
+
+```
+
+Edit your `docker-compose.yml` and find the `immich-server` section. Uncomment the extends block and set your hardware type:
+
+```yaml
+extends:
+  file: hwaccel.transcoding.yml
+  service: quicksync  # or nvenc, vaapi, rkmpp depending on your hardware
+
+```
+
+For machine learning acceleration, grab that config too:
+
+```bash
+wget https://github.com/immich-app/immich/releases/latest/download/hwaccel.ml.yml
+
+```
+
+In the `immich-machine-learning` section, add the extends configuration. For Intel, you'll use `openvino`:
+
+```yaml
+immich-machine-learning:
+  container_name: immich_machine_learning
+  image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}-openvino
+  extends:
+    file: hwaccel.ml.yml
+    service: openvino
+
+```
+
+If you're on Proxmox, make sure Quick Sync is passed through in your VM's hardware options. You can verify the device is available with:
+
+```bash
+ls /dev/dri
+
+```
+
+## First Boot and Initial Setup
+
+Fire up the stack:
 
 ```bash
 docker compose up -d
+
 ```
 
-## 6. Configuration
+The first run pulls several gigabytes of container images, so give it time. Once everything's running, access the web interface at `http://your-server-ip:2283`.
 
-Once the containers are running, access the web UI at `http://localhost:2283`. Follow these steps:
+The first user to register becomes the administrator, so create your account immediately. You'll run through an initial setup wizard covering theme preferences, privacy settings, and storage templates.
 
-1. **Set up storage paths**
-2. **Configure backup policies**
-3. **Select ML models**
-4. **Create user accounts**
-5. **Enable notifications**
+### Storage Template Configuration
 
-## 7. Remote Access
+This is actually important. The storage template determines how Immich organizes files on disk. I use a custom template that creates year and month folders:
 
-To access your image library remotely, use one of these methods:
+```
+{{y}}/{{MM}}-{{MMMM}}/{{y}}-{{MM}}-{{dd}}_{{filename}}
 
-### Option A: VPN (Recommended)
-Set up a VPN server using OpenVPN or WireGuard to securely access your NAS.
+```
 
-### Option B: Reverse Proxy with HTTPS
-Use Nginx or Traefik with Let's Encrypt certificates.
+This gives me a folder structure like `2025/06-June/` with filenames that include the date. I don't take a crazy amount of pictures, so monthly folders work fine. Adjust this to your preferences, but think about it now—changing it later requires running a migration job.
 
-### Option C: Dynamic DNS
-Use services like DuckDNS or No-IP to map a domain name to your public IP.
+## Server Settings
 
-## 8. Bulk Import
+Under Administration → Settings, there are a few things I always adjust or recommend taking a look at:
 
-### Using the Web UI
-Navigate to the import section and select your photo directory.
+**Image Settings**: The default thumbnail format is WEBP. I change this to JPEG because I don't like WEBP for basically any situation as it’s much harder to work with outside of the web browser.
 
-### Using the CLI Tool (`image-go`)
-Generate an API key in the web UI, then run:
+**Job Settings**: These control background tasks like thumbnail generation and face detection. If you notice a specific job hammering your system, you can reduce its concurrency here.
+
+**Machine Learning**: The default models work well. I've never changed them and haven't had problems. If you want to run the ML container on separate, beefier hardware, you can point to a different URL here.
+
+**Video Transcoding**: This uses FFmpeg on the backend. The defaults are reasonable, but you can customize encoding options if you have specific preferences.
+
+## Remote Access with NetBird
+
+For accessing Immich outside your home network, you have options. You can set up a traditional reverse proxy with something like Nginx or Caddy, but I use NetBird. Full disclosure—I work for NetBird, so I'm biased toward this solution, but it genuinely makes this easier.
+
+If you already have NetBird running on your network, you can add your Immich server as a peer:
 
 ```bash
-image-go import --api-key <your-api-key> --path /mnt/photos
+curl -fsSL https://pkgs.netbird.io/install.sh | sh
+netbird up --setup-key your-setup-key-here
+
 ```
 
-## 9. Backup Strategy
+Then in the NetBird dashboard, create an access policy that allows your devices to reach port 2283 on the Immich peer. Now you can access your instance from anywhere using the NetBird DNS name or peer IP—no port forwarding, no exposing services to the internet.
 
-Implement a 3-2-1 backup strategy:
+If you prefer the traditional route, Immich works behind any reverse proxy. Just note that it must run at the root of a domain or subdomain (`photos.yourdomain.com`), not a subpath. Make sure your proxy is configured for WebSocket support and has generous timeouts for large uploads.
 
-1. **3 copies** of your data
-2. **2 different media types** (local + cloud)
-3. **1 offsite backup** (external drive or NAS)
+## Bulk Uploading with Immich-Go
 
-Schedule regular `pg_dump` backups for the database.
+Dragging and dropping files through the web UI works, but it's tedious for large libraries. [Immich-Go](https://github.com/simulot/immich-go) handles bulk uploads much better.
 
-## 10. Maintenance
+First, generate an API key in Immich. Go to your profile → Account Settings → API Keys → New API Key. Give it full permissions and save the key somewhere.
 
-Regular maintenance tasks include:
+Download Immich-Go for your system from the releases page, then run:
 
-- Updating Docker images
-- Checking disk space
-- Running database vacuum operations
-- Monitoring logs for errors
-
-## 11. Advanced Topics
-
-| Feature | How It Works | When to Use |
-|---------|--------------|-------------|
-| **Smart-search** | ML-based tags + metadata search | If you have a large library or a mix of devices |
-| **Duplicate removal** | Generates a list of photos with the same SHA-256 hash | Clean up Google Photos imports that include many duplicates |
-| **Video transcoding** | Re-encodes to H.264 for web viewing | Allows you to view long 4K videos in a browser without stuttering |
-| **API & Webhooks** | Exposes REST endpoints (auth, upload, delete, list) | Build a custom iOS/Android app, or integrate with home automation |
-| **Custom scripts** | Hook into Docker Compose to run cron jobs | E.g., nightly `rsync` from an external NAS |
-
-### Example – Trigger duplicate deletion via API
 ```bash
-curl -X DELETE \
-  -H "Authorization: Bearer <API_TOKEN>" \
-  http://localhost:2283/api/v1/duplicates
+./immich-go upload \
+  --server=http://your-server-ip:2283 \
+  --api-key=your-api-key \
+  /path/to/your/photos
+
 ```
 
-### Video Transcoding Options
-Add `-F` flag under the `image` service:
-```yaml
-    environment:
-      - IMAGE_FFMPEG_OPTIONS=--vf scale=1280:720 --c:v libx264 -crf 23 -preset veryfast
+If you're migrating from Google Photos via Takeout, Immich-Go handles the metadata mess Google creates. For some reason, Takeout extracts metadata to separate JSON files instead of keeping it embedded in the images. Immich-Go reassociates everything properly:
+
+```bash
+./immich-go upload from-google-photos \
+  --server=http://your-server-ip:2283 \
+  --api-key=your-api-key \
+  --sync-albums \
+  takeout-*.zip
+
 ```
 
-## 12. Security Checklist
+Always do a dry run first with `--dry-run` to see what it's going to do before committing.
 
-| Check | Done? |
-|-------|-------|
-| Database user/password unique | ✅ |
-| Docker group usage | ✅ |
-| Container port mapped to firewall | ✅ |
-| HTTPS via reverse-proxy or VPN | ✅ |
-| Backups to separate media | ✅ |
-| Two-factor authentication (if using email) | Optional |
-| Remove default admin users | ✅ |
-| Log rotation for Docker | Optional |
+## Mobile App Setup
 
-## 13. Recap & Next Steps
+Grab the Immich app from the App Store, Play Store, or F-Droid. Enter your server URL and login credentials. For remote access, use either your public URL or NetBird address depending on your setup.
 
-1. **Install Docker** – straightforward on any Debian-based distro.
-2. **Download the Image stack** – `git clone` the official repo.
-3. **Mount your photo folder** – bind-mount or volume.
-4. **Optional GPU** – accelerate ML tasks with Intel iGPU, Nvidia, or AMD.
-5. **Run the stack** – `docker compose up -d`.
-6. **Configure via the UI** – set up storage, backups, ML models.
-7. **Generate an API key** – needed for bulk CLI imports.
-8. **Remote access** – use Netbird or any VPN; set up a DNS entry.
-9. **Bulk import** – with `image-go` or via the web UI.
-10. **Backup** – 3-2-1 policy; schedule `pg_dump` and copy to external storage.
-11. **Maintenance** – keep the container and database up-to-date.
+To enable automatic backup, tap the cloud icon and select which albums to sync. Under settings, you can configure WiFi-only backup and charging-only backup to preserve battery and cellular data. The storage indicator feature shows a cloud icon on photos that have been synced, which helps you know what's backed up.
 
-Once you're comfortable, you can experiment with building your own theme, integrating with home-automation systems (e.g., expose a “photo of the day” to your smart display), or even host a multi-tenant instance for a photography studio.
+iOS users should enable Background App Refresh and keep Low Power Mode disabled for reliable background uploads. Android handles this better out of the box but might need battery optimization disabled for the Immich app.
 
-## 14. Frequently Asked Questions
+## Backup Strategy
 
-| Question | Answer |
-|----------|--------|
-| **Does Image store any metadata in the cloud?** | No. All data stays in your container and the bound volume. Only the first time you install the web UI you hit `localhost:2283`, but it can run entirely offline. |
-| **Can I share a folder with a family member’s laptop?** | Yes. Just give them an API key, or let them log in to the UI. The photo directory is mounted from the host, so any user with access to the host can read the photos directly. |
-| **What happens if my server goes down?** | You’ll lose the web UI, but your photos remain in `/mnt/photos`. Re-create the Docker stack, point the volumes to the same directories, and you're back in business. |
-| **How do I update Image?** | Pull the latest changes from the GitHub repo and restart the containers. |
-| **Is Image compatible with mobile devices?** | Yes, the web UI is mobile-responsive. |
+Immich stores your photos as files but tracks all the metadata, faces, albums, and relationships in PostgreSQL. You need to back up both components—losing either means losing your library.
 
-## 15. Further Reading & Community
+The database dumps automatically to `UPLOAD_LOCATION/backups/` daily at 2 AM. For manual backups:
 
-- [Official Image Documentation](https://github.com/juggernaut-io/image)
-- [GitHub Repository](https://github.com/juggernaut-io/image)
-- [Community Forum](https://github.com/juggernaut-io/image/discussions)
-- [Docker Hub](https://hub.docker.com/u/juggernaut)
+```bash
+docker exec -t immich_postgres pg_dumpall --clean --if-exists \
+  --username=postgres | gzip > immich-db-backup.sql.gz
 
-## 16. Final Thoughts
+```
 
-Setting up Image may seem daunting at first, but it's a powerful way to regain control over your digital memories. With its robust feature set, extensibility, and focus on privacy, Image stands out as a compelling alternative to commercial services.
+Back up your database dumps and the `library/` and `upload/` directories. You can skip `thumbs/` and `encoded-video/` since Immich regenerates those.
 
-Remember, the key to a successful self-hosted setup lies in regular maintenance, secure configurations, and understanding how your system works. Start small, expand gradually, and always keep backups.
+For a proper 3-2-1 strategy, you want three copies of your data on two different media types with one copy offsite. I'll be doing a dedicated video on backup strategies, so subscribe if you want to catch that.
 
-Whether you're a casual user or a tech-savvy enthusiast, Image provides the tools you need to manage your photo library with confidence and peace of mind.
+## What's Next
+
+This covers the core setup, but Immich has more depth worth exploring. External libraries let you index existing photo directories without copying files into Immich's storage. The machine learning models can be swapped for different accuracy/performance tradeoffs. Partner sharing lets family members see each other's photos without full account access.
+
+The [official documentation](https://immich.app/docs) covers all of this in detail. For issues or questions, the community on Reddit and GitHub discussions is genuinely helpful.
+
+Once you've got everything running, you can finally delete those cloud storage subscriptions. Your photos stay on hardware you control, no monthly fees, no storage limits, no training someone else's AI models with your personal memories.
 
 </article>
