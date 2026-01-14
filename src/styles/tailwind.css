@@ -1,0 +1,187 @@
+:root {
+  --shiki-color-text: theme('colors.black');
+  --shiki-token-constant: theme('colors.orange.600');
+  --shiki-token-string: theme('colors.orange.600');
+  --shiki-token-comment: theme('colors.zinc.500');
+  --shiki-token-keyword: theme('colors.sky.600');
+  --shiki-token-parameter: theme('colors.pink.600');
+  --shiki-token-function: theme('colors.violet.600');
+  --shiki-token-string-expression: theme('colors.orange.600');
+  --shiki-token-punctuation: theme('colors.zinc.800');
+  --toastify-icon-color-info: theme('colors.orange.500') !important;
+  --toastify-color-info: theme('colors.orange.500') !important;
+  --toastify-color-dark: theme('colors.white') !important;
+  --toastify-text-color-dark: theme('colors.zinc.600') !important;
+  --toastify-color-light: theme('colors.white') !important;
+  --toastify-text-color-light: theme('colors.zinc.600') !important;
+}
+
+/* Dark mode styles */
+:root.dark {
+  --shiki-color-text: theme('colors.white');
+  --shiki-token-constant: theme('colors.orange.300');
+  --shiki-token-string: theme('colors.orange.300');
+  --shiki-token-comment: theme('colors.zinc.500');
+  --shiki-token-keyword: theme('colors.sky.300');
+  --shiki-token-parameter: theme('colors.pink.300');
+  --shiki-token-function: theme('colors.violet.300');
+  --shiki-token-string-expression: theme('colors.orange.300');
+  --shiki-token-punctuation: theme('colors.zinc.200');
+  --toastify-icon-color-info: theme('colors.orange.500') !important;
+  --toastify-color-info: theme('colors.orange.500') !important;
+  --toastify-color-dark: theme('colors.zinc.800') !important;
+  --toastify-text-color-dark: theme('colors.zinc.300') !important;
+  --toastify-color-light: theme('colors.zinc.800') !important;
+  --toastify-text-color-light: theme('colors.zinc.300') !important;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .custom-details li {
+    margin-left: 50px !important;
+  }
+  
+  /* Hide scrollbar for sidebar navigation */
+  .sidebar-scroll {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .sidebar-scroll::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+
+.imagewrapper {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 4px;
+  overflow:hidden;
+  width: 70%;
+}
+
+.imagewrapper-medium {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 4px;
+  overflow: hidden;
+  width: 40%;
+}
+
+.imagewrapper-big {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 4px;
+  overflow:hidden;
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
+
+.spacer-sm {
+  height: 5px;
+}
+
+.Toastify__close-button {
+  color: var(--toastify-text-color-light) !important;
+}
+
+/* Image Zoom / Lightbox Styles */
+.imagewrapper,
+.imagewrapper-big,
+.imagewrapper-medium {
+  cursor: zoom-in;
+}
+
+.image-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.image-zoom-overlay.closing {
+  animation: fadeOut 0.2s ease-out;
+}
+
+.image-zoom-content {
+  max-width: 80vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  animation: zoomIn 0.2s ease-out;
+  cursor: zoom-out;
+}
+
+.image-zoom-content.closing {
+  animation: zoomOut 0.2s ease-out;
+}
+
+.image-zoom-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.image-zoom-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}

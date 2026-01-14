@@ -1,0 +1,19 @@
+# Introduction to NetBird
+
+Source: https://docs.netbird.io/introduction
+
+---
+
+# Introduction to NetBird
+
+NetBird is an Open Source Zero Trust Networking platform that allows you to create secure private networks for your
+organization or home. We designed NetBird to be simple and fast, requiring near-zero configuration effort and leaving
+behind the hassle of opening ports, complex firewall rules, VPN gateways, etc.
+
+> **Note:** NetBird is an **[open-source](https://github.com/netbirdio/netbird)** project and can be self-hosted.
+    See a comparison between the self-hosted and cloud-hosted versions [here](/selfhosted/self-hosted-vs-cloud-netbird).
+
+There is no centralized VPN server with NetBird - your computers, devices, machines, and servers connect to each other directly over a fast encrypted tunnel.
+It creates a high-performance point-to-point [WireGuard®](https://www.wireguard.com/) overlay network that connects machines running anywhere in just a few clicks.
+
+It literally takes less than 5 minutes to deploy a secure point-to-point VPN with NetBird.

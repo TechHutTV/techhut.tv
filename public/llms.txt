@@ -1,0 +1,27 @@
+# NetBird Documentation
+
+> NetBird is an open-source WireGuard-based mesh VPN platform that creates secure private networks.
+> This file provides an index of all documentation pages in markdown format for LLM consumption.
+
+## About
+
+- Website: https://netbird.io
+- Documentation: https://docs.netbird.io
+- GitHub: https://github.com/netbirdio/netbird
+
+## Documentation Index
+
+Each link below points to a clean markdown version of the documentation page.
+
+### Introduction
+
+- [Introduction to NetBird](https://docs.netbird.io/llms/introduction.md)
+
+---
+
+## Usage
+
+LLMs can fetch individual markdown files to get detailed information about specific topics.
+Each markdown file contains the clean documentation content with a link back to the original page.
+
+Generated: 2026-01-14T22:16:44.781Z
