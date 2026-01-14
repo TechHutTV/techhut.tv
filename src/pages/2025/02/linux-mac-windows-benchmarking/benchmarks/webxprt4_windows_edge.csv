@@ -1,0 +1,24 @@
+Test Item,Value
+Test,WebXPRT 4 (v3.73)
+Test ID,671339
+Date,2024-12-13 12:52:43
+Browser,Edge(Chromium) (131.0.0.0/131.0.0.0)
+Test Item,Value,Variance
+Overall Score,185,5
+Photo Enhancement,474,9.01%
+Organize Album using AI,2392,1.24%
+Stock Option Pricing,130,4.61%
+Encrypt Notes and OCR Scan,989,0.49%
+Sales Graphs,345,2.97%
+Online Homework,1909,1.33%
+Capability,Present
+Canvas,yes
+CanvasText,yes
+Canvas2DContext,yes
+WebGL,yes
+Audio,yes
+LocalStorage,yes
+SVG,yes
+WebWorkers,yes
+Uint32ArraySupport,yes
+WASM,yes

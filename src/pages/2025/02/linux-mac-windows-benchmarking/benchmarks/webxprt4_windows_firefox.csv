@@ -1,0 +1,24 @@
+Test Item,Value
+Test,WebXPRT 4 (v3.73)
+Test ID,670723
+Date,2024-12-12 14:51:35
+Browser,Firefox 133
+Test Item,Value,Variance
+Overall Score,190,5
+Photo Enhancement,481,6.53%
+Organize Album using AI,2432,0.93%
+Stock Option Pricing,121,3.89%
+Encrypt Notes and OCR Scan,1143,1.18%
+Sales Graphs,333,3.62%
+Online Homework,1554,0.54%
+Capability,Present
+Canvas,yes
+CanvasText,yes
+Canvas2DContext,yes
+WebGL,yes
+Audio,yes
+LocalStorage,yes
+SVG,yes
+WebWorkers,yes
+Uint32ArraySupport,yes
+WASM,yes
