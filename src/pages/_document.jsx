@@ -1,5 +1,5 @@
 import { Head, Html, Main, NextScript } from 'next/document'
-import {GoogleTageManagerBodyScript, GoogleTagManagerHeadScript} from "@/components/GoogleTagManager";
+import {GoogleTagManagerBodyScript, GoogleTagManagerHeadScript} from "@/components/GoogleTagManager";
 
 const modeScript = `
   let darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -44,8 +44,8 @@ export default function Document() {
           <script dangerouslySetInnerHTML={{ __html: modeScript }} />
           <link rel="shortcut icon" href="/docs-static/img/favicon.ico" />
       </Head>
-      <body className="bg-white antialiased dark:bg-[#181A1D]">
-        <GoogleTageManagerBodyScript />
+      <body className="bg-white antialiased dark:bg-[#0f1012]">
+        <GoogleTagManagerBodyScript />
         <Main />
         <NextScript />
       </body>

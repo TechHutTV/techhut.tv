@@ -22,7 +22,29 @@ module.exports = {
     typography: require('./typography'),
     extend: {
       colors: {
-        netbird: '#f68330',
+        netbird: '#B55400', // Updated to match primary color
+        'netbird-dark': '#8a3f00', // Darker variant for gradients
+        'netbird-light': '#f58044', // Lighter variant for hover
+        // Modern color palette from ColorHunt
+        primary: {
+          50: '#fef6ee',
+          100: '#fde9d7',
+          200: '#fbd0ae',
+          300: '#f8ad7a',
+          400: '#f58044',
+          500: '#B55400', // Main accent color
+          600: '#a34d00',
+          700: '#8a3f00',
+          800: '#6f3300',
+          900: '#5c2a00',
+        },
+        dark: {
+          DEFAULT: '#222831', // Main dark background
+          lighter: '#393E46', // Secondary dark elements
+        },
+        light: {
+          DEFAULT: '#EEEEEE', // Main light background
+        },
       },
       boxShadow: {
         glow: '0 0 4px rgb(0 0 0 / 0.1)',

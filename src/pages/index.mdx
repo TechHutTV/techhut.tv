@@ -1,0 +1,58 @@
+export const title = "Welcome to TechHut"
+export const description = "TechHut is a community of hardware admirers, home lab builders, open-source advocates, and proud geeks. Find detailed guides, step-by-step tutorials, and unbiased reviews."
+export const date = ""
+export const authors = ["Brandon Hopkins"]
+export const categories = []
+export const tags = []
+
+import {Note} from "@/components/mdx"
+import {Tiles} from "@/components/Tiles"
+import {RecentContent} from "@/components/RecentContent"
+import {YouTube} from "@/components/YouTube"
+import {Button} from "@/components/Button"
+
+At TechHut, we live and breathe technology. We're a community of hardware admirers, home lab builders, open-source advocates, and proud geeks. Here, you'll find the detailed guides, step-by-step tutorials, and unbiased reviews that complement our YouTube videos. Welcome to the hut—we're glad you're here.
+
+<Note>
+    Subscribe to our **[YouTube channel](https://youtube.com/@techhut)** for video versions of these guides and more tech content!
+</Note>
+
+Whether you're building your first home server, exploring Linux distributions, or diving into self-hosted solutions, TechHut has you covered. Our content ranges from beginner-friendly tutorials to advanced homelab configurations, all designed to help you get the most out of your technology.
+
+<div className="not-prose mb-16 mt-6 flex gap-3">
+  <Button href="https://youtube.com/@techhut" arrow="right" children="Subscribe on YouTube" />
+  <Button href="/introduction" variant="outline-arrow" arrow="right" children="Learn More About TechHut" />
+</div>
+
+<RecentContent
+  title="Latest Articles"
+  id="latest-articles"
+  limit={8}
+/>
+
+<Tiles
+  title="Popular Topics"
+  id="popular-topics"
+  items={[
+    {
+      href: '/linux-mac-windows-benchmarking',
+      name: 'Benchmarking Linux, Mac AND Windows on a 2019 MacBook Pro',
+      description: 'Real-world performance comparison across all three major operating systems on the same hardware.',
+    },
+    {
+      href: '/5-reasons-build-home-server',
+      name: 'EVERYONE needs a Home Server',
+      description: 'Discover why building a home server is one of the best technology investments you can make.',
+    },
+    {
+      href: '/5-awesome-open-source-apps',
+      name: '5 AWESOME Open Source Apps that I use Everyday',
+      description: 'Explore the open-source applications that I rely on daily for productivity and creativity.',
+    },
+    {
+      href: '/nixos-best-server-os-setup',
+      name: 'NixOS - The New Best Server OS?',
+      description: 'Explore NixOS and its unique approach to Linux system configuration and package management.',
+    },
+  ]}
+/>

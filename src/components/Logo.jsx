@@ -1,17 +1,10 @@
-import {useRouter} from "next/router";
+import { memo } from 'react'
 
-export function Logo(props) {
-    let router = useRouter()
+export const Logo = memo(function Logo({ className, ...props }) {
   return (
-      <div>
-          {!router.route.startsWith('/ipa') && <img src='/docs-static/img/logo/logo-docs.png' alt="some file"  height='200'
-               width='180' className="dark:hidden"/>}
-          {!router.route.startsWith('/ipa') &&  <img src='/docs-static/img/logo/logo-docs-dark.png' alt="some file"  height='200'
-               width='180' className="hidden dark:block"/>}
-          {router.route.startsWith('/ipa') && <img src='/docs-static/img/logo/logo-api.png' alt="some file"  height='200'
-               width='180' className="dark:hidden"/>}
-          {router.route.startsWith('/ipa') && <img src='/docs-static/img/logo/logo-api-dark.png' alt="some file"  height='200'
-               width='180' className="hidden dark:block"/>}
-      </div>
+    <span className="text-3xl font-bold tracking-tight leading-none" {...props}>
+      <span className="text-zinc-900 dark:text-white transition-colors">TechHut</span>
+      <span className="text-primary-600 dark:text-primary-400 transition-colors">.tv</span>
+    </span>
   )
-}
+})

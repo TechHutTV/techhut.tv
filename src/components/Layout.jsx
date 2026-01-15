@@ -8,7 +8,6 @@ import { Prose } from '@/components/Prose'
 import {HeroPattern} from "@/components/HeroPattern";
 import {NavigationDocs} from "@/components/NavigationDocs";
 import {Header} from "@/components/Header";
-import {NavigationAPI} from "@/components/NavigationAPI";
 import {motion} from "framer-motion";
 import {Footer} from "@/components/Footer";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -17,6 +16,11 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import {toast} from "react-toastify";
 import {AnnouncementBanner} from "@/components/announcement-banner/AnnouncementBanner";
 import {useAnnouncements} from "@/components/announcement-banner/AnnouncementBannerProvider";
+import {Authors} from "@/components/Author";
+import {getAuthors} from "@/data/authors";
+import {useSidebarStore} from "@/components/SidebarState";
+import {CoverImageBackground} from "@/components/CoverImageBackground";
+import {formatDate} from "@/lib/dates";
 
 const navigation = [
   {
@@ -130,7 +134,7 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, tableOfContents }) {
+export function Layout({ children, title, date, tableOfContents, authors: authorNames, coverImage, imagePosition }) {
   let router = useRouter()
   let isHomePage = router.pathname === '/'
   let allLinks = navigation.flatMap((section) => section.links)
@@ -178,37 +182,88 @@ export function Layout({ children, title, tableOfContents }) {
   }
 
   let { bannerHeight } = useAnnouncements()
+  let { isOpen: sidebarIsOpen } = useSidebarStore()
+  const [mounted, setMounted] = useState(false)
+  const [isHoveringSidebar, setIsHoveringSidebar] = useState(false)
+  const [isNearLeftEdge, setIsNearLeftEdge] = useState(false)
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+
+  // Determine if sidebar should be visible (forced open OR hover)
+  const sidebarShouldBeVisible = sidebarIsOpen || (isNearLeftEdge || isHoveringSidebar)
+  
   return (
     <>
       <AnnouncementBanner />
-      <HeroPattern/>
+      {coverImage ? (
+        <CoverImageBackground 
+          imageUrl={coverImage} 
+          imagePosition={imagePosition} 
+        />
+      ) : (
+        <HeroPattern/>
+      )}
+      <Header />
+      {/* Hover detection zone on left edge (only when sidebar is closed) */}
+      {mounted && !sidebarIsOpen && (
+        <div
+          className="fixed left-0 top-0 bottom-0 w-[15px] z-50 pointer-events-auto lg:block hidden"
+          style={{
+            top: `calc(${bannerHeight}px + 64px)`,
+            zIndex: 50
+          }}
+          onMouseEnter={() => setIsNearLeftEdge(true)}
+          onMouseLeave={() => setIsNearLeftEdge(false)}
+          aria-hidden="true"
+        />
+      )}
       <div
-        className="relative mx-auto flex max-w-8xl sm:px-2 lg:px-8 xl:px-12 lg:ml-72 xl:ml-80"
-        style={{ paddingTop: bannerHeight }}
+        className="relative mx-auto flex max-w-8xl sm:px-2 lg:px-8 xl:px-12"
+        style={{ paddingTop: `calc(${bannerHeight}px + 64px)` }}
       >
-        <header
-            // layoutScroll
-            className="contents lg:pointer-events-none lg:fixed lg:inset-0 lg:z-40 lg:flex"
-            style={{ top: bannerHeight }}
+        <aside
+            className={clsx(
+              "contents lg:pointer-events-none lg:fixed lg:z-40 lg:block transition-transform duration-300",
+              mounted && !sidebarShouldBeVisible && "lg:-translate-x-full"
+            )}
+            style={{
+              top: `calc(${bannerHeight}px + 64px + 1rem)`,
+              left: '1rem',
+              bottom: '1rem'
+            }}
+            onMouseEnter={() => setIsHoveringSidebar(true)}
+            onMouseLeave={() => setIsHoveringSidebar(false)}
         >
-          <div className="contents lg:pointer-events-auto lg:block lg:w-72 lg:overflow-y-auto lg:border-r lg:border-zinc-900/10 lg:dark:border-neutral-700/50 lg:px-6 lg:pb-8 lg:pt-4 lg:bg-white/70 lg:dark:bg-[#181A1D]/95 lg:backdrop-blur-lg xl:w-80 lg:overflow-x-visible sidebar-scroll">
-            <div className="hidden lg:flex">
-              <Link href="/" aria-label="Home">
-                <Logo className="h-6" />
-              </Link>
-            </div>
-            {router.route.startsWith("/ipa") ? <NavigationAPI className="hidden lg:mt-10 lg:block" tableOfContents={tableOfContents} /> : <NavigationDocs className="hidden lg:mt-10 lg:block" />}
+          <div className="contents lg:pointer-events-auto lg:block lg:w-72 lg:overflow-y-auto lg:px-6 lg:pb-8 lg:pt-6 lg:bg-white/70 lg:dark:bg-[#0f1012]/70 lg:backdrop-blur-lg 2xl:w-80 lg:overflow-x-visible sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-2xl lg:shadow-xl lg:shadow-zinc-900/10 lg:dark:shadow-black/20 lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
+            <NavigationDocs className="hidden lg:block" />
           </div>
-          <Header />
-        </header>
-        <div className="min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pl-8 lg:pr-0 xl:px-5">
+        </aside>
+        <div className={clsx(
+          "min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 transition-all duration-300",
+          mounted && sidebarShouldBeVisible
+            ? "lg:ml-72 2xl:ml-80 lg:pl-8 lg:px-5"
+            : "lg:ml-0 lg:pl-32 lg:px-5"
+        )}>
           <main className="py-16">
+            {title && (
+              <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-3">{title}</h1>
+            )}
+            {date && (
+              <time className="block text-sm text-slate-500 dark:text-slate-400 mb-8" dateTime={date}>
+                {formatDate(date, 'long')}
+              </time>
+            )}
+            {authorNames && authorNames.length > 0 && (
+              <Authors authors={getAuthors(authorNames)} />
+            )}
             <Prose as="article">{children}</Prose>
           </main>
           <Footer />
         </div>
-        {!router.route.startsWith("/ipa/resources") && <div
+        <div
             className="hidden xl:sticky xl:top-[4.5rem] xl:-mr-6 xl:block xl:h-[calc(100vh-4.5rem)] xl:flex-none xl:overflow-y-auto xl:py-16 xl:pr-6 pl-12"
             style={{ top: `calc(${bannerHeight}px + 4.5rem)` }}
         >
@@ -247,7 +302,7 @@ export function Layout({ children, title, tableOfContents }) {
                   {showJumpToTop && (
                     <button
                       onClick={scrollToTop}
-                      className="text-xs text-slate-500 hover:text-orange-500 dark:text-slate-400 dark:hover:text-orange-400 transition-colors flex items-center gap-1"
+                      className="text-xs text-slate-500 hover:text-primary-500 dark:text-slate-400 dark:hover:text-primary-400 transition-colors flex items-center gap-1"
                       aria-label="Jump to top"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,7 +320,7 @@ export function Layout({ children, title, tableOfContents }) {
                           href={`#${section.id}`}
                           className={clsx(
                             isActive(section)
-                              ? 'text-orange-500'
+                              ? 'text-primary-500'
                               : 'font-normal text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                           )}
                         >
@@ -283,7 +338,7 @@ export function Layout({ children, title, tableOfContents }) {
                                 href={`#${subSection.id}`}
                                 className={
                                   isActive(subSection)
-                                    ? 'text-orange-500'
+                                    ? 'text-primary-500'
                                     : 'hover:text-slate-600 dark:hover:text-slate-300'
                                 }
                               >
@@ -299,7 +354,7 @@ export function Layout({ children, title, tableOfContents }) {
               </>
             )}
           </nav>
-        </div>}
+        </div>
       </div>
     </>
   )

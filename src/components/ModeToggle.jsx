@@ -1,3 +1,5 @@
+import { disableTransitionsTemporarily, updateDarkModeStorage } from '@/lib/darkMode'
+
 function SunIcon(props) {
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
@@ -19,13 +21,6 @@ function MoonIcon(props) {
 }
 
 export function ModeToggle() {
-  function disableTransitionsTemporarily() {
-    document.documentElement.classList.add('[&_*]:!transition-none')
-    window.setTimeout(() => {
-      document.documentElement.classList.remove('[&_*]:!transition-none')
-    }, 0)
-  }
-
   function toggleMode() {
     disableTransitionsTemporarily()
 
@@ -33,11 +28,7 @@ export function ModeToggle() {
     let isSystemDarkMode = darkModeMediaQuery.matches
     let isDarkMode = document.documentElement.classList.toggle('dark')
 
-    if (isDarkMode === isSystemDarkMode) {
-      delete window.localStorage.isDarkMode
-    } else {
-      window.localStorage.isDarkMode = isDarkMode
-    }
+    updateDarkModeStorage(isDarkMode, isSystemDarkMode)
   }
 
   return (

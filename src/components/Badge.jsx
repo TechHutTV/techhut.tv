@@ -12,7 +12,7 @@ export function Badge({ status, text, hoverText }) {
             case 'error':
                 return 'text-red-400';
             case 'cloud-only':
-                return 'text-orange-400';
+                return 'text-primary-400';
             case 'experimental':
                 return 'text-teal-400';
             default:
@@ -29,7 +29,7 @@ export function Badge({ status, text, hoverText }) {
             case 'error':
                 return 'border-red-400';
             case 'cloud-only':
-                return 'border-orange-400';
+                return 'border-primary-400';
             case 'experimental':
                 return 'border-teal-400';
             default:
@@ -42,11 +42,11 @@ export function Badge({ status, text, hoverText }) {
             case 'info':
                 return 'bg-blue-300/30 dark:bg-blue-400/10';
             case 'warning':
-                return 'bg-orange-300/30 dark:bg-yellow-600/10';
+                return 'bg-primary-300/30 dark:bg-yellow-600/10';
             case 'error':
                 return 'bg-red-300/30 dark:bg-red-400/10';
             case 'cloud-only':
-                return 'bg-orange-200/50 dark:bg-orange-600/20';
+                return 'bg-primary-200/50 dark:bg-primary-600/20';
             case 'experimental':
                 return 'bg-teal-200/50 dark:bg-teal-500/15';
             default:

@@ -3,7 +3,7 @@ import { GridPattern } from '@/components/GridPattern'
 export function HeroPattern() {
   return (
     <div className="absolute inset-0 -z-10 mx-0 max-w-none overflow-hidden">
-      <div className="absolute inset-0 hidden dark:block z-0" style={{ backgroundColor: '#181A1D' }}>
+      <div className="absolute inset-0 hidden dark:block z-0" style={{ backgroundColor: '#0f1012' }}>
         <GridPattern
           width={72}
           height={56}

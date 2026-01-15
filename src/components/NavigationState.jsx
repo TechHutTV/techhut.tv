@@ -10,6 +10,8 @@ export function NavigationStateProvider({ children,index }) {
     const router = useRouter();
 
     const setActiveHighlight = async (groupTitle = undefined) => {
+        if (typeof document === 'undefined') return Promise.resolve();
+        
         await timeout(250);
 
         const links = [];

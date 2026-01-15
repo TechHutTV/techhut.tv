@@ -4,7 +4,29 @@ import clsx from 'clsx'
 import { Heading } from '@/components/Heading'
 import { YouTube } from '@/components/YouTube'
 
-export const a = Link
+// Custom link component that adds security attributes for external links
+function SafeLink({ href, children, ...props }) {
+  // Check if the link is external
+  const isExternal = href && (href.startsWith('http://') || href.startsWith('https://'))
+
+  if (isExternal) {
+    return (
+      <a
+        href={href}
+        rel="noopener noreferrer"
+        target="_blank"
+        {...props}
+      >
+        {children}
+      </a>
+    )
+  }
+
+  // Internal link - use Next.js Link
+  return <Link href={href} {...props}>{children}</Link>
+}
+
+export const a = SafeLink
 export { Button } from '@/components/Button'
 export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 export { Badge } from '@/components/Badge'
@@ -81,8 +103,8 @@ function SuccessIcon(props) {
 
 export function Note({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-orange-500/20 bg-orange-50/50 p-4 leading-6 text-orange-900 dark:border-orange-500/30 dark:bg-orange-500/5 dark:text-orange-200 dark:[--tw-prose-links-hover:theme(colors.orange.300)] dark:[--tw-prose-links:theme(colors.white)]">
-      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-orange-500 stroke-white dark:fill-orange-200/20 dark:stroke-orange-200" />
+    <div className="my-6 flex gap-2.5 rounded-l border border-primary-500/20 bg-primary-50/50 p-4 leading-6 text-primary-900 dark:border-primary-500/30 dark:bg-primary-500/5 dark:text-primary-200 dark:[--tw-prose-links-hover:theme(colors.primary.300)] dark:[--tw-prose-links:theme(colors.white)]">
+      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-primary-500 stroke-white dark:fill-primary-200/20 dark:stroke-primary-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
       </div>
@@ -182,5 +204,23 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
         </dd>
       </dl>
     </li>
+  )
+}
+
+export function Video({ src, controls = "yes", type, preload = "metadata", ...props }) {
+  const videoType = type || (src?.endsWith('.webm') ? 'video/webm' : src?.endsWith('.mp4') ? 'video/mp4' : undefined)
+  
+  return (
+    <div className="my-6">
+      <video 
+        className="w-full rounded-lg" 
+        controls={controls === "yes" || controls === true}
+        preload={preload}
+        {...props}
+      >
+        <source src={src} type={videoType} />
+        Your browser does not support the video tag.
+      </video>
+    </div>
   )
 }

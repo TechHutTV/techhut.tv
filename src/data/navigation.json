@@ -1,0 +1,2753 @@
+{
+  "categories": {
+    "Software": [
+      {
+        "title": "Fedora Server Guide: Cockpit, ZFS, Podman, and more!",
+        "href": "/2025/12/fedora-server-guide-cockpit-zfs-podman",
+        "date": "2025-12-21",
+        "year": "2025",
+        "month": "12",
+        "categories": [
+          "Guides",
+          "Software"
+        ]
+      },
+      {
+        "title": "Read THIS before choosing a RHEL Clone",
+        "href": "/2025/07/rhel-clones-2025",
+        "date": "2025-07-14",
+        "year": "2025",
+        "month": "07",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "MUST HAVE Homelab Services",
+        "href": "/2025/03/must-have-home-server-services-2025",
+        "date": "2025-03-11",
+        "year": "2025",
+        "month": "03",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "5 AWESOME Open Source Apps that I use Everyday",
+        "href": "/2025/02/5-awesome-open-source-apps",
+        "date": "2025-02-25",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Zen browser is making me DITCH Microsoft Edge",
+        "href": "/2024/08/zen-browser-better-firefox",
+        "date": "2024-08-29",
+        "year": "2024",
+        "month": "08",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "COSMIC might be the future of the Linux Desktop.",
+        "href": "/2024/05/cosmic-pre-alpha",
+        "date": "2024-05-26",
+        "year": "2024",
+        "month": "05",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Top 5 FAVORITE Linux Distros",
+        "href": "/2023/03/top-5-favorite-linux-distros",
+        "date": "2023-03-03",
+        "year": "2023",
+        "month": "03",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Rocky Linux, AlmaLinux, RHEL, CentOS - Which Is BEST for You?",
+        "href": "/2022/11/rocky-linux-almalinux-rhel-centos-which-is-best-for-you",
+        "date": "2022-11-02",
+        "year": "2022",
+        "month": "11",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "The Death of Mozilla is the Death of the Open Web",
+        "href": "/2022/09/the-death-of-mozilla-is-the-death-of-the-open-web",
+        "date": "2022-09-25",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Linux Distros Based on Fedora",
+        "href": "/2022/08/linux-distros-based-on-fedora",
+        "date": "2022-08-08",
+        "year": "2022",
+        "month": "08",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "The BEST Solutions for Running Windows Apps in Linux",
+        "href": "/2022/07/the-best-solutions-for-running-windows-apps-in-linux",
+        "date": "2022-07-26",
+        "year": "2022",
+        "month": "07",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "No, Manjaro is NOT Arch",
+        "href": "/2022/07/no-manjaro-is-not-arch",
+        "date": "2022-07-23",
+        "year": "2022",
+        "month": "07",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "These Linux Distros are ACTUALLY FREE. Stallman Approved!",
+        "href": "/2022/07/free-software-foundation-distros",
+        "date": "2022-07-16",
+        "year": "2022",
+        "month": "07",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Chrome OS Flex is a NIGHTMARE!",
+        "href": "/2022/07/chrome-os-flex-is-a-nightmare",
+        "date": "2022-07-15",
+        "year": "2022",
+        "month": "07",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Fedora vs Arch Linux - Battle of the Best!",
+        "href": "/2022/06/fedora-vs-arch-linux",
+        "date": "2022-06-11",
+        "year": "2022",
+        "month": "06",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "7 (more) AWESOME Linux Terminal CLI Applications",
+        "href": "/2022/05/7-more-awesome-linux-terminal-utilities",
+        "date": "2022-05-15",
+        "year": "2022",
+        "month": "05",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "7 Awesome Linux Terminal Utilities",
+        "href": "/2022/03/7-awesome-linux-terminal-utilities",
+        "date": "2022-03-21",
+        "year": "2022",
+        "month": "03",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "Favorite GNOME/GTK Themes, Icons, and more!",
+        "href": "/2022/03/favorite-gnome-gtk-themes-icons",
+        "date": "2022-03-21",
+        "year": "2022",
+        "month": "03",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "5 AWESOME LINUX APPS - GNOME Circle",
+        "href": "/2022/02/5-awesome-linux-apps-gnome-circle",
+        "date": "2022-02-12",
+        "year": "2022",
+        "month": "02",
+        "categories": [
+          "Software"
+        ]
+      },
+      {
+        "title": "10 BEST Linux Applications: Must Have Software (2021)",
+        "href": "/2021/11/10-best-linux-applications-must-have-software",
+        "date": "2021-11-13",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Software"
+        ]
+      }
+    ],
+    "Guides": [
+      {
+        "title": "Fedora Server Guide: Cockpit, ZFS, Podman, and more!",
+        "href": "/2025/12/fedora-server-guide-cockpit-zfs-podman",
+        "date": "2025-12-21",
+        "year": "2025",
+        "month": "12",
+        "categories": [
+          "Guides",
+          "Software"
+        ]
+      },
+      {
+        "title": "How to Safely Upgrade or Downgrade the Kernel on Arch Linux",
+        "href": "/2025/03/how-to-safely-upgrade-or-downgrade-kernel-on-arch-linux",
+        "date": "2025-11-30",
+        "year": "2025",
+        "month": "03",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Install DaVinci Resolve in Any Linux Distro Using DavinciBox (2025)",
+        "href": "/2025/07/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora",
+        "date": "2025-07-17",
+        "year": "2025",
+        "month": "07",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Self-Host with Immich!",
+        "href": "/2025/02/self-host-immich-photo-backup",
+        "date": "2025-02-06",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Git for Everyone",
+        "href": "/2025/02/git-for-everyone-guide",
+        "date": "2025-02-03T16:40:55-08:00",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "the OFFICIAL Windows (lite) from Microsoft",
+        "href": "/2025/02/windows-lite-ltsc-microsoft",
+        "date": "2025-02-03",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "BEST Way to Monitor your Home Server! (Grafana, Prometheus, InfluxDB)",
+        "href": "/2024/07/monitor-home-server-grafana-prometheus-influxdb",
+        "date": "2024-07-06",
+        "year": "2024",
+        "month": "07",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "NixOS - The New Best Server OS?",
+        "href": "/2024/06/nixos-best-server-os-setup",
+        "date": "2024-06-13",
+        "year": "2024",
+        "month": "06",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Guide: Setting Up Windows as a NAS Operating System",
+        "href": "/2024/05/run-windows-nas-home-server",
+        "date": "2024-05-21",
+        "year": "2024",
+        "month": "05",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "7 Docker Basics for Beginners",
+        "href": "/2024/02/7-docker-basics-for-beginners",
+        "date": "2024-02-06",
+        "year": "2024",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "ChatGPT in YOUR Terminal",
+        "href": "/2023/04/chatgpt-in-your-terminal",
+        "date": "2023-04-23",
+        "year": "2023",
+        "month": "04",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to make an Apache Webserver with SSL",
+        "href": "/2022/12/how-to-apache-webserver-ssl",
+        "date": "2022-12-05",
+        "year": "2022",
+        "month": "12",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "The ULTIMATE RetroPie Setup Guide",
+        "href": "/2022/10/ultimate-retropie-setup-guid",
+        "date": "2022-10-19",
+        "year": "2022",
+        "month": "10",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Dual Boot Windows 10 and Pop!_OS (Legacy/GRUB)",
+        "href": "/2022/09/dual-boot-windows-10-pop-os",
+        "date": "2022-09-26",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Installing Arch Linux the EASY WAY! – archfi Guide",
+        "href": "/2022/09/installing-arch-linux-the-easy-way-archfi-guide",
+        "date": "2022-09-26",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Dual Boot Fedora and Windows 11",
+        "href": "/2022/09/how-to-dual-boot-fedora-and-windows-11",
+        "date": "2022-09-16",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to make ZIP Files in Windows",
+        "href": "/2022/09/how-to-make-zip-files-in-windows",
+        "date": "2022-09-04",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Turning an OLD PC/Laptop into a Media Server! (Ubuntu/PLEX Guide)",
+        "href": "/2022/03/old-pc-laptop-media-server",
+        "date": "2022-03-21",
+        "year": "2022",
+        "month": "03",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Perfect Windows 11 Virtual Machine on Linux (VMware Guide)",
+        "href": "/2022/03/windows-11-vmware-guide-linux",
+        "date": "2022-03-11",
+        "year": "2022",
+        "month": "03",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Flash Linux on the PinePhone",
+        "href": "/2022/02/how-to-flash-linux-on-the-pinephone",
+        "date": "2022-02-13",
+        "year": "2022",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Install DaVinci Resolve in Linux (Outdated)",
+        "href": "/2022/02/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora",
+        "date": "2022-02-13",
+        "year": "2022",
+        "month": "02",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Switch Arch Linux Kernels",
+        "href": "/2021/11/how-to-switch-arch-linux-kernels-lts-zen-hardened",
+        "date": "2021-11-22",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Auto-Mount Drives in Linux",
+        "href": "/2021/11/auto-mount-drives-in-linux-fstab",
+        "date": "2021-11-19",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Monitor AMD RYZEN Temps in Linux",
+        "href": "/2021/11/monitor-amd-ryzen-temps-in-linux",
+        "date": "2021-11-15",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "5 Things You MUST DO after Installing Pop!_OS",
+        "href": "/2021/11/after-installing-pop-os-cosmic",
+        "date": "2021-11-13",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "How to Control AMD Wraith Prism Cooler RGB (and more)",
+        "href": "/2021/11/control-amd-wraith-prism-cooler-master",
+        "date": "2021-11-13",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "Easily Install AMD Ryzen CPU and Wraith Prism Cooler",
+        "href": "/2021/11/install-amd-ryzen-cpu-and-wraith-prism-cooler",
+        "date": "2021-11-13",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      },
+      {
+        "title": "OpenSUSE – 5 Things You MUST Do After Installing",
+        "href": "/2021/11/opensuse-5-things-you-must-do-after-installing",
+        "date": "2021-11-10",
+        "year": "2021",
+        "month": "11",
+        "categories": [
+          "Guides"
+        ]
+      }
+    ],
+    "Benchmarking": [
+      {
+        "title": "Benchmarking Linux, Mac AND Windows on a 2019 MacBook Pro",
+        "href": "/2025/02/linux-mac-windows-benchmarking",
+        "date": "2025-02-16",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Benchmarking"
+        ]
+      },
+      {
+        "title": "Microsoft Edge might WIN on Linux.",
+        "href": "/2022/05/microsoft-edge-might-win-on-linux",
+        "date": "2022-05-16",
+        "year": "2022",
+        "month": "05",
+        "categories": [
+          "Benchmarking"
+        ]
+      },
+      {
+        "title": "Flatpak vs. Snap vs. AppImage - Linux Packaging Benchmarks!",
+        "href": "/2022/04/flatpak-vs-snap-vs-appimage",
+        "date": "2022-04-16",
+        "year": "2022",
+        "month": "04",
+        "categories": [
+          "Benchmarking"
+        ]
+      }
+    ],
+    "Hardware": [
+      {
+        "title": "The Edge2 Pro is a CRAZY Powerful ARM Single Board Computer",
+        "href": "/2022/09/edge2-powerfull-arm-sb",
+        "date": "2022-09-28",
+        "year": "2022",
+        "month": "09",
+        "categories": [
+          "Hardware"
+        ]
+      },
+      {
+        "title": "hideSummary: false",
+        "href": "/2022/08/fall-of-jingos-linux-tablet",
+        "date": "2022-08-12",
+        "year": "2022",
+        "month": "08",
+        "categories": [
+          "Hardware"
+        ]
+      }
+    ],
+    "Essay": [
+      {
+        "title": "EVERYONE needs a Home Server",
+        "href": "/2025/02/5-reasons-build-home-server",
+        "date": "2025-02-01",
+        "year": "2025",
+        "month": "02",
+        "categories": [
+          "Essay"
+        ]
+      },
+      {
+        "title": "The Future of AI NEEDS to Deal with Copyright Laws",
+        "href": "/2023/03/ai-needs-to-deal-with-copyright-laws",
+        "date": "2023-03-20",
+        "year": "2023",
+        "month": "03",
+        "categories": [
+          "Essay"
+        ]
+      }
+    ]
+  },
+  "news": {
+    "2022": {
+      "10": [
+        {
+          "title": "Ubuntu 22.10, PolyMC Collapses, Windows NVIDIA pain, and more!",
+          "href": "/2022/10/ubuntu-polymc-pocket-casts",
+          "date": "2022-10-24",
+          "year": "2022",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Linux Bug Could BREAK Displays, Steam Deck Oopsie, and more!",
+          "href": "/2022/10/linux-break-displays-steam-deck-oopsie",
+          "date": "2022-10-11",
+          "year": "2022",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "MAJOR Nextcloud Release, Pop!_OS Rust, and more!",
+          "href": "/2022/10/nextcloud-hub3-pop-os-rust",
+          "date": "2022-10-04",
+          "year": "2022",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "11": [
+        {
+          "title": "Thunderbird “Supernova” Update, Toots be gone, and more!",
+          "href": "/2022/11/thunderbird-supernova-toots-gone-kde-update",
+          "date": "2022-11-16",
+          "year": "2022",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "12": [
+        {
+          "title": "Valve making HUGE Investment in Open-Source, Deepin Home, and more!",
+          "href": "/2022/12/valve-investments-deepin",
+          "date": "2022-12-19",
+          "year": "2022",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Asahi GPU Drivers, COSMIC Updates, KDE Tiling and more!",
+          "href": "/2022/12/asahi-gpu-drivers-cosmic-updates-kde-tiling",
+          "date": "2022-12-11",
+          "year": "2022",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "GTK patches, new StarLabs laptop, big Maui updates and MORE!",
+          "href": "/2022/12/gtk-patches-starlabs-kde",
+          "date": "2022-12-03",
+          "year": "2022",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        }
+      ]
+    },
+    "2023": {
+      "10": [
+        {
+          "title": "System76's COSMIC new look, Firefox 119, KDE Plasma 6 release date, and more!",
+          "href": "/2023/10/cosmic-new-look-firefox-119-kde-plasma-6",
+          "date": "2023-10-25",
+          "year": "2023",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Ubuntu 23.10 and Wi-Fi 7 released, StackOverflow layoffs, and more!",
+          "href": "/2023/10/ubuntu-2310-wifi-7-stackoverflow",
+          "date": "2023-10-18",
+          "year": "2023",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "GNOME to drop x11, Right to Repair, OldTechBloke, and more!",
+          "href": "/2023/10/gnome-drops-x11-right-to-repair",
+          "date": "2023-10-11",
+          "year": "2023",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Stallman's health issues, KDE Plasma & COSMIC updates, and more!",
+          "href": "/2023/10/stallman-battling-cancer-kde-cosmic",
+          "date": "2023-10-04",
+          "year": "2023",
+          "month": "10",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "11": [
+        {
+          "title": "COSMIC Window Arrangement, GNOME Tech Fund, and more!",
+          "href": "/2023/11/cosmic-gnome-krita",
+          "date": "2023-11-29",
+          "year": "2023",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Chaos in OpenAI and Nothing, Firefox 120, Bluesky, and more!",
+          "href": "/2023/11/chaos-openai-nothing-firefox",
+          "date": "2023-11-22",
+          "year": "2023",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "GNOME gets €1M, SteamDeck OLED, Blender 4, and more!",
+          "href": "/2023/11/gnome-fund-steamdeck-oled",
+          "date": "2023-11-15",
+          "year": "2023",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "KDE 6 MegaRelease, Fedora 39, GPT-4 Turbo, and more!",
+          "href": "/2023/11/kde-megarelease-fedora-39",
+          "date": "2023-11-08",
+          "year": "2023",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "OpenSUSE Changes Logo, Linux 6.6 Released, Mastodon Lists, and more!",
+          "href": "/2023/11/opensuse-logo-linux-6-mastodon",
+          "date": "2023-11-01",
+          "year": "2023",
+          "month": "11",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "12": [
+        {
+          "title": "GNOME & KDE developments, Nobara & Enlightenment releases, and more!",
+          "href": "/2023/12/gnome-kde-develop-nobara-release",
+          "date": "2023-12-27",
+          "year": "2023",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "COSMIC Text Editor, the Fediverse grows, Plasma Mobile 6, and more!",
+          "href": "/2023/12/cosmic-text-editor-fediverse-plasma-mobile",
+          "date": "2023-12-20",
+          "year": "2023",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Nextcloud Hub 7, new Krita Supporter, AI Act, Gemini, and more!",
+          "href": "/2023/12/nextcloud-hub-7-krita-ai-act",
+          "date": "2023-12-13",
+          "year": "2023",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "PeerTube 6, Zorin OS 17, Cinnamon 6, and more!",
+          "href": "/2023/12/peertube6-zorin17-cinnamon6",
+          "date": "2023-12-06",
+          "year": "2023",
+          "month": "12",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "01": [
+        {
+          "title": "New EU Act poses risks for FOSS, new Immutable Distros, and more!",
+          "href": "/2023/01/eu-act-immutable-distros",
+          "date": "2023-01-31",
+          "year": "2023",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Vanilla OS release, Tokodon client, Unity, and more!",
+          "href": "/2023/01/vanilla-os-tokodon",
+          "date": "2023-01-10",
+          "year": "2023",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Linux is RISING, KDE updates and more!",
+          "href": "/2023/01/linux-rising-2023",
+          "date": "2023-01-02",
+          "year": "2023",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "02": [
+        {
+          "title": "New Linux hardware from Purism and Kubuntu, and more!",
+          "href": "/2023/02/new-linux-hardware-purism-kubuntu",
+          "date": "2023-02-25",
+          "year": "2023",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "KDE Plasma 5.27 & EndlessOS 5 released, Thunderbird future plans, and more!",
+          "href": "/2023/02/kde-plasma-527-endless-5",
+          "date": "2023-02-15",
+          "year": "2023",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Releases for Elementary, LibreOffice, KDE Apps, and more!",
+          "href": "/2023/02/new-elementary-libreoffice-and-kde-apps",
+          "date": "2023-02-07",
+          "year": "2023",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "03": [
+        {
+          "title": "New Framework laptops, GNOME 44, Wayland screen sharing, and more!",
+          "href": "/2023/03/framework-laptops-gnome44",
+          "date": "2023-03-29",
+          "year": "2023",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Nextcloud announces Hub 4 with AI Tools for everyone, a Sharepoint alternative, and more!",
+          "href": "/2023/03/nextcloud-hub-4",
+          "date": "2023-03-21",
+          "year": "2023",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "KDE Konsole on Windows, GNOME Image Viewer improvements, and more!",
+          "href": "/2023/03/konsole-on-windows-gnome-image-viewer",
+          "date": "2023-03-15",
+          "year": "2023",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "VanillaOS 2.0 announced, Nitrux 2.7 released, and more!",
+          "href": "/2023/03/vanilla-drops-ubuntu-nitrux-drops-plasma",
+          "date": "2023-03-09",
+          "year": "2023",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The future of Linux Hardware, Flathub, and more!",
+          "href": "/2023/03/future-of-linux-hardware-flathub",
+          "date": "2023-03-01",
+          "year": "2023",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "04": [
+        {
+          "title": "GIMP ported to GTK3, BlendOS 2, Plasma 6 ISO, and more!",
+          "href": "/2023/04/gimp-gtk3-blendos2-plasma6",
+          "date": "2023-04-26",
+          "year": "2023",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Fedora 38, Proton 8, Vivaldi 6, Deepin 20.9, and more",
+          "href": "/2023/04/fedora-38-proton-8-vivaldi-6",
+          "date": "2023-04-19",
+          "year": "2023",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Linux Mint introduces Styles, System76 works on COSMIC, and more!",
+          "href": "/2023/04/linux-mint-style-and-cosmic",
+          "date": "2023-04-12",
+          "year": "2023",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Pine64 announces RISC-V tablet, System76  announces in-house laptop, and more!",
+          "href": "/2023/04/pine64-riscv-system76-virgo",
+          "date": "2023-04-05",
+          "year": "2023",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "05": [
+        {
+          "title": "RHEL Summit, KDE Plasma working on HDR, better GNOME settings, and more!",
+          "href": "/2023/05/kde-plasma-hdr-gnome-settings",
+          "date": "2023-05-24",
+          "year": "2023",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Cosmic DE now has panels, BlueSky open-sourced their app, and more!",
+          "href": "/2023/05/cosmic-de-panels-bluesky-opensource",
+          "date": "2023-05-17",
+          "year": "2023",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Big KDE Plasma 6 news, Firefox 113 & 114, Fly-Pie everywhere, and more!",
+          "href": "/2023/05/kde-plasma-6-sprint-firefox-flypie",
+          "date": "2023-05-11",
+          "year": "2023",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Mastodon get BETTER, Krita reflects on 2022, and more!",
+          "href": "/2023/05/mastodon-onboarding-krita-gnome",
+          "date": "2023-05-03",
+          "year": "2023",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "06": [
+        {
+          "title": "RHEL source code controversies explained, and more!",
+          "href": "/2023/06/rhel-source-code-opensuse-songs",
+          "date": "2023-06-28",
+          "year": "2023",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The Reddit protest, COSMIC Tiling is awesome, and more!",
+          "href": "/2023/06/reddit-protest-cosmic-tiling",
+          "date": "2023-06-23",
+          "year": "2023",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Debian 12 released, a preview of Thunderbird redesign, and more!",
+          "href": "/2023/06/debian12-released-thunderbird-redesign",
+          "date": "2023-06-15",
+          "year": "2023",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Red Hat drops LibreOffice, Mozilla AI contest winners, Reddit's Strike, and more!",
+          "href": "/2023/06/mozilla-ai-red-hat-libreoffice-reddit-strike",
+          "date": "2023-06-07",
+          "year": "2023",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Ubuntu Snaps-only version, Dolphin emulator won't be on Steam, and more!",
+          "href": "/2023/06/ubuntu-snaps-only-dolphin-emulater",
+          "date": "2023-06-01",
+          "year": "2023",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "07": [
+        {
+          "title": "GNOME will get native Tiling, Google wants to DRM the Internet, and more!",
+          "href": "/2023/07/gnome-tiling-google-drm",
+          "date": "2023-07-26",
+          "year": "2023",
+          "month": "07",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "SUSE forks RHEL, Thunderbird redesign is here, and more!",
+          "href": "/2023/07/suse-forks-rhel-thunderbird-redesign",
+          "date": "2023-07-12",
+          "year": "2023",
+          "month": "07",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The RHEL story continues, a ZorinOS upgrade tool, and more!",
+          "href": "/2023/07/rhel-story-zorinos-upgrade-tool",
+          "date": "2023-07-05",
+          "year": "2023",
+          "month": "07",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "08": [
+        {
+          "title": "KDE big apps update, Fairphone new phone, VanillaOS 2, and more!",
+          "href": "/2023/08/kde-apps-update-fairphone-vanillaos",
+          "date": "2023-08-30",
+          "year": "2023",
+          "month": "08",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "StarLab's new 2-in-1 tablet, Libreoffice 7.6, and more!",
+          "href": "/2023/08/starlab-libreoffice-more",
+          "date": "2023-08-23",
+          "year": "2023",
+          "month": "08",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "System76 customization settings, KDE wallpaper contest, and more!",
+          "href": "/2023/08/system76-customization-kde-wallpaper-contest",
+          "date": "2023-08-16",
+          "year": "2023",
+          "month": "08",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Refurbished Steam Decks, BBC on the Fediverse, Rhino Linux, and more!",
+          "href": "/2023/08/steam-deck-bbc-fediverse-rhino-linux",
+          "date": "2023-08-09",
+          "year": "2023",
+          "month": "08",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Linux beats MacOS in gaming, a big Linux Foundation problem, and more!",
+          "href": "/2023/08/linux-beats-macos-gaming-linux-foundation",
+          "date": "2023-08-02",
+          "year": "2023",
+          "month": "08",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "09": [
+        {
+          "title": "GNOME 45 release, Mozilla.ai, and Valve contributions to Linux, and more!",
+          "href": "/2023/09/gnome-45-mozilla-ai-valve",
+          "date": "2023-09-27",
+          "year": "2023",
+          "month": "09",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Terraria donates $100k to Godot, Fedora wants to drop X11, and more!",
+          "href": "/2023/09/terraria-donates100k-to-godot",
+          "date": "2023-09-20",
+          "year": "2023",
+          "month": "09",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Terrible car privacy, Right to Repair for smartphones, and more!",
+          "href": "/2023/09/car-privacy-right-to-repair-unity",
+          "date": "2023-09-13",
+          "year": "2023",
+          "month": "09",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Microsoft is having EU regulations issues, Ubuntu 23.10 wallpaper, and more!",
+          "href": "/2023/09/microsoft-eu-regulations-ubuntu-2310",
+          "date": "2023-09-06",
+          "year": "2023",
+          "month": "09",
+          "categories": [
+            "News"
+          ]
+        }
+      ]
+    },
+    "2024": {
+      "01": [
+        {
+          "title": "Roblox Donates to Blender, Servo Development, Purism IPO, and more!",
+          "href": "/2024/01/roblox-donates-to-blender-servo",
+          "date": "2024-01-31",
+          "year": "2024",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "GNU to Power Online Payments, Framework Laptop 16 Reviews, and more!",
+          "href": "/2024/01/gnu-online-payments-framework",
+          "date": "2024-01-24",
+          "year": "2024",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "New Linux-based Gaming Device, €203k to GStreamer, COSMIC Road to Alpha, and more!",
+          "href": "/2024/01/linux-based-gaming-device-gstreamer-cosmic-alpha",
+          "date": "2024-01-17",
+          "year": "2024",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The Linux Foundation Report, AI in Audacity, ElementaryOS 7 update, and more!",
+          "href": "/2024/01/linux-foundation-report-ai-audacity-elementaryos",
+          "date": "2024-01-10",
+          "year": "2024",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Linux Marketshare rises, GNOME Circle apps, Scribus 1.6 and more!",
+          "href": "/2024/01/linux-marketshare-gnome-circle",
+          "date": "2024-01-03",
+          "year": "2024",
+          "month": "01",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "02": [
+        {
+          "title": "KDE Plasma 6 Released, Tails 6, LXQt on Qt6, and more!",
+          "href": "/2024/02/plasma-6-tails-6-lxqt-qt-6",
+          "date": "2024-02-28",
+          "year": "2024",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "COSMIC DE Almost Ready, Signal Usernames, Firefox 123, and more!",
+          "href": "/2024/02/cosmic-de-ready-signal-usernames",
+          "date": "2024-02-21",
+          "year": "2024",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Mozilla Corporation CEO Steps Down, Taliban Shut Down queer.af, and more!",
+          "href": "/2024/02/mozilla-ceo-steps-down",
+          "date": "2024-02-14",
+          "year": "2024",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Try Out Plasma 6, elementaryOS 8, Mozilla Monitor Plus, Bluesky, and more!",
+          "href": "/2024/02/try-out-plasma6-and-more",
+          "date": "2024-02-07",
+          "year": "2024",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "03": [
+        {
+          "title": "GNOME 46 Released, KDE Global Themes Drama, First Looks at COSMIC, and more!",
+          "href": "/2024/03/gnome-46-kde-themes-cosmic",
+          "date": "2024-03-27",
+          "year": "2024",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "COSMIC Updates, Linux at 4%, VLC Future Plans, and more!",
+          "href": "/2024/03/cosmic-updates-linux-4",
+          "date": "2024-03-13",
+          "year": "2024",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "04": [
+        {
+          "title": "Fedora 40, COSMIC Pre-Alpha, Windows 11 ads, new Linux Tablets, and more!",
+          "href": "/2024/04/fedora-40-cosmic-pre-alpha-windows-11-ads-new-linux-tablets-and-more",
+          "date": "2024-04-24",
+          "year": "2024",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The Biggest Security Attack on Linux, Kubuntu New Logo, and more!",
+          "href": "/2024/04/xz-backdoor-kubuntu-logo",
+          "date": "2024-04-11",
+          "year": "2024",
+          "month": "04",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "05": [
+        {
+          "title": "Nix governance Crisis and MORE!",
+          "href": "/2024/05/nix-governance-crisis-and-more",
+          "date": "2024-05-28",
+          "year": "2024",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "New GPT Open-Source AI in copilot!",
+          "href": "/2024/05/new-gpt-open-source-ai-copilot",
+          "date": "2024-05-15",
+          "year": "2024",
+          "month": "05",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "06": [
+        {
+          "title": "System76's COSMIC now has a new logo and brand!",
+          "href": "/2024/06/system76s-cosmic-new-logo-branding",
+          "date": "2024-06-30",
+          "year": "2024",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "The EU is still trying to dismantle end-to-end encryption",
+          "href": "/2024/06/eu-is-dismantle-end-to-end-encryption",
+          "date": "2024-06-28",
+          "year": "2024",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "KDE Plasma 6.1 completely redesigned its Edit Mode",
+          "href": "/2024/06/kde-plasma-new-edit-mode",
+          "date": "2024-06-22",
+          "year": "2024",
+          "month": "06",
+          "categories": [
+            "News"
+          ]
+        }
+      ]
+    },
+    "2025": {
+      "02": [
+        {
+          "title": "Linus ends the Rust for Linux drama, COSMIC Alpha 6 released, and more!",
+          "href": "/2025/02/linus-rust-drama-cosmic-alpha",
+          "date": "2025-02-24",
+          "year": "2025",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "url: asahi-lead-resigns-plasma-updates-and-more",
+          "href": "/2025/02/asahi-lead-resigns-plasma-updates-and-more",
+          "date": "2025-02-16",
+          "year": "2025",
+          "month": "02",
+          "categories": [
+            "News"
+          ]
+        }
+      ],
+      "03": [
+        {
+          "title": "Libadwaita 1.7, a new KDE for-profit, and more!",
+          "href": "/2025/03/libadwaita-kde-for-profit",
+          "date": "2025-03-17",
+          "year": "2025",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Mozilla and Thunderbird 136 released, Godot 4.4, and more!",
+          "href": "/2025/03/firefox-thunderbird-136-godot",
+          "date": "2025-03-10",
+          "year": "2025",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        },
+        {
+          "title": "Mozilla worrying Terms of Use, Hellwig steps down, and more!",
+          "href": "/2025/03/mozilla-term-of-use-hellwig",
+          "date": "2025-03-07",
+          "year": "2025",
+          "month": "03",
+          "categories": [
+            "News"
+          ]
+        }
+      ]
+    }
+  },
+  "pages": [
+    {
+      "title": "10 BEST Linux Applications: Must Have Software (2021)",
+      "href": "/2021/11/10-best-linux-applications-must-have-software",
+      "date": "2021-11-13",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "5 Things You MUST DO after Installing Pop!_OS",
+      "href": "/2021/11/after-installing-pop-os-cosmic",
+      "date": "2021-11-13",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "How to Auto-Mount Drives in Linux",
+      "href": "/2021/11/auto-mount-drives-in-linux-fstab",
+      "date": "2021-11-19",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "How to Control AMD Wraith Prism Cooler RGB (and more)",
+      "href": "/2021/11/control-amd-wraith-prism-cooler-master",
+      "date": "2021-11-13",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "How to Switch Arch Linux Kernels",
+      "href": "/2021/11/how-to-switch-arch-linux-kernels-lts-zen-hardened",
+      "date": "2021-11-22",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Easily Install AMD Ryzen CPU and Wraith Prism Cooler",
+      "href": "/2021/11/install-amd-ryzen-cpu-and-wraith-prism-cooler",
+      "date": "2021-11-13",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Monitor AMD RYZEN Temps in Linux",
+      "href": "/2021/11/monitor-amd-ryzen-temps-in-linux",
+      "date": "2021-11-15",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "OpenSUSE – 5 Things You MUST Do After Installing",
+      "href": "/2021/11/opensuse-5-things-you-must-do-after-installing",
+      "date": "2021-11-10",
+      "year": "2021",
+      "month": "11",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Top 10 Linux Apps – Truly Essential Software!",
+      "href": "/2021/11/top-10-linux-apps-ubuntu",
+      "date": "2021-11-19",
+      "year": "2021",
+      "month": "11",
+      "categories": []
+    },
+    {
+      "title": "5 AWESOME LINUX APPS - GNOME Circle",
+      "href": "/2022/02/5-awesome-linux-apps-gnome-circle",
+      "date": "2022-02-12",
+      "year": "2022",
+      "month": "02",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "How to Flash Linux on the PinePhone",
+      "href": "/2022/02/how-to-flash-linux-on-the-pinephone",
+      "date": "2022-02-13",
+      "year": "2022",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Install DaVinci Resolve in Linux (Outdated)",
+      "href": "/2022/02/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora",
+      "date": "2022-02-13",
+      "year": "2022",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "7 Awesome Linux Terminal Utilities",
+      "href": "/2022/03/7-awesome-linux-terminal-utilities",
+      "date": "2022-03-21",
+      "year": "2022",
+      "month": "03",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Favorite GNOME/GTK Themes, Icons, and more!",
+      "href": "/2022/03/favorite-gnome-gtk-themes-icons",
+      "date": "2022-03-21",
+      "year": "2022",
+      "month": "03",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Turning an OLD PC/Laptop into a Media Server! (Ubuntu/PLEX Guide)",
+      "href": "/2022/03/old-pc-laptop-media-server",
+      "date": "2022-03-21",
+      "year": "2022",
+      "month": "03",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Perfect Windows 11 Virtual Machine on Linux (VMware Guide)",
+      "href": "/2022/03/windows-11-vmware-guide-linux",
+      "date": "2022-03-11",
+      "year": "2022",
+      "month": "03",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Flatpak vs. Snap vs. AppImage - Linux Packaging Benchmarks!",
+      "href": "/2022/04/flatpak-vs-snap-vs-appimage",
+      "date": "2022-04-16",
+      "year": "2022",
+      "month": "04",
+      "categories": [
+        "Benchmarking"
+      ]
+    },
+    {
+      "title": "7 (more) AWESOME Linux Terminal CLI Applications",
+      "href": "/2022/05/7-more-awesome-linux-terminal-utilities",
+      "date": "2022-05-15",
+      "year": "2022",
+      "month": "05",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Microsoft Edge might WIN on Linux.",
+      "href": "/2022/05/microsoft-edge-might-win-on-linux",
+      "date": "2022-05-16",
+      "year": "2022",
+      "month": "05",
+      "categories": [
+        "Benchmarking"
+      ]
+    },
+    {
+      "title": "Fedora vs Arch Linux - Battle of the Best!",
+      "href": "/2022/06/fedora-vs-arch-linux",
+      "date": "2022-06-11",
+      "year": "2022",
+      "month": "06",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Chrome OS Flex is a NIGHTMARE!",
+      "href": "/2022/07/chrome-os-flex-is-a-nightmare",
+      "date": "2022-07-15",
+      "year": "2022",
+      "month": "07",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "These Linux Distros are ACTUALLY FREE. Stallman Approved!",
+      "href": "/2022/07/free-software-foundation-distros",
+      "date": "2022-07-16",
+      "year": "2022",
+      "month": "07",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "No, Manjaro is NOT Arch",
+      "href": "/2022/07/no-manjaro-is-not-arch",
+      "date": "2022-07-23",
+      "year": "2022",
+      "month": "07",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "The BEST Solutions for Running Windows Apps in Linux",
+      "href": "/2022/07/the-best-solutions-for-running-windows-apps-in-linux",
+      "date": "2022-07-26",
+      "year": "2022",
+      "month": "07",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "hideSummary: false",
+      "href": "/2022/08/fall-of-jingos-linux-tablet",
+      "date": "2022-08-12",
+      "year": "2022",
+      "month": "08",
+      "categories": [
+        "Hardware"
+      ]
+    },
+    {
+      "title": "Linux Distros Based on Fedora",
+      "href": "/2022/08/linux-distros-based-on-fedora",
+      "date": "2022-08-08",
+      "year": "2022",
+      "month": "08",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "How to Dual Boot Windows 10 and Pop!_OS (Legacy/GRUB)",
+      "href": "/2022/09/dual-boot-windows-10-pop-os",
+      "date": "2022-09-26",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "The Edge2 Pro is a CRAZY Powerful ARM Single Board Computer",
+      "href": "/2022/09/edge2-powerfull-arm-sb",
+      "date": "2022-09-28",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Hardware"
+      ]
+    },
+    {
+      "title": "How to Dual Boot Fedora and Windows 11",
+      "href": "/2022/09/how-to-dual-boot-fedora-and-windows-11",
+      "date": "2022-09-16",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "How to make ZIP Files in Windows",
+      "href": "/2022/09/how-to-make-zip-files-in-windows",
+      "date": "2022-09-04",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Installing Arch Linux the EASY WAY! – archfi Guide",
+      "href": "/2022/09/installing-arch-linux-the-easy-way-archfi-guide",
+      "date": "2022-09-26",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "The Death of Mozilla is the Death of the Open Web",
+      "href": "/2022/09/the-death-of-mozilla-is-the-death-of-the-open-web",
+      "date": "2022-09-25",
+      "year": "2022",
+      "month": "09",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Linux Bug Could BREAK Displays, Steam Deck Oopsie, and more!",
+      "href": "/2022/10/linux-break-displays-steam-deck-oopsie",
+      "date": "2022-10-11",
+      "year": "2022",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "MAJOR Nextcloud Release, Pop!_OS Rust, and more!",
+      "href": "/2022/10/nextcloud-hub3-pop-os-rust",
+      "date": "2022-10-04",
+      "year": "2022",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Ubuntu 22.10, PolyMC Collapses, Windows NVIDIA pain, and more!",
+      "href": "/2022/10/ubuntu-polymc-pocket-casts",
+      "date": "2022-10-24",
+      "year": "2022",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The ULTIMATE RetroPie Setup Guide",
+      "href": "/2022/10/ultimate-retropie-setup-guid",
+      "date": "2022-10-19",
+      "year": "2022",
+      "month": "10",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Rocky Linux, AlmaLinux, RHEL, CentOS - Which Is BEST for You?",
+      "href": "/2022/11/rocky-linux-almalinux-rhel-centos-which-is-best-for-you",
+      "date": "2022-11-02",
+      "year": "2022",
+      "month": "11",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Thunderbird “Supernova” Update, Toots be gone, and more!",
+      "href": "/2022/11/thunderbird-supernova-toots-gone-kde-update",
+      "date": "2022-11-16",
+      "year": "2022",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Asahi GPU Drivers, COSMIC Updates, KDE Tiling and more!",
+      "href": "/2022/12/asahi-gpu-drivers-cosmic-updates-kde-tiling",
+      "date": "2022-12-11",
+      "year": "2022",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GTK patches, new StarLabs laptop, big Maui updates and MORE!",
+      "href": "/2022/12/gtk-patches-starlabs-kde",
+      "date": "2022-12-03",
+      "year": "2022",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "How to make an Apache Webserver with SSL",
+      "href": "/2022/12/how-to-apache-webserver-ssl",
+      "date": "2022-12-05",
+      "year": "2022",
+      "month": "12",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Valve making HUGE Investment in Open-Source, Deepin Home, and more!",
+      "href": "/2022/12/valve-investments-deepin",
+      "date": "2022-12-19",
+      "year": "2022",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "New EU Act poses risks for FOSS, new Immutable Distros, and more!",
+      "href": "/2023/01/eu-act-immutable-distros",
+      "date": "2023-01-31",
+      "year": "2023",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Linux is RISING, KDE updates and more!",
+      "href": "/2023/01/linux-rising-2023",
+      "date": "2023-01-02",
+      "year": "2023",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Vanilla OS release, Tokodon client, Unity, and more!",
+      "href": "/2023/01/vanilla-os-tokodon",
+      "date": "2023-01-10",
+      "year": "2023",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE Plasma 5.27 & EndlessOS 5 released, Thunderbird future plans, and more!",
+      "href": "/2023/02/kde-plasma-527-endless-5",
+      "date": "2023-02-15",
+      "year": "2023",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Releases for Elementary, LibreOffice, KDE Apps, and more!",
+      "href": "/2023/02/new-elementary-libreoffice-and-kde-apps",
+      "date": "2023-02-07",
+      "year": "2023",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "New Linux hardware from Purism and Kubuntu, and more!",
+      "href": "/2023/02/new-linux-hardware-purism-kubuntu",
+      "date": "2023-02-25",
+      "year": "2023",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The Future of AI NEEDS to Deal with Copyright Laws",
+      "href": "/2023/03/ai-needs-to-deal-with-copyright-laws",
+      "date": "2023-03-20",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "Essay"
+      ]
+    },
+    {
+      "title": "New Framework laptops, GNOME 44, Wayland screen sharing, and more!",
+      "href": "/2023/03/framework-laptops-gnome44",
+      "date": "2023-03-29",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The future of Linux Hardware, Flathub, and more!",
+      "href": "/2023/03/future-of-linux-hardware-flathub",
+      "date": "2023-03-01",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE Konsole on Windows, GNOME Image Viewer improvements, and more!",
+      "href": "/2023/03/konsole-on-windows-gnome-image-viewer",
+      "date": "2023-03-15",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Nextcloud announces Hub 4 with AI Tools for everyone, a Sharepoint alternative, and more!",
+      "href": "/2023/03/nextcloud-hub-4",
+      "date": "2023-03-21",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Top 5 FAVORITE Linux Distros",
+      "href": "/2023/03/top-5-favorite-linux-distros",
+      "date": "2023-03-03",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "VanillaOS 2.0 announced, Nitrux 2.7 released, and more!",
+      "href": "/2023/03/vanilla-drops-ubuntu-nitrux-drops-plasma",
+      "date": "2023-03-09",
+      "year": "2023",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "ChatGPT in YOUR Terminal",
+      "href": "/2023/04/chatgpt-in-your-terminal",
+      "date": "2023-04-23",
+      "year": "2023",
+      "month": "04",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Fedora 38, Proton 8, Vivaldi 6, Deepin 20.9, and more",
+      "href": "/2023/04/fedora-38-proton-8-vivaldi-6",
+      "date": "2023-04-19",
+      "year": "2023",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GIMP ported to GTK3, BlendOS 2, Plasma 6 ISO, and more!",
+      "href": "/2023/04/gimp-gtk3-blendos2-plasma6",
+      "date": "2023-04-26",
+      "year": "2023",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Linux Mint introduces Styles, System76 works on COSMIC, and more!",
+      "href": "/2023/04/linux-mint-style-and-cosmic",
+      "date": "2023-04-12",
+      "year": "2023",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Pine64 announces RISC-V tablet, System76  announces in-house laptop, and more!",
+      "href": "/2023/04/pine64-riscv-system76-virgo",
+      "date": "2023-04-05",
+      "year": "2023",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Cosmic DE now has panels, BlueSky open-sourced their app, and more!",
+      "href": "/2023/05/cosmic-de-panels-bluesky-opensource",
+      "date": "2023-05-17",
+      "year": "2023",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Big KDE Plasma 6 news, Firefox 113 & 114, Fly-Pie everywhere, and more!",
+      "href": "/2023/05/kde-plasma-6-sprint-firefox-flypie",
+      "date": "2023-05-11",
+      "year": "2023",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "RHEL Summit, KDE Plasma working on HDR, better GNOME settings, and more!",
+      "href": "/2023/05/kde-plasma-hdr-gnome-settings",
+      "date": "2023-05-24",
+      "year": "2023",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Mastodon get BETTER, Krita reflects on 2022, and more!",
+      "href": "/2023/05/mastodon-onboarding-krita-gnome",
+      "date": "2023-05-03",
+      "year": "2023",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Debian 12 released, a preview of Thunderbird redesign, and more!",
+      "href": "/2023/06/debian12-released-thunderbird-redesign",
+      "date": "2023-06-15",
+      "year": "2023",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Red Hat drops LibreOffice, Mozilla AI contest winners, Reddit's Strike, and more!",
+      "href": "/2023/06/mozilla-ai-red-hat-libreoffice-reddit-strike",
+      "date": "2023-06-07",
+      "year": "2023",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The Reddit protest, COSMIC Tiling is awesome, and more!",
+      "href": "/2023/06/reddit-protest-cosmic-tiling",
+      "date": "2023-06-23",
+      "year": "2023",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "RHEL source code controversies explained, and more!",
+      "href": "/2023/06/rhel-source-code-opensuse-songs",
+      "date": "2023-06-28",
+      "year": "2023",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Ubuntu Snaps-only version, Dolphin emulator won't be on Steam, and more!",
+      "href": "/2023/06/ubuntu-snaps-only-dolphin-emulater",
+      "date": "2023-06-01",
+      "year": "2023",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME will get native Tiling, Google wants to DRM the Internet, and more!",
+      "href": "/2023/07/gnome-tiling-google-drm",
+      "date": "2023-07-26",
+      "year": "2023",
+      "month": "07",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The RHEL story continues, a ZorinOS upgrade tool, and more!",
+      "href": "/2023/07/rhel-story-zorinos-upgrade-tool",
+      "date": "2023-07-05",
+      "year": "2023",
+      "month": "07",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "SUSE forks RHEL, Thunderbird redesign is here, and more!",
+      "href": "/2023/07/suse-forks-rhel-thunderbird-redesign",
+      "date": "2023-07-12",
+      "year": "2023",
+      "month": "07",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE big apps update, Fairphone new phone, VanillaOS 2, and more!",
+      "href": "/2023/08/kde-apps-update-fairphone-vanillaos",
+      "date": "2023-08-30",
+      "year": "2023",
+      "month": "08",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Linux beats MacOS in gaming, a big Linux Foundation problem, and more!",
+      "href": "/2023/08/linux-beats-macos-gaming-linux-foundation",
+      "date": "2023-08-02",
+      "year": "2023",
+      "month": "08",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "StarLab's new 2-in-1 tablet, Libreoffice 7.6, and more!",
+      "href": "/2023/08/starlab-libreoffice-more",
+      "date": "2023-08-23",
+      "year": "2023",
+      "month": "08",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Refurbished Steam Decks, BBC on the Fediverse, Rhino Linux, and more!",
+      "href": "/2023/08/steam-deck-bbc-fediverse-rhino-linux",
+      "date": "2023-08-09",
+      "year": "2023",
+      "month": "08",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "System76 customization settings, KDE wallpaper contest, and more!",
+      "href": "/2023/08/system76-customization-kde-wallpaper-contest",
+      "date": "2023-08-16",
+      "year": "2023",
+      "month": "08",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Terrible car privacy, Right to Repair for smartphones, and more!",
+      "href": "/2023/09/car-privacy-right-to-repair-unity",
+      "date": "2023-09-13",
+      "year": "2023",
+      "month": "09",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME 45 release, Mozilla.ai, and Valve contributions to Linux, and more!",
+      "href": "/2023/09/gnome-45-mozilla-ai-valve",
+      "date": "2023-09-27",
+      "year": "2023",
+      "month": "09",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Microsoft is having EU regulations issues, Ubuntu 23.10 wallpaper, and more!",
+      "href": "/2023/09/microsoft-eu-regulations-ubuntu-2310",
+      "date": "2023-09-06",
+      "year": "2023",
+      "month": "09",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Terraria donates $100k to Godot, Fedora wants to drop X11, and more!",
+      "href": "/2023/09/terraria-donates100k-to-godot",
+      "date": "2023-09-20",
+      "year": "2023",
+      "month": "09",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "System76's COSMIC new look, Firefox 119, KDE Plasma 6 release date, and more!",
+      "href": "/2023/10/cosmic-new-look-firefox-119-kde-plasma-6",
+      "date": "2023-10-25",
+      "year": "2023",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME to drop x11, Right to Repair, OldTechBloke, and more!",
+      "href": "/2023/10/gnome-drops-x11-right-to-repair",
+      "date": "2023-10-11",
+      "year": "2023",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Stallman's health issues, KDE Plasma & COSMIC updates, and more!",
+      "href": "/2023/10/stallman-battling-cancer-kde-cosmic",
+      "date": "2023-10-04",
+      "year": "2023",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Ubuntu 23.10 and Wi-Fi 7 released, StackOverflow layoffs, and more!",
+      "href": "/2023/10/ubuntu-2310-wifi-7-stackoverflow",
+      "date": "2023-10-18",
+      "year": "2023",
+      "month": "10",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Chaos in OpenAI and Nothing, Firefox 120, Bluesky, and more!",
+      "href": "/2023/11/chaos-openai-nothing-firefox",
+      "date": "2023-11-22",
+      "year": "2023",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "COSMIC Window Arrangement, GNOME Tech Fund, and more!",
+      "href": "/2023/11/cosmic-gnome-krita",
+      "date": "2023-11-29",
+      "year": "2023",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME gets €1M, SteamDeck OLED, Blender 4, and more!",
+      "href": "/2023/11/gnome-fund-steamdeck-oled",
+      "date": "2023-11-15",
+      "year": "2023",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE 6 MegaRelease, Fedora 39, GPT-4 Turbo, and more!",
+      "href": "/2023/11/kde-megarelease-fedora-39",
+      "date": "2023-11-08",
+      "year": "2023",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "OpenSUSE Changes Logo, Linux 6.6 Released, Mastodon Lists, and more!",
+      "href": "/2023/11/opensuse-logo-linux-6-mastodon",
+      "date": "2023-11-01",
+      "year": "2023",
+      "month": "11",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "COSMIC Text Editor, the Fediverse grows, Plasma Mobile 6, and more!",
+      "href": "/2023/12/cosmic-text-editor-fediverse-plasma-mobile",
+      "date": "2023-12-20",
+      "year": "2023",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME & KDE developments, Nobara & Enlightenment releases, and more!",
+      "href": "/2023/12/gnome-kde-develop-nobara-release",
+      "date": "2023-12-27",
+      "year": "2023",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Nextcloud Hub 7, new Krita Supporter, AI Act, Gemini, and more!",
+      "href": "/2023/12/nextcloud-hub-7-krita-ai-act",
+      "date": "2023-12-13",
+      "year": "2023",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "PeerTube 6, Zorin OS 17, Cinnamon 6, and more!",
+      "href": "/2023/12/peertube6-zorin17-cinnamon6",
+      "date": "2023-12-06",
+      "year": "2023",
+      "month": "12",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNU to Power Online Payments, Framework Laptop 16 Reviews, and more!",
+      "href": "/2024/01/gnu-online-payments-framework",
+      "date": "2024-01-24",
+      "year": "2024",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "New Linux-based Gaming Device, €203k to GStreamer, COSMIC Road to Alpha, and more!",
+      "href": "/2024/01/linux-based-gaming-device-gstreamer-cosmic-alpha",
+      "date": "2024-01-17",
+      "year": "2024",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The Linux Foundation Report, AI in Audacity, ElementaryOS 7 update, and more!",
+      "href": "/2024/01/linux-foundation-report-ai-audacity-elementaryos",
+      "date": "2024-01-10",
+      "year": "2024",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Linux Marketshare rises, GNOME Circle apps, Scribus 1.6 and more!",
+      "href": "/2024/01/linux-marketshare-gnome-circle",
+      "date": "2024-01-03",
+      "year": "2024",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Roblox Donates to Blender, Servo Development, Purism IPO, and more!",
+      "href": "/2024/01/roblox-donates-to-blender-servo",
+      "date": "2024-01-31",
+      "year": "2024",
+      "month": "01",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "7 Docker Basics for Beginners",
+      "href": "/2024/02/7-docker-basics-for-beginners",
+      "date": "2024-02-06",
+      "year": "2024",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "COSMIC DE Almost Ready, Signal Usernames, Firefox 123, and more!",
+      "href": "/2024/02/cosmic-de-ready-signal-usernames",
+      "date": "2024-02-21",
+      "year": "2024",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Mozilla Corporation CEO Steps Down, Taliban Shut Down queer.af, and more!",
+      "href": "/2024/02/mozilla-ceo-steps-down",
+      "date": "2024-02-14",
+      "year": "2024",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE Plasma 6 Released, Tails 6, LXQt on Qt6, and more!",
+      "href": "/2024/02/plasma-6-tails-6-lxqt-qt-6",
+      "date": "2024-02-28",
+      "year": "2024",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Try Out Plasma 6, elementaryOS 8, Mozilla Monitor Plus, Bluesky, and more!",
+      "href": "/2024/02/try-out-plasma6-and-more",
+      "date": "2024-02-07",
+      "year": "2024",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "COSMIC Updates, Linux at 4%, VLC Future Plans, and more!",
+      "href": "/2024/03/cosmic-updates-linux-4",
+      "date": "2024-03-13",
+      "year": "2024",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "GNOME 46 Released, KDE Global Themes Drama, First Looks at COSMIC, and more!",
+      "href": "/2024/03/gnome-46-kde-themes-cosmic",
+      "date": "2024-03-27",
+      "year": "2024",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Fedora 40, COSMIC Pre-Alpha, Windows 11 ads, new Linux Tablets, and more!",
+      "href": "/2024/04/fedora-40-cosmic-pre-alpha-windows-11-ads-new-linux-tablets-and-more",
+      "date": "2024-04-24",
+      "year": "2024",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "The Biggest Security Attack on Linux, Kubuntu New Logo, and more!",
+      "href": "/2024/04/xz-backdoor-kubuntu-logo",
+      "date": "2024-04-11",
+      "year": "2024",
+      "month": "04",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "COSMIC might be the future of the Linux Desktop.",
+      "href": "/2024/05/cosmic-pre-alpha",
+      "date": "2024-05-26",
+      "year": "2024",
+      "month": "05",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "New GPT Open-Source AI in copilot!",
+      "href": "/2024/05/new-gpt-open-source-ai-copilot",
+      "date": "2024-05-15",
+      "year": "2024",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Nix governance Crisis and MORE!",
+      "href": "/2024/05/nix-governance-crisis-and-more",
+      "date": "2024-05-28",
+      "year": "2024",
+      "month": "05",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Guide: Setting Up Windows as a NAS Operating System",
+      "href": "/2024/05/run-windows-nas-home-server",
+      "date": "2024-05-21",
+      "year": "2024",
+      "month": "05",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "The EU is still trying to dismantle end-to-end encryption",
+      "href": "/2024/06/eu-is-dismantle-end-to-end-encryption",
+      "date": "2024-06-28",
+      "year": "2024",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "KDE Plasma 6.1 completely redesigned its Edit Mode",
+      "href": "/2024/06/kde-plasma-new-edit-mode",
+      "date": "2024-06-22",
+      "year": "2024",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "NixOS - The New Best Server OS?",
+      "href": "/2024/06/nixos-best-server-os-setup",
+      "date": "2024-06-13",
+      "year": "2024",
+      "month": "06",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "System76's COSMIC now has a new logo and brand!",
+      "href": "/2024/06/system76s-cosmic-new-logo-branding",
+      "date": "2024-06-30",
+      "year": "2024",
+      "month": "06",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "BEST Way to Monitor your Home Server! (Grafana, Prometheus, InfluxDB)",
+      "href": "/2024/07/monitor-home-server-grafana-prometheus-influxdb",
+      "date": "2024-07-06",
+      "year": "2024",
+      "month": "07",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Zen browser is making me DITCH Microsoft Edge",
+      "href": "/2024/08/zen-browser-better-firefox",
+      "date": "2024-08-29",
+      "year": "2024",
+      "month": "08",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "5 AWESOME Open Source Apps that I use Everyday",
+      "href": "/2025/02/5-awesome-open-source-apps",
+      "date": "2025-02-25",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "EVERYONE needs a Home Server",
+      "href": "/2025/02/5-reasons-build-home-server",
+      "date": "2025-02-01",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Essay"
+      ]
+    },
+    {
+      "title": "url: asahi-lead-resigns-plasma-updates-and-more",
+      "href": "/2025/02/asahi-lead-resigns-plasma-updates-and-more",
+      "date": "2025-02-16",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Git for Everyone",
+      "href": "/2025/02/git-for-everyone-guide",
+      "date": "2025-02-03T16:40:55-08:00",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Linus ends the Rust for Linux drama, COSMIC Alpha 6 released, and more!",
+      "href": "/2025/02/linus-rust-drama-cosmic-alpha",
+      "date": "2025-02-24",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Benchmarking Linux, Mac AND Windows on a 2019 MacBook Pro",
+      "href": "/2025/02/linux-mac-windows-benchmarking",
+      "date": "2025-02-16",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Benchmarking"
+      ]
+    },
+    {
+      "title": "Self-Host with Immich!",
+      "href": "/2025/02/self-host-immich-photo-backup",
+      "date": "2025-02-06",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "the OFFICIAL Windows (lite) from Microsoft",
+      "href": "/2025/02/windows-lite-ltsc-microsoft",
+      "date": "2025-02-03",
+      "year": "2025",
+      "month": "02",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Mozilla and Thunderbird 136 released, Godot 4.4, and more!",
+      "href": "/2025/03/firefox-thunderbird-136-godot",
+      "date": "2025-03-10",
+      "year": "2025",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "How to Safely Upgrade or Downgrade the Kernel on Arch Linux",
+      "href": "/2025/03/how-to-safely-upgrade-or-downgrade-kernel-on-arch-linux",
+      "date": "2025-11-30",
+      "year": "2025",
+      "month": "03",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Libadwaita 1.7, a new KDE for-profit, and more!",
+      "href": "/2025/03/libadwaita-kde-for-profit",
+      "date": "2025-03-17",
+      "year": "2025",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "Mozilla worrying Terms of Use, Hellwig steps down, and more!",
+      "href": "/2025/03/mozilla-term-of-use-hellwig",
+      "date": "2025-03-07",
+      "year": "2025",
+      "month": "03",
+      "categories": [
+        "News"
+      ]
+    },
+    {
+      "title": "MUST HAVE Homelab Services",
+      "href": "/2025/03/must-have-home-server-services-2025",
+      "date": "2025-03-11",
+      "year": "2025",
+      "month": "03",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Install DaVinci Resolve in Any Linux Distro Using DavinciBox (2025)",
+      "href": "/2025/07/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora",
+      "date": "2025-07-17",
+      "year": "2025",
+      "month": "07",
+      "categories": [
+        "Guides"
+      ]
+    },
+    {
+      "title": "Read THIS before choosing a RHEL Clone",
+      "href": "/2025/07/rhel-clones-2025",
+      "date": "2025-07-14",
+      "year": "2025",
+      "month": "07",
+      "categories": [
+        "Software"
+      ]
+    },
+    {
+      "title": "Fedora Server Guide: Cockpit, ZFS, Podman, and more!",
+      "href": "/2025/12/fedora-server-guide-cockpit-zfs-podman",
+      "date": "2025-12-21",
+      "year": "2025",
+      "month": "12",
+      "categories": [
+        "Guides",
+        "Software"
+      ]
+    }
+  ]
+}

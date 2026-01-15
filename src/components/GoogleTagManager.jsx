@@ -1,8 +1,8 @@
 import * as React from "react";
 import Script from "next/script";
 
-// Google Tag Manager ID
-const GTM_ID = "GTM-PGWDPDN3";
+// Google Tag Manager ID from environment variables
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID;
 
 export const GoogleTagManagerHeadScript = () => {
     return (
@@ -16,7 +16,7 @@ export const GoogleTagManagerHeadScript = () => {
     );
 };
 
-export const GoogleTageManagerBodyScript = () => {
+export const GoogleTagManagerBodyScript = () => {
     return (
         <noscript>
             <iframe

@@ -1,466 +1,238 @@
 import { useRouter } from 'next/router'
 import clsx from 'clsx'
-import {
-    ActivePageMarker,
-    NavLink,
-    TopLevelNavItem,
-    VisibleSectionHighlight
-} from '@/components/NavigationAPI'
+import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Button } from '@/components/mdx'
 import { useState } from 'react'
-import { NavigationStateProvider, useNavigationState } from '@/components/NavigationState'
-import ChevronDownIcon from '@/components/icons/ChevronDownIcon'
+import {
+  Home,
+  Users,
+  Handshake,
+  FileText,
+  Code,
+  Monitor,
+  Wrench,
+  ChevronRight,
+  BookOpen
+} from 'lucide-react'
+
+function NavLink({ href, active, children }) {
+    return (
+        <Link
+            href={href}
+            aria-current={active ? 'page' : undefined}
+            className={clsx(
+                'block py-2 px-3 text-sm transition-all duration-200 rounded-md relative',
+                active
+                    ? 'text-zinc-900 dark:text-white font-medium bg-primary-500/10 dark:bg-primary-500/10 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-primary-500 before:rounded-r-full'
+                    : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 dark:hover:bg-primary-500/10'
+            )}
+        >
+            {children}
+        </Link>
+    )
+}
 
 export const docsNavigation = [
     {
-        title: 'ABOUT',
-        links: [
-            { title: 'How NetBird Works', href: '/about-netbird/how-netbird-works' },
-            { title: 'NetBird vs. Traditional VPN', href: '/about-netbird/netbird-vs-traditional-vpn' },
-            { title: 'Understanding NAT and Connectivity', href: '/about-netbird/understanding-nat-and-connectivity' },
-            { title: 'Why WireGuard with NetBird', href: '/about-netbird/why-wireguard-with-netbird' },
-            { title: 'Browser Client Architecture', href: '/about-netbird/browser-client-architecture' },
-            { title: 'FAQ', href: '/about-netbird/faq' },
-            /*{ title: 'Whats new in version xx', href: '/welcome/how-netbird-works' },
-            { title: 'Release notes', href: '/about-netbird/netbird-vs-traditional-vpn' },*/
+        title: 'PAGES',
+        icon: <Home className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'Introduction', href: '/' },
+            { title: 'Partners', href: '/partners' },
+            { title: 'Team', href: '/team' },
         ],
     },
     {
-        title: 'GET STARTED',
-        links: [
-            { title: 'Quickstart Guide', href: '/get-started' },
-            {
-              title: 'Install NetBird', isOpen: true, href: '/get-started/install',
-              links: [
-                { title: 'Linux', href: '/get-started/install/linux' },
-                { title: 'Windows', href: '/get-started/install/windows' },
-                { title: 'MacOS', href: '/get-started/install/macos' },
-                { title: 'Docker', href: '/get-started/install/docker' },
-                { title: 'iOS', href: '/get-started/install/ios' },
-                { title: 'Android', href: '/get-started/install/android' },
-              ],
-            },
-            {
-              title: 'Platforms', isOpen: false,
-              links: [
-                { title: 'Proxmox VE', href: '/get-started/install/proxmox-ve' },
-                { title: 'Synology', href: '/get-started/install/synology' },
-                { title: 'pfSense', href: '/get-started/install/pfsense' },
-                { title: 'OPNsense', href: '/get-started/install/opnsense' },
-                { title: 'Raspberry Pi', href: '/get-started/install/raspberrypi' },
-              ]
-            },
-            { title: 'CLI', href: '/get-started/cli' },
+        title: 'BENCHMARKING',
+        icon: <Monitor className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'Benchmarking Linux, Mac AND Windows on a 2019 MacBook Pro', href: '/linux-mac-windows-benchmarking' },
+            { title: 'Microsoft Edge might WIN on Linux.', href: '/microsoft-edge-might-win-on-linux' },
+            { title: 'Flatpak vs. Snap vs. AppImage - Linux Packaging Benchmarks!', href: '/flatpak-vs-snap-vs-appimage' },
         ],
     },
     {
-        title: 'MANAGE NETBIRD',
-        links: [
-            { title: 'Control Center', href: '/manage/control-center' },
-            {
-                title: 'Peers',
-                isOpen: false,
-                links: [
-                    { title: 'Add Peers', href: '/manage/peers/add-machines-to-your-network' },
-                    { title: 'Approve Peers', href: '/manage/peers/approve-peers' },
-                    { title: 'Setup Keys', href: '/manage/peers/register-machines-using-setup-keys' },
-                    { title: 'Browser Client', href: '/manage/peers/browser-client' },
-                    { title: 'SSH', href: '/manage/peers/ssh' },
-                    { title: 'Lazy Connections', href: '/manage/peers/lazy-connection' },
-                    {
-                        title: 'Access Infrastructure',
-                        isOpen: true,
-                        links: [
-                            {
-                                title: 'Access Remote Webserver',
-                                href: '/manage/peers/access-infrastructure/secure-remote-webserver-access'
-                            },
-                            {
-                                title: 'Add Servers to the Network',
-                                href: '/manage/peers/access-infrastructure/setup-keys-add-servers-to-network'
-                            },
-                            {
-                                title: 'Access from Kubernetes',
-                                href: '/manage/peers/access-infrastructure/access-internal-resources-from-autoscaled-environments'
-                            },
-                            {
-                                title: 'Peer Approval for Remote Access',
-                                href: '/manage/peers/access-infrastructure/peer-approval-for-remote-worker-access'
-                            },
-                        ]
-                    },
-                    {
-                        title: 'Connect Site-to-Site',
-                        isOpen: true,
-                        links: [
-                            {
-                                title: 'Simplify Workload Migrations',
-                                href: '/manage/peers/site-to-site/db-workload-migration'
-                            },
-                        ]
-                    },
-                    { title: 'Auto Update', href: '/manage/peers/auto-update' },
-                ]
-            },
-            {
-                title: 'Access Control',
-                isOpen: false,
-                links: [
-                    { title: 'Groups & Policies', href: '/manage/access-control' },
-                    { title: 'Manage Access', href: '/manage/access-control/manage-network-access' },
-                    {
-                        title: 'Posture Checks',
-                        href: '/manage/access-control/posture-checks',
-                        isOpen: false,
-                        links: [
-                            { title: 'Disable route when in the office', href: '/manage/access-control/posture-checks/connecting-from-the-office' },
-                        ]
-                    },
-                    {
-                        title: 'Integrate MDM & EDR',
-                        href: '/manage/access-control/endpoint-detection-and-response',
-                        isOpen: false,
-                        links: [
-                            { title: 'CrowdStrike Falcon', href: '/manage/access-control/endpoint-detection-and-response/crowdstrike-edr' },
-                            { title: 'Microsoft Intune', href: '/manage/access-control/endpoint-detection-and-response/intune-mdm' },
-                            { title: 'SentinelOne Singularity', href: '/manage/access-control/endpoint-detection-and-response/sentinelone-edr' },
-                            { title: 'Huntress', href: '/manage/access-control/endpoint-detection-and-response/huntress-edr' },
-                        ]
-                    },
-                ]
-            },
-            {
-                title: 'Networks',
-                isOpen: false,
-                links: [
-                    { title: 'Concept', href: '/manage/networks' },
-                    { title: 'Route Traffic to Multiple IP resources', href: '/manage/networks/routing-traffic-to-multiple-resources' },
-                    { title: 'Access Restricted Website Domain Resources', href: '/manage/networks/accessing-restricted-domain-resources' },
-                    { title: 'Access Entire Domains Within Networks', href: '/manage/networks/accessing-entire-domains-within-networks' },
-                    {
-                        title: 'Homelab',
-                        isOpen: true,
-                        links: [
-                            { title: 'Access Home Network', href: '/manage/networks/homelab/access-home-network' },
-                        ]
-                    },
-                ]
-            },
-            {
-                title: 'Network Routes',
-                isOpen: false,
-                links: [
-                    { title: 'Route Traffic to Private Networks', href: '/manage/network-routes/routing-traffic-to-private-networks' },
-                    { title: 'Configure Default Routes for Internet Traffic', href: '/manage/network-routes/configuring-default-routes-for-internet-traffic' },
-                    { title: 'Configure Routes with Access control', href: '/manage/network-routes/configuring-routes-with-access-control' },
-                    { title: 'Resolve Overlapping Routes', href: '/manage/network-routes/resolve-overlapping-routes' },
-                ]
-            },
-            {
-                title: 'DNS',
-                isOpen: false,
-                links: [
-                    { title: 'Overview', href: '/manage/dns' },
-                    { title: 'Configuring Nameservers', href: '/manage/dns/nameserver-groups' },
-                    { title: 'DNS Settings', href: '/manage/dns/dns-settings' },
-                    { title: 'DNS Troubleshooting', href: '/manage/dns/troubleshooting' },
-                ]
-            },
-            {
-                title: 'Team',
-                isOpen: false,
-                links: [
-                    { title: 'Add Users to Your Network', href: '/manage/team/add-users-to-your-network' },
-                    { title: 'Approve Users', href: '/manage/team/approve-users' },
-                    {
-                        title: 'Provision Users & Groups',
-                        href: '/manage/team/idp-sync',
-                        isOpen: false,
-                        links: [
-                            { title: 'Microsoft Entra ID (API)', href: '/manage/team/idp-sync/microsoft-entra-id-sync' },
-                            { title: 'Microsoft Entra ID (SCIM)', href: '/manage/team/idp-sync/microsoft-entra-id-scim-sync' },
-                            { title: 'Okta', href: '/manage/team/idp-sync/okta-sync' },
-                            { title: 'Google Workspace', href: '/manage/team/idp-sync/google-workspace-sync' },
-                            { title: 'JumpCloud', href: '/manage/team/idp-sync/jumpcloud-sync' },
-                            { title: 'Keycloak', href: '/manage/team/idp-sync/keycloak-sync' },
-                        ]
-                    },
-                    {
-                        title: 'Auto-Offboard Users',
-                        href: '/manage/team/auto-offboard-users',
-                        isOpen: false,
-                    },
-                    {
-                        title: 'Single Sign-On',
-                        href: '/manage/team/single-sign-on',
-                        isOpen: false,
-//                        links: [
-//                            { title: 'Authentik', href: '/manage/team/single-sign-on/authentik' },
-//                            { title: 'Keycloak', href: '/manage/team/single-sign-on/keycloak' },
-//                            { title: 'Auth0', href: '/manage/team/single-sign-on/auth0' },
-//                            { title: 'JumpCloud', href: '/manage/team/single-sign-on/jumpcloud' },
-//                        ]
-                    },
-                ]
-            },
-            {
-                title: 'Activity',
-                links: [
-                    { title: 'Audit Events Logging', href: '/manage/activity' },
-                    { title: 'Traffic Events Logging', href: '/manage/activity/traffic-events-logging' },
-                    {
-                        title: 'Stream Activity Events',
-                        href: '/manage/activity/event-streaming',
-                        isOpen: false,
-                        links: [
-                            { title: 'Datadog', href: '/manage/activity/event-streaming/datadog' },
-                            { title: 'Amazon S3', href: '/manage/activity/event-streaming/amazon-s3' },
-                            { title: 'Amazon Firehose', href: '/manage/activity/event-streaming/amazon-firehose' },
-                            { title: 'SentinelOne Data Lake', href: '/manage/activity/event-streaming/sentinelone-data-lake' },
-                            { title: 'Generic HTTP', href: '/manage/activity/event-streaming/generic-http' },
-                        ]
-                    },
-                ],
-            },
-            {
-                title: 'Settings',
-                isOpen: false,
-                links: [
-                    { title: 'Authentication', href: '/manage/settings/enforce-periodic-user-authentication' },
-                    { title: 'Multi-Factor Authentication', href: '/manage/settings/multi-factor-authentication' },
-                    { title: 'Delete Account', href: '/manage/settings/delete-account' },
-                    { title: 'Plans and Billing', href: '/manage/settings/plans-and-billing' }
-                ]
-            },
-            {
-                title: 'Integrations',
-                isOpen: false,
-                links: [
-                    { title: 'Enable Post Quantum Cryptography', href: '/manage/integrations/enable-post-quantum-cryptography' },
-                    {
-                        title: 'MDM for Deployment',
-                        isOpen: true,
-                        links: [
-                            { title: 'Deploy with Jamf Pro', href: '/manage/integrations/mdm-deployment/jamf-pro-netbird-integration' },
-                            { title: 'Deploy with Kandji', href: '/manage/integrations/mdm-deployment/kandji-netbird-integration' },
-                            { title: 'Deploy with Intune', href: '/manage/integrations/mdm-deployment/intune-netbird-integration' },
-                        ]
-                    },
-                    {
-                        title: 'Kubernetes',
-                        isOpen: true,
-                        links: [
-                            { title: 'Operator', href: '/manage/integrations/kubernetes' },
-                        ]
-                    },
-                ]
-            },
-
-            {
-                title: 'Public API',
-                isOpen: false,
-                links: [
-                    { title: 'Access Public API', href: '/manage/public-api' },
-                ]
-            },
-            {
-                title: 'For Partners',
-                isOpen: false,
-                links: [
-                    { title: 'Managed Service Providers', href: '/manage/for-partners/msp-portal' },
-                    { title: 'Acronis NetBird integration', href: '/manage/for-partners/acronis-integration' },
-                ]
-            },
+        title: 'ESSAY',
+        icon: <FileText className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'EVERYONE needs a Home Server', href: '/5-reasons-build-home-server' },
+            { title: 'The Future of AI NEEDS to Deal with Copyright Laws', href: '/ai-needs-to-deal-with-copyright-laws' },
         ],
     },
     {
-        title: 'CLIENT',
-        links: [
-            { title: 'Profiles', href: '/client/profiles' },
+        title: 'GUIDES',
+        icon: <BookOpen className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'Fedora Server Guide: Cockpit, ZFS, Podman, and more!', href: '/fedora-server-guide-cockpit-zfs-podman' },
+            { title: 'How to Safely Upgrade or Downgrade the Kernel on Arch Linux', href: '/how-to-safely-upgrade-or-downgrade-kernel-on-arch-linux' },
+            { title: 'Automate homelab chores with Ansible', href: '/automate-homelab-chores-ansible' },
+            { title: 'Install DaVinci Resolve in Any Linux Distro Using DavinciBox (2025)', href: '/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox' },
+            { title: 'Self-Host with Immich!', href: '/self-host-immich-photo-backup' },
+            { title: 'Git for Everyone', href: '/git-for-everyone-guide' },
+            { title: 'Create an AWESOME Home Server/NAS with Proxmox', href: '/index' },
+            { title: 'the OFFICIAL Windows (lite) from Microsoft', href: '/windows-lite-ltsc-microsoft' },
+            { title: 'BEST Way to Monitor your Home Server! (Grafana, Prometheus, InfluxDB)', href: '/monitor-home-server-grafana-prometheus-influxdb' },
+            { title: 'NixOS - The New Best Server OS?', href: '/nixos-best-server-os-setup' },
+            { title: 'Guide: Setting Up Windows as a NAS Operating System', href: '/run-windows-nas-home-server' },
+            { title: '7 Docker Basics for Beginners', href: '/7-docker-basics-for-beginners' },
+            { title: 'ChatGPT in YOUR Terminal', href: '/chatgpt-in-your-terminal' },
+            { title: 'How to make an Apache Webserver with SSL', href: '/how-to-apache-webserver-ssl' },
+            { title: 'The ULTIMATE RetroPie Setup Guide', href: '/ultimate-retropie-setup-guide' },
+            { title: 'How to Dual Boot Windows 10 and Pop!_OS (Legacy/GRUB)', href: '/dual-boot-windows-10-pop-os' },
+            { title: 'Installing Arch Linux the EASY WAY! – archfi Guide', href: '/installing-arch-linux-the-easy-way-archfi-guide' },
+            { title: 'How to Dual Boot Fedora and Windows 11', href: '/how-to-dual-boot-fedora-and-windows-11' },
+            { title: 'How to make ZIP Files in Windows', href: '/how-to-make-zip-files-in-windows' },
+            { title: 'Turning an OLD PC/Laptop into a Media Server! (Ubuntu/PLEX Guide)', href: '/old-pc-laptop-media-server' },
+            { title: 'Perfect Windows 11 Virtual Machine on Linux (VMware Guide)', href: '/windows-11-vmware-guide-linux' },
+            { title: 'How to Flash Linux on the PinePhone', href: '/how-to-flash-linux-on-the-pinephone' },
+            { title: 'Install DaVinci Resolve in Linux (Outdated)', href: '/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora' },
+            { title: 'How to Switch Arch Linux Kernels', href: '/how-to-switch-arch-linux-kernels-lts-zen-hardened' },
+            { title: 'How to Auto-Mount Drives in Linux', href: '/auto-mount-drives-in-linux-fstab' },
+            { title: 'Monitor AMD RYZEN Temps in Linux', href: '/monitor-amd-ryzen-temps-in-linux' },
+            { title: '5 Things You MUST DO after Installing Pop!_OS', href: '/after-installing-pop-os-cosmic' },
+            { title: 'How to Control AMD Wraith Prism Cooler RGB (and more)', href: '/control-amd-wraith-prism-cooler-master' },
+            { title: 'Easily Install AMD Ryzen CPU and Wraith Prism Cooler', href: '/install-amd-ryzen-cpu-and-wraith-prism-cooler' },
+            { title: 'OpenSUSE – 5 Things You MUST Do After Installing', href: '/opensuse-5-things-you-must-do-after-installing' },
         ],
     },
     {
-        title: 'SELF-HOST NETBIRD',
-        links: [
-            { title: 'Quickstart Guide', href: '/selfhosted/selfhosted-quickstart' },
-            {
-                title: 'Authentication',
-                isOpen: false,
-                links: [
-                    { title: 'Authentication and IdPs', href: '/selfhosted/identity-providers' },
-                    { title: 'Local User Management', href: '/selfhosted/identity-providers/local' },
-                    {
-                        title: 'Self-hosted IdPs',
-                        isOpen: true,
-                        links: [
-                            { title: 'Zitadel', href: '/selfhosted/identity-providers/zitadel' },
-                            { title: 'Authentik', href: '/selfhosted/identity-providers/authentik' },
-                            { title: 'Keycloak', href: '/selfhosted/identity-providers/keycloak' },
-                            { title: 'PocketID', href: '/selfhosted/identity-providers/pocketid' },
-                        ]
-                    },
-                    {
-                        title: 'Managed IdPs',
-                        isOpen: true,
-                        links: [
-                            { title: 'Google Workspace', href: '/selfhosted/identity-providers/managed/google-workspace' },
-                            { title: 'Microsoft Entra ID', href: '/selfhosted/identity-providers/managed/microsoft-entra-id' },
-                            { title: 'JumpCloud', href: '/selfhosted/identity-providers/managed/jumpcloud' },
-                            { title: 'Auth0', href: '/selfhosted/identity-providers/managed/auth0' },
-                            { title: 'Okta', href: '/selfhosted/identity-providers/managed/okta' },
-                        ]
-                    },
-                ]
-            },
-            { title: 'Advanced guide', href: '/selfhosted/selfhosted-guide' },
-            { title: 'Management SQLite Store', href: '/selfhosted/sqlite-store' },
-            { title: 'Management Postgres Store', href: '/selfhosted/postgres-store' },
-            { title: 'Activity Events Postgres Store', href: '/selfhosted/activity-postgres-store' },
-            { title: 'Management geolocation', href: '/selfhosted/geo-support' },
-            { title: 'Troubleshooting', href: '/selfhosted/troubleshooting' },
+        title: 'HARDWARE',
+        icon: <Wrench className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'The Edge2 Pro is a CRAZY Powerful ARM Single Board Computer', href: '/edge2-powerfull-arm-sb' },
+            { title: 'The Sudden Fall of JingOS and their Linux Tablet', href: '/fall-of-jingos-linux-tablet' },
         ],
     },
     {
-        title: 'USE CASES',
-        links: [
-            { title: 'Site-to-Site and Site-to-VPN', href: '/use-cases/setup-site-to-site-access' },
-            { title: 'Serverless and NetBird', href: '/use-cases/netbird-on-faas' },
-            { title: 'Routing peers and Kubernetes', href: '/use-cases/routing-peers-and-kubernetes' },
-            { title: 'NetBird Client on AWS ECS', href: '/use-cases/examples' },
-            { title: 'NetBird on Mikrotik Router', href: '/use-cases/client-on-mikrotik-router' },
-            { title: 'Distributed AI on Kubernetes', href: '/use-cases/distributed-multi-cloud-ai-argocd-microk8s-vllm' },
-            { title: 'Self-hosted vs. Cloud-hosted NetBird', href: '/selfhosted/self-hosted-vs-cloud-netbird' },
-        ],
-    },
-    {
-        title: 'GET MORE HELP',
-        links: [
-            { title: 'Troubleshooting client issues', href: '/help/troubleshooting-client' },
-            { title: 'Report bugs and issues', href: '/help/report-bug-issues' },
+        title: 'SOFTWARE',
+        icon: <Code className="h-5 w-5" />,
+        defaultOpen: true,
+        pages: [
+            { title: 'Fedora Server Guide: Cockpit, ZFS, Podman, and more!', href: '/fedora-server-guide-cockpit-zfs-podman' },
+            { title: 'Read THIS before choosing a RHEL Clone', href: '/rhel-clones-almalinux-centos-rocky-2025' },
+            { title: 'MUST HAVE Homelab Services', href: '/must-have-home-server-services-2025' },
+            { title: '5 AWESOME Open Source Apps that I use Everyday', href: '/5-awesome-open-source-apps' },
+            { title: 'Zen browser is making me DITCH Microsoft Edge', href: '/zen-browser-better-firefox' },
+            { title: 'COSMIC might be the future of the Linux Desktop.', href: '/cosmic-pre-alpha' },
+            { title: 'Top 5 FAVORITE Linux Distros', href: '/top-5-favorite-linux-distros' },
+            { title: 'Rocky Linux, AlmaLinux, RHEL, CentOS - Which Is BEST for You?', href: '/rocky-linux-almalinux-rhel-centos-which-is-best-for-you' },
+            { title: 'The Death of Mozilla is the Death of the Open Web', href: '/the-death-of-mozilla-is-the-death-of-the-open-web' },
+            { title: 'Linux Distros Based on Fedora', href: '/linux-distros-based-on-fedora' },
+            { title: 'The BEST Solutions for Running Windows Apps in Linux', href: '/the-best-solutions-for-running-windows-apps-in-linux' },
+            { title: 'No, Manjaro is NOT Arch', href: '/no-manjaro-is-not-arch' },
+            { title: 'These Linux Distros are ACTUALLY FREE. Stallman Approved!', href: '/free-software-foundation-distros' },
+            { title: 'Chrome OS Flex is a NIGHTMARE!', href: '/chrome-os-flex-is-a-nightmare' },
+            { title: 'Fedora vs Arch Linux - Battle of the Best!', href: '/fedora-vs-arch-linux' },
+            { title: '7 (more) AWESOME Linux Terminal CLI Applications', href: '/7-more-awesome-linux-terminal-utilities' },
+            { title: '7 Awesome Linux Terminal Utilities', href: '/7-awesome-linux-terminal-utilities' },
+            { title: 'Favorite GNOME/GTK Themes, Icons, and more!', href: '/favorite-gnome-gtk-themes-icons' },
+            { title: '5 AWESOME LINUX APPS - GNOME Circle', href: '/5-awesome-linux-apps-gnome-circle' },
+            { title: '10 BEST Linux Applications: Must Have Software (2021)', href: '/10-best-linux-applications-must-have-software' },
         ],
     },
 ]
- 
+
 export function NavigationDocs({ className }) {
     return (
-        <nav className={className}>
-            <ul role="list">
-                <TopLevelNavItem href="https://netbird.io/">Home</TopLevelNavItem>
-                <TopLevelNavItem href="/">Docs</TopLevelNavItem>
-                <TopLevelNavItem href="/api">API</TopLevelNavItem>
-                <TopLevelNavItem href="https://netbird.io/knowledge-hub/">Learn</TopLevelNavItem>
-                <TopLevelNavItem href="https://github.com/netbirdio/netbird">Github</TopLevelNavItem>
-                <TopLevelNavItem href="/slack-url">Support</TopLevelNavItem>
-                {docsNavigation.map((group, groupIndex) => (
-                    <NavigationStateProvider key={group.title} index={groupIndex}>
-                        <NavigationGroup
-                            group={group}
-                            index={groupIndex}
-                            className={groupIndex === 0 && 'md:mt-0'}
-                        />
-                    </NavigationStateProvider>
+        <nav className={clsx('space-y-1', className)}>
+            <ul role="list" className="space-y-1">
+                {docsNavigation.map((group) => (
+                    <NavigationGroup
+                        key={group.title}
+                        group={group}
+                    />
                 ))}
-                <li className="sticky bottom-0 z-10 mt-6 min-[416px]:hidden">
-                    <Button href="https://app.netbird.io/" variant="filled" className="w-full">
-                        Sign in
-                    </Button>
-                </li>
             </ul>
         </nav>
     )
 }
- 
-const findActiveGroupIndex = (group, pathname) => {
-    let activeIndex = -1
-    group.links.forEach((link, index) => {
-        if (link.href === pathname) {
-            activeIndex = index
-        } else if (link.links) {
-            const childIndex = findActiveGroupIndex(link, pathname)
-            if (childIndex !== -1) {
-                activeIndex = index
-            }
+
+const checkIfChildIsActive = (pages, pathname) => {
+    if (!pages) return false
+    return pages.some((page) => {
+        if (pathname === page.href) return true
+        if (pathname.startsWith(page.href + '/')) return true
+        if (page.pages && page.pages.length > 0) {
+            return checkIfChildIsActive(page.pages, pathname)
         }
+        return false
     })
-    return activeIndex
 }
 
-function NavigationGroup({ group, className, hasChildren }) {
+function NavigationGroup({ group, className }) {
     let router = useRouter()
-    let isActiveGroup = findActiveGroupIndex(group, router.pathname) !== -1
-    const [isOpen, setIsOpen] = useState(group.isOpen ? group.isOpen : !hasChildren)
-    const [, setActiveHighlight] = useNavigationState()
+    const hasActiveChild = checkIfChildIsActive(group.pages, router.pathname)
+    const [isOpen, setIsOpen] = useState(group.defaultOpen || hasActiveChild)
+
+    const toggleOpen = () => {
+        setIsOpen(!isOpen)
+    }
 
     return (
-        <li className={clsx('relative', className, hasChildren ? '' : 'mt-6')}>
-            <motion.h2
-                // layout={"size"}
+        <li className={clsx('mb-1', className)}>
+            <button
+                onClick={toggleOpen}
                 className={clsx(
-                    'flex justify-between items-center gap-2 group',
-                    hasChildren ? 'text-zinc-700 select-none py-1 pr-3 hover:text-zinc-900 dark:text-zinc-300 font-medium dark:hover:text-white text-sm cursor-pointer' : 'text-xs font-semibold text-zinc-900 dark:text-white'
+                    'flex items-center justify-between w-full py-2.5 px-3 rounded-md text-sm font-medium transition-all duration-200',
+                    hasActiveChild
+                        ? 'text-zinc-900 dark:text-white'
+                        : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 dark:hover:bg-primary-500/10'
                 )}
-                onClick={() => {
-                    setIsOpen(!isOpen)
-                    if (!isOpen) {
-                        if (!isActiveGroup) router.push(group.links[0].href)
-                        setActiveHighlight()
-                    } else {
-                        setActiveHighlight(group.title)
-                    }
-                }}
-                data-nb-link={group.title}
-                data-nb-active={hasChildren && isActiveGroup ? '1' : '0'}
             >
-                {group.title}
-                {hasChildren && <ChevronDownIcon className={clsx('fill-zinc-700 group-hover:fill-zinc-900 dark:fill-zinc-300 dark:group-hover:fill-white', 'transition', isOpen ? 'transform rotate-180' : '')} size={10} />}
-            </motion.h2>
-            <div className={clsx('relative', hasChildren ? '' : 'mt-3 pl-2')}>
-                {!hasChildren &&
-                    <>
-                        <AnimatePresence>
-                            {isActiveGroup && (
-                                <VisibleSectionHighlight group={group} pathname={router.pathname} />
-                            )}
-                        </AnimatePresence>
-                        <motion.div
-                            // layout
-                            className="absolute inset-y-0 left-2 w-px bg-zinc-900/10 dark:bg-white/5"
-                        />
-                        <AnimatePresence initial={false}>
-                            {isActiveGroup && (
-                                <ActivePageMarker group={group} pathname={router.pathname} />
-                            )}
-                        </AnimatePresence>
-                    </>
-                }
+                <div className="flex items-center gap-3">
+                    {group.icon && (
+                        <span className={clsx(
+                            'flex-shrink-0',
+                            hasActiveChild ? 'text-primary-500' : 'text-zinc-500 dark:text-zinc-500'
+                        )}>
+                            {group.icon}
+                        </span>
+                    )}
+                    <span>{group.title}</span>
+                </div>
+                <ChevronRight
+                    className={clsx(
+                        'h-4 w-4 transition-transform duration-200 text-zinc-500',
+                        isOpen && 'transform rotate-90'
+                    )}
+                />
+            </button>
 
-                <AnimatePresence mode={'wait'} initial={false}>
-                    {isOpen && <motion.ul
-                        role="list"
-                        initial={{ opacity: 0 }}
+            <AnimatePresence initial={false}>
+                {isOpen && group.pages && (
+                    <motion.ul
+                        initial={{ opacity: 0, height: 0 }}
                         animate={{
                             opacity: 1,
-                            transition: { delay: 0.05 },
+                            height: 'auto',
+                            transition: { duration: 0.2 },
                         }}
                         exit={{
                             opacity: 0,
+                            height: 0,
                             transition: { duration: 0.15 },
                         }}
-                        className="border-l border-transparent">
-                        {group.links.map((link) => {
-                            return link.href ?
-                                <motion.li key={link.href} className="relative">
-                                    <NavLink href={link.href} active={link.href === router.pathname} links={link.links}>
-                                        {link.title}
+                        className="mt-1 space-y-0.5 ml-3 pl-3 border-l border-zinc-200 dark:border-zinc-800"
+                    >
+                        {group.pages.map((page) => {
+                            const isActive = router.pathname === page.href
+                            return (
+                                <li key={page.href}>
+                                    <NavLink href={page.href} active={isActive}>
+                                        {page.title}
                                     </NavLink>
-                                </motion.li>
-                                :
-                                <NavigationGroup className={'ml-4'} key={link.title + isOpen} group={link} hasChildren={true} />
+                                </li>
+                            )
                         })}
-                    </motion.ul>}
-                </AnimatePresence>
-            </div>
+                    </motion.ul>
+                )}
+            </AnimatePresence>
         </li>
     )
 }
+

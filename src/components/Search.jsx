@@ -5,6 +5,7 @@ import { getAlgoliaResults } from '@algolia/autocomplete-preset-algolia'
 import { Dialog, Transition } from '@headlessui/react'
 import algoliasearch from 'algoliasearch/lite'
 import clsx from 'clsx'
+import { sanitizeHTML } from '@/lib/sanitize'
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_DOCSEARCH_APP_ID,
@@ -57,7 +58,7 @@ function useAutocomplete() {
                     params: {
                       hitsPerPage: 5,
                       highlightPreTag:
-                        '<mark class="underline bg-transparent text-orange-500">',
+                        '<mark class="underline bg-transparent text-primary-500">',
                       highlightPostTag: '</mark>',
                     },
                   },
@@ -170,8 +171,8 @@ function SearchResult({ result, resultIndex, autocomplete, collection }) {
       <div
         id={`${id}-title`}
         aria-hidden="true"
-        className="text-sm font-medium text-zinc-900 group-aria-selected:text-orange-500 dark:text-white"
-        dangerouslySetInnerHTML={{ __html: titleHtml }}
+        className="text-sm font-medium text-zinc-900 group-aria-selected:text-primary-500 dark:text-white"
+        dangerouslySetInnerHTML={{ __html: sanitizeHTML(titleHtml) }}
       />
       {hierarchyHtml.length > 0 && (
         <div
@@ -181,7 +182,7 @@ function SearchResult({ result, resultIndex, autocomplete, collection }) {
         >
           {hierarchyHtml.map((item, itemIndex, items) => (
             <Fragment key={itemIndex}>
-              <span dangerouslySetInnerHTML={{ __html: item }} />
+              <span dangerouslySetInnerHTML={{ __html: sanitizeHTML(item) }} />
               <span
                 className={
                   itemIndex === items.length - 1
@@ -264,7 +265,7 @@ const SearchInput = forwardRef(function SearchInput(
       />
       {autocompleteState.status === 'stalled' && (
         <div className="absolute inset-y-0 right-3 flex items-center">
-          <LoadingIcon className="h-5 w-5 animate-spin stroke-zinc-200 text-zinc-900 dark:stroke-zinc-800 dark:text-orange-400" />
+          <LoadingIcon className="h-5 w-5 animate-spin stroke-zinc-200 text-zinc-900 dark:stroke-zinc-800 dark:text-primary-400" />
         </div>
       )}
     </div>

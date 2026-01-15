@@ -31,3 +31,6 @@ package-lock.json
 # LLM documentation (generated)
 /public/llms/
 /public/llms.txt
+
+# Old Hugo site (not used, will never be added again)
+/techhut.tv/

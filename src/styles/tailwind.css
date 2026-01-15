@@ -1,15 +1,15 @@
 :root {
   --shiki-color-text: theme('colors.black');
-  --shiki-token-constant: theme('colors.orange.600');
-  --shiki-token-string: theme('colors.orange.600');
+  --shiki-token-constant: theme('colors.primary.600');
+  --shiki-token-string: theme('colors.primary.600');
   --shiki-token-comment: theme('colors.zinc.500');
   --shiki-token-keyword: theme('colors.sky.600');
   --shiki-token-parameter: theme('colors.pink.600');
   --shiki-token-function: theme('colors.violet.600');
-  --shiki-token-string-expression: theme('colors.orange.600');
+  --shiki-token-string-expression: theme('colors.primary.600');
   --shiki-token-punctuation: theme('colors.zinc.800');
-  --toastify-icon-color-info: theme('colors.orange.500') !important;
-  --toastify-color-info: theme('colors.orange.500') !important;
+  --toastify-icon-color-info: theme('colors.primary.500') !important;
+  --toastify-color-info: theme('colors.primary.500') !important;
   --toastify-color-dark: theme('colors.white') !important;
   --toastify-text-color-dark: theme('colors.zinc.600') !important;
   --toastify-color-light: theme('colors.white') !important;
@@ -19,16 +19,16 @@
 /* Dark mode styles */
 :root.dark {
   --shiki-color-text: theme('colors.white');
-  --shiki-token-constant: theme('colors.orange.300');
-  --shiki-token-string: theme('colors.orange.300');
+  --shiki-token-constant: theme('colors.primary.300');
+  --shiki-token-string: theme('colors.primary.300');
   --shiki-token-comment: theme('colors.zinc.500');
   --shiki-token-keyword: theme('colors.sky.300');
   --shiki-token-parameter: theme('colors.pink.300');
   --shiki-token-function: theme('colors.violet.300');
-  --shiki-token-string-expression: theme('colors.orange.300');
+  --shiki-token-string-expression: theme('colors.primary.300');
   --shiki-token-punctuation: theme('colors.zinc.200');
-  --toastify-icon-color-info: theme('colors.orange.500') !important;
-  --toastify-color-info: theme('colors.orange.500') !important;
+  --toastify-icon-color-info: theme('colors.primary.500') !important;
+  --toastify-color-info: theme('colors.primary.500') !important;
   --toastify-color-dark: theme('colors.zinc.800') !important;
   --toastify-text-color-dark: theme('colors.zinc.300') !important;
   --toastify-color-light: theme('colors.zinc.800') !important;

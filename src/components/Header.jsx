@@ -13,6 +13,7 @@ import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { ModeToggle } from '@/components/ModeToggle'
 import { MobileSearch, Search } from '@/components/Search'
 import { useAnnouncements } from '@/components/announcement-banner/AnnouncementBannerProvider'
+import { useSidebarStore } from '@/components/SidebarState'
 
 function TopLevelNavItem({ href, children }) {
   return (
@@ -31,44 +32,66 @@ export const Header = forwardRef(function Header({ className }, ref) {
   let { isOpen: mobileNavIsOpen } = useMobileNavigationStore()
   let isInsideMobileNavigation = useIsInsideMobileNavigation()
   let { bannerHeight } = useAnnouncements()
+  let { isOpen: sidebarIsOpen, toggle: toggleSidebar } = useSidebarStore()
 
   return (
     <motion.div
       ref={ref}
-        className={clsx(
-          className,
-          'fixed inset-x-0 top-0 z-40 flex items-center justify-between gap-3 px-5 transition h-[64px] lg:left-72 lg:z-50 lg:px-8 xl:left-80 min-h-[64px] lg:pointer-events-auto',
-          !isInsideMobileNavigation &&
-            'backdrop-blur-lg bg-white/70 dark:bg-[#181A1D]/95 lg:left-72 xl:left-80',
-          isInsideMobileNavigation &&
-            'bg-white/70 dark:bg-[#181A1D]/95 backdrop-blur-lg'
-        )}
+      className={clsx(
+        className,
+        'fixed z-50 flex items-center justify-between gap-3 px-5 transition h-[64px] lg:px-8 min-h-[64px] lg:pointer-events-auto',
+        'lg:left-4 lg:right-4 lg:rounded-2xl lg:shadow-lg lg:border lg:!top-[var(--header-top)]',
+        'inset-x-0 left-0 right-0',
+        !isInsideMobileNavigation &&
+          'backdrop-blur-lg bg-white/70 dark:bg-[#0f1012]/70 lg:border-zinc-200/50 lg:dark:border-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 lg:border-b-0',
+        isInsideMobileNavigation &&
+          'bg-white/70 dark:bg-[#0f1012]/70 backdrop-blur-lg lg:border-zinc-200/50 lg:dark:border-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 lg:border-b-0'
+      )}
       style={{
+        '--header-top': `calc(${bannerHeight}px + 0.5rem)`,
         top: bannerHeight,
       }}
     >
-      <div
-        className={clsx(
-          'absolute inset-x-0 top-full h-px transition border-b border-transparent',
-          !isInsideMobileNavigation && 'border-zinc-900/10 dark:border-neutral-700/50'
-        )}
-      />
-      <Search />
-      <div className="flex items-center gap-2 lg:hidden">
-        <MobileNavigation />
-        <Link href="/" aria-label="Home">
-          <Logo className="h-6" />
-        </Link>
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        <button
+          onClick={toggleSidebar}
+          className="hidden lg:flex items-center justify-center h-6 w-6 rounded-md transition hover:bg-zinc-900/5 dark:hover:bg-white/5 flex-shrink-0"
+          aria-label={sidebarIsOpen ? 'Hide sidebar' : 'Show sidebar'}
+        >
+          <svg
+            viewBox="0 0 10 9"
+            fill="none"
+            strokeLinecap="round"
+            aria-hidden="true"
+            className="w-2.5 stroke-zinc-900 dark:stroke-white"
+          >
+            <path d="M.5 1h9M.5 8h9M.5 4.5h9" />
+          </svg>
+        </button>
+        <div className="hidden lg:flex flex-shrink-0">
+          <Link href="/" aria-label="Home">
+            <Logo className="h-6" />
+          </Link>
+        </div>
+        <div className="flex items-center gap-2 lg:hidden flex-shrink-0">
+          <MobileNavigation />
+          <Link href="/" aria-label="Home">
+            <Logo className="h-6" />
+          </Link>
+        </div>
+        <div className="hidden lg:block flex-1 max-w-2xl mx-4">
+          <Search />
+        </div>
+        <div className="lg:hidden">
+          <Search />
+        </div>
       </div>
-      <div className="flex items-center gap-3 xl:gap-2">
+      <div className="flex items-center gap-3 xl:gap-2 flex-shrink-0">
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-3 xl:gap-2 m-0 p-0 list-none">
-            <TopLevelNavItem href="https://netbird.io/">Home</TopLevelNavItem>
-            <TopLevelNavItem href="/">Docs</TopLevelNavItem>
-            <TopLevelNavItem href="/api">API</TopLevelNavItem>
-            <TopLevelNavItem href="https://netbird.io/knowledge-hub/">Learn</TopLevelNavItem>
-            <TopLevelNavItem href="https://github.com/netbirdio/netbird">Github</TopLevelNavItem>
-            <TopLevelNavItem href="/slack-url">Support</TopLevelNavItem>
+            <TopLevelNavItem href="/">Home</TopLevelNavItem>
+            <TopLevelNavItem href="/team">Team</TopLevelNavItem>
+            <TopLevelNavItem href="/partner">Partner</TopLevelNavItem>
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-neutral-500/20" />
@@ -77,7 +100,17 @@ export const Header = forwardRef(function Header({ className }, ref) {
           <ModeToggle />
         </div>
         <div className="hidden min-[416px]:contents">
-          <Button href="https://app.netbird.io/" target="_blank" className="!py-1.5 !px-3 text-xs">Try NetBird</Button>
+          <a
+            href="https://youtube.com/@techhut"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-all duration-200"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            YouTube
+          </a>
         </div>
       </div>
     </motion.div>

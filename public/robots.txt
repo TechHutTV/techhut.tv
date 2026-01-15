@@ -1,0 +1,11 @@
+# robots.txt for TechHut Documentation
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://techhut.tv/sitemap.xml
+
+# Disallow private or system paths (if any)
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/

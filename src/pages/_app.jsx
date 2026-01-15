@@ -4,6 +4,7 @@ import { MDXProvider } from '@mdx-js/react'
 
 import * as mdxComponents from '@/components/mdx'
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 import '@/styles/tailwind.css'
 import 'focus-visible'
@@ -25,25 +26,53 @@ Router.events.on('hashChangeStart', onRouteChange)
 export default function App({ Component, pageProps }) {
   let router = useRouter()
     let tableOfContents = collectHeadings(pageProps.sections)
+
+  // Get cover from pageProps (extracted by recmaNextjsStaticProps)
+  const cover = pageProps.cover
+  const imagePosition = pageProps.imagePosition
+  
   return (
-    <>
+    <ErrorBoundary>
       <Head>
         <style>{dom.css()}</style>
-        {router.route.startsWith('/ipa') ?
-            <title>{`${pageProps.title} - NetBird API`}</title> : <title>{`${pageProps.title} - NetBird Docs`}</title>
-        }
+        <title>{`${pageProps.title} - TechHut`}</title>
         <meta name="description" content={pageProps.description} />
+
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`https://techhut.tv${router.pathname}`} />
+        <meta property="og:title" content={`${pageProps.title} - TechHut`} />
+        <meta property="og:description" content={pageProps.description} />
+        {cover && <meta property="og:image" content={`https://techhut.tv${cover}`} />}
+        <meta property="og:site_name" content="TechHut" />
+
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`https://techhut.tv${router.pathname}`} />
+        <meta name="twitter:title" content={`${pageProps.title} - TechHut`} />
+        <meta name="twitter:description" content={pageProps.description} />
+        {cover && <meta name="twitter:image" content={`https://techhut.tv${cover}`} />}
+        <meta name="twitter:creator" content="@techhutofficial" />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href={`https://techhut.tv${router.pathname}`} />
       </Head>
       <AnnouncementBannerProvider>
           <MDXProvider components={mdxComponents}>
-              <Layout title={pageProps.title?.toString()} tableOfContents={tableOfContents} {...pageProps}>
+              <Layout
+                title={pageProps.title?.toString()}
+                tableOfContents={tableOfContents}
+                coverImage={cover}
+                imagePosition={imagePosition}
+                {...pageProps}
+              >
                   <Component {...pageProps} />
               </Layout>
           </MDXProvider>
       </AnnouncementBannerProvider>
       <ToastContainer />
       <ImageZoom />
-    </>
+    </ErrorBoundary>
   )
 }
 
@@ -59,22 +88,29 @@ function collectHeadings(sections, slugify = slugifyWithCounter()) {
             let id = section.id
             let tag = section.tag
             if (section.tagName === 'h3') {
-                if (!output[output.length - 1]) {
-                    throw new Error(
-                        'Cannot add `h3` to table of contents without a preceding `h2`'
-                    )
+                // Check if there's a last item and it's an h2 (has children array)
+                const lastItem = output[output.length - 1]
+                if (!lastItem || !lastItem.children) {
+                    // If no h2 exists, treat h3 as a top-level item
+                    // This handles cases where h3 appears before any h2
+                    output.push({ id, title, tag, children: [] })
+                } else {
+                    // Add h3 as a child of the last h2
+                    lastItem.children.push({
+                        id,
+                        title,
+                        tag,
+                    })
                 }
-                output[output.length - 1].children.push({
-                    id,
-                    title,
-                    tag,
-                })
             } else {
                 output.push({ id, title, tag, children: [] })
             }
         }
 
-        output.push(...collectHeadings(output.children ?? [], slugify))
+        // Recursively process children if they exist
+        if (section.children && Array.isArray(section.children)) {
+            output.push(...collectHeadings(section.children, slugify))
+        }
     }
 
     return output
