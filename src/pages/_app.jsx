@@ -40,7 +40,7 @@ export default function App({ Component, pageProps }) {
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`https://techhut.tv${router.pathname}`} />
+        <meta property="og:url" content={`https://techhut.tv${router.asPath}`} />
         <meta property="og:title" content={`${pageProps.title} - TechHut`} />
         <meta property="og:description" content={pageProps.description} />
         {cover && <meta property="og:image" content={`https://techhut.tv${cover}`} />}
@@ -48,14 +48,14 @@ export default function App({ Component, pageProps }) {
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={`https://techhut.tv${router.pathname}`} />
+        <meta name="twitter:url" content={`https://techhut.tv${router.asPath}`} />
         <meta name="twitter:title" content={`${pageProps.title} - TechHut`} />
         <meta name="twitter:description" content={pageProps.description} />
         {cover && <meta name="twitter:image" content={`https://techhut.tv${cover}`} />}
         <meta name="twitter:creator" content="@techhutofficial" />
 
         {/* Canonical URL */}
-        <link rel="canonical" href={`https://techhut.tv${router.pathname}`} />
+        <link rel="canonical" href={`https://techhut.tv${router.asPath}`} />
       </Head>
       <AnnouncementBannerProvider>
           <MDXProvider components={mdxComponents}>

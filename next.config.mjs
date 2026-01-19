@@ -2,8 +2,6 @@ import nextMDX from '@next/mdx'
 import {remarkPlugins} from './mdx/remark.mjs'
 import {rehypePlugins} from './mdx/rehype.mjs'
 import {recmaPlugins} from './mdx/recma.mjs'
-import { readdirSync, statSync } from 'fs'
-import { join } from 'path'
 
 const withMDX = nextMDX({
     options: {
@@ -18,47 +16,6 @@ const withMDX = nextMDX({
 
 const isProd = process.env.NODE_ENV === 'production'
 const assetPrefix = process.env.ASSET_PREFIX || (isProd ? '/docs-static' : undefined)
-
-/**
- * Recursively find all index.mdx files in content directory and generate rewrites
- */
-function findContentPages(dir, basePath = '') {
-  const pages = []
-  const entries = readdirSync(dir, { withFileTypes: true })
-
-  for (const entry of entries) {
-    const fullPath = join(dir, entry.name)
-    const relativePath = basePath ? `${basePath}/${entry.name}` : entry.name
-
-    if (entry.isDirectory()) {
-      pages.push(...findContentPages(fullPath, relativePath))
-    } else if (entry.name === 'index.mdx') {
-      // Extract the folder name (slug) from the path
-      // e.g., content/2021/11/after-installing-pop-os-cosmic/index.mdx
-      // -> slug is "after-installing-pop-os-cosmic"
-      const pathParts = basePath.split('/')
-      const slug = pathParts[pathParts.length - 1]
-      const fullContentPath = `/content/${basePath}`
-      
-      pages.push({
-        slug,
-        fullPath: fullContentPath
-      })
-    }
-  }
-
-  return pages
-}
-
-function generateContentRewrites() {
-  const contentDir = join(process.cwd(), 'src/pages/content')
-  const pages = findContentPages(contentDir)
-  
-  return pages.map(page => ({
-    source: `/${page.slug}`,
-    destination: page.fullPath
-  }))
-}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -123,7 +80,6 @@ const nextConfig = {
         return []
     },
     rewrites: async () => {
-        const contentRewrites = generateContentRewrites()
         return [
             {
                 source: '/',
@@ -137,7 +93,6 @@ const nextConfig = {
                 source: '/api/:path*',
                 destination: '/ipa/:path*',
             },
-            ...contentRewrites
         ]
     }
 }
