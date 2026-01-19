@@ -73,12 +73,12 @@ export function AnnouncementBanner() {
       ref={bannerRef}
       id="announcement-banner"
       className={clsx(
-        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-800 bg-netbird/95 px-4 py-1.5 text-[11px] font-medium text-black shadow-sm backdrop-blur'
+        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-700 bg-zinc-800/95 px-4 py-1.5 text-[11px] font-medium text-zinc-100 shadow-sm backdrop-blur'
       )}
     >
       <div className="flex flex-col items-start gap-1 pr-8 leading-snug md:flex-row md:items-center">
         {announcement.tag ? (
-          <div className="mr-2 inline rounded-md bg-black/70 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-white">
+          <div className="mr-2 inline rounded-md bg-[#266ecc] px-2 py-1 text-[10px] font-semibold tracking-wide text-white">
             {announcement.tag}
           </div>
         ) : null}
@@ -89,7 +89,7 @@ export function AnnouncementBanner() {
           <Link
             href={announcementLink}
             target={announcement.isExternal ? '_blank' : undefined}
-            className="inline-flex items-center gap-1 text-[12px] text-black underline underline-offset-4"
+            className="inline-flex items-center gap-1 text-[12px] text-zinc-100 underline underline-offset-4 hover:text-white"
             title={announcement.linkAlt}
           >
             {announcement.linkText}
@@ -101,7 +101,7 @@ export function AnnouncementBanner() {
         <button
           type="button"
           onClick={close}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-black transition hover:bg-black/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-300 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           aria-label="Dismiss announcement"
         >
           <CloseIcon className="h-3.5 w-3.5" />

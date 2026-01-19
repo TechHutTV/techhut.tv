@@ -12,12 +12,12 @@ import { useLocalStorage } from '@/hooks/useLocalStorage'
 const BANNER_ENABLED = true
 
 export const announcement = {
-  tag: 'New',
-  text: 'Simplified IdP Integration',
-  link: '/selfhosted/identity-providers',
+  tag: 'AirVPN',
+  text: 'Secure your *arr stack with the VPN I actually use',
+  link: 'https://airvpn.org/?referred_by=673908',
   linkText: 'Learn More',
-  linkAlt: 'Learn more about the embedded Identity Provider powered by DEX for self-hosted installations',
-  isExternal: false,
+  linkAlt: 'Learn more about AirVPN',
+  isExternal: true,
   closeable: true,
 }
 

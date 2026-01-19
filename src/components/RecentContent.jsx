@@ -67,9 +67,13 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
               <TileHighlight />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
 
+              <Link href={article.href} className="absolute inset-0 z-10">
+                <span className="sr-only">{article.title}</span>
+              </Link>
+
               {/* Cover Image */}
               {article.cover && (
-                <div className="relative w-full h-48 bg-zinc-100 dark:bg-zinc-800">
+                <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800">
                   <Image
                     src={article.cover}
                     alt={article.title}
@@ -88,10 +92,7 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
                   </time>
                 )}
                 <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
-                  <Link href={article.href}>
-                    <span className="absolute inset-0 rounded-2xl" />
-                    {article.title}
-                  </Link>
+                  {article.title}
                 </h3>
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
                   {article.description}
