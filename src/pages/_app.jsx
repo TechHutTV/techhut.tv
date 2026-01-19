@@ -60,6 +60,7 @@ export default function App({ Component, pageProps }) {
       <AnnouncementBannerProvider>
           <MDXProvider components={mdxComponents}>
               <Layout
+                key={router.asPath}
                 title={pageProps.title?.toString()}
                 tableOfContents={tableOfContents}
                 coverImage={cover}

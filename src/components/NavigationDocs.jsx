@@ -42,7 +42,7 @@ export const docsNavigation = [
         pages: [
             { title: 'Introduction', href: '/' },
             { title: 'All Content', href: '/content' },
-            { title: 'Partners', href: '/partners' },
+            { title: 'Partners', href: '/partner' },
             { title: 'Team', href: '/team' },
         ],
     },

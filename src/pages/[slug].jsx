@@ -4,7 +4,6 @@ import fs from 'fs'
 import path from 'path'
 import { slugMap } from '@/data/slugMap'
 import * as mdxComponents from '@/components/mdx'
-import remarkGfm from 'remark-gfm'
 
 export default function ArticlePage({ source, ...pageProps }) {
   return <MDXRemote {...source} components={mdxComponents} />
@@ -74,7 +73,6 @@ export async function getStaticProps({ params }) {
   // Serialize the MDX content
   const source = await serialize(mdxContent, {
     mdxOptions: {
-      remarkPlugins: [remarkGfm],
       development: process.env.NODE_ENV === 'development',
     },
   })
