@@ -221,7 +221,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
         />
       )}
       <div
-        className="relative mx-auto flex w-full max-w-8xl sm:px-2 lg:px-8 xl:px-12"
+        className="relative mx-auto flex min-h-screen w-full max-w-8xl sm:px-2 lg:px-8 xl:px-12"
         style={{ paddingTop: `calc(${bannerHeight}px + 64px)` }}
       >
         <aside
