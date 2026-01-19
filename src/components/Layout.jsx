@@ -221,7 +221,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
         />
       )}
       <div
-        className="relative mx-auto flex max-w-8xl sm:px-2 lg:px-8 xl:px-12"
+        className="relative mx-auto flex w-full max-w-8xl sm:px-2 lg:px-8 xl:px-12"
         style={{ paddingTop: `calc(${bannerHeight}px + 64px)` }}
       >
         <aside
@@ -242,8 +242,8 @@ export function Layout({ children, title, date, tableOfContents, authors: author
           </div>
         </aside>
         <div className={clsx(
-          "min-w-0 max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 transition-all duration-300",
-          mounted && sidebarShouldBeVisible
+          "min-w-0 w-full max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 transition-all duration-300",
+          !mounted || sidebarShouldBeVisible
             ? "lg:ml-72 2xl:ml-80 lg:pl-8 lg:px-5"
             : "lg:ml-0 lg:pl-32 lg:px-5"
         )}>

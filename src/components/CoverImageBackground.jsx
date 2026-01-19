@@ -41,8 +41,8 @@ export function CoverImageBackground({
       <div className="h-[150px] md:h-[200px]" aria-hidden="true" />
       
       {/* Background container with image */}
-      <div 
-        className="fixed top-0 left-0 right-0 bottom-0 w-screen h-screen pointer-events-none"
+      <div
+        className="fixed inset-0 pointer-events-none"
         style={{ zIndex: -20 }}
         aria-hidden="true"
       >
@@ -54,7 +54,7 @@ export function CoverImageBackground({
           decoding="async"
           fetchpriority="high"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ ...imageStyle, width: '100vw', height: '100vh', minWidth: '100%', minHeight: '100%' }}
+          style={imageStyle}
           onError={() => {
             setImageError(true)
           }}
@@ -73,7 +73,7 @@ export function CoverImageBackground({
       {/* Scroll-based blur overlay */}
       {mounted && (
         <div
-          className="fixed top-0 left-0 right-0 w-screen h-full pointer-events-none backdrop-blur-xl bg-zinc-100/75 dark:bg-zinc-800/60"
+          className="fixed inset-0 pointer-events-none backdrop-blur-xl bg-zinc-100/75 dark:bg-zinc-800/60"
           style={{
             zIndex: -19,
             opacity: blurOpacity,
