@@ -4,6 +4,8 @@ import fs from 'fs'
 import path from 'path'
 import { slugMap } from '@/data/slugMap'
 import * as mdxComponents from '@/components/mdx'
+import rehypeSlug from 'rehype-slug'
+import { slugifyWithCounter } from '@sindresorhus/slugify'
 
 export default function ArticlePage({ source, ...pageProps }) {
   return <MDXRemote {...source} components={mdxComponents} />
@@ -32,6 +34,29 @@ function extractMdxContent(content) {
   // Remove import statements
   cleaned = cleaned.replace(/^import\s+.*$/gm, '')
   return cleaned.trim()
+}
+
+// Extract headings from MDX content for table of contents
+function extractSections(content) {
+  const slugify = slugifyWithCounter()
+  const sections = []
+  const headingRegex = /^(#{2,6})\s+(.+)$/gm
+  let match
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length
+    const title = match[2].trim()
+    const id = slugify(title)
+    const tagName = `h${level}`
+
+    sections.push({
+      title,
+      id,
+      tagName,
+    })
+  }
+
+  return sections
 }
 
 export async function getStaticPaths() {
@@ -70,9 +95,13 @@ export async function getStaticProps({ params }) {
   // Extract just the MDX content (without exports/imports)
   const mdxContent = extractMdxContent(rawContent)
 
-  // Serialize the MDX content
+  // Extract sections for table of contents
+  const sections = extractSections(mdxContent)
+
+  // Serialize the MDX content with rehype-slug to add IDs to headings
   const source = await serialize(mdxContent, {
     mdxOptions: {
+      rehypePlugins: [rehypeSlug],
       development: process.env.NODE_ENV === 'development',
     },
   })
@@ -88,6 +117,7 @@ export async function getStaticProps({ params }) {
       tags,
       cover: cover || null,
       imagePosition: imagePosition || null,
+      sections,
     }
   }
 }

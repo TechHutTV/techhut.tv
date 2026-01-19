@@ -1,6 +1,4 @@
-import { useEffect, useRef } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
+import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 
 import { useSectionStore } from '@/components/SectionProvider'
@@ -40,12 +38,9 @@ function Eyebrow({ tag, label }) {
 }
 
 function Anchor({ id, inView, children }) {
-  const router = useRouter()
-  const pathname = router.pathname
-
   return (
-    <Link
-      href={`${pathname}#${id}`}
+    <a
+      href={`#${id}`}
       className="group text-inherit no-underline hover:text-inherit"
     >
       {inView && (
@@ -56,7 +51,7 @@ function Anchor({ id, inView, children }) {
         </div>
       )}
       <div>{children}</div>
-    </Link>
+    </a>
   )
 }
 

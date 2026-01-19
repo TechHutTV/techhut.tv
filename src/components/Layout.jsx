@@ -316,7 +316,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
                   {tableOfContents.map((section) => (
                     <li key={section.id}>
                       <h3>
-                        <Link
+                        <a
                           href={`#${section.id}`}
                           className={clsx(
                             isActive(section)
@@ -325,7 +325,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
                           )}
                         >
                           {section.title}
-                        </Link>
+                        </a>
                       </h3>
                       {section.children.length > 0 && (
                         <ol
@@ -334,7 +334,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
                         >
                           {section.children.map((subSection) => (
                             <li key={subSection.id}>
-                              <Link
+                              <a
                                 href={`#${subSection.id}`}
                                 className={
                                   isActive(subSection)
@@ -343,7 +343,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
                                 }
                               >
                                 {subSection.title}
-                              </Link>
+                              </a>
                             </li>
                           ))}
                         </ol>

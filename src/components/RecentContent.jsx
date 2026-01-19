@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import Image from 'next/image'
 
 import { GridPattern } from '@/components/GridPattern'
@@ -59,17 +58,18 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
       )}
       <div className={`not-prose grid grid-cols-1 gap-8 sm:grid-cols-2 ${hasHeader ? 'mt-4 border-t border-zinc-900/5 pt-10 dark:border-white/5' : ''}`}>
         {recentArticles.map((article) => {
+          const handleClick = () => {
+            window.location.href = article.href
+          }
+
           return (
             <div
               key={article.href}
-              className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden"
+              className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden cursor-pointer"
+              onClick={handleClick}
             >
               <TileHighlight />
               <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
-
-              <a href={article.href} className="absolute inset-0 z-10">
-                <span className="sr-only">{article.title}</span>
-              </a>
 
               {/* Cover Image */}
               {article.cover && (

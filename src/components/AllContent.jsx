@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 
 import { GridPattern } from '@/components/GridPattern'
@@ -28,14 +27,17 @@ function TileHighlight() {
 }
 
 function ArticleCard({ article }) {
+  const handleClick = () => {
+    window.location.href = article.href
+  }
+
   return (
-    <div className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden">
+    <div
+      className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden cursor-pointer"
+      onClick={handleClick}
+    >
       <TileHighlight />
       <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
-
-      <a href={article.href} className="absolute inset-0 z-10">
-        <span className="sr-only">{article.title}</span>
-      </a>
 
       {article.cover && (
         <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800">
