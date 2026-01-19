@@ -33,9 +33,9 @@ function ArticleCard({ article }) {
       <TileHighlight />
       <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
 
-      <Link href={article.href} className="absolute inset-0 z-10">
+      <a href={article.href} className="absolute inset-0 z-10">
         <span className="sr-only">{article.title}</span>
-      </Link>
+      </a>
 
       {article.cover && (
         <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800">
