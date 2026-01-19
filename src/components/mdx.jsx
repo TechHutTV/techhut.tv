@@ -1,8 +1,85 @@
 import Link from 'next/link'
 import clsx from 'clsx'
+import Image from 'next/image'
 
 import { Heading } from '@/components/Heading'
 import { YouTube } from '@/components/YouTube'
+
+/**
+ * Generates a human-readable alt text from an image filename
+ * @param {string} src - Image source path
+ * @returns {string} Generated alt text
+ */
+function generateAltFromFilename(src) {
+  if (!src) return 'Image'
+
+  // Extract filename from path
+  const filename = src.split('/').pop()
+  if (!filename) return 'Image'
+
+  // Remove extension
+  const nameWithoutExt = filename.replace(/\.[^/.]+$/, '')
+
+  // Convert kebab-case, snake_case, or camelCase to readable text
+  const readable = nameWithoutExt
+    .replace(/[-_]/g, ' ')  // Replace dashes and underscores with spaces
+    .replace(/([a-z])([A-Z])/g, '$1 $2')  // Add space before capital letters
+    .replace(/\b\w/g, (c) => c.toUpperCase())  // Capitalize first letter of each word
+    .replace(/\s+/g, ' ')  // Clean up multiple spaces
+    .trim()
+
+  return readable || 'Image'
+}
+
+/**
+ * Optimized image component for MDX
+ * - Generates alt text from filename if not provided
+ * - Uses Next.js Image for optimization (lazy loading, modern formats)
+ * - Falls back to img for GIFs to preserve animation
+ */
+function MdxImage({ src, alt, title, ...props }) {
+  // Generate alt text if not provided or empty
+  const imageAlt = alt || generateAltFromFilename(src)
+
+  // Check if it's a GIF (animated images don't work well with Next.js Image optimization)
+  const isGif = src?.toLowerCase().endsWith('.gif')
+
+  // Check if it's an external image
+  const isExternal = src?.startsWith('http://') || src?.startsWith('https://')
+
+  // For GIFs or external images, use regular img tag with lazy loading
+  if (isGif || isExternal) {
+    return (
+      <img
+        src={src}
+        alt={imageAlt}
+        title={title}
+        loading="lazy"
+        decoding="async"
+        className="rounded-lg"
+        {...props}
+      />
+    )
+  }
+
+  // For local static images, use Next.js Image with fill mode
+  return (
+    <span className="block relative my-4">
+      <Image
+        src={src}
+        alt={imageAlt}
+        title={title}
+        width={0}
+        height={0}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+        className="rounded-lg w-full h-auto"
+        style={{ width: '100%', height: 'auto' }}
+        loading="lazy"
+        {...props}
+      />
+    </span>
+  )
+}
 
 // Custom link component that adds security attributes for external links
 function SafeLink({ href, children, ...props }) {
@@ -27,6 +104,7 @@ function SafeLink({ href, children, ...props }) {
 }
 
 export const a = SafeLink
+export const img = MdxImage
 export { Button } from '@/components/Button'
 export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
 export { Badge } from '@/components/Badge'
@@ -209,11 +287,11 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
 
 export function Video({ src, controls = "yes", type, preload = "metadata", ...props }) {
   const videoType = type || (src?.endsWith('.webm') ? 'video/webm' : src?.endsWith('.mp4') ? 'video/mp4' : undefined)
-  
+
   return (
     <div className="my-6">
-      <video 
-        className="w-full rounded-lg" 
+      <video
+        className="w-full rounded-lg"
         controls={controls === "yes" || controls === true}
         preload={preload}
         {...props}
@@ -222,5 +300,56 @@ export function Video({ src, controls = "yes", type, preload = "metadata", ...pr
         Your browser does not support the video tag.
       </video>
     </div>
+  )
+}
+
+// Table components with horizontal scroll wrapper and explicit styling
+export function table({ children, ...props }) {
+  return (
+    <div className="my-8 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm">
+      <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700" {...props}>
+        {children}
+      </table>
+    </div>
+  )
+}
+
+export function thead({ children, ...props }) {
+  return (
+    <thead className="bg-zinc-50 dark:bg-zinc-800" {...props}>
+      {children}
+    </thead>
+  )
+}
+
+export function tbody({ children, ...props }) {
+  return (
+    <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900" {...props}>
+      {children}
+    </tbody>
+  )
+}
+
+export function tr({ children, ...props }) {
+  return (
+    <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" {...props}>
+      {children}
+    </tr>
+  )
+}
+
+export function th({ children, ...props }) {
+  return (
+    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider" {...props}>
+      {children}
+    </th>
+  )
+}
+
+export function td({ children, ...props }) {
+  return (
+    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap" {...props}>
+      {children}
+    </td>
   )
 }

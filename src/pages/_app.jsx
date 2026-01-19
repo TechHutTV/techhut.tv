@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
 import {AnnouncementBannerProvider} from "@/components/announcement-banner/AnnouncementBannerProvider";
 import {ImageZoom} from "@/components/ImageZoom";
+import {JsonLd} from "@/components/JsonLd";
 
 function onRouteChange() {
   useMobileNavigationStore.getState().close()
@@ -30,19 +31,20 @@ export default function App({ Component, pageProps }) {
   // Get cover from pageProps (extracted by recmaNextjsStaticProps)
   const cover = pageProps.cover
   const imagePosition = pageProps.imagePosition
-  
+  const description = pageProps.description || `${pageProps.title} - TechHut` || 'TechHut - Linux guides, software reviews, and tech content'
+
   return (
     <ErrorBoundary>
       <Head>
         <style>{dom.css()}</style>
         <title>{`${pageProps.title} - TechHut`}</title>
-        <meta name="description" content={pageProps.description} />
+        <meta name="description" content={description} />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`https://techhut.tv${router.asPath}`} />
         <meta property="og:title" content={`${pageProps.title} - TechHut`} />
-        <meta property="og:description" content={pageProps.description} />
+        <meta property="og:description" content={description} />
         {cover && <meta property="og:image" content={`https://techhut.tv${cover}`} />}
         <meta property="og:site_name" content="TechHut" />
 
@@ -50,13 +52,20 @@ export default function App({ Component, pageProps }) {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={`https://techhut.tv${router.asPath}`} />
         <meta name="twitter:title" content={`${pageProps.title} - TechHut`} />
-        <meta name="twitter:description" content={pageProps.description} />
+        <meta name="twitter:description" content={description} />
         {cover && <meta name="twitter:image" content={`https://techhut.tv${cover}`} />}
         <meta name="twitter:creator" content="@techhutofficial" />
 
         {/* Canonical URL */}
         <link rel="canonical" href={`https://techhut.tv${router.asPath}`} />
       </Head>
+      <JsonLd
+        title={pageProps.title}
+        description={description}
+        date={pageProps.date}
+        authors={pageProps.authors}
+        cover={cover}
+      />
       <AnnouncementBannerProvider>
           <MDXProvider components={mdxComponents}>
               <Layout

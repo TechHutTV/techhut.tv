@@ -280,7 +280,6 @@ module.exports = ({ theme }) => ({
         marginBottom: theme('spacing.8'),
         lineHeight: theme('lineHeight.6'),
         borderRadius: theme('borderRadius.lg'),
-        overflow: 'hidden',
         borderWidth: '1px',
         borderColor: 'var(--tw-prose-th-borders)',
         boxShadow: theme('boxShadow.sm'),
