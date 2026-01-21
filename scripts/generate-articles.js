@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const CONTENT_DIR = path.join(__dirname, '../src/pages/content')
+const CONTENT_DIR = path.join(__dirname, '../src/content')
 const OUTPUT_FILE = path.join(__dirname, '../src/data/articles.js')
 
 function findMdxFiles(dir) {

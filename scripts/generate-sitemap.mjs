@@ -29,7 +29,7 @@ function findContentPages(dir, basePath = '') {
 }
 
 function generateSitemap() {
-  const contentDir = join(process.cwd(), 'src/pages/content')
+  const contentDir = join(process.cwd(), 'src/content')
   const pages = findContentPages(contentDir)
 
   // Static pages
