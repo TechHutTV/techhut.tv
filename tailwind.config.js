@@ -22,9 +22,9 @@ module.exports = {
     typography: require('./typography'),
     extend: {
       colors: {
-        netbird: '#B55400', // Updated to match primary color
-        'netbird-dark': '#8a3f00', // Darker variant for gradients
-        'netbird-light': '#f58044', // Lighter variant for hover
+        techhut: '#B55400', // Primary brand color
+        'techhut-dark': '#8a3f00', // Darker variant for gradients
+        'techhut-light': '#f58044', // Lighter variant for hover
         // Modern color palette from ColorHunt
         primary: {
           50: '#fef6ee',

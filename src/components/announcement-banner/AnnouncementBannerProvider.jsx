@@ -31,7 +31,7 @@ const AnnouncementContext = createContext({
 export function AnnouncementBannerProvider({ children }) {
   let [mounted, setMounted] = useState(false)
   let [closedAnnouncement, setClosedAnnouncement] = useLocalStorage(
-    'netbird-announcement',
+    'techhut-announcement',
     undefined
   )
   let announcementId = announcement.text

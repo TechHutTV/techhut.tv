@@ -16,14 +16,13 @@ function findMdxFiles(dir, basePath = '') {
 
       if (entry.isDirectory()) {
         scan(fullPath, newRelativePath)
-      } else if (entry.name === 'index.mdx') {
-        // Extract slug from parent folder name
-        const pathParts = relativePath.split('/')
-        const slug = pathParts[pathParts.length - 1]
+      } else if (entry.name.endsWith('.mdx') && entry.name !== 'index.mdx') {
+        // Extract slug from filename (without .mdx extension)
+        const slug = entry.name.replace(/\.mdx$/, '')
 
         files.push({
           slug,
-          path: relativePath // e.g., "2024/08/zen-browser-better-firefox"
+          path: newRelativePath // e.g., "2024/08/zen-browser-better-firefox.mdx"
         })
       }
     }

@@ -10,10 +10,10 @@ import { UsersIcon } from '@/components/icons/UsersIcon'
 
 const clients = [
   {
-    href: '/client-installation#linux',
+    href: '/content?categories=Linux',
     name: 'Linux',
     description:
-      'Learn how to install the NetBird client on Linux devices.',
+      'Explore articles and guides for Linux users.',
     icon: UserIcon,
     pattern: {
       y: 16,
@@ -24,10 +24,10 @@ const clients = [
     },
   },
   {
-    href: '/client-installation#mac-os',
+    href: '/content?categories=MacOS',
     name: 'MacOS',
     description:
-      'Learn how to install the NetBird client on MacOS devices.',
+      'Explore articles and guides for MacOS users.',
     icon: ChatBubbleIcon,
     pattern: {
       y: -6,
@@ -38,10 +38,10 @@ const clients = [
     },
   },
   {
-    href: '/client-installation#windows',
+    href: '/content?categories=Windows',
     name: 'Windows',
     description:
-      'Learn how to install the NetBird client on Windows devices.',
+      'Explore articles and guides for Windows users.',
     icon: EnvelopeIcon,
     pattern: {
       y: 32,
@@ -52,10 +52,10 @@ const clients = [
     },
   },
   {
-    href: '/client-installation#android',
+    href: '/content?categories=Android',
     name: 'Android',
     description:
-      'Learn how to install the NetBird client on Android devices.',
+      'Explore articles and guides for Android users.',
     icon: UsersIcon,
     pattern: {
       y: 22,
@@ -63,10 +63,10 @@ const clients = [
     },
   },
   {
-    href: '/client-installation#ios',
-    name: 'iOS',
+    href: '/content?categories=Self-Hosting',
+    name: 'Self-Hosting',
     description:
-      'Learn how to install the NetBird client on OS devices.',
+      'Explore self-hosting tutorials and guides.',
     icon: UsersIcon,
     pattern: {
       y: 22,

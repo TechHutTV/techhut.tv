@@ -280,7 +280,7 @@ export function Layout({ children, title, date, tableOfContents, authors: author
             </li>
             <li key="edit-on-github">
               <Link
-                  href={"https://github.com/netbirdio/docs/tree/main/src/pages" + router.pathname + ".mdx"}
+                  href={"https://github.com/TechHutTV/new.techhut.tv/tree/main/src/pages" + router.pathname + ".mdx"}
                   className="dark:hover:text-slate-300 dark:text-slate-400 text-slate-500 hover:text-slate-700 font-normal'"
                   style={{display: "flex", alignItems: 'center'}}
               >

@@ -13,13 +13,13 @@ function findContentPages(dir, basePath = '') {
 
     if (entry.isDirectory()) {
       pages.push(...findContentPages(fullPath, relativePath))
-    } else if (entry.name === 'index.mdx') {
-      const pathParts = basePath.split('/')
-      const slug = pathParts[pathParts.length - 1]
+    } else if (entry.name.endsWith('.mdx') && entry.name !== 'index.mdx') {
+      // Extract slug from filename (without .mdx extension)
+      const slug = entry.name.replace(/\.mdx$/, '')
 
       pages.push({
         slug,
-        path: basePath,
+        path: relativePath,
         lastMod: new Date().toISOString().split('T')[0] // Use current date for now
       })
     }

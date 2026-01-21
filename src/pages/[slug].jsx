@@ -79,7 +79,7 @@ export async function getStaticProps({ params }) {
   }
 
   // Read the raw MDX file
-  const filePath = path.join(process.cwd(), 'src/pages/content', contentPath, 'index.mdx')
+  const filePath = path.join(process.cwd(), 'src/pages/content', contentPath)
   const rawContent = fs.readFileSync(filePath, 'utf-8')
 
   // Extract exports

@@ -1,6 +1,12 @@
 import Head from 'next/head'
+import Script from 'next/script'
 import { Router, useRouter } from 'next/router'
 import { MDXProvider } from '@mdx-js/react'
+
+// Site configuration
+const siteConfig = {
+  googleAnalytics: 'G-D2EGVWGPYR',
+}
 
 import * as mdxComponents from '@/components/mdx'
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
@@ -35,6 +41,19 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ErrorBoundary>
+      {/* Google Analytics */}
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.googleAnalytics}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${siteConfig.googleAnalytics}');
+        `}
+      </Script>
       <Head>
         <style>{dom.css()}</style>
         <title>{`${pageProps.title} - TechHut`}</title>

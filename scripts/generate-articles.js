@@ -15,7 +15,7 @@ function findMdxFiles(dir) {
 
       if (entry.isDirectory()) {
         scan(fullPath)
-      } else if (entry.name === 'index.mdx') {
+      } else if (entry.name.endsWith('.mdx') && entry.name !== 'index.mdx') {
         files.push(fullPath)
       }
     }
@@ -41,10 +41,9 @@ function parseExport(content, name) {
 }
 
 function extractSlug(filePath) {
-  // Extract the slug from the folder name (e.g., "old-pc-laptop-media-server")
-  const parts = filePath.split(path.sep)
-  const slugIndex = parts.indexOf('index.mdx') - 1
-  return parts[slugIndex]
+  // Extract the slug from the filename (e.g., "old-pc-laptop-media-server.mdx" -> "old-pc-laptop-media-server")
+  const filename = path.basename(filePath)
+  return filename.replace(/\.mdx$/, '')
 }
 
 function generateArticles() {
