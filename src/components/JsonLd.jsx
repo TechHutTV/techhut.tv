@@ -14,7 +14,7 @@ export function OrganizationJsonLd() {
     '@type': 'Organization',
     name: SITE_NAME,
     url: SITE_URL,
-    logo: `${SITE_URL}/docs-static/img/favicon.ico`,
+    logo: `${SITE_URL}/favicon.ico`,
     sameAs: [
       'https://youtube.com/@techhut',
       'https://x.com/TechHutTV',
@@ -107,7 +107,7 @@ export function ArticleJsonLd({ title, description, date, authors, cover, dateMo
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/docs-static/img/favicon.ico`,
+        url: `${SITE_URL}/favicon.ico`,
       },
     },
     ...(date && { datePublished: date }),
