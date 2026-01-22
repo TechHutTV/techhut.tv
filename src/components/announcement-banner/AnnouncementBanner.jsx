@@ -73,7 +73,7 @@ export function AnnouncementBanner() {
       ref={bannerRef}
       id="announcement-banner"
       className={clsx(
-        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-700 bg-zinc-800/95 px-4 py-1.5 text-[11px] font-medium text-zinc-100 shadow-sm backdrop-blur'
+        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-700 bg-zinc-900 px-4 py-1.5 text-[11px] font-medium text-zinc-100 shadow-sm'
       )}
     >
       <div className="flex flex-col items-start gap-1 pr-8 leading-snug md:flex-row md:items-center">

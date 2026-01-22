@@ -40,17 +40,14 @@ export const Header = forwardRef(function Header({ className }, ref) {
       className={clsx(
         className,
         'fixed z-50 flex items-center justify-between gap-3 px-5 transition h-[64px] lg:px-8 min-h-[64px] lg:pointer-events-auto',
-        'lg:left-4 lg:right-4 lg:rounded-2xl lg:shadow-lg lg:border lg:!top-[var(--header-top)]',
+        'lg:left-4 lg:right-4 lg:rounded-b-2xl lg:shadow-lg lg:border lg:border-t-0 lg:border-zinc-200/50 lg:dark:border-zinc-800/50',
         'inset-x-0 left-0 right-0',
         !isInsideMobileNavigation &&
-          'backdrop-blur-lg bg-white/70 dark:bg-[#0f1012]/70 lg:border-zinc-200/50 lg:dark:border-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 lg:border-b-0',
+          'backdrop-blur-lg bg-white/70 dark:bg-[#0f1012]/70 border-b border-zinc-200 dark:border-zinc-800',
         isInsideMobileNavigation &&
-          'bg-white/70 dark:bg-[#0f1012]/70 backdrop-blur-lg lg:border-zinc-200/50 lg:dark:border-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800 lg:border-b-0'
+          'bg-white/70 dark:bg-[#0f1012]/70 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-800'
       )}
-      style={{
-        '--header-top': `calc(${bannerHeight}px + 0.5rem)`,
-        top: bannerHeight,
-      }}
+      style={{ top: bannerHeight }}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <button

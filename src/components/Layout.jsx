@@ -123,9 +123,9 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
     <>
       <AnnouncementBanner />
       {coverImage ? (
-        <CoverImageBackground 
-          imageUrl={coverImage} 
-          imagePosition={imagePosition} 
+        <CoverImageBackground
+          imageUrl={coverImage}
+          imagePosition={imagePosition}
         />
       ) : (
         <HeroPattern/>

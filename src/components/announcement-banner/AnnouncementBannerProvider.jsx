@@ -9,7 +9,7 @@ import {
 
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 
-const BANNER_ENABLED = true
+const BANNER_ENABLED = false
 
 export const announcement = {
   tag: 'AirVPN',
