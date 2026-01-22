@@ -76,9 +76,14 @@ const nextConfig = {
             },
         ]
     },
-    // All redirects removed as requested
     redirects: async () => {
-        return []
+        return [
+            {
+                source: '/rss.xml',
+                destination: '/rss',
+                permanent: true,
+            },
+        ]
     },
     rewrites: async () => {
         return [
@@ -93,10 +98,6 @@ const nextConfig = {
             {
                 source: '/api/:path*',
                 destination: '/ipa/:path*',
-            },
-            {
-                source: '/rss',
-                destination: '/rss.xml',
             },
         ]
     }
