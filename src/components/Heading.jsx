@@ -78,7 +78,7 @@ export function Heading({
       <Component
         ref={ref}
         id={anchor ? id : undefined}
-        className={tag || label ? 'mt-2 scroll-mt-32' : 'scroll-mt-24'}
+        className={tag || label ? 'mt-2 scroll-mt-36' : 'scroll-mt-32'}
         {...props}
       >
         {anchor ? (

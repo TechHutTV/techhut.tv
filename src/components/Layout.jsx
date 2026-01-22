@@ -45,8 +45,9 @@ function useTableOfContents(tableOfContents) {
         if (!el) continue
 
         let rect = el.getBoundingClientRect()
-        // Check if heading is at or above the top of viewport (with small offset)
-        if (rect.top <= 100) {
+        // Check if heading is at or above the top of viewport
+        // Threshold should match or exceed scroll-mt value (128px) in Heading.jsx
+        if (rect.top <= 140) {
           current = id
         } else {
           break

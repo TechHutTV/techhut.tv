@@ -61,10 +61,15 @@ function stripMarkdown(text) {
 function extractSections(content) {
   const slugger = new GithubSlugger()
   const sections = []
+
+  // Remove fenced code blocks before extracting headings
+  // This prevents matching ## comments inside bash/code blocks
+  const contentWithoutCodeBlocks = content.replace(/```[\s\S]*?```/g, '')
+
   const headingRegex = /^(#{2,6})\s+(.+)$/gm
   let match
 
-  while ((match = headingRegex.exec(content)) !== null) {
+  while ((match = headingRegex.exec(contentWithoutCodeBlocks)) !== null) {
     const level = match[1].length
     const rawTitle = match[2].trim()
     // Strip markdown formatting to match what rehype-slug sees in rendered HTML
