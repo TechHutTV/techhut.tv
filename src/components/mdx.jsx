@@ -267,8 +267,6 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
         </dd>}
         <dt className="sr-only">Enum</dt>
         <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
-          {/*{enumList && "Possible values: [" + enumList.split(',').forEach((type) => (<tag>{type}</tag>)) + "]"}*/}
-          {/*  {enumList && <div><text>Possible Values: [</text></div>}enumList.split(',').map(type => '<code>'+ type + '</code>')}*/}
             {min && !max && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={min}</code></div>}
             {max && !min && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&lt;={max}</code></div>}
             {min && max && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={min}</code><text> and </text><code className="text-sky-600 bg-sky-400/10">&lt;={max}</code></div>}

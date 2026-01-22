@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Script from 'next/script'
+import dynamic from 'next/dynamic'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Router, useRouter } from 'next/router'
@@ -22,8 +23,13 @@ import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
 import {AnnouncementBannerProvider} from "@/components/announcement-banner/AnnouncementBannerProvider";
-import {ImageZoom} from "@/components/ImageZoom";
 import {JsonLd} from "@/components/JsonLd";
+
+// Lazy load ImageZoom since it's only used on click
+const ImageZoom = dynamic(
+  () => import('@/components/ImageZoom').then(mod => ({ default: mod.ImageZoom })),
+  { ssr: false }
+)
 
 function onRouteChange() {
   useMobileNavigationStore.getState().close()
