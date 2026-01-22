@@ -1,5 +1,10 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { getGitLastModified } from '../src/lib/gitDates.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const CONTENT_DIR = path.join(__dirname, '../src/content')
 const OUTPUT_FILE = path.join(__dirname, '../src/data/slugMap.js')
@@ -20,9 +25,13 @@ function findMdxFiles(dir, basePath = '') {
         // Extract slug from filename (without .mdx extension)
         const slug = entry.name.replace(/\.mdx$/, '')
 
+        // Get last modified date from git
+        const dateModified = getGitLastModified(fullPath)
+
         files.push({
           slug,
-          path: newRelativePath // e.g., "2024/08/zen-browser-better-firefox.mdx"
+          path: newRelativePath, // e.g., "2024/08/zen-browser-better-firefox.mdx"
+          dateModified
         })
       }
     }
@@ -37,7 +46,10 @@ function generateSlugMap() {
 
   const slugMap = {}
   for (const file of files) {
-    slugMap[file.slug] = file.path
+    slugMap[file.slug] = {
+      path: file.path,
+      dateModified: file.dateModified
+    }
   }
 
   const output = `// Auto-generated slug to path mapping

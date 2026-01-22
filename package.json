@@ -2,6 +2,7 @@
   "name": "techhut-tv",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "npm run gen:articles && npm run gen:slugmap && next dev",
     "build": "npm run gen:articles && npm run gen:slugmap && npm run gen:sitemap && next build",

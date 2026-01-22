@@ -134,7 +134,7 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, tableOfContents, authors: authorNames, coverImage, imagePosition }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition }) {
   let router = useRouter()
   let isHomePage = router.pathname === '/'
   let allLinks = navigation.flatMap((section) => section.links)
@@ -252,9 +252,12 @@ export function Layout({ children, title, date, tableOfContents, authors: author
               <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-3">{title}</h1>
             )}
             {date && (
-              <time className="block text-sm text-slate-500 dark:text-slate-400 mb-8" dateTime={date}>
-                {formatDate(date, 'long')}
-              </time>
+              <div className="flex flex-wrap gap-x-2 text-sm text-slate-500 dark:text-slate-400 mb-8">
+                <time dateTime={date}>Published {formatDate(date, 'long')}</time>
+                {dateModified && dateModified !== date && (
+                  <span>· Updated <time dateTime={dateModified}>{formatDate(dateModified, 'long')}</time></span>
+                )}
+              </div>
             )}
             {authorNames && authorNames.length > 0 && (
               <Authors authors={getAuthors(authorNames)} />

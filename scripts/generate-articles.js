@@ -1,5 +1,10 @@
-const fs = require('fs')
-const path = require('path')
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { getGitLastModified } from '../src/lib/gitDates.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const CONTENT_DIR = path.join(__dirname, '../src/content')
 const OUTPUT_FILE = path.join(__dirname, '../src/data/articles.js')
@@ -61,6 +66,9 @@ function generateArticles() {
     const categories = parseExport(content, 'categories') || []
     const tags = parseExport(content, 'tags') || []
 
+    // Get last modified date from git
+    const dateModified = getGitLastModified(filePath)
+
     if (!title || !date) {
       console.warn(`Skipping ${filePath}: missing title or date`)
       continue
@@ -70,6 +78,7 @@ function generateArticles() {
       title,
       description: description || '',
       date,
+      dateModified: dateModified || date, // Fall back to publish date if no git history
       href: `/${slug}`,
       cover: cover || null,
       categories,

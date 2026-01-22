@@ -32,6 +32,7 @@ const nextConfig = {
     },
     experimental: {
         scrollRestoration: true,
+        largePageDataBytes: 256 * 1024, // 256 KB threshold for long articles
     },
     // Security headers
     headers: async () => {

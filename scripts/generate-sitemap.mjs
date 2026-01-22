@@ -1,37 +1,10 @@
-import { readdirSync, writeFileSync } from 'fs'
+import { writeFileSync } from 'fs'
 import { join } from 'path'
+import { articles } from '../src/data/articles.js'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://techhut.tv'
 
-function findContentPages(dir, basePath = '') {
-  const pages = []
-  const entries = readdirSync(dir, { withFileTypes: true })
-
-  for (const entry of entries) {
-    const fullPath = join(dir, entry.name)
-    const relativePath = basePath ? `${basePath}/${entry.name}` : entry.name
-
-    if (entry.isDirectory()) {
-      pages.push(...findContentPages(fullPath, relativePath))
-    } else if (entry.name.endsWith('.mdx') && entry.name !== 'index.mdx') {
-      // Extract slug from filename (without .mdx extension)
-      const slug = entry.name.replace(/\.mdx$/, '')
-
-      pages.push({
-        slug,
-        path: relativePath,
-        lastMod: new Date().toISOString().split('T')[0] // Use current date for now
-      })
-    }
-  }
-
-  return pages
-}
-
 function generateSitemap() {
-  const contentDir = join(process.cwd(), 'src/content')
-  const pages = findContentPages(contentDir)
-
   // Static pages
   const staticPages = [
     { path: '', priority: '1.0' },
@@ -48,16 +21,16 @@ ${staticPages.map(page => `  <url>
     <changefreq>monthly</changefreq>
     <priority>${page.priority}</priority>
   </url>`).join('\n')}
-${pages.map(page => `  <url>
-    <loc>${SITE_URL}/${page.slug}</loc>
-    <lastmod>${page.lastMod}</lastmod>
+${articles.map(article => `  <url>
+    <loc>${SITE_URL}${article.href}</loc>
+    <lastmod>${article.dateModified}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`).join('\n')}
 </urlset>`
 
   writeFileSync(join(process.cwd(), 'public/sitemap.xml'), sitemap)
-  console.log(`✓ Generated sitemap with ${staticPages.length + pages.length} URLs`)
+  console.log(`✓ Generated sitemap with ${staticPages.length + articles.length} URLs`)
 }
 
 generateSitemap()

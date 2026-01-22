@@ -72,14 +72,14 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }) {
   const { slug } = params
-  const contentPath = slugMap[slug]
+  const slugData = slugMap[slug]
 
-  if (!contentPath) {
+  if (!slugData) {
     return { notFound: true }
   }
 
   // Read the raw MDX file
-  const filePath = path.join(process.cwd(), 'src/content', contentPath)
+  const filePath = path.join(process.cwd(), 'src/content', slugData.path)
   const rawContent = fs.readFileSync(filePath, 'utf-8')
 
   // Extract exports
@@ -112,6 +112,7 @@ export async function getStaticProps({ params }) {
       title,
       description,
       date,
+      dateModified: slugData.dateModified || date,
       authors,
       categories,
       tags,
