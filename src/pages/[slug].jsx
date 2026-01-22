@@ -5,7 +5,7 @@ import path from 'path'
 import { slugMap } from '@/data/slugMap'
 import * as mdxComponents from '@/components/mdx'
 import rehypeSlug from 'rehype-slug'
-import { slugifyWithCounter } from '@sindresorhus/slugify'
+import GithubSlugger from 'github-slugger'
 
 export default function ArticlePage({ source, ...pageProps }) {
   return <MDXRemote {...source} components={mdxComponents} />
@@ -36,17 +36,40 @@ function extractMdxContent(content) {
   return cleaned.trim()
 }
 
+// Strip markdown formatting to get plain text (matches what rehype-slug sees)
+function stripMarkdown(text) {
+  return text
+    // Remove links but keep text: [text](url) -> text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    // Remove bold: **text** or __text__ -> text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    // Remove italic: *text* or _text_ -> text
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    // Remove inline code: `text` -> text
+    .replace(/`([^`]+)`/g, '$1')
+    // Remove strikethrough: ~~text~~ -> text
+    .replace(/~~([^~]+)~~/g, '$1')
+    // Remove escape characters
+    .replace(/\\([\\`*_{}[\]()#+\-.!])/g, '$1')
+    .trim()
+}
+
 // Extract headings from MDX content for table of contents
+// Uses github-slugger to match rehype-slug's ID generation
 function extractSections(content) {
-  const slugify = slugifyWithCounter()
+  const slugger = new GithubSlugger()
   const sections = []
   const headingRegex = /^(#{2,6})\s+(.+)$/gm
   let match
 
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length
-    const title = match[2].trim()
-    const id = slugify(title)
+    const rawTitle = match[2].trim()
+    // Strip markdown formatting to match what rehype-slug sees in rendered HTML
+    const title = stripMarkdown(rawTitle)
+    const id = slugger.slug(title)
     const tagName = `h${level}`
 
     sections.push({

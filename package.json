@@ -46,6 +46,7 @@
     "dompurify": "^3.3.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "10.12.9",
+    "github-slugger": "^2.0.0",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.562.0",
     "mdast-util-to-string": "^3.2.0",

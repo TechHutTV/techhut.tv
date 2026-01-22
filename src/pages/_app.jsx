@@ -18,7 +18,6 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import '@/styles/tailwind.css'
 import 'focus-visible'
 import {Layout} from "@/components/Layout";
-import {slugifyWithCounter} from "@sindresorhus/slugify";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
@@ -115,7 +114,7 @@ export default function App({ Component, pageProps }) {
   )
 }
 
-function collectHeadings(sections, slugify = slugifyWithCounter()) {
+function collectHeadings(sections) {
     let output = []
 
     if (sections === undefined) {
@@ -148,7 +147,7 @@ function collectHeadings(sections, slugify = slugifyWithCounter()) {
 
         // Recursively process children if they exist
         if (section.children && Array.isArray(section.children)) {
-            output.push(...collectHeadings(section.children, slugify))
+            output.push(...collectHeadings(section.children))
         }
     }
 
