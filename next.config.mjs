@@ -94,6 +94,10 @@ const nextConfig = {
                 source: '/api/:path*',
                 destination: '/ipa/:path*',
             },
+            {
+                source: '/rss',
+                destination: '/rss.xml',
+            },
         ]
     }
 }

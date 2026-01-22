@@ -84,6 +84,9 @@ export default function App({ Component, pageProps }) {
 
         {/* Canonical URL */}
         <link rel="canonical" href={`https://techhut.tv${router.asPath}`} />
+
+        {/* RSS Feed */}
+        <link rel="alternate" type="application/rss+xml" title="TechHut RSS Feed" href="https://techhut.tv/rss" />
       </Head>
       <JsonLd
         title={pageProps.title}

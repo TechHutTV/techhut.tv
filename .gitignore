@@ -8,6 +8,7 @@
 /src/data/articles.js
 /src/data/slugMap.js
 /public/sitemap.xml
+/public/rss.xml
 
 # Environment
 .env.local

@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "npm run gen:articles && npm run gen:slugmap && next dev",
-    "build": "npm run gen:articles && npm run gen:slugmap && npm run gen:sitemap && next build",
+    "build": "npm run gen:articles && npm run gen:slugmap && npm run gen:sitemap && npm run gen:rss && next build",
     "gen:articles": "node scripts/generate-articles.js",
     "gen:slugmap": "node scripts/generate-slug-map.js",
     "gen:sitemap": "node scripts/generate-sitemap.mjs",
+    "gen:rss": "node scripts/generate-rss.mjs",
     "start": "next start",
     "lint": "next lint"
   },
