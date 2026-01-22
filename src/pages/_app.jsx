@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Router, useRouter } from 'next/router'
 import { MDXProvider } from '@mdx-js/react'
 
@@ -101,6 +103,8 @@ export default function App({ Component, pageProps }) {
       </AnnouncementBannerProvider>
       <ToastContainer />
       <ImageZoom />
+      <Analytics />
+      <SpeedInsights />
     </ErrorBoundary>
   )
 }
