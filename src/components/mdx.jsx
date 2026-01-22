@@ -301,11 +301,11 @@ export function Video({ src, controls = "yes", type, preload = "metadata", ...pr
   )
 }
 
-// Table components with horizontal scroll wrapper and explicit styling
+// Table components with modern, elegant styling
 export function table({ children, ...props }) {
   return (
-    <div className="my-8 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm">
-      <table className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700" {...props}>
+    <div className="my-8 overflow-x-auto">
+      <table className="min-w-full" {...props}>
         {children}
       </table>
     </div>
@@ -314,7 +314,7 @@ export function table({ children, ...props }) {
 
 export function thead({ children, ...props }) {
   return (
-    <thead className="bg-zinc-50 dark:bg-zinc-800" {...props}>
+    <thead className="border-b border-zinc-200 dark:border-zinc-700" {...props}>
       {children}
     </thead>
   )
@@ -322,7 +322,7 @@ export function thead({ children, ...props }) {
 
 export function tbody({ children, ...props }) {
   return (
-    <tbody className="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900" {...props}>
+    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800" {...props}>
       {children}
     </tbody>
   )
@@ -330,7 +330,7 @@ export function tbody({ children, ...props }) {
 
 export function tr({ children, ...props }) {
   return (
-    <tr className="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" {...props}>
+    <tr className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors" {...props}>
       {children}
     </tr>
   )
@@ -338,7 +338,7 @@ export function tr({ children, ...props }) {
 
 export function th({ children, ...props }) {
   return (
-    <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider" {...props}>
+    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" {...props}>
       {children}
     </th>
   )
@@ -346,7 +346,7 @@ export function th({ children, ...props }) {
 
 export function td({ children, ...props }) {
   return (
-    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap" {...props}>
+    <td className="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300" {...props}>
       {children}
     </td>
   )
