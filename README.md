@@ -30,6 +30,20 @@ You can click the **Fork** button in the upper-right area of the screen to creat
 
 Once your pull request is created, a TechHut reviewer will take responsibility for providing clear, actionable feedback. As the owner of the pull request, **it is your responsibility to modify your pull request to address the feedback that has been provided to you by the reviewer.**
 
+## Documentation
+
+Internal documentation for contributors and maintainers:
+
+- [Documentation Index](docs/README.md)
+- [Project Structure](docs/project-structure.md)
+- [Content Authoring Guide](docs/content-authoring.md)
+- [Authors System](docs/authors.md)
+- [Components Reference](docs/components.md)
+- [MDX Components](docs/mdx-components.md)
+- [Build Scripts](docs/build-scripts.md)
+- [Styling Guide](docs/styling.md)
+- [Deployment](docs/deployment.md)
+
 ## License
 
 This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
