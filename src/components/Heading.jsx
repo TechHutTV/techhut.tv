@@ -24,6 +24,7 @@ export function Heading({
   id,
   tag,
   label,
+  anchor,
   ...props
 }) {
   let Component = `h${level}`

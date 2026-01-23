@@ -122,6 +122,14 @@ function CodePanelHeader({ tag, label }) {
 
 function CodePanel({ tag, label, code, children }) {
   let child = Children.only(children)
+  let preRef = useRef(null)
+  let [codeText, setCodeText] = useState(code || '')
+
+  useEffect(() => {
+    if (preRef.current) {
+      setCodeText(preRef.current.textContent || '')
+    }
+  }, [children])
 
   return (
     <div className="group bg-white dark:bg-[#1e1e1e]">
@@ -130,8 +138,8 @@ function CodePanel({ tag, label, code, children }) {
         label={child.props.label ?? label}
       />
       <div className="relative bg-white dark:bg-[#1e1e1e]">
-        <pre className="overflow-x-auto p-4 text-xs text-zinc-900 dark:text-zinc-100">{children}</pre>
-        <CopyButton code={child.props.code ?? code} />
+        <pre ref={preRef} className="overflow-x-auto p-4 text-xs text-zinc-900 dark:text-zinc-100">{children}</pre>
+        <CopyButton code={codeText} />
       </div>
     </div>
   )
