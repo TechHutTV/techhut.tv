@@ -147,6 +147,7 @@ export async function getStaticProps({ params }) {
       cover: cover || null,
       imagePosition: imagePosition || null,
       sections,
+      editUrl: `https://github.com/TechHutTV/techhut.tv/tree/main/src/content/${slugData.path}`,
     }
   }
 }

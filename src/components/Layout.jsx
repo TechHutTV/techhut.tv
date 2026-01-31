@@ -66,8 +66,11 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl }) {
   let router = useRouter()
+
+  // Build edit URL: use provided editUrl for content pages, or construct from pathname for pages
+  const githubEditUrl = editUrl || `https://github.com/TechHutTV/techhut.tv/tree/main/src/pages${router.pathname === '/' ? '/index' : router.pathname}.mdx`
 
   const buttonStyle = {
     display: 'inline',
@@ -207,7 +210,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             </li>
             <li key="edit-on-github">
               <Link
-                  href={"https://github.com/TechHutTV/techhut.tv/tree/main/src/pages" + router.pathname + ".mdx"}
+                  href={githubEditUrl}
                   className="dark:hover:text-slate-300 dark:text-slate-400 text-slate-500 hover:text-slate-700 font-normal'"
                   style={{display: "flex", alignItems: 'center'}}
               >
