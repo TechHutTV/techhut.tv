@@ -13,15 +13,19 @@ export default function ArticlePage({ source, ...pageProps }) {
 
 // Parse exports from MDX content (same logic as generate-articles.js)
 function parseExport(content, name) {
-  // Match: export const name = "value" or export const name = 'value'
-  const stringMatch = content.match(new RegExp(`export\\s+const\\s+${name}\\s*=\\s*["']([^"']*?)["']`))
-  if (stringMatch) return stringMatch[1]
+  // Match: export const name = "value" (double quotes - can contain apostrophes)
+  const doubleQuoteMatch = content.match(new RegExp(`export\\s+const\\s+${name}\\s*=\\s*"([^"]*?)"`))
+  if (doubleQuoteMatch) return doubleQuoteMatch[1]
+
+  // Match: export const name = 'value' (single quotes - can contain double quotes)
+  const singleQuoteMatch = content.match(new RegExp(`export\\s+const\\s+${name}\\s*=\\s*'([^']*?)'`))
+  if (singleQuoteMatch) return singleQuoteMatch[1]
 
   // Match: export const name = ["item1", "item2"]
   const arrayMatch = content.match(new RegExp(`export\\s+const\\s+${name}\\s*=\\s*\\[([^\\]]*?)\\]`))
   if (arrayMatch) {
-    const items = arrayMatch[1].match(/["']([^"']*?)["']/g)
-    return items ? items.map(item => item.replace(/["']/g, '')) : []
+    const items = arrayMatch[1].match(/"([^"]*?)"|'([^']*?)'/g)
+    return items ? items.map(item => item.slice(1, -1)) : []
   }
 
   return null
