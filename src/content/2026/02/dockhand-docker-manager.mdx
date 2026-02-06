@@ -8,7 +8,7 @@ export const cover = "/docs-static/img/2026/02/dockhand-docker-manager/cover.png
 
 import {YouTube} from "@/components/YouTube"
 
-So if you're anything like me, you've probably got Docker Compose stacks scattered across a handful of different machines. Maybe a server here, a VM there, and you're just SSHing into each one to manage things from the terminal. And honestly, that works. I've been doing it for a while now. But the problem is that updates start slipping through your fingers. You don't have a great way to monitor everything across all those different systems at a glance. That's where Dockhand comes in.
+So if you're anything like me, you've probably got Docker Compose stacks scattered across a handful of different machines. Maybe a server here, a VM there, and you're just SSHing into each one to manage things from the terminal. And honestly, that works. I've been doing it for a while now. But the problem is that updates start slipping through your fingers. You don't have a great way to monitor everything across all those different systems at a glance. That's where [Dockhand](https://dockhand.pro/) comes in.
 
 <YouTube videoId="dwFktbtuTFQ" />
 
@@ -18,7 +18,7 @@ Dockhand is a modern, powerful Docker management platform that's free for home l
 
 For this setup, I'm installing Dockhand on a Fedora desktop that I'm currently using as my LLM server. It's got a 3090 in it, a bunch of Docker stuff already running, so it's a great place to start.
 
-On their website under the home lab section, you just hit "Get Started for Free" and you've got a few options. You can do a simple `docker run` command, a Docker Compose setup, or a Compose stack with PostgreSQL if you want to use that instead of SQLite. For me, I don't see a need to run Postgres here, I'm not storing a ton of data. So the basic Compose route is the way to go.
+On [their website](https://dockhand.pro/) under the home lab section, you just hit "Get Started for Free" and you've got a few options. You can do a simple `docker run` command, a Docker Compose setup, or a Compose stack with PostgreSQL if you want to use that instead of SQLite. For me, I don't see a need to run Postgres here, I'm not storing a ton of data. So the basic Compose route is the way to go.
 
 I already had my Docker stuff organized into directories on this server, things like my automation stack with n8n, Open WebUI, Ollama, and Postgres, plus a ZeroByte stack. So I just made a new directory for Dockhand and dropped in a compose file:
 
@@ -62,7 +62,7 @@ The logs viewer streams in real time with full ANSI color support, and you've go
 
 ![](/docs-static/img/2026/02/dockhand-docker-manager/view-logs.png)
 
-But here's the big one for me: checking for updates. There's a button right there at the top to check for updates across all your containers. When I clicked it, I could see a few of my images had newer versions available. Updating is as simple as clicking the update button on the one you want. It pulls the new image and restarts the container. And there we go, it's done. That little update notification disappears and you're all up to date.
+But here's the big one for me: [checking for updates](https://dockhand.pro/manual/#containers-autoupdate). There's a button right there at the top to check for updates across all your containers. When I clicked it, I could see a few of my images had newer versions available. Updating is as simple as clicking the update button on the one you want. It pulls the new image and restarts the container. And there we go, it's done. That little update notification disappears and you're all up to date.
 
 In the settings for each environment, you can enable scheduled update checks (I set mine to daily at 4:00 AM) and even turn on automatic updates if you're feeling brave. I would not recommend auto-updating personally, but it's there if you want it. You can also enable automatic image pruning so unused images get cleaned up on their own, which is a nice way to save some disk space.
 
@@ -82,7 +82,7 @@ Once I linked my automation stack, I could see all four containers in it, their 
 
 So managing one environment is really no trouble. But the whole point of setting this up for me was managing multiple environments. I've got Docker stacks and VMs spread across different machines, and SSHing into each one just doesn't scale well.
 
-This is where Hawser comes in. Hawser is Dockhand's lightweight remote agent that lets you manage Docker hosts on other machines. The setup is honestly about as easy as it gets. On the remote machine, you just run:
+This is where [Hawser](https://dockhand.pro/manual/#hawser-modes) comes in. Hawser is Dockhand's lightweight remote agent that lets you manage Docker hosts on other machines. The [setup](https://dockhand.pro/manual/#hawser-install) is honestly about as easy as it gets. On the remote machine, you just run:
 
 ```bash
 docker run -d \
@@ -94,13 +94,13 @@ docker run -d \
   ghcr.io/finsys/hawser:latest
 ```
 
-Then back in Dockhand, you click the plus button to add a new environment, give it a name, select the Hawser agent connection type, plug in the IP address and token, and test the connection.
+Then back in Dockhand, you click the plus button to add a new environment, give it a name, select the Hawser agent connection type, plug in the IP address and [token](https://dockhand.pro/manual/#hawser-tokens), and test the connection.
 
 I did this with my NextCloud VM first. Tested the connection and, would you look at that, 14 containers detected. Easy peasy. Added it, and the dashboard now shows both environments side by side.
 
 Then I did the same thing with my Immich server, which is another VM I use specifically for photo management. That one was way out of date, and checking for updates showed a couple new image versions available right away. Beautiful.
 
-If you're running Hawser on machines that are behind NAT or a firewall, there's also an Edge mode where the agent connects outbound to Dockhand via WebSocket instead of Dockhand connecting inbound. So you don't need to open any ports on the remote machine. Pretty slick for VPS setups or anything where you don't have a static IP.
+If you're running Hawser on machines that are behind NAT or a firewall, there's also an [Edge mode](https://dockhand.pro/manual/#hawser-modes) where the agent connects outbound to Dockhand via WebSocket instead of Dockhand connecting inbound. So you don't need to open any ports on the remote machine. Pretty slick for VPS setups or anything where you don't have a static IP.
 
 ## Other Stuff Worth Mentioning
 
@@ -108,13 +108,13 @@ There are a bunch of other features I want to quickly touch on.
 
 **Images** gives you a full view of all your Docker images with an easy way to spot unused ones. I found an 8 GB image sitting there doing nothing, got rid of it in one click. You can also pull new images, scan for vulnerabilities (with Trivy or Grype integration), and browse registries right from the UI.
 
-**Git Integration** lets you deploy stacks directly from a Git repository with automatic sync and webhooks. I don't have a specific use case for it right now, but if you're managing infrastructure as code, this is a really nice feature.
+**[Git Integration](https://dockhand.pro/manual/#stacks-git)** lets you deploy stacks directly from a Git repository with automatic sync and webhooks. I don't have a specific use case for it right now, but if you're managing infrastructure as code, this is a really nice feature.
 
 **Config Sets** are basically reusable templates for container configurations. Set up your environment variables, port mappings, network mode, and restart policy once, then apply that template whenever you spin up a new container.
 
 **Notifications** support SMTP and Apprise webhooks, so you can get alerts through Telegram, Slack, Discord, ntfy, Gotify, and more for things like container events, update results, and security findings.
 
-**Authentication** is something you'll want to enable right away. By default, Dockhand ships with no authentication, so anybody on your network can access it. Head to Settings, Authentication, create a user, and flip the switch. They also support OIDC/SSO, so if you're running something like Pocket ID or Authentik, you can hook that up too.
+**Authentication** is something you'll want to enable right away. By default, Dockhand ships with no authentication, so anybody on your network can access it. Head to Settings, Authentication, create a user, and flip the switch. They also support [OIDC/SSO](https://dockhand.pro/manual/#settings-auth-oidc), so if you're running something like Pocket ID or Authentik, you can hook that up too.
 
 ## My Honest Take
 
@@ -124,6 +124,6 @@ The multi-environment management is the killer feature for me. Being able to see
 
 One thing I still need to figure out is getting Hawser running on my Unraid machine. They don't have the agent available in the Unraid app store yet, so that's going to take a little extra work. But for everything else, it just worked. Also, it doesn't look like there is an easy way to import compose files from off-site machines. So theres that.
 
-What do you guys use to manage your Docker setups? Are you a terminal purist, a Portainer loyalist, or are you going to give Dockhand a shot? Let me know in the comments.
+What do you guys use to manage your Docker setups? Are you a terminal purist, a Portainer loyalist, or are you going to [give Dockhand a shot](https://dockhand.pro/)? The [manual](https://dockhand.pro/manual/) has everything if you want to go deeper. Let me know in the comments.
 
 I do hope you enjoyed this one. Have a great day and goodbye.
