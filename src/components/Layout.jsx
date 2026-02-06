@@ -17,6 +17,7 @@ import {AnnouncementBanner} from "@/components/announcement-banner/AnnouncementB
 import {useAnnouncements} from "@/components/announcement-banner/AnnouncementBannerProvider";
 import {Authors} from "@/components/Author";
 import {getAuthors} from "@/data/authors";
+import {TopContentBanner} from "@/components/TopContentBanner";
 import {useSidebarStore} from "@/components/SidebarState";
 import {CoverImageBackground} from "@/components/CoverImageBackground";
 import {formatDate} from "@/lib/dates";
@@ -66,7 +67,7 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage }) {
   let router = useRouter()
 
   // Build edit URL: use provided editUrl for content pages, or construct from pathname for pages
@@ -189,6 +190,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             {authorNames && authorNames.length > 0 && (
               <Authors authors={getAuthors(authorNames)} />
             )}
+            {isContentPage && <TopContentBanner />}
             <Prose as="article">{children}</Prose>
           </main>
           <Footer />

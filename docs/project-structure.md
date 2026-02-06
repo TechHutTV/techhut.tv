@@ -39,7 +39,8 @@ src/
 ├── data/                 # Generated and static data
 │   ├── articles.js       # Generated article metadata
 │   ├── authors.js        # Author registry
-│   └── slugMap.js        # Generated URL routing map
+│   ├── slugMap.js        # Generated URL routing map
+│   └── topContentBanner.js # Banner ad/referral configuration
 ├── lib/                  # Utility functions
 │   └── gitDates.js       # Git-based date tracking
 ├── pages/                # Next.js page routes

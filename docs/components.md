@@ -107,6 +107,38 @@ import { CoverImageBackground } from '@/components/CoverImageBackground'
 
 **Location**: `src/components/CoverImageBackground.jsx`
 
+### TopContentBanner
+
+Configurable banner that displays below the author section on content pages. Useful for advertisements, referral links, or promotional content. Users can dismiss the banner with a close button.
+
+```jsx
+import { TopContentBanner } from '@/components/TopContentBanner'
+
+<TopContentBanner />
+```
+
+**Configuration**: Edit `src/data/topContentBanner.js` to update banner content:
+
+```javascript
+export const topContentBannerConfig = {
+  enabled: true,  // Set to false to hide the banner
+
+  html: `
+    <a href="https://example.com" target="_blank">
+      <img src="https://example.com/banner.gif" alt="Banner" />
+    </a>
+  `,
+}
+```
+
+**Features**:
+- Only displays on content pages (from `src/content/`)
+- Dismissible via close button (X in top right corner)
+- Supports any HTML content with Tailwind CSS classes
+- Easy to enable/disable via config
+
+**Location**: `src/components/TopContentBanner.jsx`, `src/data/topContentBanner.js`
+
 ## Interactive Components
 
 ### Search
