@@ -13,7 +13,7 @@ export function TopContentBanner() {
     <div className="my-8 relative">
       <button
         onClick={() => setDismissed(true)}
-        className="absolute top-0 right-0 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+        className="absolute top-0 left-0 p-1 text-slate-200 dark:text-slate-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
         aria-label="Dismiss banner"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
