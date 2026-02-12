@@ -1,0 +1,93 @@
+export const title = "Wayland is Taking Over... Will 2026 Be The Death of X11?"
+export const description = "For years, Linux users have been experiencing the transition from X11 to Wayland. However, with GNOME 50 and KDE Plasma 6.8 both dropping support for X11, people are declaring the death of X11. But, is X11 actually dead, or will it remain around? With that, this article goes over the state of Wayland (and a little of X11) to determine if X11 is actually dead. This includes the state of Wayland on GNOME, Plasma, COSMIC, MATE, Xfce, Cinnamon, and more, as well as projects like XLibre and Phoenix X Server."
+export const date = "2026-02-09"
+export const authors = ["Cameron Knauff"]
+export const categories = ["Essay", "Software"]
+export const tags = ["X11", "Distros", "Desktop Environments", "Gnome", "COSMIC", "KDE", "Linux"]
+export const cover = "/docs-static/img/2026/02/wayland-x11-death/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+If you're a Linux user, you've been witnessing the transition from X11 to Wayland for what feels like forever. I remember this whole thing kicking off back when I first started using Linux in 2017, and we're barely wrapping it up now in 2026. So in this article, I'm going to break down the current state of Wayland, touch on X11, and figure out if this is actually the year X11 dies for good.
+
+<YouTube videoId="JLcHCB8dNkU" />
+
+## Why Wayland Needs to Exist
+
+Before getting into the current state of things, it's worth understanding why Wayland needs to exist in the first place.
+
+![](/docs-static/img/2026/02/wayland-x11-death/x11-diagram.png)
+
+Here's a huge oversimplification of how an X server works. You have your apps (technically called X clients, but I'm keeping it simple). Using Firefox as an example, when Firefox needs to render something onto your monitor, it sends data to the X server saying "I need to update what's inside my window, go do that." The X server takes that image and passes it to the compositor (your desktop environment or window manager).
+
+The compositor takes that image of Firefox and transforms it however it needs to. Maybe multiple windows need to be positioned, or a panel and other desktop environment elements need to be layered in. Once the compositor finishes its work, it sends the entire composed desktop back to the X server, which then signals Firefox that it's done.
+
+This is a huge oversimplification. The X server also handles things like hardware input, among other responsibilities. But this general flow is enough to understand the core problems.
+
+There are a few issues with this approach. The X server was designed back in the 80s, so it was never built with modern form factors in mind like phones or VR headsets. There's also the latency issue. The app has to go from app to X server to compositor, back to the X server, then back to the app. All of those hops add up.
+
+![](/docs-static/img/2026/02/wayland-x11-death/wayland-diagram.png)
+
+Wayland completely cuts out the middleman. It isn't actually a piece of software by itself, it's a protocol that a compositor can implement. Instead of going through the X server, apps communicate directly with the compositor, which implements the Wayland protocol. That protocol is essentially a universal API that all compositors can implement, so apps like Firefox only have to add Wayland support once and every compositor handles its own rendering work from there.
+
+This adds a ton of flexibility. A compositor targeting phones isn't bound to the restrictions of X11. It can do whatever it wants, like making apps full screen and acting like a proper mobile interface. [It also enables things like 3D compositors running on an Oculus Rift](https://www.reddit.com/r/linux/comments/287nup/wayland_3d_compositor_on_oculus_rift/), something that never would have worked on X11 since there are no traditional displays involved. Because each compositor implements its own version of the Wayland protocol, it can exclude things that don't make sense for its environment.
+
+There are other benefits too, like improved security. Programs can't just grab data from the X server anymore. Screen recording, for example, requires specific protocols within the compositor. But that design choice is also exactly why Wayland took so long to mature. All of these different compositors had to be built up basically from scratch, each creating their own server implementation.
+
+## The Transition Is Nearly Complete
+
+That said, the transition is nearly complete. Distros are going Wayland-only across the board. Red Hat Enterprise Linux 10, dropped support for the X Window System. Fedora Workstation 43 completely dropped X11 support on its GNOME version, and Ubuntu 25.10 did the same.
+
+It's not just distros making this move either. The desktop environments themselves are going Wayland-only. Part of why Fedora and Ubuntu dropped support is because GNOME itself is dropping X11, which is happening in the next GNOME release this March. KDE is dropping support in Plasma 6.8, expected in 2027. And the new COSMIC desktop from System76 was built entirely for Wayland from the start. It has never supported X11.
+
+Effectively, if you're on GNOME, Plasma, or COSMIC, the death of X11 is already here. For KDE users it's 2027, but for GNOME and COSMIC users, 2026 is where X11 ends.
+
+## The Smaller Desktops Are Still Catching Up
+
+X11 isn't disappearing overnight though. Some of the smaller desktop environments are still in mid-transition.
+
+**Cinnamon** didn't have any Wayland support at all until November 2023. Currently on Cinnamon version 6.6, Wayland reviews are mixed. Some people say it works great and is barely distinguishable from an X session. Others say they can't even boot into it. If I was a betting man, I would expect Linux Mint 23 to make Wayland the default and Linux Mint 24 to remove X11 entirely. We're currently on Mint 22 with about another year until Mint 23, which gives the team time to get things polished.
+
+**MATE** has an experimental Wayland session as well. All of the MATE packages have technically finished their Wayland support, and there's now a Wayland session that uses the Wayfire compositor. That said, it's still very much experimental.
+
+**XFCE** is an interesting case. Most of the XFCE stack has Wayland support, with one major exception: the window manager, XFWM4. Without that, you had to use an alternative compositor like LabWC or Wayfire. This is changing soon though, thanks to XFWL4, a brand new Rust-based XFCE Wayland compositor built on Smithay, the same library that COSMIC uses. XFCE Wayland support should be coming soon. It's still a big project that may take a couple of years, but it's on track.
+
+There's also a project called **[Wayback](https://gitlab.freedesktop.org/wayback/wayback)** worth mentioning. This one is aimed at more obscure desktop environments that just don't have the developer resources for a full Wayland port. Wayland has XWayland, which lets you run X11 applications inside a Wayland session. What Wayback does is spin up a basic Wayland compositor that runs a full screen XWayland instance, allowing an entire X11 desktop environment to run through it. Super cool concept. Do note that this is brand new, so give it time to mature before running it on anything important.
+
+## Hardware Support
+
+The big hardware topic that always comes up with Wayland is NVIDIA. For the longest time, NVIDIA just did not care about Wayland support. However, this is mostly in the past. If you're running modern NVIDIA hardware with modern drivers, Wayland should be a solid experience.
+
+The exception is older NVIDIA cards. Cards like the GTX 1000 series don't support the modern drivers needed to run Wayland properly, which means some users may need to upgrade their GPU to make the switch.
+
+Beyond NVIDIA, older hardware in general is hit or miss. Some of it actually runs better on Wayland, but there's no blanket statement to be made here. If you have older hardware, I'd recommend just booting into a Wayland session and testing it out. If it works, great. If not, stick with X11 for now.
+
+## Real-World Problems That Still Exist
+
+Even with the transition nearly complete, there are some real-world problems on Wayland that you're going to run into.
+
+**Screen recording is finicky.** The misconception that screen recording flat out doesn't work has been fixed for a couple years now. But it still isn't reliable. It uses PipeWire for capture, and I've had problems where OBS randomly forgets my recording configuration. With two monitors, it sometimes switches to the wrong one. If your screen goes to sleep, the recording freezes entirely. Every time I record on a Wayland session, I have to double check that the capture is actually working so I don't end up with a frozen recording.
+
+**Global hotkeys are still maturing.** This was implemented recently into GNOME and Wayland, but a lot of apps don't fully support it yet. I've used OBS on Fedora, which ships the new global hotkeys, and OBS still requires a separate plugin for it. That plugin flashes a global hotkeys dialogue every single time I open OBS. It's annoying. This is an app-level problem that will get better over time, but right now, these little friction points are real.
+
+**Remote desktop is still a pain point.** GNOME and KDE both have decent native remote desktop options on Wayland, but they use RDP. That means you either need to be on your local network, VPN in, or port forward, which introduces security concerns. Your average user doesn't want to deal with any of that. Many third-party remote desktop apps I've tried on Wayland require you to physically be at the computer to accept the connection due to Wayland's permission model, which kind of defeats the whole purpose unless you're using it for live support. TigerVNC recently released a Wayland-first VNC server, which is promising. I haven't tested it yet, but it shows that people are actively working on this.
+
+## If You Still Need X11
+
+For those who still need X11, there are options.
+
+Many distros will keep the standard X server available even if it's no longer the default. Some distros may stop packaging Xorg eventually, but it'll always be around in distros like Arch and Gentoo.
+
+There's also **[XLibre](https://x11libre.net/)**, a fork of the X11 server that's more actively maintained than Xorg. It did originate from some community drama, and a number of distributions aren't packaging it because of that. I'm not going to get into the specifics. If you're interested in using it, do your own research and form your own opinion. There are community packages available for it on several distros.
+
+Then there's **[Phoenix](https://git.dec05eba.com/phoenix/about/)**, a brand new X server written in Zig. This isn't a fork. It's designed from the ground up with goals like better security, improved multi-monitor support, better graphics handling, and potentially even support for running Wayland applications through it (though not as a one-for-one replacement). It is a very new project, started in July 2025, which puts it right at the tail end of the Wayland transition. GNOME and KDE had already made their decisions by that point. Still, I think Phoenix could become a solid option for legacy X11 use cases down the road. It's just a cool project worth keeping an eye on.
+
+If the reason you're not on Wayland is because your desktop environment will never add support for it, I'd recommend waiting for the Wayback project to mature and using that as your path forward.
+
+## So, Is 2026 the Death of X11?
+
+For the majority of Linux users, yes. The major desktop environments and distributions have made their decision. Wayland is the present and the future.
+
+But if you have a specific need for X11, whether that's unsupported hardware, screen recording workflows, remote desktop requirements, or something else, then X11 is going to remain a part of your setup for a while longer. You can't reasonably expect people to invest in new hardware just to switch display servers when X11 still works fine for them.
+
+For most people, 2026 is the death of X11. For a smaller group, X11 will stick around as a niche solution for specific use cases. And honestly, that's okay.
