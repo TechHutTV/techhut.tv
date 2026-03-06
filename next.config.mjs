@@ -23,7 +23,6 @@ const nextConfig = {
     reactStrictMode: true,
     pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
     compress: true,
-    swcMinify: true,
     images: {
         unoptimized: false,
         deviceSizes: [640, 750, 828, 1080, 1200, 1920],
