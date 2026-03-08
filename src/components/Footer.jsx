@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import { Button } from '@/components/Button'
-import {docsNavigation} from "@/components/NavigationDocs";
+import { docsNavigation } from '@/components/NavigationDocs'
 
 function flattenNavItems(items, includeGroups = false) {
   let result = []
@@ -42,7 +42,9 @@ function PageLink({ label, page, previous = false }) {
 
 function PageNavigation() {
   let router = useRouter()
-  let allPages = docsNavigation.flatMap((group) => flattenNavItems(group.pages, true));
+  let allPages = docsNavigation.flatMap((group) =>
+    flattenNavItems(group.pages, true)
+  )
   let currentPageIndex = allPages.findIndex(
     (page) => page.href === router.pathname
   )
@@ -74,85 +76,127 @@ function PageNavigation() {
   )
 }
 
-function TwitterIcon(props) {
+function FooterLink({ href, children }) {
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
-      <path d="M16.712 6.652c.01.146.01.29.01.436 0 4.449-3.267 9.579-9.242 9.579v-.003a8.963 8.963 0 0 1-4.98-1.509 6.379 6.379 0 0 0 4.807-1.396c-1.39-.027-2.608-.966-3.035-2.337.487.097.99.077 1.467-.059-1.514-.316-2.606-1.696-2.606-3.3v-.041c.45.26.956.404 1.475.42C3.18 7.454 2.74 5.486 3.602 3.947c1.65 2.104 4.083 3.382 6.695 3.517a3.446 3.446 0 0 1 .94-3.217 3.172 3.172 0 0 1 4.596.148 6.38 6.38 0 0 0 2.063-.817 3.357 3.357 0 0 1-1.428 1.861 6.283 6.283 0 0 0 1.865-.53 6.735 6.735 0 0 1-1.62 1.744Z" />
-    </svg>
+    <li>
+      <Link
+        href={href}
+        className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+      >
+        {children}
+      </Link>
+    </li>
   )
 }
 
-function GitHubIcon(props) {
+function SocialLink({ href, label, children }) {
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M10 1.667c-4.605 0-8.334 3.823-8.334 8.544 0 3.78 2.385 6.974 5.698 8.106.417.075.573-.182.573-.406 0-.203-.011-.875-.011-1.592-2.093.397-2.635-.522-2.802-1.002-.094-.246-.5-1.005-.854-1.207-.291-.16-.708-.556-.01-.567.656-.01 1.124.62 1.281.876.75 1.292 1.948.93 2.427.705.073-.555.291-.93.531-1.143-1.854-.213-3.791-.95-3.791-4.218 0-.929.322-1.698.854-2.296-.083-.214-.375-1.09.083-2.265 0 0 .698-.224 2.292.876a7.576 7.576 0 0 1 2.083-.288c.709 0 1.417.096 2.084.288 1.593-1.11 2.291-.875 2.291-.875.459 1.174.167 2.05.084 2.263.53.599.854 1.357.854 2.297 0 3.278-1.948 4.005-3.802 4.219.302.266.563.78.563 1.58 0 1.143-.011 2.061-.011 2.35 0 .224.156.491.573.405a8.365 8.365 0 0 0 4.11-3.116 8.707 8.707 0 0 0 1.567-4.99c0-4.721-3.73-8.545-8.334-8.545Z"
-      />
-    </svg>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-zinc-500 transition hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
+      aria-label={label}
+    >
+      {children}
+    </a>
   )
 }
 
-function SlackIcon(props) {
-    return (
-        <svg viewBox="56 56 160 160" aria-hidden="true" {...props}>
-            <g>
-                <g>
-                    <path d="M99.4,151.2c0,7.1-5.8,12.9-12.9,12.9s-12.9-5.8-12.9-12.9c0-7.1,5.8-12.9,12.9-12.9h12.9V151.2z"/>
-                    <path d="M105.9,151.2c0-7.1,5.8-12.9,12.9-12.9s12.9,5.8,12.9,12.9v32.3c0,7.1-5.8,12.9-12.9,12.9s-12.9-5.8-12.9-12.9
-                        C105.9,183.5,105.9,151.2,105.9,151.2z"/>
-                </g>
-                <g>
-                    <path d="M118.8,99.4c-7.1,0-12.9-5.8-12.9-12.9s5.8-12.9,12.9-12.9s12.9,5.8,12.9,12.9v12.9H118.8z"/>
-                    <path d="M118.8,105.9c7.1,0,12.9,5.8,12.9,12.9s-5.8,12.9-12.9,12.9H86.5c-7.1,0-12.9-5.8-12.9-12.9s5.8-12.9,12.9-12.9
-                        C86.5,105.9,118.8,105.9,118.8,105.9z"/>
-                </g>
-                <g>
-                    <path d="M170.6,118.8c0-7.1,5.8-12.9,12.9-12.9c7.1,0,12.9,5.8,12.9,12.9s-5.8,12.9-12.9,12.9h-12.9V118.8z"/>
-                    <path d="M164.1,118.8c0,7.1-5.8,12.9-12.9,12.9c-7.1,0-12.9-5.8-12.9-12.9V86.5c0-7.1,5.8-12.9,12.9-12.9
-                        c7.1,0,12.9,5.8,12.9,12.9V118.8z"/>
-                </g>
-                <g>
-                    <path d="M151.2,170.6c7.1,0,12.9,5.8,12.9,12.9c0,7.1-5.8,12.9-12.9,12.9c-7.1,0-12.9-5.8-12.9-12.9v-12.9H151.2z"/>
-                    <path d="M151.2,164.1c-7.1,0-12.9-5.8-12.9-12.9c0-7.1,5.8-12.9,12.9-12.9h32.3c7.1,0,12.9,5.8,12.9,12.9
-                        c0,7.1-5.8,12.9-12.9,12.9H151.2z"/>
-                </g>
-            </g>
-        </svg>
-    )
-}
-
-function DiscordIcon(props) {
+function FooterContent() {
   return (
-    <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
-      <path d="M16.238 4.515a14.842 14.842 0 0 0-3.664-1.136.055.055 0 0 0-.059.027 10.35 10.35 0 0 0-.456.938 13.702 13.702 0 0 0-4.115 0 9.479 9.479 0 0 0-.464-.938.058.058 0 0 0-.058-.027c-1.266.218-2.497.6-3.664 1.136a.052.052 0 0 0-.024.02C1.4 8.023.76 11.424 1.074 14.782a.062.062 0 0 0 .024.042 14.923 14.923 0 0 0 4.494 2.272.058.058 0 0 0 .064-.02c.346-.473.654-.972.92-1.496a.057.057 0 0 0-.032-.08 9.83 9.83 0 0 1-1.404-.669.058.058 0 0 1-.029-.046.058.058 0 0 1 .023-.05c.094-.07.189-.144.279-.218a.056.056 0 0 1 .058-.008c2.946 1.345 6.135 1.345 9.046 0a.056.056 0 0 1 .059.007c.09.074.184.149.28.22a.058.058 0 0 1 .023.049.059.059 0 0 1-.028.046 9.224 9.224 0 0 1-1.405.669.058.058 0 0 0-.033.033.056.056 0 0 0 .002.047c.27.523.58 1.022.92 1.495a.056.056 0 0 0 .062.021 14.878 14.878 0 0 0 4.502-2.272.055.055 0 0 0 .016-.018.056.056 0 0 0 .008-.023c.375-3.883-.63-7.256-2.662-10.246a.046.046 0 0 0-.023-.021Zm-9.223 8.221c-.887 0-1.618-.814-1.618-1.814s.717-1.814 1.618-1.814c.908 0 1.632.821 1.618 1.814 0 1-.717 1.814-1.618 1.814Zm5.981 0c-.887 0-1.618-.814-1.618-1.814s.717-1.814 1.618-1.814c.908 0 1.632.821 1.618 1.814 0 1-.71 1.814-1.618 1.814Z" />
-    </svg>
-  )
-}
+    <div className="border-t border-zinc-900/5 pt-10 dark:border-white/5">
+      <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Brand */}
+        <div className="sm:col-span-2 lg:col-span-1">
+          <Link href="/" className="inline-block">
+            <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              TechHut<span>.tv</span>
+            </span>
+          </Link>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Guides, tutorials, and reviews for Linux, homelabs, and self-hosted solutions.
+          </p>
+        </div>
 
-function SocialLink({ href, icon: Icon, children }) {
-  return (
-    <Link href={href} className="group">
-      <span className="sr-only">{children}</span>
-      <Icon className="h-5 w-5 fill-zinc-700 transition group-hover:fill-zinc-900 dark:group-hover:fill-zinc-500" />
-    </Link>
-  )
-}
+        {/* Categories */}
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+            Categories
+          </h3>
+          <ul className="mt-3 space-y-2">
+            <FooterLink href="/categories/guides">Guides</FooterLink>
+            <FooterLink href="/categories/software">Software</FooterLink>
+            <FooterLink href="/categories/hardware">Hardware</FooterLink>
+            <FooterLink href="/categories/benchmarking">Benchmarking</FooterLink>
+            <FooterLink href="/categories/essay">Essay</FooterLink>
+          </ul>
+        </div>
 
-function SmallPrint() {
-  return (
-    <div className="flex flex-col items-center justify-between gap-5 border-t border-zinc-900/5 pt-8 dark:border-white/5 sm:flex-row">
-      <p className="text-xs text-zinc-600 dark:text-zinc-400">
-        &copy; Copyright {new Date().getFullYear()}. All rights reserved.
-      </p>
-      <div className="flex gap-4">
-        <SocialLink href="https://x.com/techhuttv" icon={TwitterIcon}>
-          Follow us on X
-        </SocialLink>
-        <SocialLink href="https://github.com/TechHutTV" icon={GitHubIcon}>
-          Follow us on GitHub
-        </SocialLink>
+        {/* Pages */}
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+            Pages
+          </h3>
+          <ul className="mt-3 space-y-2">
+            <FooterLink href="/content">All Content</FooterLink>
+            <FooterLink href="/team">Team</FooterLink>
+            <FooterLink href="/partner">Partners</FooterLink>
+            <FooterLink href="https://techhut.tv/rss">RSS Feed</FooterLink>
+          </ul>
+        </div>
+
+        {/* Social */}
+        <div>
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+            Connect
+          </h3>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <SocialLink href="https://youtube.com/@techhut" label="YouTube">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://github.com/TechHutTV" label="GitHub">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://x.com/TechHutTV" label="X (Twitter)">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://instagram.com/brandonhopkins" label="Instagram">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.319 1.347 20.651.935 19.86.63c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.061 1.17-.256 1.805-.421 2.227-.224.562-.479.96-.899 1.382-.419.419-.824.679-1.38.896-.42.164-1.065.36-2.235.413-1.274.057-1.649.07-4.859.07-3.211 0-3.586-.015-4.859-.074-1.171-.061-1.816-.256-2.236-.421-.569-.224-.96-.479-1.379-.899-.421-.419-.69-.824-.9-1.38-.165-.42-.359-1.065-.42-2.235-.045-1.26-.061-1.649-.061-4.844 0-3.196.016-3.586.061-4.861.061-1.17.255-1.814.42-2.234.21-.57.479-.96.9-1.381.419-.419.81-.689 1.379-.898.42-.166 1.051-.361 2.221-.421 1.275-.045 1.65-.06 4.859-.06l.045.03zm0 3.678c-3.405 0-6.162 2.76-6.162 6.162 0 3.405 2.76 6.162 6.162 6.162 3.405 0 6.162-2.76 6.162-6.162 0-3.405-2.76-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm7.846-10.405c0 .795-.646 1.44-1.44 1.44-.795 0-1.44-.646-1.44-1.44 0-.794.646-1.439 1.44-1.439.793-.001 1.44.645 1.44 1.439z" />
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://reddit.com/user/techhuttv" label="Reddit">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" />
+              </svg>
+            </SocialLink>
+            <SocialLink href="https://medium.com/@techhuttv" label="Medium">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
+              </svg>
+            </SocialLink>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-zinc-900/5 pt-8 dark:border-white/5 sm:flex-row">
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          &copy; {new Date().getFullYear()} TechHut. All rights reserved.
+        </p>
+        <Link
+          href="https://github.com/TechHutTV/techhut.tv"
+          className="text-xs text-zinc-500 transition hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+        >
+          Open source on GitHub
+        </Link>
       </div>
     </div>
   )
@@ -162,7 +206,7 @@ export function Footer() {
   return (
     <footer className="mx-auto max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
       <PageNavigation />
-      <SmallPrint />
+      <FooterContent />
     </footer>
   )
 }
