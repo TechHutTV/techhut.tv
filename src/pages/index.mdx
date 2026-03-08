@@ -1,21 +1,21 @@
-export const title = "Welcome to TechHut"
+export const title = ""
 export const description = "TechHut is a community of hardware admirers, home lab builders, open-source advocates, and proud geeks. Find detailed guides, step-by-step tutorials, and unbiased reviews."
 export const date = ""
-export const authors = ["Brandon Hopkins"]
+export const authors = []
 export const categories = []
 export const tags = []
 
-import {Note} from "@/components/mdx"
 import {Tiles} from "@/components/Tiles"
 import {RecentContent} from "@/components/RecentContent"
-import {YouTube} from "@/components/YouTube"
-import {Button} from "@/components/Button"
+import {HeroSection} from "@/components/HeroSection"
+import {FeaturedArticle} from "@/components/FeaturedArticle"
+import {CategoryStrip} from "@/components/CategoryStrip"
 
-Whether you're building your first home server, exploring Linux distributions, or diving into self-hosted solutions, TechHut has you covered. Our content ranges from beginner-friendly tutorials to advanced homelab configurations, all designed to help you get the most out of your technology.
+<HeroSection />
 
-<div className="not-prose mb-16 mt-6 flex gap-3">
-  <Button href="https://youtube.com/@techhut" arrow="right" children="Subscribe on YouTube" />
-</div>
+<CategoryStrip />
+
+<FeaturedArticle slug="/must-have-home-server-services-2025" />
 
 <RecentContent
   title="Latest Articles"

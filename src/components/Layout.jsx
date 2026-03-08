@@ -170,7 +170,10 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
           </div>
         </aside>
         <div className={clsx(
-          "min-w-0 w-full max-w-2xl flex-auto px-4 py-16 lg:max-w-none lg:pr-0 transition-all duration-300",
+          "min-w-0 w-full max-w-2xl flex-auto px-4 py-16 lg:max-w-none transition-all duration-300",
+          router.pathname === '/'
+            ? "lg:pr-8 xl:pr-12"
+            : "lg:pr-0",
           !mounted || sidebarShouldBeVisible
             ? "lg:ml-72 2xl:ml-80 lg:pl-8 lg:px-5"
             : "lg:ml-0 lg:pl-32 lg:px-5"
@@ -191,11 +194,11 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
               <Authors authors={getAuthors(authorNames)} />
             )}
             {isContentPage && <TopContentBanner />}
-            <Prose as="article">{children}</Prose>
+            <Prose as="article" className={router.pathname === '/' ? '!max-w-5xl' : undefined}>{children}</Prose>
           </main>
           <Footer />
         </div>
-        <div
+        {router.pathname !== '/' && <div
             className="hidden xl:sticky xl:top-[4.5rem] xl:-mr-6 xl:block xl:h-[calc(100vh-4.5rem)] xl:flex-none xl:overflow-y-auto xl:py-16 xl:pr-6 pl-12"
             style={{ top: `calc(${bannerHeight}px + 4.5rem)` }}
         >
@@ -286,7 +289,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
               </>
             )}
           </nav>
-        </div>
+        </div>}
       </div>
     </>
   )
