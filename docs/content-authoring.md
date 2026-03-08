@@ -45,6 +45,7 @@ export const cover = "/docs-static/img/2025/02/article-slug/cover.jpg"
 | `categories` | array | Primary category (usually one) |
 | `tags` | array | Relevant tags for filtering |
 | `cover` | string | Path to cover image |
+| `imagePosition` | string | (Optional) CSS object-position for cover image (e.g. `"top"`, `"center"`) |
 
 ## Categories
 

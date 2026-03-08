@@ -16,6 +16,7 @@ export const authors = {
     name: "Author Name",
     image: "/docs-static/img/authors/firstname.jpeg",
     bio: "Short bio description",
+    role: "team",  // "team" or "contributor"
     social: [
       { platform: "twitter", url: "https://x.com/username" },
       { platform: "github", url: "https://github.com/username" }
@@ -26,12 +27,12 @@ export const authors = {
 
 ## Current Authors
 
-| Name | Bio |
-|------|-----|
-| Brandon Hopkins | Writer |
-| Cameron Knauff | Linux systems developer, writer, and video editor |
-| Niccolo Venerandi | Writer |
-| Scott Yeager | Geek and Linux enthusiast. Loves music and nature. |
+| Name | Role | Bio |
+|------|------|-----|
+| Brandon Hopkins | team | Founder - homelabs, self-hosting, and Linux distros. |
+| Cameron Knauff | contributor | Writer - Linux systems and video production. |
+| Niccolo Venerandi | contributor | Writer - KDE, Plasma, and the Linux desktop experience. |
+| Scott Yeager | contributor | Writer - Linux enthusiast and nature lover. |
 
 ## Author Object Structure
 
@@ -40,6 +41,7 @@ export const authors = {
   name: "Full Name",           // Display name
   image: "/path/to/image.jpeg", // Profile photo path
   bio: "Short description",     // Brief bio
+  role: "team",                 // "team" or "contributor" (used by TeamGrid filtering)
   social: [                     // Social media links
     { platform: "twitter", url: "https://..." },
     { platform: "github", url: "https://..." },
@@ -87,6 +89,7 @@ export const authors = {
     name: "New Author Name",
     image: "/docs-static/img/authors/newauthor.jpeg",
     bio: "Brief description of the author",
+    role: "contributor",
     social: [
       { platform: "twitter", url: "https://x.com/username" },
       { platform: "github", url: "https://github.com/username" }
@@ -127,8 +130,11 @@ const authorList = getAuthors(["Brandon Hopkins", "Scott Yeager"])
 
 Authors are displayed:
 
-1. **Article header**: Profile image, name, and social links
-2. **Team page**: Full bio and all social links
+1. **Article header**: Profile image, name, and social links via `Author` component
+2. **Team page**: Full bio, role badge, and all social links via `TeamGrid` component
 3. **Article cards**: Name only
 
-The `Author` component (`src/components/Author.jsx`) handles rendering author information with their social links.
+### Components
+
+- **`Author`** (`src/components/Author.jsx`) — Renders author info with social links in article headers.
+- **`TeamGrid`** (`src/components/TeamGrid.jsx`) — Renders a responsive grid of author cards. Supports filtering by `role` ("team" or "contributor") or by an explicit `members` array. Used on the team page.

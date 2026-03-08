@@ -47,7 +47,7 @@ This runs all generation scripts automatically and builds the static site.
 
 ## Tech Stack
 
-- **Framework**: Next.js 14
+- **Framework**: Next.js 15
 - **UI**: React 18
 - **Styling**: Tailwind CSS 3.3
 - **Content**: MDX with custom components

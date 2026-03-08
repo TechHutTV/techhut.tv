@@ -4,7 +4,7 @@
 
 ## Overview
 
-TechHut is a Next.js 14 static site with MDX content support. The codebase follows Next.js conventions with custom build scripts for content generation.
+TechHut is a Next.js 15 static site with MDX content support. The codebase follows Next.js conventions with custom build scripts for content generation.
 
 ## Top-Level Directory Layout
 
@@ -40,13 +40,14 @@ src/
 │   ├── articles.js       # Generated article metadata
 │   ├── authors.js        # Author registry
 │   ├── slugMap.js        # Generated URL routing map
+│   ├── navigation.json   # Navigation structure
 │   └── topContentBanner.js # Banner ad/referral configuration
 ├── lib/                  # Utility functions
 │   └── gitDates.js       # Git-based date tracking
 ├── pages/                # Next.js page routes
 │   ├── categories/       # Category pages
 │   ├── tags/             # Tag pages
-│   └── [slug].mdx        # Dynamic article routes
+│   └── [slug].jsx        # Dynamic article routes
 └── styles/               # Global stylesheets
     └── tailwind.css      # Tailwind entry point
 ```
