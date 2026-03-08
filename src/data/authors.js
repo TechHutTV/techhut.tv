@@ -7,7 +7,8 @@ export const authors = {
   "Brandon Hopkins": {
     name: "Brandon Hopkins",
     image: "/docs-static/img/authors/brandon.jpeg",
-    bio: "Writer",
+    bio: "Founder - homelabs, self-hosting, and Linux distros.",
+    role: "team",
     social: [
       { platform: "linkedin", url: "https://www.linkedin.com/in/hopki" },
       { platform: "twitter", url: "https://x.com/TechHutTV" },
@@ -20,7 +21,8 @@ export const authors = {
   "Cameron Knauff": {
     name: "Cameron Knauff",
     image: "/docs-static/img/authors/cameron.jpeg",
-    bio: "Writer / Linux systems developer, writer, and video editor.",
+    bio: "Writer - Linux systems and video production.",
+    role: "contributor",
     social: [
       { platform: "twitter", url: "https://x.com/PizzaLovingNerd" },
       { platform: "github", url: "https://github.com/PizzaLovingNerd" }
@@ -29,7 +31,8 @@ export const authors = {
   "Niccolo Venerandi": {
     name: "Niccolo Venerandi",
     image: "/docs-static/img/authors/niccolo.jpeg",
-    bio: "Writer",
+    bio: "Writer - KDE, Plasma, and the Linux desktop experience.",
+    role: "contributor",
     social: [
       { platform: "twitter", url: "https://twitter.com/veggero" },
       { platform: "github", url: "https://github.com/veggero" }
@@ -38,7 +41,8 @@ export const authors = {
   "Scott Yeager": {
     name: "Scott Yeager",
     image: "/docs-static/img/authors/scott.jpeg",
-    bio: "Writer / Geek and Linux enthusiast. Loves music and nature.",
+    bio: "Writer - Linux enthusiast and nature lover.",
+    role: "contributor",
     social: [
       { platform: "linkedin", url: "https://www.linkedin.com/in/scottmyeager/" },
       { platform: "twitter", url: "https://x.com/scott__yeager/" }
