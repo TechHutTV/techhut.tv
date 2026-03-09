@@ -41,7 +41,7 @@ export const authors = {
   "Allison Hopkins": {
     name: "Allison Hopkins",
     image: "/docs-static/img/authors/allison.jpg",
-    bio: "Editor - I go by Twigshi! Animator and artist.",
+    bio: "Editor - Call me Twigshi! Animator, editor and artist.",
     role: "team",
     social: [
       { platform: "instagram", url: "https://www.instagram.com/twigshi/" }

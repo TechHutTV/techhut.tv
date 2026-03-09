@@ -30,7 +30,7 @@ export const authors = {
 | Name | Role | Bio |
 |------|------|-----|
 | Brandon Hopkins | team | Founder - homelabs, self-hosting, and Linux distros. |
-| Allison Hopkins | team | Editor - I go by Twigshi! Animator and artist. |
+| Allison Hopkins | team | Editor - Call me Twigshi! Animator, editor and artist. |
 | Cameron Knauff | contributor | Writer - Linux systems and video production. |
 | Niccolo Venerandi | contributor | Writer - KDE, Plasma, and the Linux desktop experience. |
 | Scott Yeager | contributor | Writer - Linux enthusiast and nature lover. |
