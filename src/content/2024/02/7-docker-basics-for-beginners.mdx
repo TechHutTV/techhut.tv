@@ -25,11 +25,10 @@ So, how do you get started using Docker? In general, when I use Docker, it's usu
 
 I also have a bare metal Ubuntu server with Docker installed. Installing Docker on an Ubuntu server is pretty easy; you can install it with `apt` using the following commands:
 
-We will use the "convenience script" for one of the easiest ways to install it on your system. Once that's done, any future updates will also be available through `apt`. Here are the commands to install using the script:
+We will use the "convenience script" for one of the easiest ways to install it on your system. Once that's done, any future updates will also be available through `apt`. Here is the command to install using the script:
 
 ```
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
+curl -fsSL https://get.docker.com | sudo sh
 ```
 
 Regardless of how you install Docker on Ubuntu, the Docker systemd service will automatically start and enable. So, Docker will start automatically if the system is ever rebooted. You can check to see if it is running with the following command:
