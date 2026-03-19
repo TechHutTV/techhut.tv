@@ -6,6 +6,8 @@ export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Docker", "Networking"]
 export const cover = "/docs-static/img/2026/03/self-host-netbird-pocketid/cover.jpg"
 
+<YouTube videoId="z0HPuNFkmt4" />
+
 [NetBird](https://netbird.io/) is an open source zero-trust networking platform that lets you create secure private networks to connect directly to your home servers using the [WireGuard](https://www.wireguard.com/) protocol. Recently NetBird has massively improved the [self-hosting experience](https://docs.netbird.io/selfhosted/selfhosted-guide), and a single script now handles pretty much everything for you. This includes automatically setting up [Traefik](https://traefik.io/traefik/) as a reverse proxy with automatic TLS and letting you use local users right out of the box. For my setup I like to use an external IdP for added security, and we're going to use the new built-in [reverse proxy feature](https://docs.netbird.io/manage/reverse-proxy/overview) to expose [Pocket ID](https://github.com/pocket-id/pocket-id) without needing a separate proxy stack.
 
 While I could self-host this on my own hardware at home I prefer to use a VPS in the cloud. That way I don't need to open any ports at home and if my home internet goes down (happens quite a bit) I don't lose access to other resources that are not hosted on my home servers.
