@@ -100,14 +100,15 @@ __Be sure to checkout the [Portainer Steps](https://immich.app/docs/install/port
 3. Enable auto-backup in app settings
 
 ### **Post-Installation Tasks**
-1. **Reverse Proxy Setup (Recommended)**:
-   - Setup NGINX Reverse Proxy Manager to give yourself a better ineral domain or external access. ([video guide](https://www.youtube.com/watch?v=79e6KBYcVmQ))
+1. **Remote Access Setup (Recommended)**:
+   - **[NetBird](https://github.com/TechHutTV/homelab/tree/main/netbird) (Recommended)**: A zero-trust networking solution using WireGuard. NetBird lets you securely access Immich from anywhere without exposing ports on your home network. Follow our [NetBird setup guide](https://github.com/TechHutTV/homelab/tree/main/netbird) to get started.
+   - **Reverse Proxy**: Alternatively, setup NGINX Reverse Proxy Manager for domain-based access. ([video guide](https://www.youtube.com/watch?v=79e6KBYcVmQ))
      - Domain: `photos.yourdomain.com`
      - Forward to `http://immich-server:2283`
 
 2. **Backup Strategy**:
    - Regularly back up `~/docker/immich/data` (PostgreSQL database)
-   - Use another backup tool or serivce to keep a copy of your data externally. I have a Proxmox Backup Server at my parents house for this.
+   - Use another backup tool or service to keep a copy of your data externally. I have a Proxmox Backup Server at my parents house for this.
 
 ### **Troubleshooting**
 1. **Common Issues**:
