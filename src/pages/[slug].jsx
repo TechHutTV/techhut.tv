@@ -5,6 +5,7 @@ import path from 'path'
 import { slugMap } from '@/data/slugMap'
 import * as mdxComponents from '@/components/mdx'
 import rehypeSlug from 'rehype-slug'
+import remarkGfm from 'remark-gfm'
 import GithubSlugger from 'github-slugger'
 
 export default function ArticlePage({ source, ...pageProps }) {
@@ -133,6 +134,7 @@ export async function getStaticProps({ params }) {
   // Serialize the MDX content with rehype-slug to add IDs to headings
   const source = await serialize(mdxContent, {
     mdxOptions: {
+      remarkPlugins: [remarkGfm],
       rehypePlugins: [rehypeSlug],
       development: process.env.NODE_ENV === 'development',
     },
