@@ -1,10 +1,14 @@
 export const title = "Kubernetes in the Homelab: Setting Up a k3s Cluster on Real Hardware"
 export const description = "I don't run Kubernetes in my homelab, and I don't think most of you need to either. But it's worth learning, so let's set up a real k3s cluster on three mini PCs from scratch."
-export const date = "2026-03-14"
+export const date = "2026-03-30"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
-export const tags = ["Docker", "Homelab", "Self-Host", "Linux"]
+export const tags = ["Docker", "Homelab", "Self-Host", "Linux", "Kubernetes"]
 export const cover = "/docs-static/img/2026/03/kubernetes-homelab-k3s-cluster/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="tzj59F02TFU" />
 
 If you've been anywhere near the self-hosting or homelab space recently, you've probably seen Kubernetes everywhere. Every other blog post, every other video, someone is telling you that you need Kubernetes in your homelab. And look, I get the appeal. Container orchestration, high availability, automatic failover. These are all great things.
 
@@ -78,11 +82,13 @@ And just like that, k3s is installed and running. No configuration files to edit
 Now, by default the k3s config file is only readable by root, which means every kubectl command would need `sudo` in front of it. Let's fix that now so we don't have to deal with it going forward.
 
 ```bash
-# Make the kubeconfig readable by your user
-sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+# Copy the kubeconfig to your user's home directory
+mkdir -p ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(id -u):$(id -g) ~/.kube/config
 
 # Tell kubectl where to find it (add to .bashrc so it persists)
-echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
+echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 source ~/.bashrc
 ```
 
