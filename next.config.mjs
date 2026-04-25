@@ -108,6 +108,10 @@ const nextConfig = {
                 source: '/api/:path*',
                 destination: '/ipa/:path*',
             },
+            {
+                source: '/lfnw26',
+                destination: '/lfnw26/index.html',
+            },
         ]
     }
 }

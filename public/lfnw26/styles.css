@@ -1,0 +1,494 @@
+/* === Self-Hosted Stack Deck — Terminal/Homelab Aesthetic === */
+
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/space-grotesk-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/jetbrains-mono-latin.woff2') format('woff2');
+}
+
+:root {
+  --bg: #0a0d0a;
+  --bg-2: #0f1410;
+  --bg-3: #141a15;
+  --ink: #e8efe6;
+  --ink-dim: #9ba89a;
+  --ink-faint: #5a6a5a;
+  --line: #1e2820;
+  --line-2: #2a3a2c;
+  --accent: #f68330;       /* NetBird orange */
+  --accent-dim: #e48b42;
+  --accent-deep: #5a2e0e;
+  --accent-soft: rgba(246,131,48,0.12);
+  --amber: #fbbf24;
+  --rust: #fb7185;
+  --cyan: #67e8f9;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: #000;
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+}
+
+deck-stage { background: #000; }
+
+deck-stage > section {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+  position: relative;
+  /* subtle terminal scanline texture */
+  background-image:
+    linear-gradient(180deg, rgba(246,131,48,0.025) 0%, transparent 40%),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(255,255,255,0.008) 2px 3px);
+}
+
+/* === Persistent chrome on every slide === */
+.chrome-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50px;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--ink-faint);
+  border-bottom: 1px solid var(--line);
+  z-index: 5;
+  background: rgba(10,13,10,0.6);
+  backdrop-filter: blur(6px);
+}
+.chrome-top .dots { display: flex; gap: 8px; }
+.chrome-top .dot { width: 10px; height: 10px; border-radius: 50%; background: #2a2f2a; }
+.chrome-top .dot.g { background: var(--accent); box-shadow: 0 0 8px rgba(246,131,48,0.55); }
+.chrome-top .dot.a { background: var(--amber); }
+.chrome-top .dot.r { background: var(--rust); }
+
+.chrome-top .path { letter-spacing: 0.02em; }
+.chrome-top .path .slash { color: var(--line-2); }
+.chrome-top .path .leaf { color: var(--ink-dim); }
+
+.chrome-bottom {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 46px;
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink-faint);
+  border-top: 1px solid var(--line);
+  z-index: 5;
+}
+.chrome-bottom .tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chrome-bottom .tag::before {
+  content: '';
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: blink 2.2s ease-in-out infinite;
+}
+@keyframes blink { 0%, 60%, 100% { opacity: 1; } 80% { opacity: 0.35; } }
+
+/* === Main content area === */
+.content {
+  position: absolute;
+  inset: 50px 0 46px 0;
+  padding: 64px 100px 54px 100px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* === Typography === */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 19px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '›';
+  font-weight: 700;
+}
+
+h1.slide-title {
+  font-family: var(--sans);
+  font-size: 84px;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  background: linear-gradient(180deg, #ffffff 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  max-width: 22ch;
+  margin-bottom: 44px;
+  text-wrap: balance;
+}
+h1.slide-title .g {
+  background: linear-gradient(175deg, #f68330 0%, #e48b42 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+h1.slide-title em {
+  font-style: normal;
+  background: linear-gradient(175deg, #f68330 0%, #e48b42 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 0.82em;
+  letter-spacing: -0.01em;
+}
+
+h2.slide-title {
+  font-family: var(--sans);
+  font-size: 68px;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  background: linear-gradient(180deg, #ffffff 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  max-width: 22ch;
+  margin-bottom: 34px;
+  text-wrap: balance;
+}
+h2.slide-title .g {
+  background: linear-gradient(175deg, #f68330 0%, #e48b42 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.lede {
+  font-family: var(--sans);
+  font-size: 32px;
+  line-height: 1.4;
+  color: var(--ink-dim);
+  max-width: 56ch;
+  font-weight: 400;
+  text-wrap: pretty;
+}
+.lede strong { color: var(--ink); font-weight: 500; }
+
+.kicker {
+  font-family: var(--mono);
+  font-size: 17px;
+  color: var(--ink-faint);
+  letter-spacing: 0.04em;
+}
+
+/* === Bullet rows: terminal-list look === */
+.term-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  margin-top: 12px;
+}
+.term-list li {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: baseline;
+  column-gap: 22px;
+  font-size: 34px;
+  line-height: 1.38;
+  color: var(--ink);
+  max-width: 58ch;
+  text-wrap: pretty;
+}
+.term-list li::before {
+  content: '›';
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+.term-list li .dim { color: var(--ink-dim); }
+.term-list li code,
+.term-list li .mono {
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 0.92em;
+}
+
+/* === Section dividers === */
+.divider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 96px;
+  height: 100%;
+  position: relative;
+}
+.divider .num {
+  font-family: var(--mono);
+  font-size: 340px;
+  font-weight: 700;
+  line-height: 0.85;
+  color: transparent;
+  -webkit-text-stroke: 2px #6b3814;
+  letter-spacing: -0.04em;
+  position: absolute;
+  right: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  user-select: none;
+}
+.divider .num-solid {
+  font-family: var(--mono);
+  font-size: 160px;
+  font-weight: 700;
+  line-height: 0.9;
+  color: var(--accent);
+  letter-spacing: -0.04em;
+  margin-bottom: 8px;
+}
+.divider .label {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--ink-faint);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.divider .title {
+  font-family: var(--sans);
+  font-size: 96px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(180deg, #ffffff 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  max-width: 16ch;
+  text-wrap: balance;
+  position: relative;
+  z-index: 2;
+}
+.divider .title span[style*="--accent"], .divider .title .g {
+  background: linear-gradient(175deg, #f68330 0%, #e48b42 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.divider .sub {
+  font-family: var(--sans);
+  font-size: 30px;
+  color: var(--ink-dim);
+  margin-top: 28px;
+  max-width: 56ch;
+  line-height: 1.4;
+  position: relative;
+  z-index: 2;
+}
+
+/* === Tool chip === */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px 8px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-family: var(--mono);
+  font-size: 20px;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.chip::before {
+  content: '';
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(246,131,48,0.75);
+}
+.chip.amber::before { background: var(--amber); box-shadow: 0 0 6px rgba(251,191,36,0.6); }
+.chip.cyan::before { background: var(--cyan); box-shadow: 0 0 6px rgba(103,232,249,0.6); }
+.chip.rust::before { background: var(--rust); box-shadow: 0 0 6px rgba(251,113,133,0.5); }
+.chip.dim { color: var(--ink-dim); border-color: var(--line); }
+.chip.dim::before { background: var(--ink-faint); box-shadow: none; }
+
+/* === Cards === */
+.card {
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  border-radius: 8px;
+  padding: 28px 30px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card .card-title {
+  font-family: var(--sans);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.card .card-title .g { color: var(--accent); }
+.card .card-sub {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.card .card-body {
+  font-size: 25px;
+  line-height: 1.45;
+  color: var(--ink-dim);
+  text-wrap: pretty;
+}
+.card .card-body strong { color: var(--ink); font-weight: 500; }
+
+.card.feature::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent);
+}
+
+/* === Grids === */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 18px; }
+
+/* === Ascii-ish framing === */
+.frame-label {
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--ink-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* === Prompt bars === */
+.prompt {
+  font-family: var(--mono);
+  font-size: 22px;
+  color: var(--ink-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.prompt .p { color: var(--accent); }
+.prompt .c {
+  display: inline-block;
+  width: 9px; height: 18px;
+  background: var(--accent);
+  margin-left: 4px;
+  animation: blink2 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink2 { 50% { opacity: 0; } }
+
+/* === Background grid watermark === */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(246,131,48,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(246,131,48,0.045) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* === Animated brand gradient (cover) === */
+.brand-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 30%, rgba(246,131,48,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 75%, rgba(228,139,66,0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 40% at 50% 110%, rgba(246,131,48,0.10) 0%, transparent 60%);
+  background-size: 200% 200%;
+  animation: brand-shift 18s ease infinite;
+  z-index: 0;
+}
+@keyframes brand-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === Cover-specific === */
+.cover-ascii {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--accent-deep);
+  white-space: pre;
+  letter-spacing: 0;
+}
+
+/* === QA / closer === */
+.qa-giant {
+  font-family: var(--sans);
+  font-size: 280px;
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  background: linear-gradient(180deg, #ffffff 0%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.qa-giant .g {
+  background: linear-gradient(175deg, #f68330 0%, #e48b42 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Print rules handled by deck-stage */

@@ -1,0 +1,1371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>The Self-Hosted Stack · Brandon Hopkins</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="/lfnw26/styles.css?v=5" />
+<script src="/lfnw26/deck-stage.js"></script>
+</head>
+<body>
+
+<deck-stage>
+
+<!-- ============================================================ -->
+<!-- 00 · COVER                                                   -->
+<!-- ============================================================ -->
+<section data-screen-label="01 Cover">
+  <div class="bg-grid"></div>
+  <div class="brand-glow"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">brandon@homelab</span><span class="slash">:</span><span class="leaf">~</span><span class="slash">$</span> <span style="color:var(--accent)">./talk.sh</span></div>
+    <div>26 · 04 · 2026</div>
+  </div>
+
+  <div class="content" style="padding: 80px 96px 70px 96px; justify-content: space-between; position: relative; z-index: 2;">
+    <div>
+      <div class="eyebrow" style="margin-bottom: 40px;">A TALK IN 10 PARTS</div>
+      <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.04em;">
+        # ~/talks/selfhost-2026.md
+      </div>
+      <h1 class="slide-title" style="font-size: 108px; max-width: 16ch; margin-bottom: 0; line-height: 0.98;">
+        The <span class="g">Self-Hosted</span><br/>Stack.
+      </h1>
+      <div class="lede" style="margin-top: 32px; font-size: 28px; max-width: 48ch;">
+        Building your own cloud<br/>with open source.
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 60px;">
+      <div>
+        <div class="kicker" style="margin-bottom: 10px;">// speaker</div>
+        <div style="font-family: var(--sans); font-size: 26px; font-weight: 600; color: var(--ink);">Brandon Hopkins</div>
+        <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); margin-top: 6px;">
+          Head of Content &amp; DevRel · NetBird<br/>
+          <span style="color: var(--accent-dim);">@TechHut</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chrome-bottom">
+    <div class="tag">session.live</div>
+    <div>THE SELF-HOSTED STACK · 2026</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 01 · AGENDA                                                  -->
+<!-- ============================================================ -->
+<section data-screen-label="02 Agenda">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">agenda</span></div>
+    <div>00 · AGENDA</div>
+  </div>
+
+  <div class="content">
+    <div class="eyebrow">./what's on deck</div>
+    <h1 class="slide-title" style="margin-bottom: 50px;">The route we'll take.</h1>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 80px; row-gap: 18px; font-family: var(--mono); font-size: 25px;">
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">01</span>
+        <span style="color: var(--ink); white-space: nowrap;">Introduction</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">06</span>
+        <span style="color: var(--ink); white-space: nowrap;">The Stack</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">02</span>
+        <span style="color: var(--ink); white-space: nowrap;">Why Self-Host</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">07</span>
+        <span style="color: var(--ink); white-space: nowrap;">Connecting It Securely</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">03</span>
+        <span style="color: var(--ink); white-space: nowrap;">Before You Start</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">08</span>
+        <span style="color: var(--ink); white-space: nowrap;">Backups</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">04</span>
+        <span style="color: var(--ink); white-space: nowrap;">Picking Your Foundation</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">09</span>
+        <span style="color: var(--ink); white-space: nowrap;">Monitoring &amp; Automation</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">05</span>
+        <span style="color: var(--ink); white-space: nowrap;">Why Proxmox</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+      <div style="display: flex; gap: 20px; align-items: baseline;">
+        <span style="color: var(--accent); width: 40px;">10</span>
+        <span style="color: var(--ink); white-space: nowrap;">Q&amp;A</span>
+        <span style="flex:1; border-bottom: 1px dashed var(--line-2); transform: translateY(-4px);"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chrome-bottom">
+    <div class="tag">session.live</div>
+    <div>2 / 49</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 01 · INTRODUCTION                                    -->
+<!-- ============================================================ -->
+<section data-screen-label="03 Section 01 Divider" class="divider-slide">
+  <div class="bg-grid"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">01-intro</span></div>
+    <div>SECTION · 01</div>
+  </div>
+  <div class="divider">
+    <div class="num">01</div>
+    <div class="label">// section 01 of 10</div>
+    <div class="title">Who's <span style="color:var(--accent);">talking.</span></div>
+    <div class="sub">A quick who/what before we get into the stack.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>3 / 49</div></div>
+</section>
+
+<section data-screen-label="04 Who Am I">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">01-intro</span><span class="slash">/</span><span class="leaf">whoami</span></div>
+    <div>01 · INTRO</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">$ whoami</div>
+    <h1 class="slide-title" style="margin-bottom: 60px;">Brandon Hopkins.</h1>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: start;">
+      <ul class="term-list">
+        <li><span>Head of Content &amp; Developer Relations at <span class="mono">NetBird</span></span></li>
+        <li><span>Founder of <span class="mono">TechHut</span>. Linux, self-hosting, and open source on YouTube</span></li>
+        <li><span>Been running a homelab for <strong style="color:var(--accent);">years</strong>. This isn't theoretical.<br/><span class="dim">This is what I actually run.</span></span></li>
+      </ul>
+      <div class="card" style="background: var(--bg-3); border-color: var(--line-2);">
+        <div class="card-sub">// id_rsa.pub</div>
+        <div style="font-family: var(--mono); font-size: 19px; line-height: 1.6; color: var(--ink-dim); word-break: break-all;">
+          <span style="color: var(--accent);">user</span>=brandon<br/>
+          <span style="color: var(--accent);">role</span>=devrel + creator<br/>
+          <span style="color: var(--accent);">homelab</span>=online since 2018<br/>
+          <span style="color: var(--accent);">services</span>=~20 containers<br/>
+          <span style="color: var(--accent);">uptime</span>=mostly good ¯\_(ツ)_/¯
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>4 / 49</div></div>
+</section>
+
+<section data-screen-label="05 What Is This Talk">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">01-intro</span><span class="slash">/</span><span class="leaf">what-is-this</span></div>
+    <div>01 · INTRO</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">./readme.md</div>
+    <h1 class="slide-title">What is this talk?</h1>
+    <ul class="term-list" style="font-size: 26px; gap: 28px;">
+      <li><span>A practical walkthrough of a <strong style="color:var(--accent);">real</strong> open source self-hosted stack.</span></li>
+      <li><span>Not a tutorial. More of a <strong style="color:var(--accent);">map of the territory</strong>.</span></li>
+      <li><span>Leave here knowing what's possible, what it takes, and whether it's right for you.</span></li>
+    </ul>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>5 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 02 · WHY SELF-HOST                                   -->
+<!-- ============================================================ -->
+<section data-screen-label="06 Section 02 Divider" class="divider-slide">
+  <div class="bg-grid"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">02-why-self-host</span></div>
+    <div>SECTION · 02</div>
+  </div>
+  <div class="divider">
+    <div class="num">02</div>
+    <div class="label">// section 02 of 10</div>
+    <div class="title">Why <span style="color:var(--accent);">self-host?</span></div>
+    <div class="sub">The pitch, the subscription treadmill, and the honest trade-offs.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>6 / 49</div></div>
+</section>
+
+<section data-screen-label="07 Own Your Data">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">data-ownership</span></div>
+    <div>02 · WHY SELF-HOST</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">the pitch, part one</div>
+    <h1 class="slide-title">You don't <span class="g">own</span><br/>your data.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px;">
+      <ul class="term-list">
+        <li><span>Cloud services store your files, photos, and documents on <strong style="color:var(--ink);">their</strong> infrastructure.</span></li>
+        <li><span>TOS change. Accounts get banned. Companies shut down.</span></li>
+        <li><span>Self-hosting means your data lives on hardware <strong style="color:var(--accent);">you own</strong>.</span></li>
+      </ul>
+      <div style="display: flex; flex-direction: column; gap: 16px; font-family: var(--mono); font-size: 19px; align-self: center;">
+        <div style="color: var(--ink-faint); letter-spacing: 0.1em; font-size: 16px; text-transform: uppercase; margin-bottom: 4px;">// somewhere, right now</div>
+        <div style="padding: 18px 22px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-2); display: flex; gap: 12px; align-items: flex-start; line-height: 1.45;">
+          <span style="color: var(--rust); flex-shrink: 0;">!</span> <span style="color: var(--ink-dim);">"Your account has been suspended for violating our community guidelines."</span>
+        </div>
+        <div style="padding: 18px 22px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-2); display: flex; gap: 12px; align-items: flex-start; line-height: 1.45;">
+          <span style="color: var(--amber); flex-shrink: 0;">!</span> <span style="color: var(--ink-dim);">"We're sunsetting this product on Dec 31."</span>
+        </div>
+        <div style="padding: 18px 22px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-2); display: flex; gap: 12px; align-items: flex-start; line-height: 1.45;">
+          <span style="color: var(--rust); flex-shrink: 0;">!</span> <span style="color: var(--ink-dim);">"Our updated Terms of Service take effect..."</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>7 / 49</div></div>
+</section>
+
+<section data-screen-label="08 Subscription Treadmill">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">subscriptions</span></div>
+    <div>02 · WHY SELF-HOST</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">the pitch, part two</div>
+    <h1 class="slide-title">The subscription treadmill.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 60px; align-items: start; margin-top: 10px;">
+      <div>
+        <ul class="term-list">
+          <li><span>Google Workspace, iCloud, Microsoft 365, Netflix.<br/><span class="dim">It adds up fast.</span></span></li>
+          <li><span>Most of these have capable open source alternatives.</span></li>
+          <li><span>One-time hardware cost vs. paying forever for someone else's server.</span></li>
+        </ul>
+      </div>
+      <div class="card" style="padding: 32px 38px;">
+        <div class="card-sub">// typical monthly stack</div>
+        <div style="font-family: var(--mono); font-size: 24px; line-height: 1.9; color: var(--ink-dim); display: grid; grid-template-columns: 1fr auto; column-gap: 32px;">
+          <span>iCloud 2TB</span><span style="color: var(--ink); text-align:right;">$9.99</span>
+          <span>Microsoft 365</span><span style="color: var(--ink); text-align:right;">$9.99</span>
+          <span>Netflix</span><span style="color: var(--ink); text-align:right;">$15.49</span>
+          <span>Nest Aware</span><span style="color: var(--ink); text-align:right;">$8.00</span>
+          <span style="border-top: 1px solid var(--line-2); margin-top: 8px; padding-top: 8px; color: var(--accent); font-weight: 600;">/mo</span><span style="border-top: 1px solid var(--line-2); margin-top: 8px; padding-top: 8px; color: var(--accent); font-weight: 600; text-align:right;">$43.47</span>
+          <span style="color: var(--rust); font-weight: 600;">/yr</span><span style="color: var(--rust); font-weight: 600; text-align:right;">$521.64</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>8 / 49</div></div>
+</section>
+
+<section data-screen-label="09 Hardware Payback">
+  <img src="/lfnw26/assets/slide-09-hardware.png" alt="Homelab hardware: mini PC, NAS, UPS, switch" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0.22; filter: saturate(0.9) brightness(0.7);"/>
+  <div style="position:absolute; inset:0; background: linear-gradient(90deg, rgba(8,9,10,0.92) 0%, rgba(8,9,10,0.78) 55%, rgba(8,9,10,0.55) 100%);"></div>
+  <div class="chrome-top" style="position:relative; z-index:2;"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">payback.calc</span></div><div>02 · WHY SELF-HOST</div></div>
+  <div class="content" style="padding: 56px 80px 50px 80px; position:relative; z-index:2;">
+    <div class="eyebrow">do the math</div>
+    <h1 class="slide-title" style="margin-bottom: 28px;">It pays for itself.</h1>
+
+    <div style="display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; align-items: stretch; flex: 1;">
+
+      <!-- Hardware ledger -->
+      <div class="card" style="padding: 28px 32px; gap: 0;">
+        <div class="card-sub" style="margin-bottom: 14px;">// one-time hardware</div>
+        <div style="font-family: var(--mono); font-size: 22px; line-height: 1.85; color: var(--ink-dim); display: grid; grid-template-columns: 1fr auto; column-gap: 28px;">
+          <span>Mini PC · 16GB · used</span><span style="color: var(--ink); text-align:right;">$280</span>
+          <span>2× NVMe SSD · 1TB</span><span style="color: var(--ink); text-align:right;">$140</span>
+          <span>4× 8TB HDD · used</span><span style="color: var(--ink); text-align:right;">$320</span>
+          <span>UPS</span><span style="color: var(--ink); text-align:right;">$110</span>
+          <span style="border-top: 1px solid var(--line-2); margin-top: 8px; padding-top: 8px; color: var(--accent); font-weight: 600;">total · once</span><span style="border-top: 1px solid var(--line-2); margin-top: 8px; padding-top: 8px; color: var(--accent); font-weight: 600; text-align:right;">$850</span>
+          <span style="font-size: 18px; color: var(--ink-faint); padding-top: 4px;">+ power ≈ $8/mo</span><span style="font-size: 18px; color: var(--ink-faint); padding-top: 4px; text-align:right;">$96/yr</span>
+        </div>
+      </div>
+
+      <!-- Payback math -->
+      <div style="display: flex; flex-direction: column; gap: 14px; justify-content: center;">
+
+        <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-faint); letter-spacing: 0.04em;">// payback period</div>
+
+        <div style="font-family: var(--mono); font-size: 36px; line-height: 1.5; color: var(--ink-dim);">
+          <span style="color: var(--ink);">$850</span> <span style="color: var(--ink-faint);">÷</span> <span style="color: var(--accent);">($522 − $96)</span>
+        </div>
+        <div style="font-family: var(--mono); font-size: 36px; color: var(--ink-dim);">
+          <span style="color: var(--ink-faint);">=</span> <span style="color: var(--accent); font-weight: 700;">~ 24 months</span>
+        </div>
+
+        <div style="margin-top: 22px; padding: 18px 22px; border: 1px solid var(--accent-deep); background: rgba(246,131,48,0.04); border-radius: 8px; font-family: var(--mono); font-size: 19px; color: var(--ink); line-height: 1.5;">
+          <span style="color: var(--accent);">→</span> Year 3 onward, you're saving <strong style="color: var(--accent);">$426/yr</strong> compared to subscriptions.
+        </div>
+
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); line-height: 1.5; margin-top: 4px;">
+          // not counting the value of owning your data, your photos, your files.
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>9 / 49</div></div>
+</section>
+
+<section data-screen-label="10 Trade-offs">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">tradeoffs</span></div>
+    <div>02 · WHY SELF-HOST</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">being honest</div>
+    <h1 class="slide-title">The trade-offs.</h1>
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="card">
+        <div class="card-sub">// cost: time</div>
+        <div class="card-title">It takes setup and maintenance.</div>
+        <div class="card-body">Nothing is free. You're trading dollars for hours, sometimes a lot of them, especially early on.</div>
+      </div>
+      <div class="card">
+        <div class="card-sub">// cost: on-call</div>
+        <div class="card-title">You are your own IT dept.</div>
+        <div class="card-body">When things break, that's on you. No support line. No SLA. Just you and <span class="mono" style="color:var(--accent);">journalctl</span>.</div>
+      </div>
+      <div class="card">
+        <div class="card-sub">// reality check</div>
+        <div class="card-title">Not for everyone, and that's okay.</div>
+        <div class="card-body">If the time cost outweighs the benefit for you, the cloud is a perfectly reasonable answer.</div>
+      </div>
+      <div class="card feature">
+        <div class="card-sub">// the actual goal</div>
+        <div class="card-title"><span class="g">Self-host what matters.</span></div>
+        <div class="card-body">The goal isn't to self-host <em>everything</em>. It's to self-host the things that matter to <strong>you</strong>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>10 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 04 · BEFORE YOU START                                -->
+<!-- ============================================================ -->
+<section data-screen-label="11 Section 03 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">03-before-you-start</span></div><div>SECTION · 03</div></div>
+  <div class="divider">
+    <div class="num">03</div>
+    <div class="label">// section 03 of 10</div>
+    <div class="title">Before you <span style="color:var(--accent);">start.</span></div>
+    <div class="sub">Hardware, maintenance, when the cloud still wins, and where to actually begin.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>11 / 49</div></div>
+</section>
+
+<section data-screen-label="12 Reality Check">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">03-before</span><span class="slash">/</span><span class="leaf">reality-check</span></div><div>03 · BEFORE YOU START</div></div>
+  <div class="content">
+    <div class="eyebrow">being honest</div>
+    <h1 class="slide-title" style="margin-bottom: 36px;">A few reality checks.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 22px; flex: 1; margin-top: 4px;">
+
+      <div class="card" style="padding: 28px 28px;">
+        <div class="card-sub">// hardware</div>
+        <div class="card-title"><span class="g">You don't need a rack.</span></div>
+        <div class="card-body">A mini PC or old desktop is a fine start. Watch power draw, 24/7 adds up. Storage is usually the biggest cost, so plan for growth.</div>
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line-2);">
+          mini-PC · used SFF · old gaming rig
+        </div>
+      </div>
+
+      <div class="card" style="padding: 28px 28px;">
+        <div class="card-sub">// maintenance</div>
+        <div class="card-title"><span class="g">Set it, then check on it.</span></div>
+        <div class="card-body">Not set-and-forget. Updates, patches, occasional weird things. Plan on an hour a month once it's stable. Community and docs are excellent.</div>
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line-2);">
+          ≈ 1 hr / month after setup
+        </div>
+      </div>
+
+      <div class="card" style="padding: 28px 28px;">
+        <div class="card-sub">// when cloud wins</div>
+        <div class="card-title"><span class="g">Sometimes cloud is right.</span></div>
+        <div class="card-body">If you travel constantly and need an SLA, or you're collaborating with non-technical folks, the cloud is still the right call. Self-hosting and cloud aren't mutually exclusive.</div>
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line-2);">
+          intentional choices, not zealotry
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>12 / 49</div></div>
+</section>
+
+<section data-screen-label="13 Where to Start">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">03-before</span><span class="slash">/</span><span class="leaf">where-to-start</span></div><div>03 · BEFORE YOU START</div></div>
+  <div class="content">
+    <div class="eyebrow">where to start</div>
+    <h1 class="slide-title">Pick <span class="g">one or two</span> services that matter.</h1>
+    <ul class="term-list">
+      <li><span>One or two. Start there.</span></li>
+      <li><span><span class="mono">Immich</span> and <span class="mono">Jellyfin</span> are great first projects. High reward, approachable setup.</span></li>
+      <li><span>Check out the TechHut homelab repo. Docker Compose stacks and templates.</span></li>
+    </ul>
+    <div style="margin-top: 40px; padding: 20px 26px; border: 1px solid var(--accent-deep); background: rgba(74,222,128,0.04); border-radius: 6px; font-family: var(--mono); font-size: 26px; display: inline-block;">
+      <span style="color: var(--accent);">→</span> <span style="color: var(--ink);">github.com/TechHutTV/homelab</span>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>13 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 03 · PICKING YOUR FOUNDATION                         -->
+<!-- ============================================================ -->
+<section data-screen-label="14 Section 04 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">04-foundation</span></div>
+    <div>SECTION · 04</div>
+  </div>
+  <div class="divider">
+    <div class="num">04</div>
+    <div class="label">// section 04 of 10</div>
+    <div class="title">Picking your <span style="color:var(--accent);">foundation.</span></div>
+    <div class="sub">NAS OS, bare metal, or hypervisor. Which floor are you building on?</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>14 / 49</div></div>
+</section>
+
+<!-- Foundation decision diagram -->
+<section data-screen-label="15 Foundation Decision Tree">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">decision-tree</span></div>
+    <div>04 · FOUNDATION</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">$ ./pick-foundation.sh</div>
+    <h2 class="slide-title" style="font-size: 44px; margin-bottom: 30px;">Three layers of abstraction.</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex: 1; margin-top: 10px;">
+      <!-- NAS -->
+      <div class="card" style="padding: 30px 28px;">
+        <div style="display:flex; justify-content: space-between; align-items: baseline;">
+          <div class="card-sub">// tier 1 · easiest</div>
+          <div style="font-family: var(--mono); font-size: 40px; color: var(--accent); font-weight: 700;">01</div>
+        </div>
+        <div class="card-title"><span class="g">NAS</span> Operating Systems</div>
+        <div class="card-body">Purpose-built for storage. Plug in drives, turn it on, add services on top.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+          <span class="chip">UnRaid</span>
+          <span class="chip">TrueNAS</span>
+          <span class="chip">OpenMediaVault</span>
+          <span class="chip">ZimaOS</span>
+        </div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-faint); margin-top: auto; padding-top: 8px; border-top: 1px dashed var(--line-2);">
+          best for → <span style="color: var(--ink-dim);">storage first, services second</span>
+        </div>
+      </div>
+
+      <!-- Bare metal -->
+      <div class="card" style="padding: 30px 28px;">
+        <div style="display:flex; justify-content: space-between; align-items: baseline;">
+          <div class="card-sub">// tier 2 · flexible</div>
+          <div style="font-family: var(--mono); font-size: 40px; color: var(--accent); font-weight: 700;">02</div>
+        </div>
+        <div class="card-title"><span class="g">Bare Metal</span> Linux</div>
+        <div class="card-body">Full control. No abstraction. Everything runs directly on the OS.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+          <span class="chip">Ubuntu Server</span>
+          <span class="chip">Fedora Server</span>
+          <span class="chip amber">+ Cockpit</span>
+        </div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-faint); margin-top: auto; padding-top: 8px; border-top: 1px dashed var(--line-2);">
+          best for → <span style="color: var(--ink-dim);">terminal-comfortable, keep it simple</span>
+        </div>
+      </div>
+
+      <!-- Hypervisor -->
+      <div class="card feature" style="padding: 30px 28px;">
+        <div style="display:flex; justify-content: space-between; align-items: baseline;">
+          <div class="card-sub">// tier 3 · flexible²</div>
+          <div style="font-family: var(--mono); font-size: 40px; color: var(--accent); font-weight: 700;">03</div>
+        </div>
+        <div class="card-title"><span class="g">Hypervisors</span></div>
+        <div class="card-body">Run multiple isolated VMs and containers from a single machine.<br/>Windows VM here, Linux container there. Same box.</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;">
+          <span class="chip cyan">Proxmox ←</span>
+        </div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-faint); margin-top: auto; padding-top: 8px; border-top: 1px dashed var(--line-2);">
+          best for → <span style="color: var(--ink-dim);">diverse stack, flexibility, isolation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>15 / 49</div></div>
+</section>
+
+<section data-screen-label="16 NAS Operating Systems">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">nas-os</span></div>
+    <div>04 · FOUNDATION</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">tier 01 · NAS operating systems</div>
+    <h1 class="slide-title" style="margin-bottom: 30px;">Storage first. Services second.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.15fr; gap: 36px; flex: 1; align-items: stretch;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-content: start;">
+        <div class="card"><div class="card-title">UnRaid</div><div class="card-body">Popular. Great UI, huge plugin ecosystem. <span style="color:var(--amber);">Not fully open source.</span></div></div>
+        <div class="card"><div class="card-title">TrueNAS</div><div class="card-body">Rock-solid ZFS. Enterprise feel. <span style="color:var(--amber);">Code open; builds went private in 2026.</span></div></div>
+        <div class="card"><div class="card-title">OpenMediaVault</div><div class="card-body">Lightweight Debian-based. Great for low-power hardware.</div></div>
+        <div class="card"><div class="card-title">ZimaOS</div><div class="card-body">Newer player. Approachable UI. <span style="color:var(--amber);">Partially open source.</span></div></div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; padding: 4px 6px;">// UNRAID DASHBOARD · MEDIA SERVER</div>
+        <img src="/lfnw26/assets/slide-16-unraid.png" alt="UnRaid dashboard showing array devices and pool devices" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>16 / 49</div></div>
+</section>
+
+<section data-screen-label="17 Bare Metal Linux">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">bare-metal</span></div>
+    <div>04 · FOUNDATION</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">tier 02 · bare metal linux</div>
+    <h1 class="slide-title" style="margin-bottom: 40px;">Full control, no abstractions.</h1>
+    <ul class="term-list">
+      <li><span><strong style="color:var(--accent);">Ubuntu Server</strong>: most documentation, largest community, great starting point.</span></li>
+      <li><span><strong style="color:var(--accent);">Fedora Server</strong>: cutting-edge packages, SELinux by default, great if you want current software.</span></li>
+      <li><span><strong style="color:var(--accent);">Cockpit</strong>: web UI layer you can add to either for a friendlier management experience.</span></li>
+      <li><span class="dim">Best for people comfortable in the terminal who want to keep things simple.</span></li>
+    </ul>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>17 / 49</div></div>
+</section>
+
+<section data-screen-label="18 Hypervisors">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">hypervisors</span></div>
+    <div>04 · FOUNDATION</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">tier 03 · hypervisors</div>
+    <h1 class="slide-title" style="margin-bottom: 30px;">One machine. Many operating systems.</h1>
+    <ul class="term-list" style="margin-bottom: 24px;">
+      <li><span>Run multiple isolated VMs and containers from a single machine.</span></li>
+      <li><span>Mix and match. A <strong style="color:var(--accent);">Windows VM</strong> here, a <strong style="color:var(--accent);">Linux container</strong> there, all on the same hardware.</span></li>
+      <li><span>Best for people running a diverse stack who want flexibility and isolation.</span></li>
+    </ul>
+    <div style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 22px; align-items: stretch;">
+      <img src="/lfnw26/assets/slide-18-proxmox.png" alt="Proxmox VE web UI showing a mix of LXC containers and VMs" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <div style="display:flex; align-items:center; padding: 18px 22px; border: 1px solid var(--accent-deep); background: rgba(246,131,48,0.04); border-radius: 6px; font-family: var(--mono); font-size: 22px; line-height: 1.4;">
+        <div><span style="color: var(--accent);">→</span> <span style="color: var(--ink);">This is where <strong>Proxmox</strong> comes in.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>18 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 05 · PROXMOX                                         -->
+<!-- ============================================================ -->
+<section data-screen-label="19 Section 05 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">05-proxmox</span></div>
+    <div>SECTION · 05</div>
+  </div>
+  <div class="divider">
+    <div class="num">05</div>
+    <div class="label">// section 05 of 10</div>
+    <div class="title">Why <span style="color:var(--accent);">Proxmox</span><br/>is my favorite.</div>
+    <div class="sub">The UI, LXC + VMs side by side, native ZFS, helper scripts, and PBS.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>19 / 49</div></div>
+</section>
+
+<section data-screen-label="20 Proxmox Host Layout Diagram">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">05-proxmox</span><span class="slash">/</span><span class="leaf">node-layout.svg</span></div>
+    <div>05 · PROXMOX</div>
+  </div>
+  <div class="content" style="padding: 60px 80px 50px 80px;">
+    <div class="eyebrow">anatomy of a proxmox node</div>
+    <h2 class="slide-title" style="font-size: 44px; margin-bottom: 24px;">What's running.</h2>
+
+    <!-- Diagram frame -->
+    <div style="flex: 1; border: 1px solid var(--line-2); border-radius: 10px; padding: 28px 32px 24px 32px; background: var(--bg-2); display: flex; flex-direction: column; gap: 18px; position: relative;">
+      <div style="position: absolute; top: -10px; left: 24px; background: var(--bg-2); padding: 0 10px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint); letter-spacing: 0.15em;">// NODE: pve-01 · 64GB · 8 core</div>
+
+      <!-- VM row -->
+      <div>
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); letter-spacing: 0.1em; margin-bottom: 8px;">[ VMs · full isolation · own kernel ]</div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;">
+          <div style="border: 1px solid var(--amber); border-radius: 6px; padding: 14px 16px; background: rgba(251,191,36,0.05);">
+            <div style="font-family: var(--sans); font-size: 21px; font-weight: 600; color: var(--ink);">Nextcloud</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vm-200</div>
+          </div>
+          <div style="border: 1px solid var(--amber); border-radius: 6px; padding: 14px 16px; background: rgba(251,191,36,0.05);">
+            <div style="font-family: var(--sans); font-size: 21px; font-weight: 600; color: var(--ink);">Immich</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vm-201</div>
+          </div>
+          <div style="border: 1px solid var(--amber); border-radius: 6px; padding: 14px 16px; background: rgba(251,191,36,0.05);">
+            <div style="font-family: var(--sans); font-size: 21px; font-weight: 600; color: var(--ink);">*arr stack</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vm-202 · sonarr/radarr/prowlarr</div>
+          </div>
+          <div style="border: 1px solid var(--amber); border-radius: 6px; padding: 14px 16px; background: rgba(251,191,36,0.05);">
+            <div style="font-family: var(--sans); font-size: 21px; font-weight: 600; color: var(--ink);">Home Assistant OS</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vm-203 · zigbee passthrough</div>
+          </div>
+          <div style="border: 1px solid var(--amber); border-radius: 6px; padding: 14px 16px; background: rgba(251,191,36,0.05);">
+            <div style="font-family: var(--sans); font-size: 21px; font-weight: 600; color: var(--ink);">Windows 11</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vm-204 · GPU passthrough</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LXC row -->
+      <div style="flex: 1;">
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); letter-spacing: 0.1em; margin-bottom: 8px;">[ LXC containers · shared kernel · lightweight ]</div>
+        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px;">
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Jellyfin</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-100</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">NPM</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-101</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Vaultwarden</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-102</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Uptime Kuma</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-103</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Grafana</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-104</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">n8n</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-105</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Paperless</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-106</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">AdGuard</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-107</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">OpenWebUI</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-108</div></div>
+          <div style="border: 1px solid var(--accent); border-radius: 6px; padding: 12px 14px; background: rgba(246,131,48,0.05);"><div style="font-size: 20px; font-weight: 600; color: var(--ink);">Duplicati</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">ct-109</div></div>
+        </div>
+      </div>
+
+      <!-- Off-site VPS callout -->
+      <div style="border-top: 1px dashed var(--line-2); padding-top: 14px;">
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); letter-spacing: 0.1em; margin-bottom: 8px;">[ off-site · VPS ]</div>
+        <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 12px; align-items: stretch;">
+          <div style="border: 1px solid var(--cyan); border-radius: 6px; padding: 12px 16px; background: rgba(103,232,249,0.05);">
+            <div style="font-size: 20px; font-weight: 600; color: var(--ink);">NetBird</div>
+            <div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 4px;">vps · control plane</div>
+          </div>
+          <div style="display: flex; align-items: center; padding: 0 8px; font-family: var(--mono); font-size: 16px; color: var(--ink-dim); line-height: 1.4;">
+            <span>Lives off-site so it stays reachable when home is down. Peer-to-peer tunnels still flow direct.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ZFS -->
+      <div style="border-top: 1px dashed var(--line-2); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 17px; color: var(--ink-dim);">
+        <span>[ ZFS pool: rpool · 2× NVMe mirror ]</span>
+        <span>[ ZFS pool: tank · 4× 8TB raidz1 ]</span>
+        <span style="color: var(--accent);">● healthy</span>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>20 / 49</div></div>
+</section>
+
+<section data-screen-label="21 Proxmox Helper Scripts">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">05-proxmox</span><span class="slash">/</span><span class="leaf">helper-scripts</span></div>
+    <div>05 · PROXMOX</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">feature 04</div>
+    <h1 class="slide-title">Proxmox helper scripts.</h1>
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; align-items: start; margin-top: 10px;">
+      <ul class="term-list">
+        <li><span>Community-maintained scripts that automate common setups.</span></li>
+        <li><span>Jellyfin, Vaultwarden, Immich, the works. Up in <strong style="color:var(--accent);">minutes</strong>.</span></li>
+        <li><span class="mono" style="color: var(--accent); font-size: 0.9em;">community-scripts.github.io/ProxmoxVE</span><br/><span class="dim">Bookmark it. You'll use it constantly.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-21-helper-scripts.png" alt="Proxmox VE Helper Scripts library" style="width: 876px; display: block; object-fit: cover; height: 528px"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>21 / 49</div></div>
+</section>
+
+<section data-screen-label="22 Proxmox Backup Server">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">05-proxmox</span><span class="slash">/</span><span class="leaf">pbs</span></div>
+    <div>05 · PROXMOX</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">feature 05</div>
+    <h1 class="slide-title" style="margin-bottom: 28px;">Proxmox Backup Server.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.15fr; gap: 32px; align-items: start;">
+      <ul class="term-list">
+        <li><span>First-class backup solution, built specifically for Proxmox.</span></li>
+        <li><span>Incremental backups, deduplication, encryption. All built in.</span></li>
+        <li><span class="dim">We'll come back to this in section 07. It's a big deal.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-22-pbs.png" alt="Proxmox Backup Server storage and disks view with a 53.69 TB datastore" style="width: 100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>22 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 06 · THE STACK                                       -->
+<!-- ============================================================ -->
+<section data-screen-label="23 Section 06 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">06-the-stack</span></div>
+    <div>SECTION · 06</div>
+  </div>
+  <div class="divider">
+    <div class="num">06</div>
+    <div class="label">// section 06 of 10</div>
+    <div class="title">The <span style="color:var(--accent);">stack.</span></div>
+    <div class="sub">The actual services. What they do, what they replace.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>23 / 49</div></div>
+</section>
+
+<!-- Stack overview -->
+<section data-screen-label="24 Stack Overview">
+  <div class="chrome-top">
+    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
+    <div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">overview</span></div>
+    <div>06 · THE STACK</div>
+  </div>
+  <div class="content">
+    <div class="eyebrow">the whole menu</div>
+    <h2 class="slide-title" style="font-size: 44px;">Here's what we're replacing.</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px;">
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">FILES / DOCS</div><div style="font-size: 26px; font-weight: 600;">Nextcloud</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · Google Workspace</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">PHOTOS</div><div style="font-size: 26px; font-weight: 600;">Immich</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · Google Photos</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">MEDIA</div><div style="font-size: 26px; font-weight: 600;">Jellyfin</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · Plex / Netflix-y</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">PASSWORDS</div><div style="font-size: 26px; font-weight: 600;">Vaultwarden</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · 1Password / LastPass</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">SMART HOME</div><div style="font-size: 26px; font-weight: 600;">Home Assistant</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · cloud hubs</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">CAMERAS</div><div style="font-size: 26px; font-weight: 600;">Frigate NVR</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">replaces · Nest / Ring / Arlo</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">PROXY</div><div style="font-size: 26px; font-weight: 600;">NGINX PM</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">local domains + SSL</div></div>
+      <div class="card" style="padding: 18px 20px; gap: 6px;"><div style="font-family: var(--mono); font-size: 16px; color: var(--accent);">REMOTE ACCESS</div><div style="font-size: 26px; font-weight: 600;">NetBird</div><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">zero-trust, §07</div></div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>24 / 49</div></div>
+</section>
+
+<section data-screen-label="25 Nextcloud">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">nextcloud</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Nextcloud</span> &nbsp; replaces Google Workspace</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your own Google Workspace.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
+      <ul class="term-list" style="align-self: center;">
+        <li><span>Full office suite replacement: files, docs, calendar, contacts, video calls.</span></li>
+        <li><span>Replaces Google Drive, Google Docs, Microsoft 365.</span></li>
+        <li><span><span class="mono">Nextcloud AIO</span> (All-in-One) makes setup way more approachable than it used to be.</span></li>
+        <li><span class="dim">Runs as a dedicated VM on Proxmox. (Nextcloud AIO uses Docker under the hood.)</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-25-nextcloud.png" alt="Nextcloud Files UI showing folders and storage usage" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>25 / 49</div></div>
+</section>
+
+<section data-screen-label="26 Immich">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">immich</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Immich</span> &nbsp; replaces Google Photos</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your own Google Photos.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: start;">
+      <ul class="term-list">
+        <li><span>Fast, modern photo and video backup with automatic device sync.</span></li>
+        <li><span>Face recognition, map view, search, shared albums. <strong style="color:var(--accent);">The full package</strong>.</span></li>
+        <li><span>Replaces Google Photos, iCloud Photos, Amazon Photos.</span></li>
+        <li><span class="dim">Hit stable in early 2025. Production-ready and still moving fast.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-26-immich.png" alt="Immich timeline showing photos by year with map and search" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>26 / 49</div></div>
+</section>
+
+<section data-screen-label="27 Jellyfin">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">jellyfin</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Jellyfin</span> &nbsp; your own streaming service</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your library, on any device.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: start; margin-top: 12px;">
+      <ul class="term-list">
+        <li><span>Stream your personal media library to anything.</span></li>
+        <li><span>Completely free and open source. <strong style="color:var(--accent);">No Plex Pass</strong> required for anything.</span></li>
+        <li><span>Hardware transcoding: Intel QuickSync, NVIDIA, AMD.</span></li>
+        <li><span class="dim">Replaces Plex (sort of), complements the *arr stack.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-27-jellyfin.png" alt="Jellyfin movies library showing Continue Watching and Recently Added" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>27 / 49</div></div>
+</section>
+
+<section data-screen-label="28 Vaultwarden">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">vaultwarden</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Vaultwarden</span> &nbsp; replaces 1Password / LastPass</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your passwords, self-hosted.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: start;">
+      <ul class="term-list">
+        <li><span>Lightweight Bitwarden-compatible server, written in Rust.</span></li>
+        <li><span>Works with the official Bitwarden clients. Browser, mobile, desktop.</span></li>
+        <li><span>End-to-end encrypted. Sync across devices without trusting a cloud.</span></li>
+        <li><span class="dim">Replaces 1Password, LastPass, hosted Bitwarden.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-28-vaultwarden.png" alt="Vaultwarden web vault showing saved logins" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>28 / 49</div></div>
+</section>
+
+<section data-screen-label="29 Home Assistant">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">home-assistant</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Home Assistant</span> &nbsp; your smart home hub</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Local control.<br/>No cloud required.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
+      <ul class="term-list" style="align-self: center;">
+        <li><span>Local control of lights, sensors, automations, dashboards.</span></li>
+        <li><span>Replaces cloud-dependent hubs and subscriptions.</span></li>
+        <li><span>Works with <strong style="color:var(--accent);">thousands</strong> of devices and integrations.</span></li>
+        <li><span class="dim">Runs best as a dedicated VM for full add-on support.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-29-home-assistant.jpeg" alt="Home Assistant dashboard with rooms, devices and energy stats" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>29 / 49</div></div>
+</section>
+
+<section data-screen-label="30 Frigate">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">frigate</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Frigate</span> &nbsp; your own camera system</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Local AI.<br/>No monthly fee.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
+      <ul class="term-list" style="align-self: center;">
+        <li><span>Local AI-powered security cameras with object detection.</span></li>
+        <li><span>Uses a <span class="mono">Coral TPU</span> for fast, efficient inference. No GPU needed.</span></li>
+        <li><span>Replaces Nest Cam, Arlo, Ring subscriptions.</span></li>
+        <li><span class="dim">Integrates directly with Home Assistant for automations.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-30-frigate.jpeg" alt="Frigate event log inside Home Assistant showing person detections in the backyard" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>30 / 49</div></div>
+</section>
+
+<section data-screen-label="31 NPM">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">nginx-pm</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">NGINX Proxy Manager</span> &nbsp; clean local access</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Pretty URLs.<br/>Locally.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: start; margin-top: 12px;">
+      <ul class="term-list">
+        <li><span>Clean local domain names and HTTPS for internal services.</span></li>
+        <li><span>Local IP set as an A-record, wildcard SSL cert, <strong style="color:var(--accent);">no port numbers in URLs</strong>.</span></li>
+        <li><span>Services stay private. Nothing is exposed to the internet through NPM.</span></li>
+        <li><span class="dim">External access is handled separately by NetBird →</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-31-npm.png" alt="NGINX Proxy Manager Proxy Hosts list with Let's Encrypt certs and Online status" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>31 / 49</div></div>
+</section>
+
+<section data-screen-label="32 Honorable Mentions">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-stack</span><span class="slash">/</span><span class="leaf">honorable-mentions</span></div><div>06 · THE STACK</div></div>
+  <div class="content">
+    <div class="eyebrow">honorable mentions</div>
+    <h1 class="slide-title">The ecosystem is massive.</h1>
+    <div class="grid-2" style="margin-top: 20px;">
+      <div class="card"><div class="card-title">AdGuard Home</div><div class="card-body">Network-wide DNS ad blocking. No more ads on every device on your LAN.</div></div>
+      <div class="card"><div class="card-title">Uptime Kuma</div><div class="card-body">Beautiful self-hosted status and monitoring page.</div></div>
+      <div class="card"><div class="card-title">Paperless-ngx</div><div class="card-body">Document management and OCR.</div></div>
+      <div class="card"><div class="card-title">Mealie</div><div class="card-body">Recipe manager and meal planner.</div></div>
+    </div>
+    <div style="margin-top: 30px; font-family: var(--mono); font-size: 21px; color: var(--ink-faint);">
+      // and that's just the surface.
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>32 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 07 · NETBIRD                                         -->
+<!-- ============================================================ -->
+<section data-screen-label="33 Section 07 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">07-connecting</span></div><div>SECTION · 07</div></div>
+  <div class="divider">
+    <div class="num">07</div>
+    <div class="label">// section 07 of 10</div>
+    <div class="title">Connecting it <span style="color:var(--accent);">securely.</span></div>
+    <div class="sub">Remote access without opening your front door to the internet.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>33 / 49</div></div>
+</section>
+
+<section data-screen-label="34 Remote Access Problem">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">the-problem</span></div><div>07 · CONNECTING</div></div>
+  <div class="content">
+    <div class="eyebrow">the problem</div>
+    <h1 class="slide-title">Your stack is at home.<br/>You are not.</h1>
+    <ul class="term-list">
+      <li><span>Useful when you're home. Useless when you're not.</span></li>
+      <li><span>Old way: <strong style="color:var(--rust);">port forwarding</strong>. Open ports, expose services to the public internet.</span></li>
+      <li><span>Traditional VPN: gives every peer the <strong style="color:var(--ink);">whole network</strong>. Big blast radius.</span></li>
+      <li><span class="dim">There's a better way. Mesh networking with per-resource access.</span></li>
+    </ul>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>34 / 49</div></div>
+</section>
+
+<section data-screen-label="35 NetBird Overview">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">netbird</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow"><span class="chip">NetBird</span> &nbsp; in 30 seconds</div>
+    <h1 class="slide-title" style="font-size: 56px; margin-bottom: 18px;">One flat network.<br/><span class="g">All your machines.</span></h1>
+
+    <div style="display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; flex: 1; align-items: center;">
+      <div>
+        <ul class="term-list">
+          <li><span>Open source. Connects laptops, servers, phones, VPCs into one private mesh.</span></li>
+          <li><span>Peer-to-peer WireGuard tunnels. End-to-end encrypted, even when relayed.</span></li>
+          <li><span>Use the managed cloud, <strong style="color:var(--accent);">or self-host the whole stack.</strong></span></li>
+          <li><span class="dim">No port forwarding to your homelab, no public IPs, no exposed services.</span></li>
+        </ul>
+      </div>
+      <div><img src="/lfnw26/assets/mesh.png" alt="NetBird peer-to-peer mesh" style="width:100%; display:block;"/><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 10px; text-align:center;">// every peer talks directly to every other peer</div></div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>35 / 49</div></div>
+</section>
+
+<section data-screen-label="36 Self-Host Install">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">self-host.sh</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow">self-hosting</div>
+    <h1 class="slide-title" style="font-size: 60px; margin-bottom: 16px;">One script.<br/><span class="g">Full stack.</span></h1>
+
+    <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1; align-items: center;">
+      <div>
+        <div class="card" style="padding: 24px 28px; gap: 10px;">
+          <div class="card-sub">// getting-started.sh</div>
+          <div style="font-family: var(--mono); font-size: 22px; color: var(--ink); line-height: 1.55; word-break: break-all;">
+            curl -fsSL <span style="color: var(--accent);">https://github.com/netbirdio/netbird/releases/latest/download/getting-started.sh</span> | bash
+          </div>
+        </div>
+
+        <ul class="term-list" style="margin-top: 24px;">
+          <li><span>Deploys management, signal, relay, dashboard, and Traefik.</span></li>
+          <li><span>Auto TLS via Let's Encrypt. Just point a domain at the box.</span></li>
+          <li><span>Local users out of the box, or bring any OIDC: Keycloak, Authentik, Okta, Google.</span></li>
+          <li><span class="dim">Your data, your domain, your infrastructure. AGPLv3 server, BSD-3 client.</span></li>
+        </ul>
+      </div>
+      <div><img src="/lfnw26/assets/install-netbird.png" alt="NetBird Add new peer install panel" style="width:100%; display:block;"/><div style="font-family: var(--mono); font-size: 15px; color: var(--ink-faint); margin-top: 10px; text-align:center;">// adding a peer is two commands</div></div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>36 / 49</div></div>
+</section>
+
+<section data-screen-label="37 NetBird Dashboard">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">dashboard</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow">the dashboard</div>
+    <h2 class="slide-title" style="font-size: 48px; margin-bottom: 22px;">One pane of glass<br/>for the whole mesh.</h2>
+
+    <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 32px; flex: 1; align-items: center;">
+      <img src="/lfnw26/assets/control-center-peers.png" alt="NetBird Control Center peers view" style="width:100%; display:block;"/>
+      <div>
+        <ul class="term-list">
+          <li><span><strong style="color:var(--ink);">Peers</strong> · every device in the mesh, status at a glance.</span></li>
+          <li><span><strong style="color:var(--ink);">Groups &amp; policies</strong> · who can reach what, in plain English.</span></li>
+          <li><span><strong style="color:var(--ink);">Networks &amp; routes</strong> · gateway entire LANs without installing on every device.</span></li>
+          <li><span><strong style="color:var(--ink);">Activity logs</strong> · every connection, every change, audited.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>37 / 49</div></div>
+</section>
+
+<section data-screen-label="38 NetBird Features">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">features</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow">more than a vpn</div>
+    <h2 class="slide-title" style="font-size: 48px; margin-bottom: 22px;">A platform, <span class="g">not a tunnel.</span></h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; flex: 1;">
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">Access Control + Posture</span></div>
+        <div class="card-body">Group-based policies. Restrict by OS, country, client version, or peer network range. Posture checks before access is granted.</div>
+      </div>
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">Networks &amp; Routes</span></div>
+        <div class="card-body">Gateway entire LANs or VPCs through a single peer. Reach a printer, a NAS, a whole subnet, without installing NetBird on each device.</div>
+      </div>
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">DNS Management</span></div>
+        <div class="card-body">Custom DNS zones, private nameservers, and split DNS. <span style="font-family:var(--mono); color:var(--accent);">jellyfin.home</span> resolves the same everywhere you go.</div>
+      </div>
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">Exit Nodes</span></div>
+        <div class="card-body">Route internet traffic through any peer. Browse from home while you're on hotel Wi-Fi. HA across multiple exits.</div>
+      </div>
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">Reverse Proxy</span></div>
+        <div class="card-body">Expose internal services to the public internet with auto TLS. No open firewall ports on your home network.</div>
+      </div>
+
+      <div class="card" style="padding: 22px 26px; gap: 6px;">
+        <div class="card-title"><span class="g">SSO + MFA</span></div>
+        <div class="card-body">Identity comes from your IdP. Onboarding a new device is an SSO login. Offboarding is one click.</div>
+      </div>
+
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>38 / 49</div></div>
+</section>
+
+<section data-screen-label="39 NetBird Reverse Proxy">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">reverse-proxy</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow">reverse proxy</div>
+    <h2 class="slide-title" style="font-size: 48px; margin-bottom: 22px;">Public services. <span class="g">No ports open at home.</span></h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.05fr; gap: 32px; flex: 1; align-items: center;">
+      <div>
+        <ul class="term-list">
+          <li><span>Pick a service. Pick a subdomain. Done.</span></li>
+          <li><span>HTTP/S, TLS passthrough, raw TCP, UDP. Auto TLS via Let's Encrypt.</span></li>
+          <li><span>Optional CrowdSec integration for threat protection at the edge.</span></li>
+          <li><span class="dim">Internal: NPM with local domains. External: NetBird reverse proxy. Clean split.</span></li>
+        </ul>
+      </div>
+      <img src="/lfnw26/assets/proxy-modes.png" alt="NetBird Reverse Proxy service configuration" style="width:100%; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>39 / 49</div></div>
+</section>
+
+<!-- DIAGRAM: NetBird data path -->
+<section data-screen-label="40 NetBird Data Flow">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-connecting</span><span class="slash">/</span><span class="leaf">data-flow.svg</span></div><div>07 · CONNECTING</div></div>
+  <div class="content" style="padding: 56px 80px 50px 80px;">
+    <div class="eyebrow">my topology</div>
+    <h2 class="slide-title" style="font-size: 46px; margin-bottom: 28px;">Open ports on a $5 VPS. <span class="g">Not on my homelab.</span></h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; flex: 1; align-items: stretch; position: relative;">
+
+      <div style="border: 1px solid var(--line-2); border-radius: 10px; padding: 24px 26px; background: var(--bg-2); display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--ink-faint); letter-spacing: 0.12em;">[ 01 · YOU ]</div>
+        <div style="font-family: var(--sans); font-size: 28px; font-weight: 600; color: var(--ink); line-height: 1.15;">A laptop in a coffee shop.</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-dim); line-height: 1.5; margin-top: 6px;">NetBird client running. Authenticated by SSO. Dials out to the control plane.</div>
+        <div style="margin-top: auto; padding-top: 14px; font-family: var(--mono); font-size: 15px; color: var(--ink-faint);">
+          <span style="color: var(--accent);">→</span> identity verified by IdP
+        </div>
+      </div>
+
+      <div style="border: 1px solid var(--cyan); border-radius: 10px; padding: 24px 26px; background: rgba(103,232,249,0.04); display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--cyan); letter-spacing: 0.12em;">[ 02 · VPS · NETBIRD ]</div>
+        <div style="font-family: var(--sans); font-size: 28px; font-weight: 600; color: var(--ink); line-height: 1.15;">Self-hosted control plane.</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-dim); line-height: 1.5; margin-top: 6px;">Management + Signal + STUN + TURN run on a small VPS. <strong style="color: var(--ink);">This</strong> is where the open ports live. Coordinates peers; doesn't see traffic.</div>
+        <div style="margin-top: auto; padding-top: 14px; font-family: var(--mono); font-size: 15px; color: var(--cyan);">
+          ports open here · TCP 80, TCP 443, UDP 3478
+        </div>
+      </div>
+
+      <div style="border: 1px solid var(--accent); border-radius: 10px; padding: 24px 26px; background: rgba(246,131,48,0.04); display: flex; flex-direction: column; gap: 10px;">
+        <div style="font-family: var(--mono); font-size: 16px; color: var(--accent); letter-spacing: 0.12em;">[ 03 · HOMELAB ]</div>
+        <div style="font-family: var(--sans); font-size: 28px; font-weight: 600; color: var(--ink); line-height: 1.15;">Your stack at home.</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--ink-dim); line-height: 1.5; margin-top: 6px;">Router has <strong style="color: var(--accent);">zero open ports</strong>. The agent dials out to the VPS. P2P tunnel opens directly to the laptop.</div>
+        <div style="margin-top: auto; padding-top: 14px; font-family: var(--mono); font-size: 15px; color: var(--accent);">
+          home firewall stays closed
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 22px; padding: 16px 22px; border: 1px dashed var(--line-2); border-radius: 8px; font-family: var(--mono); font-size: 19px; color: var(--ink-dim); display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+      <span style="color: var(--ink-faint);">// data path</span>
+      <span style="color: var(--ink);">laptop</span>
+      <span style="color: var(--accent);">━━ direct P2P WireGuard ━━▸</span>
+      <span style="color: var(--ink);">jellyfin.home</span>
+      <span style="color: var(--ink-faint); margin-left: auto;">control plane is out of band on the VPS</span>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>40 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 08 · BACKUPS                                         -->
+<!-- ============================================================ -->
+<section data-screen-label="41 Section 08 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">08-backups</span></div><div>SECTION · 08</div></div>
+  <div class="divider">
+    <div class="num">08</div>
+    <div class="label">// section 08 of 10</div>
+    <div class="title">Backups are <span style="color:var(--accent);">non-negotiable.</span></div>
+    <div class="sub">Because drives fail. It's not <em style="font-style: italic; color: var(--accent);">if</em>. It's <em style="font-style: italic; color: var(--accent);">when</em>.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>41 / 49</div></div>
+</section>
+
+<!-- DIAGRAM: 3-2-1 rule -->
+<section data-screen-label="42 3-2-1 Backup Rule">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">08-backups</span><span class="slash">/</span><span class="leaf">3-2-1.svg</span></div><div>08 · BACKUPS</div></div>
+  <div class="content" style="padding: 56px 80px 50px 80px;">
+    <div class="eyebrow">the rule</div>
+    <h2 class="slide-title" style="font-size: 52px; margin-bottom: 36px;">The <span class="g">3-2-1</span> rule.</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex: 1;">
+      <div style="border: 1px solid var(--line-2); border-radius: 10px; padding: 30px 28px; background: var(--bg-2); position: relative; display: flex; flex-direction: column;">
+        <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">3</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// COPIES</div>
+        <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">Three copies of your data.</div>
+        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Production + two backups. If one fails, two remain.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">live · backup · backup</div>
+      </div>
+      <div style="border: 1px solid var(--line-2); border-radius: 10px; padding: 30px 28px; background: var(--bg-2); position: relative; display: flex; flex-direction: column;">
+        <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">2</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// MEDIA TYPES</div>
+        <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">On two different media.</div>
+        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">A firmware bug that eats one kind of drive won't eat both.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">nvme + hdd, or hdd + tape…</div>
+      </div>
+      <div style="border: 1px solid var(--accent); border-radius: 10px; padding: 30px 28px; background: rgba(74,222,128,0.04); position: relative; display: flex; flex-direction: column;">
+        <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">1</div>
+        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// OFFSITE</div>
+        <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">One copy offsite.</div>
+        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Fire, theft, flood. If the building is gone, the backup in it is gone too.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">friend's house · object storage · vps</div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>42 / 49</div></div>
+</section>
+
+<section data-screen-label="43 PBS Details">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">08-backups</span><span class="slash">/</span><span class="leaf">pbs</span></div><div>08 · BACKUPS</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Proxmox Backup Server</span></div>
+    <h1 class="slide-title" style="margin-top: 12px;">Purpose-built. Incremental.<br/>Deduplicated.</h1>
+    <ul class="term-list">
+      <li><span>Purpose-built backup for Proxmox environments.</span></li>
+      <li><span>Incremental. Only changed blocks transferred after the first backup.</span></li>
+      <li><span>Built-in deduplication. Optional encryption.</span></li>
+      <li><span>Restore a full VM or LXC container in <strong style="color:var(--accent);">minutes</strong>.</span></li>
+    </ul>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>43 / 49</div></div>
+</section>
+
+<section data-screen-label="44 PBS Fit">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">08-backups</span><span class="slash">/</span><span class="leaf">pbs-fit</span></div><div>08 · BACKUPS</div></div>
+  <div class="content">
+    <div class="eyebrow">how it fits</div>
+    <h1 class="slide-title">PBS in the stack.</h1>
+    <ul class="term-list">
+      <li><span>Runs as a separate VM or on separate hardware.</span></li>
+      <li><span>Schedule automated backups for every VM and container.</span></li>
+      <li><span>PBS <strong style="color:var(--accent);">verifies backups automatically</strong>. You don't have to remember.</span></li>
+      <li><span class="dim">Pair with offsite storage for true 3-2-1 compliance.</span></li>
+    </ul>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>44 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 09 · MONITORING & AUTOMATION                         -->
+<!-- ============================================================ -->
+<section data-screen-label="45 Section 09 Divider">
+  <div class="bg-grid"></div>
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">09-monitoring</span></div><div>SECTION · 09</div></div>
+  <div class="divider">
+    <div class="num">09</div>
+    <div class="label">// section 09 of 10</div>
+    <div class="title">Monitoring <span style="color:var(--accent);">+</span> automation.</div>
+    <div class="sub">Two tools I use constantly. There's a whole other talk in each one.</div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>45 / 49</div></div>
+</section>
+
+<section data-screen-label="46 Grafana">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">09-monitoring</span><span class="slash">/</span><span class="leaf">grafana</span></div><div>09 · MONITORING</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">Grafana</span> &nbsp; know what your stack is doing</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Dashboards<br/>you'll actually look at.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
+      <ul class="term-list">
+        <li><span>Beautiful dashboards for infrastructure metrics: CPU, RAM, disk, network.</span></li>
+        <li><span>Pulls data from Proxmox, your containers, and other sources.</span></li>
+        <li><span>Know about problems <strong style="color:var(--accent);">before</strong> they become outages.</span></li>
+        <li><span class="dim">There's a whole talk in here on observability alone.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-46-grafana.avif" alt="Grafana node-exporter dashboard with CPU, memory, network, and disk panels" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>46 / 49</div></div>
+</section>
+
+<section data-screen-label="47 n8n">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">09-monitoring</span><span class="slash">/</span><span class="leaf">n8n</span></div><div>09 · MONITORING</div></div>
+  <div class="content">
+    <div class="eyebrow"><span class="chip">n8n</span> &nbsp; automate your homelab</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Zapier, but<br/>on your box.</h1>
+    <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
+      <ul class="term-list">
+        <li><span>Self-hostable workflow automation. Think Zapier &mdash; but you run it.</span></li>
+        <li><span>Connect services together: Nextcloud triggers, HA events, notifications.</span></li>
+        <li><span>I use it for content workflows. The homelab use cases are endless.</span></li>
+        <li><span class="dim">Seriously, there's a whole other talk here.</span></li>
+      </ul>
+      <img src="/lfnw26/assets/slide-47-n8n.png" alt="n8n workflow canvas with branching automation graph" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>47 / 49</div></div>
+</section>
+
+<!-- RECAP slide: my actual stack -->
+<section data-screen-label="48 My Actual Stack">
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">recap</span></div><div>RECAP</div></div>
+  <div class="content" style="padding: 56px 80px 46px 80px;">
+    <div class="eyebrow">what I actually run</div>
+    <h2 class="slide-title" style="font-size: 44px; margin-bottom: 22px;">The whole stack, in one breath.</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 22px; flex: 1; align-items: stretch;">
+
+      <!-- left column -->
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">FOUNDATION</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">Proxmox</span> on a mini-PC → ZFS pools → 5 VMs + 10 LXCs
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">DAILY DRIVERS</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">Nextcloud</span> · <span style="color: var(--accent);">Immich</span> · <span style="color: var(--accent);">Jellyfin</span> · <span style="color: var(--accent);">Vaultwarden</span> · <span style="color: var(--accent);">Home Assistant</span>
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">SUPPORTING CAST</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">Frigate</span> · <span style="color: var(--accent);">AdGuard</span> · <span style="color: var(--accent);">Paperless</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- right column -->
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">CONNECTIVITY</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">NPM</span> internal · <span style="color: var(--accent);">NetBird</span> external · no open ports at home
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">BACKUPS</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">PBS</span> nightly → separate box → offsite copy = <strong style="color: var(--ink);">3-2-1</strong>
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--line-2); border-radius: 8px; padding: 16px 20px; background: var(--bg-2);">
+          <div style="font-family: var(--mono); font-size: 14px; color: var(--ink-faint); letter-spacing: 0.12em; margin-bottom: 6px;">EYES + GLUE</div>
+          <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); line-height: 1.55;">
+            <span style="color: var(--accent);">Grafana</span> dashboards · <span style="color: var(--accent);">Uptime Kuma</span> · <span style="color: var(--accent);">n8n</span> automations
+          </div>
+        </div>
+
+        <div style="margin-top: auto; padding: 14px 18px; border-left: 2px solid var(--accent); font-family: var(--mono); font-size: 18px; color: var(--ink-dim); line-height: 1.5; background: rgba(246,131,48,0.03);">
+          <span style="color: var(--accent-dim);">// the point:</span> none of this is exotic. Pick the two that matter to you and start there.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>48 / 49</div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10 · Q&A                                             -->
+<!-- ============================================================ -->
+<section data-screen-label="49 QA Big">
+  <div class="bg-grid"></div>
+  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">10-qa</span></div><div>SECTION · 10</div></div>
+  <div class="content" style="justify-content: center; align-items: flex-start;">
+    <div class="eyebrow" style="margin-bottom: 30px;">// section 10 · thanks for listening</div>
+    <div class="qa-giant">Q<span class="g">&amp;</span>A.</div>
+    <div style="margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; width: 100%; max-width: 1400px;">
+      <div>
+        <div class="kicker" style="margin-bottom: 10px;">// code + configs</div>
+        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">github.com/TechHutTV/homelab</div>
+      </div>
+      <div>
+        <div class="kicker" style="margin-bottom: 10px;">// videos</div>
+        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">youtube.com/@TechHut</div>
+      </div>
+      <div>
+        <div class="kicker" style="margin-bottom: 10px;">// say hi</div>
+        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">@TechHut &nbsp; · &nbsp; netbird.io</div>
+      </div>
+    </div>
+  </div>
+  <div class="chrome-bottom"><div class="tag">session.live</div><div>END · THANKS</div></div>
+</section>
+
+</deck-stage>
+
+
+
+</body>
+</html>
