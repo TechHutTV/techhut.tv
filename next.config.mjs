@@ -109,8 +109,12 @@ const nextConfig = {
                 destination: '/ipa/:path*',
             },
             {
-                source: '/lfnw26',
-                destination: '/lfnw26/index.html',
+                source: '/decks',
+                destination: '/decks/index.html',
+            },
+            {
+                source: '/decks/lfnw26',
+                destination: '/decks/lfnw26/index.html',
             },
         ]
     }
