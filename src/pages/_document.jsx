@@ -48,7 +48,7 @@ export default function Document() {
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
           <link rel="manifest" href="/site.webmanifest" />
       </Head>
-      <body className="bg-white antialiased dark:bg-[#0f1012]">
+      <body className="bg-white antialiased dark:bg-[#0a0d0a]">
         <GoogleTagManagerBodyScript />
         <Main />
         <NextScript />

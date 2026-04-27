@@ -165,7 +165,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             onMouseEnter={() => setIsHoveringSidebar(true)}
             onMouseLeave={() => setIsHoveringSidebar(false)}
         >
-          <div className="contents lg:pointer-events-auto lg:block lg:w-72 lg:overflow-y-auto lg:px-6 lg:pb-8 lg:pt-6 lg:bg-white/70 lg:dark:bg-[#0f1012]/70 lg:backdrop-blur-lg 2xl:w-80 lg:overflow-x-visible sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-2xl lg:shadow-xl lg:shadow-zinc-900/10 lg:dark:shadow-black/20 lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
+          <div className="contents lg:pointer-events-auto lg:block lg:w-72 lg:overflow-y-auto lg:px-6 lg:pb-8 lg:pt-6 lg:bg-white/70 lg:dark:bg-[#0a0d0a]/70 lg:backdrop-blur-lg 2xl:w-80 lg:overflow-x-visible sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-2xl lg:shadow-xl lg:shadow-zinc-900/10 lg:dark:shadow-black/20 lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
             <NavigationDocs className="hidden lg:block" />
           </div>
         </aside>

@@ -43,9 +43,9 @@ export const Header = forwardRef(function Header({ className }, ref) {
         'lg:left-4 lg:right-4 lg:rounded-b-2xl lg:shadow-lg lg:border lg:border-t-0 lg:border-zinc-200/50 lg:dark:border-zinc-800/50',
         'inset-x-0 left-0 right-0',
         !isInsideMobileNavigation &&
-          'backdrop-blur-lg bg-white/70 dark:bg-[#0f1012]/70 border-b border-zinc-200 dark:border-zinc-800',
+          'backdrop-blur-lg bg-white/70 dark:bg-[#0a0d0a]/70 border-b border-zinc-200 dark:border-zinc-800',
         isInsideMobileNavigation &&
-          'bg-white/70 dark:bg-[#0f1012]/70 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-800'
+          'bg-white/70 dark:bg-[#0a0d0a]/70 backdrop-blur-lg border-b border-zinc-200 dark:border-zinc-800'
       )}
       style={{ top: bannerHeight }}
     >

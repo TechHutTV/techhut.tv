@@ -21,29 +21,42 @@ module.exports = {
     },
     typography: require('./typography.cjs'),
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+      },
       colors: {
-        techhut: '#B55400', // Primary brand color
-        'techhut-dark': '#8a3f00', // Darker variant for gradients
-        'techhut-light': '#f58044', // Lighter variant for hover
-        // Modern color palette from ColorHunt
+        techhut: '#f68330', // Primary brand color (deck-aligned)
+        'techhut-dark': '#d96a1f', // Darker variant for gradients
+        'techhut-light': '#fda861', // Lighter variant for hover
+        // Deck-aligned warm orange palette
         primary: {
-          50: '#fef6ee',
-          100: '#fde9d7',
-          200: '#fbd0ae',
-          300: '#f8ad7a',
-          400: '#f58044',
-          500: '#B55400', // Main accent color
-          600: '#a34d00',
-          700: '#8a3f00',
-          800: '#6f3300',
-          900: '#5c2a00',
+          50: '#fff4eb',
+          100: '#ffe0c4',
+          200: '#ffc394',
+          300: '#fda861',
+          400: '#f9923c',
+          500: '#f68330', // Main accent color (deck)
+          600: '#d96a1f',
+          700: '#b25218',
+          800: '#8a3f12',
+          900: '#6b300d',
         },
         dark: {
-          DEFAULT: '#222831', // Main dark background
-          lighter: '#393E46', // Secondary dark elements
+          DEFAULT: '#0a0d0a', // Deck-aligned near-black with green tint
+          lighter: '#0f1410', // Secondary dark surface
         },
         light: {
           DEFAULT: '#EEEEEE', // Main light background
+        },
+        ink: {
+          DEFAULT: '#e8efe6', // Warm cream foreground (deck)
+          dim: '#9ba89a',
+          faint: '#5a6a5a',
+        },
+        line: {
+          DEFAULT: '#1e2820',
+          strong: '#2a3a2c',
         },
       },
       boxShadow: {
