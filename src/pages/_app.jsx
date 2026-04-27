@@ -9,8 +9,6 @@ import { MDXProvider } from '@mdx-js/react'
 // Site configuration
 const siteConfig = {
   googleAnalytics: 'G-D2EGVWGPYR',
-  matomoUrl: '//matomo.hopkins.sh/',
-  matomoSiteId: '1',
 }
 
 import * as mdxComponents from '@/components/mdx'
@@ -25,6 +23,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
 import {AnnouncementBannerProvider} from "@/components/announcement-banner/AnnouncementBannerProvider";
 import {JsonLd} from "@/components/JsonLd";
+import {MatomoTagManager} from "@/components/Matomo";
 
 // Lazy load ImageZoom since it's only used on click
 const ImageZoom = dynamic(
@@ -36,16 +35,8 @@ function onRouteChange() {
   useMobileNavigationStore.getState().close()
 }
 
-function trackMatomoPageView(url) {
-  if (typeof window === 'undefined' || !window._paq) return
-  window._paq.push(['setCustomUrl', url])
-  window._paq.push(['setDocumentTitle', document.title])
-  window._paq.push(['trackPageView'])
-}
-
 Router.events.on('routeChangeStart', onRouteChange)
 Router.events.on('hashChangeStart', onRouteChange)
-Router.events.on('routeChangeComplete', trackMatomoPageView)
 
 export default function App({ Component, pageProps }) {
   let router = useRouter()
@@ -71,21 +62,7 @@ export default function App({ Component, pageProps }) {
           gtag('config', '${siteConfig.googleAnalytics}');
         `}
       </Script>
-      {/* Matomo */}
-      <Script id="matomo" strategy="afterInteractive">
-        {`
-          var _paq = window._paq = window._paq || [];
-          _paq.push(['trackPageView']);
-          _paq.push(['enableLinkTracking']);
-          (function() {
-            var u="${siteConfig.matomoUrl}";
-            _paq.push(['setTrackerUrl', u+'matomo.php']);
-            _paq.push(['setSiteId', '${siteConfig.matomoSiteId}']);
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-          })();
-        `}
-      </Script>
+      <MatomoTagManager />
       <Head>
         <style>{dom.css()}</style>
         <title>{`${pageProps.title} - TechHut`}</title>
