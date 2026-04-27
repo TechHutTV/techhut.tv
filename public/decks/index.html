@@ -88,6 +88,38 @@
   .chrome-top .path .slash { color: var(--line-2); }
   .chrome-top .path .leaf { color: var(--ink-dim); }
 
+  .chrome-top nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+  .chrome-top nav a {
+    color: var(--ink-dim);
+    transition: color 140ms ease;
+  }
+  .chrome-top nav a:hover { color: var(--accent); }
+  .chrome-top nav .home {
+    color: var(--ink);
+    border: 1px solid var(--line-2);
+    padding: 5px 10px;
+    border-radius: 6px;
+  }
+  .chrome-top nav .home:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .chrome-top nav .sep { color: var(--line-2); }
+
+  @media (max-width: 720px) {
+    .chrome-top .path { display: none; }
+  }
+  @media (max-width: 480px) {
+    .chrome-top nav .secondary { display: none; }
+  }
+
   main {
     position: relative;
     z-index: 1;
@@ -266,7 +298,13 @@
 <header class="chrome-top">
   <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
   <div class="path"><span class="leaf">brandon@homelab</span><span class="slash">:</span><span class="leaf">~/decks</span><span class="slash">$</span> <span style="color:var(--accent)">ls</span></div>
-  <div><a href="https://techhut.tv">techhut.tv</a></div>
+  <nav>
+    <a class="secondary" href="https://techhut.tv/content">articles</a>
+    <span class="sep secondary">·</span>
+    <a class="secondary" href="https://techhut.tv/team">team</a>
+    <span class="sep secondary">·</span>
+    <a class="home" href="https://techhut.tv">← techhut.tv</a>
+  </nav>
 </header>
 
 <main>
