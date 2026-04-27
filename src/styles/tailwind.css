@@ -49,15 +49,33 @@
   .custom-details li {
     margin-left: 50px !important;
   }
-  
+
   /* Hide scrollbar for sidebar navigation */
   .sidebar-scroll {
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
   }
-  
+
   .sidebar-scroll::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Deck-aligned global grid background — only shown in dark mode */
+  .deck-grid {
+    display: none;
+  }
+  :root.dark .deck-grid {
+    display: block;
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
   }
 }
 

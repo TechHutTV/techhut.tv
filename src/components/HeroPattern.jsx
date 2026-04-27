@@ -3,14 +3,7 @@ import { GridPattern } from '@/components/GridPattern'
 export function HeroPattern() {
   return (
     <div className="absolute inset-0 -z-10 mx-0 max-w-none overflow-hidden">
-      <div
-        className="absolute inset-0 hidden dark:block z-0"
-        style={{
-          backgroundColor: '#0a0d0a',
-          backgroundImage:
-            'linear-gradient(180deg, rgba(246,131,48,0.045) 0%, transparent 45%), repeating-linear-gradient(0deg, transparent 0 2px, rgba(255,255,255,0.008) 2px 3px)',
-        }}
-      >
+      <div className="absolute inset-0 hidden dark:block z-0" style={{ backgroundColor: '#0a0d0a' }}>
         <GridPattern
           width={72}
           height={56}
@@ -22,7 +15,7 @@ export function HeroPattern() {
             [7, 3],
             [10, 6],
           ]}
-          className="absolute inset-x-0 inset-y-[-50%] h-[200%] w-full skew-y-[-18deg] fill-black/40 stroke-black/50 mix-blend-overlay dark:fill-[#f68330]/[0.04] dark:stroke-[#f68330]/[0.08]"
+          className="absolute inset-x-0 inset-y-[-50%] h-[200%] w-full skew-y-[-18deg] fill-black/40 stroke-black/50 mix-blend-overlay dark:fill-white/2.5 dark:stroke-white/5"
         />
       </div>
       <div className="absolute inset-x-0 top-0 h-[25rem] dark:[mask-image:linear-gradient(white,transparent)] pointer-events-none z-10">

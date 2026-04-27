@@ -5,21 +5,6 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Router, useRouter } from 'next/router'
 import { MDXProvider } from '@mdx-js/react'
-import { Space_Grotesk, JetBrains_Mono } from 'next/font/google'
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans',
-  display: 'swap',
-})
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-mono',
-  display: 'swap',
-})
 
 // Site configuration
 const siteConfig = {
@@ -31,6 +16,7 @@ import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 import '@/styles/tailwind.css'
+import '@/lib/fonts'
 import 'focus-visible'
 import {Layout} from "@/components/Layout";
 import {ToastContainer} from "react-toastify";
@@ -63,15 +49,6 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ErrorBoundary>
-      <style jsx global>{`
-        :root {
-          --font-sans: ${spaceGrotesk.style.fontFamily};
-          --font-mono: ${jetbrainsMono.style.fontFamily};
-        }
-        html {
-          font-family: ${spaceGrotesk.style.fontFamily};
-        }
-      `}</style>
       {/* Google Analytics */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.googleAnalytics}`}

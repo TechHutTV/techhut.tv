@@ -132,7 +132,10 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
           imagePosition={imagePosition}
         />
       ) : (
-        <HeroPattern/>
+        <>
+          <HeroPattern/>
+          <div aria-hidden="true" className="deck-grid" />
+        </>
       )}
       <Header />
       {/* Hover detection zone on left edge (only when sidebar is closed) */}
