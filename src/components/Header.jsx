@@ -40,7 +40,7 @@ export const Header = forwardRef(function Header({ className }, ref) {
       className={clsx(
         className,
         'fixed z-50 flex items-center justify-between gap-3 px-5 transition h-[64px] lg:pl-5 lg:pr-8 min-h-[64px] lg:pointer-events-auto',
-        'lg:left-4 lg:right-4 lg:rounded-b-2xl lg:shadow-lg lg:border lg:border-t-0 lg:border-zinc-200/50 lg:dark:border-zinc-800/50',
+        'lg:left-4 lg:right-4 lg:rounded-b-md lg:shadow-lg lg:border lg:border-t-0 lg:border-zinc-200/50 lg:dark:border-zinc-800/50',
         'inset-x-0 left-0 right-0',
         !isInsideMobileNavigation &&
           'backdrop-blur-lg bg-white/70 dark:bg-[#0a0d0a]/70 border-b border-zinc-200 dark:border-zinc-800',

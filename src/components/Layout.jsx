@@ -5,7 +5,7 @@ import clsx from 'clsx'
 
 import { Prose } from '@/components/Prose'
 import {HeroPattern} from "@/components/HeroPattern";
-import {NavigationDocs} from "@/components/NavigationDocs";
+import {NavigationDocs, SidebarFooter} from "@/components/NavigationDocs";
 import {Header} from "@/components/Header";
 import {motion} from "framer-motion";
 import {Footer} from "@/components/Footer";
@@ -21,6 +21,7 @@ import {TopContentBanner} from "@/components/TopContentBanner";
 import {useSidebarStore} from "@/components/SidebarState";
 import {CoverImageBackground} from "@/components/CoverImageBackground";
 import {formatDate} from "@/lib/dates";
+import {getRelatedArticles} from "@/lib/relatedArticles";
 
 function useTableOfContents(tableOfContents) {
   let [currentSection, setCurrentSection] = useState(tableOfContents[0]?.id)
@@ -67,8 +68,9 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage, tags }) {
   let router = useRouter()
+  const relatedArticles = isContentPage ? getRelatedArticles(tags, router.asPath, 4) : []
 
   // Build edit URL: use provided editUrl for content pages, or construct from pathname for pages
   const githubEditUrl = editUrl || `https://github.com/TechHutTV/techhut.tv/tree/main/src/pages${router.pathname === '/' ? '/index' : router.pathname}.mdx`
@@ -168,8 +170,11 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             onMouseEnter={() => setIsHoveringSidebar(true)}
             onMouseLeave={() => setIsHoveringSidebar(false)}
         >
-          <div className="contents lg:pointer-events-auto lg:block lg:w-72 lg:overflow-y-auto lg:px-6 lg:pb-8 lg:pt-6 lg:bg-white/70 lg:dark:bg-[#0a0d0a]/70 lg:backdrop-blur-lg 2xl:w-80 lg:overflow-x-visible sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-2xl lg:shadow-xl lg:shadow-zinc-900/10 lg:dark:shadow-black/20 lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
-            <NavigationDocs className="hidden lg:block" />
+          <div className="contents lg:pointer-events-auto lg:flex lg:flex-col lg:w-56 lg:px-4 lg:pb-4 lg:pt-5 lg:bg-white/70 lg:dark:bg-[#0a0d0a]/70 lg:backdrop-blur-lg 2xl:w-60 sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-md lg:shadow-xl lg:shadow-zinc-900/10 lg:dark:shadow-black/20 lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
+            <div className="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:overflow-x-visible sidebar-scroll lg:-mx-4 lg:px-4">
+              <NavigationDocs />
+            </div>
+            <SidebarFooter className="hidden lg:block" />
           </div>
         </aside>
         <div className={clsx(
@@ -178,7 +183,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             ? "lg:pr-8 xl:pr-12"
             : "lg:pr-0",
           !mounted || sidebarShouldBeVisible
-            ? "lg:ml-72 2xl:ml-80 lg:pl-8 lg:px-5"
+            ? "lg:ml-56 2xl:ml-60 lg:pl-8 lg:px-5"
             : "lg:ml-0 lg:pl-32 lg:px-5"
         )}>
           <main className="py-16">
@@ -292,6 +297,29 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
               </>
             )}
           </nav>
+          {relatedArticles.length > 0 && (
+            <div className={clsx("w-80", tableOfContents.length > 0 ? "mt-10" : "mt-0")}>
+              <h2 className="font-display text-sm font-medium text-slate-900 dark:text-white mb-4">
+                Related
+              </h2>
+              <ul role="list" className="space-y-4">
+                {relatedArticles.map((article) => (
+                  <li key={article.href}>
+                    <Link href={article.href} className="group block">
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors leading-snug">
+                        {article.title}
+                      </p>
+                      {article.tags && article.tags.length > 0 && (
+                        <p className="text-xs text-slate-500 dark:text-slate-500 mt-1">
+                          {article.tags.slice(0, 3).join(' · ')}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>}
       </div>
     </>

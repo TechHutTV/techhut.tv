@@ -22,7 +22,7 @@ export function FeaturedArticle({ article: articleProp, slug }) {
     <div className="not-prose my-8">
       <div
         className={clsx(
-          'group relative cursor-pointer rounded-2xl overflow-hidden',
+          'group relative cursor-pointer rounded-md overflow-hidden',
           'bg-white dark:bg-white/[0.03]',
           'ring-1 ring-inset ring-zinc-900/7.5 dark:ring-white/10',
           'transition-shadow hover:shadow-lg hover:shadow-zinc-900/10 dark:hover:shadow-black/20',
