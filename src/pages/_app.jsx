@@ -46,6 +46,7 @@ export default function App({ Component, pageProps }) {
   const cover = pageProps.cover
   const imagePosition = pageProps.imagePosition
   const description = pageProps.description || `${pageProps.title} - TechHut` || 'TechHut - Linux guides, software reviews, and tech content'
+  const pageTitle = pageProps.title ? `${pageProps.title} - TechHut` : 'TechHut - Linux Guides, Reviews & Homelab Tutorials'
 
   return (
     <ErrorBoundary>
@@ -64,13 +65,13 @@ export default function App({ Component, pageProps }) {
       </Script>
       <Head>
         <style>{dom.css()}</style>
-        <title>{`${pageProps.title} - TechHut`}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={description} />
 
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`https://techhut.tv${router.asPath}`} />
-        <meta property="og:title" content={`${pageProps.title} - TechHut`} />
+        <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={description} />
         {cover && <meta property="og:image" content={`https://techhut.tv${cover}`} />}
         <meta property="og:site_name" content="TechHut" />
@@ -78,7 +79,7 @@ export default function App({ Component, pageProps }) {
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:url" content={`https://techhut.tv${router.asPath}`} />
-        <meta name="twitter:title" content={`${pageProps.title} - TechHut`} />
+        <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={description} />
         {cover && <meta name="twitter:image" content={`https://techhut.tv${cover}`} />}
         <meta name="twitter:creator" content="@techhutofficial" />
