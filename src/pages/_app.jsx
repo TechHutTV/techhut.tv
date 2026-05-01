@@ -16,7 +16,7 @@ import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 import '@/styles/tailwind.css'
-import '@/lib/fonts'
+import { spaceGrotesk, jetbrainsMono } from '@/lib/fonts'
 import 'focus-visible'
 import {Layout} from "@/components/Layout";
 import {ToastContainer} from "react-toastify";
@@ -51,6 +51,15 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ErrorBoundary>
+      <style jsx global>{`
+        :root {
+          --font-sans: ${spaceGrotesk.style.fontFamily};
+          --font-mono: ${jetbrainsMono.style.fontFamily};
+        }
+        html {
+          font-family: ${spaceGrotesk.style.fontFamily};
+        }
+      `}</style>
       {/* Google Analytics */}
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.googleAnalytics}`}

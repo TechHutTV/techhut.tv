@@ -1,5 +1,4 @@
 import { Head, Html, Main, NextScript } from 'next/document'
-import { spaceGrotesk, jetbrainsMono } from '@/lib/fonts'
 import {GoogleTagManagerBodyScript, GoogleTagManagerHeadScript} from "@/components/GoogleTagManager";
 
 const modeScript = `
@@ -49,7 +48,7 @@ export default function Document() {
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
           <link rel="manifest" href="/site.webmanifest" />
       </Head>
-      <body className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} font-sans bg-white antialiased dark:bg-[#0a0d0a]`}>
+      <body className="font-sans bg-white antialiased dark:bg-[#0a0d0a]">
         <GoogleTagManagerBodyScript />
         <Main />
         <NextScript />
