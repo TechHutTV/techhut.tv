@@ -15,7 +15,7 @@ const withMDX = nextMDX({
 
 
 const isProd = process.env.NODE_ENV === 'production'
-const assetPrefix = process.env.ASSET_PREFIX || (isProd ? '/docs-static' : undefined)
+const assetPrefix = process.env.ASSET_PREFIX || undefined
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
