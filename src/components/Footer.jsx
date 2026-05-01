@@ -191,6 +191,20 @@ function FooterContent() {
               </svg>
             </SocialLink>
           </div>
+          <a
+            href="https://privatealps.net/en?affiliate=2E2I75V1RT"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            title="Join PrivateAlps"
+            className="mt-4 block overflow-hidden rounded-md"
+          >
+            <img
+              src="https://privatealps.net/img/privatealps_banner.gif"
+              alt="PrivateAlps"
+              loading="lazy"
+              className="block w-full h-auto"
+            />
+          </a>
         </div>
       </div>
 
