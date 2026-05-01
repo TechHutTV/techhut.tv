@@ -11,7 +11,7 @@ const ARTICLES_PER_PAGE = 8
 function TileHighlight() {
   return (
     <div className="pointer-events-none">
-      <div className="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
+      <div className="absolute inset-0 rounded-md transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
         <GridPattern
           width={72}
           height={56}
@@ -20,7 +20,7 @@ function TileHighlight() {
         />
       </div>
       <div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#FFAC1C] to-[#F28C28] opacity-0 transition duration-300 group-hover:opacity-20 dark:group-hover:opacity-40 dark:from-[#F28C28]/30 dark:to-[#FF7518]/30"
+        className="absolute inset-0 rounded-md bg-gradient-to-br from-[#FFAC1C] to-[#F28C28] opacity-0 transition duration-300 group-hover:opacity-20 dark:group-hover:opacity-40 dark:from-[#F28C28]/30 dark:to-[#FF7518]/30"
       />
     </div>
   )
@@ -33,11 +33,11 @@ function ArticleCard({ article }) {
 
   return (
     <div
-      className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden cursor-pointer"
+      className="group relative flex flex-col rounded-md bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden cursor-pointer"
       onClick={handleClick}
     >
       <TileHighlight />
-      <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
+      <div className="absolute inset-0 rounded-md ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
 
       {article.cover && (
         <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800">
@@ -51,7 +51,7 @@ function ArticleCard({ article }) {
         </div>
       )}
 
-      <div className="relative flex-1 rounded-2xl px-4 pb-4 pt-4">
+      <div className="relative flex-1 rounded-md px-4 pb-4 pt-4">
         {article.date && (
           <time className="block text-xs text-zinc-500 dark:text-zinc-400 mb-2" dateTime={article.date}>
             {formatDate(article.date, 'medium')}

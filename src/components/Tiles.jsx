@@ -10,7 +10,7 @@ function TilePattern({ mouseX, mouseY }) {
 
   return (
     <div className="pointer-events-none">
-      <div className="absolute inset-0 rounded-2xl transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
+      <div className="absolute inset-0 rounded-md transition duration-300 [mask-image:linear-gradient(white,transparent)] group-hover:opacity-50">
         <GridPattern
           width={72}
           height={56}
@@ -19,20 +19,9 @@ function TilePattern({ mouseX, mouseY }) {
         />
       </div>
       <motion.div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#FFAC1C] to-[#F28C28] opacity-0 transition duration-300 group-hover:opacity-30 dark:group-hover:opacity-60 dark:from-[#F28C28]/30 dark:to-[#FF7518]/30"
+        className="absolute inset-0 rounded-md bg-gradient-to-r from-[#FFAC1C] to-[#F28C28] opacity-0 transition duration-300 group-hover:opacity-30 dark:group-hover:opacity-60 dark:from-[#F28C28]/30 dark:to-[#FF7518]/30"
         style={style}
       />
-      <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 mix-blend-overlay transition duration-300 group-hover:opacity-100"
-        style={style}
-      >
-        <GridPattern
-          width={72}
-          height={56}
-          x="50%"
-          className="absolute inset-x-0 inset-y-[-30%] h-[160%] w-full skew-y-[-18deg] fill-black/50 stroke-black/70 dark:fill-white/2.5 dark:stroke-white/10"
-        />
-      </motion.div>
     </div>
   )
 }
@@ -76,14 +65,14 @@ export function Tiles({ title, id, description, items, buttonText = 'Read more' 
             <div
               key={item.href}
               onMouseMove={onMouseMove}
-              className="group relative flex rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5"
+              className="group relative flex rounded-md bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5"
             >
               <TilePattern mouseX={mouseX} mouseY={mouseY} />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
-              <div className="relative rounded-2xl px-4 pb-4 pt-4">
+              <div className="absolute inset-0 rounded-md ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
+              <div className="relative rounded-md px-4 pb-4 pt-4">
                 <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
                   <Link href={item.href}>
-                    <span className="absolute inset-0 rounded-2xl" />
+                    <span className="absolute inset-0 rounded-md" />
                     {item.name}
                   </Link>
                 </h3>

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import { Button } from '@/components/Button'
-import { docsNavigation } from '@/components/NavigationDocs'
+import { docsNavigation } from '@/data/docsNavigation'
 
 function flattenNavItems(items, includeGroups = false) {
   let result = []
