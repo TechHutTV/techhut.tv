@@ -24,6 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
 import {AnnouncementBannerProvider} from "@/components/announcement-banner/AnnouncementBannerProvider";
 import {JsonLd} from "@/components/JsonLd";
+import {MatomoTagManager} from "@/components/Matomo";
 
 // Lazy load ImageZoom since it's only used on click
 const ImageZoom = dynamic(
@@ -63,6 +64,7 @@ export default function App({ Component, pageProps }) {
           gtag('config', '${siteConfig.googleAnalytics}');
         `}
       </Script>
+      <MatomoTagManager />
       <Head>
         <style>{dom.css()}</style>
         <title>{pageTitle}</title>
