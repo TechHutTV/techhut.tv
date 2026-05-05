@@ -1,0 +1,113 @@
+export const title = "Run Wikipedia, Maps, and AI Offline with Project Nomad"
+export const description = "Project Nomad is a self-hosted offline knowledge server that bundles Wikipedia, maps, medical references, AI, and more into a single Docker-based suite. Here's how to set it up."
+export const date = "2026-05-05"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "AI", "Linux"]
+export const cover = "/docs-static/img/2026/05/project-nomad-offline-knowledge-server/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="-YCNzxZX2_0" />
+
+I've done a video before on self-hosting the internet - grabbing Wikipedia, maps, and offline reference data and hosting it locally. It's one of my favorite kinds of rabbit holes because the idea of having critical knowledge available when the internet goes down is just genuinely useful, not just a prepper fantasy.
+
+Project Nomad takes that concept and wraps it into a single, nicely packaged suite. One installer, one dashboard, and a whole collection of tools ready to go. I hadn't tested it before the video so this was a genuine first look and I came away pretty impressed.
+
+## What is Project Nomad?
+
+Project N.O.M.A.D. stands for Node for Offline Media, Archives, and Data. It's an open source, self-hosted knowledge server built around Docker. The main interface is called the Command Center, which acts as a dashboard and management UI that spins up and configures all the individual tools underneath it.
+
+![Project Nomad Command Center dashboard](/docs-static/img/2026/05/project-nomad-offline-knowledge-server/nomad-dashboard.jpg)
+
+Here's what's included out of the box:
+
+**Information Library** - Powered by Kiwix, this is where you get your offline Wikipedia, medical references, survival guides, ebooks, and more. If you've ever used Kiwix before you know how it works with the ZIM file format. Project Nomad makes downloading and managing those files a lot easier with a built-in content browser.
+
+![Kiwix offline information library](/docs-static/img/2026/05/project-nomad-offline-knowledge-server/kiwix.jpg)
+
+**AI Assistant** - Local AI chat powered by Ollama with document upload and semantic search via Qdrant. If you have a decent GPU you can run a full local LLM. If not, you can skip it or point it at an external OpenAI-compatible API like LM Studio.
+
+![Local AI chat assistant](/docs-static/img/2026/05/project-nomad-offline-knowledge-server/ai-chat.jpg)
+
+**Education Platform** - This one surprised me. It's powered by Kolibri and includes Khan Academy courses with progress tracking and multi-user support. There's also a content importer for things like Teachable Earth which has some really solid educational videos for kids.
+
+![Kolibri education platform](/docs-static/img/2026/05/project-nomad-offline-knowledge-server/kolibri-education.jpg)
+
+**Offline Maps** - Regional downloadable maps via ProtoMaps. You're not getting GPS navigation here but you're getting a real working map that works with zero internet. For the Pacific Northwest region I downloaded it's about the size you'd expect.
+
+![Offline regional maps](/docs-static/img/2026/05/project-nomad-offline-knowledge-server/maps.jpg)
+
+**Data Tools** - CyberChef is bundled in here which is a Swiss Army knife for encryption, encoding, hashing, and data analysis. It's genuinely a useful tool even outside of a doomsday scenario.
+
+**Notes** - FlatNotes is included as a local markdown note-taking tool. Pretty basic but nice to have built in.
+
+## Hardware Requirements
+
+Do note that Project Nomad itself is pretty lightweight. The minimum specs are a dual-core processor, 4GB of RAM, and 5GB of free disk space on any Debian-based OS. That's pretty easy to hit.
+
+Where things scale up is if you want to run the AI tools. For that they recommend at least an Intel Core i7 or AMD Ryzen 7, 32GB of RAM, and an NVIDIA RTX 3060 or equivalent. Basically if you want local AI you want a real GPU. For everything else though, something like a Zimaboard 2 would run this without breaking a sweat.
+
+For storage, keep in mind that full Wikipedia with images is over 100GB. If you're grabbing everything including survival guides, Docker docs, medical references, and so on, you'll want at least 250GB free, preferably on an SSD.
+
+## Installing Project Nomad
+
+Project Nomad installs on any Debian-based OS. Ubuntu is what they recommend and what I tested with. The quick install is a single command:
+
+```bash
+sudo apt-get update && \
+sudo apt-get install -y curl && \
+curl -fsSL https://raw.githubusercontent.com/Crosstalk-Solutions/project-nomad/refs/heads/main/install/install_nomad.sh \
+  -o install_nomad.sh && \
+sudo bash install_nomad.sh
+```
+
+That's it. The script handles pulling all the Docker images and getting everything wired up. Once it finishes, go ahead and open a browser and head to `http://[your-ip]:8080` and you'll land in the Command Center.
+
+Do note that this spins up quite a few containers. When I ran `docker ps` after going through the setup wizard it was pretty full. I'd recommend running this in its own VM or at minimum on a system where you don't have a bunch of other services fighting for resources.
+
+If you already have Docker installed the script will detect it. If you prefer to do things manually, there's also a Docker Compose template in the repo you can grab and customize yourself.
+
+## First Time Setup
+
+When you first log in you'll get a setup wizard which is a nice touch. It walks you through selecting which tools you want to enable and which content you want to download. Here's roughly what that looks like:
+
+**Maps** - Pick your region. I grabbed the Pacific Northwest region. Global coverage comes in at around 125GB so pick wisely depending on your storage situation.
+
+**AI Assistant** - If you have GPU acceleration available it'll show up here. If not, you can skip it for now and enable it later through settings.
+
+**Information Library** - This is where you pick your Wikipedia version. Options range from popular articles only (small and fast) all the way up to the full Wikipedia with images at 100GB+. For testing I grabbed just popular articles. For my actual deployment I'll grab the full thing.
+
+There's also a content section for additional downloads including survival and preparedness guides, medicine, WikiBooks, Wikiversity, TED talks, FreeCodeCamp, Docker documentation, and Linux documentation. You can add as much or as little as you want and add more later from within the app.
+
+**Education Platform** - Kolibri gets its own setup step where you set a facility name and can start importing content. Teachable Earth is available as a free import and has some really solid video lessons.
+
+**Additional Tools** - Notes and Data Tools can be toggled on here.
+
+Once you submit your selections it pulls down any remaining containers and starts downloading your content in the background. The downloads show up in an active downloads panel so you can track progress.
+
+## Exploring the Tools
+
+Once everything is up and running, navigating between tools is simple from the Command Center home screen.
+
+The Information Library viewer is clean and works well. If you grab the Docker documentation for example you get the full docs browsable offline. Same with the medical library, which comes as a collection of PDFs including a general first aid manual. Do note some of that content is from the early 2000s so best practices for certain things may have been updated since.
+
+When Wikipedia finishes downloading it's genuinely impressive. Full article pages with links and references all working locally. The fact they can fit the entire thing including images under 200GB is pretty wild.
+
+The education platform via Kolibri is the one that surprised me most. The Teachable Earth content is really good and I could see myself actually using this for my kids. It's a proper offline learning platform, not just a document dump.
+
+The data tools section with CyberChef is great even for day-to-day use. Encoding, hashing, network utilities, the works. It's another one of those tools that's useful well outside of a worst case scenario.
+
+## A Note on Security
+
+Project Nomad ships with no authentication by default. The intention is to keep it open and accessible. They're pretty clear in the docs that you should not expose this directly to the internet and I'd agree with that. If you want to make it accessible beyond your local network, something like NetBird's reverse proxy with a pin or SSO layer would be a clean way to do it while keeping it locked down.
+
+Authentication is on their public roadmap so it may come eventually, but for now treat this as a local network tool.
+
+## Final Thoughts
+
+I really like this project. It hits a spot that nothing else really fills cleanly - a single installer, a nice dashboard, and a curated collection of offline knowledge tools all working together. The setup wizard makes it approachable and the content library options cover the important stuff.
+
+For my actual deployment I'm planning to put this on a Zimaboard 2 and just leave it running. I'll grab the full Wikipedia, the full medical library, Docker docs, survival guides, all of it. I'm a data hoarder and just having all this stuff sitting there ready to go is genuinely nice peace of mind.
+
+You can find the full project over on [GitHub](https://github.com/Crosstalk-Solutions/project-nomad) and their website at [projectnomad.us](https://www.projectnomad.us). With all that, I do hope you found this useful. Have a great one.
