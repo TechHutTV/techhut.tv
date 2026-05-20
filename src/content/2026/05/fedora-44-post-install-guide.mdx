@@ -10,6 +10,16 @@ So I just installed Fedora 44 on my main desktop and figured I'd put together a 
 
 Quick heads up before we dive in. I generally recommend waiting a week or two after a major Fedora release before updating. Small hiccups on day-zero releases get caught and patched fast, and you skip the friction. If you're new to Linux and not yet comfortable troubleshooting, give it a couple of weeks before jumping on a fresh major release. I'm doing it now because I'm making content about it and I'm comfortable troubleshooting. Just keep that in mind.
 
+## Why Fedora
+
+The short version: Fedora gives you the latest kernel and packages without the maintenance burden of a rolling release. Strong upstream-first philosophy and serious Red Hat engineering behind it. It's a beautiful mix of Ubuntu LTS and Arch — bleeding edge, but stable. New GNOME, newer drivers, but you're not constantly chasing dependency churn in the background. Linus Torvalds himself uses Fedora as his daily driver for exactly that reason: it stays out of his way.
+
+I'm not going to spend time bashing Ubuntu or Arch — they're both great for plenty of reasons. I just didn't want to deal with the snap-first direction Canonical is taking, and actually maintaining my system isn't a hobby of mine anymore. I used to run EndeavourOS and enjoyed the tinkering, but these days I don't have the time. Fedora hits the sweet spot.
+
+The other obvious question is "why not Bazzite or Nobara?" Both are excellent — the Nobara video is actually one of the most popular videos on the channel. They're gaming-focused distros though, and gaming isn't my primary use case. If you're a Linux gamer first, absolutely go look at those instead. For everyone else, you can get most of the same results out of vanilla Fedora with a couple of extra packages.
+
+![Fedora Linux live media welcome screen](/docs-static/img/2026/05/fedora-44-post-install-guide/welcome-screen.jpg)
+
 ## DNF Configuration
 
 This is probably the single biggest quality-of-life change you can make to the package manager, and it makes everything else in this guide noticeably faster. Go ahead and open up the dnf config file:
@@ -212,6 +222,12 @@ curl -fsSL https://pkgs.netbird.io/install.sh | sh
 netbird up
 ```
 
+If you self-host NetBird like I do, point the client at your management URL instead:
+
+```
+netbird up --management-url https://your-netbird-instance
+```
+
 Full setup walkthrough is over on the [NetBird docs site](https://docs.netbird.io) if you're new to it.
 
 ## Mounting an Unraid SMB Share
@@ -282,10 +298,14 @@ flatpak install flathub com.mattjakeman.ExtensionManager
 
 A few extensions I recommend for daily-driver use:
 
+- **Blur my Shell**: replaces the flat gray overview background with a nice colored blur. Silly to some, but a must-have for me
 - **AppIndicator and KStatusNotifierItem Support**: brings system tray icons back, needed for apps like Discord, Steam, and Slack
 - **Tray Icons: Reloaded**: alternative tray icon implementation. Pick whichever works better for your apps
 - **Dash to Dock** or **Dash to Panel**: adds a persistent dock or full taskbar if you don't like the default GNOME activities flow
+- **Clipboard Indicator**: clipboard history in the top bar, simple and out of the way
 - **Caffeine**: keeps the screen awake on demand, super useful when you're watching videos or running long tasks
+
+A heads up on extensions: on a fresh major GNOME release, some take a little while to get updated for the new version. A few never do. Stick to popular, actively maintained ones and don't go overboard. Only add what actually improves your day-to-day.
 
 ## Troubleshooting
 
