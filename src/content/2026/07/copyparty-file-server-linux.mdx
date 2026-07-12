@@ -1,0 +1,382 @@
+export const title = "Copyparty: A Full File Server in a Single Python File"
+export const description = "Set up copyparty on Linux as a user-level systemd service. One Python file gets you a full file server with thumbnails, music streaming, and resumable uploads, no Docker required."
+export const date = "2026-07-12"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Linux", "Homelab"]
+export const cover = "/docs-static/img/2026/07/copyparty-file-server-linux/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="AlwcuEQNU18" />
+
+What if your entire file server was one Python file? No Docker, no database, no account with anyone. That's [copyparty](https://github.com/9001/copyparty), and it's honestly one of the most fun pieces of software I've set up in a while.
+
+You point it at a folder and get a genuinely great web UI. Every image and video gets a thumbnail. Music plays right in the browser with gapless playback, and it'll even transcode formats your browser can't handle. There's a full text and markdown viewer, folder downloads as a single zip, and search that digs through filenames and media tags.
+
+![The copyparty web UI, a clean file listing served straight from a home directory](/docs-static/img/2026/07/copyparty-file-server-linux/web-ui.jpg)
+
+The uploader is where it gets a little ridiculous. It's resumable and multithreaded, so you can drop in a fifty gig file, close the tab halfway through, come back tomorrow, and it picks up exactly where it left off. It even deduplicates, so the same file never gets stored twice. And beyond HTTP, this same little server can speak WebDAV, FTP, SFTP, and even SMB, so it shows up as a network drive on basically anything you own.
+
+![Copyparty's resumable, multithreaded uploader with parallel upload controls and a drag-and-drop zone](/docs-static/img/2026/07/copyparty-file-server-linux/upload-panel.jpg)
+
+In this guide we're setting it up the way I actually run it at home: as a user-level systemd service on Linux, serving files across the LAN, surviving reboots, with the firewall done properly.
+
+## Why not Docker?
+
+Normally I'd reach for a container, but for a file browser pointed at your own home directory, a user-level systemd service is honestly cleaner. The service runs as your user, so the UID and GID match your files naturally. No `PUID=1000`, no `PGID=1000`, none of that bind-mount permission weirdness. Copyparty just sees your files exactly the way you do.
+
+That said, if you'd rather run it in a container, no hard feelings. Here's a little compose tidbit to grab, just fill in your user ID and bind mount the folder where your files actually live:
+
+```yaml
+services:
+  copyparty:
+    image: copyparty/ac
+    container_name: copyparty
+    user: "1000:1000"                 # your UID:GID, run `id` to find it
+    ports:
+      - "3923:3923"
+    volumes:
+      - /path/to/your/files:/w        # the files you want to serve
+      - ./copyparty.conf:/cfg/copyparty.conf:ro
+    restart: unless-stopped
+```
+
+The `/w` path is copyparty's working directory inside the container, and it reads its config from `/cfg`. Everything else in this guide still applies, just point those volumes at your own files and config.
+
+Do note that what we're building here is meant for a trusted LAN or a VPN. The base config is read-only with no login, so anyone on your network can browse and download, but nobody can upload, change, or delete anything. That's the safest starting point. Do not point this at the open internet. If you want remote access, put it behind Tailscale, NetBird, WireGuard, or a reverse proxy with real authentication. If NetBird sounds good, I've got a [full guide on self-hosting it with Pocket ID](/self-host-netbird-pocketid) that pairs perfectly with this.
+
+## Prerequisites
+
+You need almost nothing for this. A Linux box with python3, curl, systemd, and a normal non-root user. I'm on Fedora:
+
+```bash
+sudo dnf install -y python3 curl
+```
+
+On Ubuntu or Debian it's the same idea with apt:
+
+```bash
+sudo apt update
+sudo apt install -y python3 curl
+```
+
+Real quick, check your user and group ID:
+
+```bash
+id -u
+id -g
+```
+
+On most single-user systems you'll see 1000 and 1000. That number is the whole reason this setup is clean. The server runs as you, so it sees files the same way you do.
+
+Copyparty defaults to port 3923, so make sure nothing's already sitting on it:
+
+```bash
+ss -tlnp | grep ':3923\b' || true
+```
+
+If nothing prints, you're good to go. If something's already there, you can change the port in the config, and we'll cover that below.
+
+## Installing copyparty
+
+Installation is one download. Copyparty ships as a self-extracting Python script, the whole server in one file. First, make a proper home for it:
+
+```bash
+mkdir -p ~/.local/opt/copyparty
+```
+
+Now go ahead and grab the latest release straight from GitHub:
+
+```bash
+curl -fL --retry 3 --retry-delay 2 \
+  -o ~/.local/opt/copyparty/copyparty-sfx.py \
+  https://github.com/9001/copyparty/releases/latest/download/copyparty-sfx.py
+```
+
+Make it executable and give it a quick sanity check:
+
+```bash
+chmod 755 ~/.local/opt/copyparty/copyparty-sfx.py
+python3 ~/.local/opt/copyparty/copyparty-sfx.py --version
+```
+
+If you see a version number and some Python environment details, that's it. That's the install. I love this thing.
+
+## Configuration
+
+Everything copyparty does is driven by one config file, so let's spend some real time here. This is the part you'll come back to.
+
+### The base config
+
+Go ahead and make the directory and drop the config in:
+
+```bash
+mkdir -p ~/.config/copyparty
+
+cat > ~/.config/copyparty/copyparty.conf <<EOF
+[global]
+ i: 0.0.0.0
+ p: 3923
+ name: Home File Server
+ no-robots
+
+[/]
+ /home/brandon
+ accs:
+  r: *
+EOF
+```
+
+Walking through this real quick:
+
+- `i: 0.0.0.0` means listen on every network interface, which is what lets other machines on your LAN reach it.
+- `p: 3923` is the port.
+- `name` is just the title shown in the browser.
+- `no-robots` politely asks search engines to stay away.
+
+Then the volume section. `[/]` is the web root, and the path under it is the local folder being served. I'm serving my whole home directory, so **replace `/home/brandon` with your own home directory**, or any folder you want to serve. And `r: *` means everyone gets read-only access. Read, but never write, never delete.
+
+Do note, if you're tempted to write `$HOME` in there instead of a real path, copyparty only accepts the curly brace form `${HOME}` for environment variables. A bare `$HOME` will refuse to start with a syntax error. I learned that one the hard way. Just write the actual path.
+
+Any time you change the config, restart the service (once we've built it):
+
+```bash
+systemctl --user restart copyparty.service
+```
+
+### Bind address and port
+
+`i: 0.0.0.0` is LAN-wide, which is what we're using. If you want to lock it to just this machine, use `i: 127.0.0.1`. Or set a specific IP like `i: 192.168.1.50` if the box has multiple interfaces and you only want it reachable on one.
+
+The port is just `p:`. Change it to whatever you like, but remember to swap the firewall rule too. Remove the old port, add the new one, reload.
+
+### Multiple folders
+
+Copyparty can serve multiple folders as separate web paths, each with its own permissions:
+
+```ini
+[/]
+ /home/brandon
+ accs:
+  r: *
+
+[/downloads]
+ /home/brandon/Downloads
+ accs:
+  r: *
+
+[/projects]
+ /home/brandon/projects
+ accs:
+  r: *
+```
+
+And just like that, `/downloads` and `/projects` are their own volumes. Swap the paths for anything you want, a media drive, a shared folder, so on and so forth.
+
+### Accounts and permissions
+
+Everything so far is read-only, and that's the right default. But if you want uploads, and honestly copyparty's uploader is too good not to use, do it with accounts, not by opening writes to the whole world.
+
+Add an accounts section near the top of the config:
+
+```ini
+[accounts]
+ brandon: your-strong-password-here
+```
+
+Then grant that account permissions on a volume. The permission letters matter here, so do note how they break down:
+
+- `r` (read): browse folders, download files
+- `w` (write): upload files, copy files into the folder
+- `m` (move): move and rename files from the folder
+- `d` (delete): delete files and folders
+- `A`: everything, shorthand for full access including admin
+
+Delete is its own flag, separate from move. So for full control over a volume, you want `rwmd`:
+
+```ini
+[/]
+ /home/brandon
+ accs:
+  rwmd: brandon
+```
+
+Or here's the pattern I actually recommend: keep anonymous read-only browsing, and scope write access to one dedicated uploads folder:
+
+```ini
+[accounts]
+ uploader: use-a-real-password-here
+
+[/uploads]
+ /home/brandon/uploads
+ accs:
+  r: *
+  rw: uploader
+```
+
+Restart the service, and now the UI prompts for a login before anyone can touch that volume. As a nice bonus, copyparty has brute-force protection built in, so anyone hammering the password gets banned automatically.
+
+Whatever you do, do not hand write or delete access to `*`. Anyone on the network could fill your disk or wipe your files. Scope it.
+
+## First run
+
+Before we wire up the service, run it by hand once, because you should always know a thing works before you turn it into a service:
+
+```bash
+python3 ~/.local/opt/copyparty/copyparty-sfx.py \
+  -c ~/.config/copyparty/copyparty.conf
+```
+
+Then in a second terminal:
+
+```bash
+curl -I http://127.0.0.1:3923/
+```
+
+A `200 OK` means we're in business. Open `http://localhost:3923` in a browser and there it is, your files, browsable, with that whole UI, from one Python file we downloaded ninety seconds ago. Beautiful.
+
+While you're in there, poke around. That little trumpet icon opens a full media control panel with an equalizer, transcoding, and gapless playback, all baked into the same single file.
+
+![Copyparty's built-in media control panel with an equalizer, transcode options, and a dynamic range compressor](/docs-static/img/2026/07/copyparty-file-server-linux/media-panel.jpg)
+
+Ctrl+C to stop it, and let's make it permanent.
+
+## The systemd user service
+
+Here's the part that makes this a real server instead of a terminal window you have to babysit.
+
+```bash
+mkdir -p ~/.config/systemd/user
+
+cat > ~/.config/systemd/user/copyparty.service <<EOF
+[Unit]
+Description=Copyparty file server
+Documentation=https://github.com/9001/copyparty
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/brandon
+ExecStart=/usr/bin/python3 /home/brandon/.local/opt/copyparty/copyparty-sfx.py -c /home/brandon/.config/copyparty/copyparty.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+EOF
+```
+
+Do note that this lives in your user systemd directory, so no sudo, no root service. It waits for the network, and if copyparty ever crashes, systemd restarts it after five seconds.
+
+Those are full absolute paths, so **replace `/home/brandon` with your own home directory** in both `WorkingDirectory` and `ExecStart`. And don't try to get clever with `$HOME` or `~` in here. systemd doesn't do shell expansion and will reject the whole file with a "bad unit file setting" error. Real paths only. If you want a version that works for any user without editing, systemd's `%h` specifier expands to the home directory, but plain paths are easier to read.
+
+Reload and fire it up:
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable --now copyparty.service
+systemctl --user status copyparty.service
+```
+
+You want to see a green `active (running)`. And here's my favorite verification, proof of why we did it this way:
+
+```bash
+ps -o pid,user,uid,gid,cmd -p "$(systemctl --user show -p MainPID --value copyparty.service)"
+```
+
+Running as my user, my UID, my GID. Not root, not some container user. Whatever files I can read, copyparty can serve. Nothing more.
+
+## The reboot gotcha: linger
+
+Here's the detail that trips everyone up with user services. You've enabled it, but it might not start at boot. By default, your user services only run while you're logged in. The fix is called linger, and it tells systemd to run your services even when you're not.
+
+Check it:
+
+```bash
+loginctl show-user "$(id -un)" -p Linger
+```
+
+If it says `Linger=yes`, you're good to go. If it says no:
+
+```bash
+sudo loginctl enable-linger "$(id -un)"
+```
+
+Just like that, this server survives reboots, headless, no login required. If your service mysteriously vanishes after a restart someday, this is the first thing to check.
+
+## Firewall and LAN access
+
+We're listening on all interfaces, but your firewall might not care what copyparty wants. First, grab your server's IP:
+
+```bash
+hostname -I
+```
+
+A fun Fedora quirk: Fedora Workstation ships with all the high ports open by default, and 3923 is one of them, so on a desktop install this might already just work with zero firewall changes. Fedora Server is locked down properly though, so let's open the port with firewalld and reload:
+
+```bash
+sudo firewall-cmd --add-port=3923/tcp --permanent
+sudo firewall-cmd --reload
+```
+
+Without a zone specified, this applies to your default zone, which is what you want on pretty much any normal setup. Verify with:
+
+```bash
+sudo firewall-cmd --query-port=3923/tcp
+```
+
+If you're on Ubuntu with UFW, it's just:
+
+```bash
+sudo ufw allow 3923/tcp
+```
+
+Even if you don't think you're running a host firewall, check anyway. A service can be listening perfectly fine and still be unreachable from another machine, and the firewall is almost always why.
+
+Now the payoff. Confirm you're listening on all interfaces:
+
+```bash
+ss -tlnp | grep ':3923\b'
+```
+
+You want to see `0.0.0.0:3923`, not `127.0.0.1`. Then from your laptop or phone, browse to `http://SERVER-IP:3923` and there we go. Every device in the house can browse this machine, stream music from it, and grab files off it. That's the whole point, and we got here without a single container.
+
+## Living with it
+
+Day-to-day, everything is standard systemd. Status, start, stop, restart, all `systemctl --user` with the service name. Logs live in the journal:
+
+```bash
+journalctl --user -u copyparty.service -f
+```
+
+Updating is beautifully dumb. Because the whole app is one file, you just re-run the curl command from the install section, chmod it, and restart the service. Done. New version. It's real nice.
+
+And if you ever want it gone, removal is basically three deletes:
+
+```bash
+systemctl --user disable --now copyparty.service
+rm -f ~/.config/systemd/user/copyparty.service
+rm -rf ~/.config/copyparty
+rm -rf ~/.local/opt/copyparty
+systemctl --user daemon-reload
+```
+
+Close the firewall port, and it's like it was never there. No orphaned volumes, no dangling images, no leftover databases.
+
+## Troubleshooting
+
+A quick cheat sheet for the common stuff:
+
+- **Works locally but not from another machine.** Check the bind address with `ss -tlnp | grep 3923` first. If you see `127.0.0.1`, fix the config. If you see `0.0.0.0`, it's the firewall.
+- **"Bad unit file setting" from systemd.** You've got a `$HOME` or `~` in the unit file. systemd doesn't do shell expansion, so use full absolute paths (or the `%h` specifier) instead.
+- **Firewall rule doesn't seem to take effect.** On the rare setup where your interface is assigned to a non-default zone, run `firewall-cmd --get-active-zones` and add the port to that zone with `--zone=<name>`.
+- **Doesn't come back after a reboot.** Check that the service is enabled and that linger is on. It's almost always linger.
+- **Copyparty can't see a folder.** It can only read what your user can read. Check permissions with `ls -ld` on the folder in question.
+
+## Wrapping up
+
+Copyparty isn't trying to replace Nextcloud, or Syncthing, or Immich, or your NAS. It's not a cloud and it's not a sync platform. It's the fastest possible way to point a web browser at a folder and get a genuinely great interface for it. And running it as a user-level systemd service keeps it exactly as simple as it deserves to be. Your files, your permissions, one config, one service, one Python file.
+
+I am really curious what you all end up serving with this, so let me know in the comments on the video. With all that, I do hope this earned a spot in your homelab, and I hope you have an absolutely beautiful day.
