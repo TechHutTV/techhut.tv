@@ -181,8 +181,8 @@ function SuccessIcon(props) {
 
 export function Note({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-primary-500/20 bg-primary-50/50 p-4 leading-6 text-primary-900 dark:border-primary-500/30 dark:bg-primary-500/5 dark:text-primary-200 dark:[--tw-prose-links-hover:theme(colors.primary.300)] dark:[--tw-prose-links:theme(colors.white)]">
-      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-primary-500 stroke-white dark:fill-primary-200/20 dark:stroke-primary-200" />
+    <div className="my-6 flex gap-2.5 rounded-l border border-ice-500/20 bg-ice-50/50 p-4 leading-6 text-ice-900 dark:border-ice-500/30 dark:bg-ice-500/5 dark:text-ice-200 dark:[--tw-prose-links-hover:theme(colors.ice.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+      <InfoIcon className="mt-1 h-4 w-4 flex-none fill-ice-800 stroke-white dark:fill-ice-200/20 dark:stroke-ice-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
       </div>
@@ -192,8 +192,8 @@ export function Note({ children }) {
 
 export function Warning({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-red-500/20 bg-red-50/50 p-4 leading-6 text-red-900 dark:border-red-500/30 dark:bg-red-500/5 dark:text-red-200 dark:[--tw-prose-links-hover:theme(colors.red.300)] dark:[--tw-prose-links:theme(colors.white)]">
-      <WarningIcon className="mt-1 h-4 w-4 flex-none fill-red-500 stroke-white dark:fill-red-200/20 dark:stroke-red-200" />
+    <div className="my-6 flex gap-2.5 rounded-l border border-warning/20 bg-warning/10 p-4 leading-6 text-zinc-900 dark:border-warning/30 dark:bg-warning/5 dark:text-warning dark:[--tw-prose-links-hover:theme(colors.warning)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+      <WarningIcon className="mt-1 h-4 w-4 flex-none stroke-zinc-900 dark:stroke-warning" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
       </div>
@@ -203,8 +203,8 @@ export function Warning({ children }) {
 
 export function Success({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-green-500/20 bg-green-50/50 p-4 leading-6 text-green-900 dark:border-green-500/30 dark:bg-green-500/5 dark:text-green-200 dark:[--tw-prose-links-hover:theme(colors.green.300)] dark:[--tw-prose-links:theme(colors.white)]">
-      <SuccessIcon className="mt-1 h-4 w-4 flex-none fill-green-500 stroke-white dark:fill-green-200/20 dark:stroke-green-200" />
+    <div className="my-6 flex gap-2.5 rounded-l border border-primary-500/20 bg-primary-50/50 p-4 leading-6 text-primary-900 dark:border-primary-500/30 dark:bg-primary-500/5 dark:text-primary-200 dark:[--tw-prose-links-hover:theme(colors.primary.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+      <SuccessIcon className="mt-1 h-4 w-4 flex-none fill-primary-800 stroke-white dark:fill-primary-200/20 dark:stroke-primary-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
       </div>
@@ -259,7 +259,7 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
           {type}
         </dd>
         <dt className="sr-only">Required</dt>
-          {required && <dd className="font-mono text-xs text-red-600 dark:text-red-600">
+          {required && <dd className="font-mono text-xs text-danger">
           required
         </dd>}
           {!required && <dd className="font-mono text-xs text-zinc-400 dark:text-zinc-500">
@@ -267,12 +267,12 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
         </dd>}
         <dt className="sr-only">Enum</dt>
         <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
-            {min && !max && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={min}</code></div>}
-            {max && !min && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&lt;={max}</code></div>}
-            {min && max && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={min}</code><text> and </text><code className="text-sky-600 bg-sky-400/10">&lt;={max}</code></div>}
-            {minLen && !maxLen && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={minLen} {type === "string" ? "characters" : "objects"}</code></div>}
-            {maxLen && !minLen && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&lt;={maxLen} {type === "string" ? "characters" : "objects"}</code></div>}
-            {minLen && maxLen && <div><strong>Possible Values: </strong><code className="text-sky-600 bg-sky-400/10">&gt;={minLen} {type === "string" ? "characters" : "objects"}</code><text> and </text><code className="text-sky-600 bg-sky-400/10">&lt;={maxLen} {type === "string" ? "characters" : "objects"}</code></div>}
+            {min && !max && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&gt;={min}</code></div>}
+            {max && !min && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&lt;={max}</code></div>}
+            {min && max && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&gt;={min}</code><text> and </text><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&lt;={max}</code></div>}
+            {minLen && !maxLen && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&gt;={minLen} {type === "string" ? "characters" : "objects"}</code></div>}
+            {maxLen && !minLen && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&lt;={maxLen} {type === "string" ? "characters" : "objects"}</code></div>}
+            {minLen && maxLen && <div><strong>Possible Values: </strong><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&gt;={minLen} {type === "string" ? "characters" : "objects"}</code><text> and </text><code className="text-ice-800 dark:text-ice-500 bg-ice-400/10">&lt;={maxLen} {type === "string" ? "characters" : "objects"}</code></div>}
         </dd>
         <dt className="sr-only">Description</dt>
         <dd className="w-full flex-none [&>:first-child]:mt-0 [&>:last-child]:mb-0">
@@ -338,7 +338,7 @@ export function tr({ children, ...props }) {
 
 export function th({ children, ...props }) {
   return (
-    <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" {...props}>
+    <th className="px-4 py-3 text-left text-xs font-mono font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" {...props}>
       {children}
     </th>
   )

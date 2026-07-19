@@ -18,7 +18,7 @@ export function HeroSection({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-5xl lg:text-6xl">
+      <h1 className="font-display text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-ink sm:text-5xl lg:text-6xl">
         {title}
       </h1>
 

@@ -73,12 +73,12 @@ export function AnnouncementBanner() {
       ref={bannerRef}
       id="announcement-banner"
       className={clsx(
-        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-700 bg-zinc-900 px-4 py-1.5 text-[11px] font-medium text-zinc-100 shadow-sm'
+        'sticky top-0 z-50 flex w-full items-center justify-center border-b border-zinc-200 bg-zinc-100 px-4 py-1.5 text-[11px] font-medium text-zinc-900 shadow-sm dark:border-line dark:bg-dark-lighter dark:text-ink-dim'
       )}
     >
       <div className="flex flex-col items-start gap-1 pr-8 leading-snug md:flex-row md:items-center">
         {announcement.tag ? (
-          <div className="mr-2 inline rounded-md bg-[#266ecc] px-2 py-1 text-[10px] font-semibold tracking-wide text-white">
+          <div className="mr-2 inline rounded-md bg-ice-500/10 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ice-800 ring-1 ring-inset ring-ice-500/30 dark:text-ice-500">
             {announcement.tag}
           </div>
         ) : null}
@@ -89,7 +89,7 @@ export function AnnouncementBanner() {
           <Link
             href={announcementLink}
             target={announcement.isExternal ? '_blank' : undefined}
-            className="inline-flex items-center gap-1 text-[12px] text-zinc-100 underline underline-offset-4 hover:text-white"
+            className="inline-flex items-center gap-1 text-[12px] text-primary-800 underline underline-offset-4 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400"
             title={announcement.linkAlt}
           >
             {announcement.linkText}
@@ -101,7 +101,7 @@ export function AnnouncementBanner() {
         <button
           type="button"
           onClick={close}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-300 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-500 transition hover:bg-zinc-900/5 hover:text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:text-ink-faint dark:hover:bg-white/10 dark:hover:text-ink"
           aria-label="Dismiss announcement"
         >
           <CloseIcon className="h-3.5 w-3.5" />

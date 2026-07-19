@@ -18,7 +18,7 @@ function TileHighlight() {
         />
       </div>
       <div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#FFAC1C] to-[#F28C28] opacity-0 transition duration-300 group-hover:opacity-20 dark:group-hover:opacity-40 dark:from-[#F28C28]/30 dark:to-[#FF7518]/30"
+        className="absolute inset-0 rounded-2xl bg-primary-500 opacity-0 transition duration-base group-hover:opacity-5 dark:group-hover:opacity-10"
       />
     </div>
   )
@@ -56,7 +56,7 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
           {description}
         </div>
       )}
-      <div className={`not-prose grid grid-cols-1 gap-8 sm:grid-cols-2 ${hasHeader ? 'mt-4 border-t border-zinc-900/5 pt-10 dark:border-white/5' : ''}`}>
+      <div className={`not-prose grid grid-cols-1 gap-8 sm:grid-cols-2 ${hasHeader ? 'mt-4 border-t border-zinc-900/5 pt-10 dark:border-line' : ''}`}>
         {recentArticles.map((article) => {
           const handleClick = () => {
             window.location.href = article.href
@@ -65,11 +65,11 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
           return (
             <div
               key={article.href}
-              className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5 overflow-hidden cursor-pointer"
+              className="group relative flex flex-col rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-dark-lighter dark:hover:shadow-none overflow-hidden cursor-pointer"
               onClick={handleClick}
             >
               <TileHighlight />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
+              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-line dark:group-hover:ring-line-strong" />
 
               {/* Cover Image */}
               {article.cover && (
@@ -87,11 +87,11 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
               {/* Content */}
               <div className="relative flex-1 rounded-2xl px-4 pb-4 pt-4">
                 {article.date && (
-                  <time className="block text-xs text-zinc-500 dark:text-zinc-400 mb-2" dateTime={article.date}>
+                  <time className="block font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint mb-2" dateTime={article.date}>
                     {formatDate(article.date, 'medium')}
                   </time>
                 )}
-                <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
+                <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-ink">
                   {article.title}
                 </h3>
                 <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">

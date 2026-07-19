@@ -14,18 +14,20 @@ function ArrowIcon(props) {
   )
 }
 
+// Spearmint acts: primary actions are bright mint fills with dark text
+// (the bright-fill rule — bright mint is never text on light surfaces).
 const variantStyles = {
   primary:
-    'rounded-[5px] bg-techhut text-white border-0 border-transparent duration-300 relative overflow-hidden group',
+    'rounded-sm bg-primary-500 text-dark font-semibold hover:bg-primary-600 dark:hover:bg-primary-400 duration-base',
   secondary:
-    'rounded-full bg-zinc-100 py-1 px-3 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800/40 dark:text-zinc-400 dark:ring-1 dark:ring-inset dark:ring-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-300',
+    'rounded-sm bg-zinc-100 py-1 px-3 text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800/40 dark:text-zinc-300 dark:ring-1 dark:ring-inset dark:ring-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-ink',
   filled:
-    'rounded-full bg-zinc-900 py-1 px-3 text-white hover:bg-zinc-700 dark:bg-techhut dark:text-white dark:hover:bg-techhut-dark',
+    'rounded-sm bg-zinc-900 py-1 px-3 text-zinc-50 hover:bg-zinc-700 dark:bg-primary-500 dark:text-dark dark:hover:bg-primary-400',
   outline:
-    'rounded-full py-1 px-3 text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:ring-white/10 dark:hover:bg-white/5 dark:hover:text-white',
+    'rounded-sm py-1 px-3 text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:ring-white/10 dark:hover:bg-white/5 dark:hover:text-ink',
   'outline-arrow':
-    'rounded-[5px] text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:ring-white/10 dark:hover:bg-white/5 dark:hover:text-white duration-300 relative overflow-hidden group',
-  text: 'text-techhut hover:text-techhut-dark dark:text-techhut dark:hover:text-techhut-light',
+    'rounded-sm text-zinc-700 ring-1 ring-inset ring-zinc-900/10 hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:ring-white/10 dark:hover:bg-white/5 dark:hover:text-ink duration-base relative overflow-hidden group',
+  text: 'text-primary-800 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400',
 }
 
 export function Button({
@@ -54,26 +56,8 @@ export function Button({
     />
   )
 
-  if (variant === 'primary' || variant === 'outline-arrow') {
-    return (
-      <div className="relative inline-flex group transition-all" onClick={props.href ? undefined : props.onClick}>
-        {variant === 'primary' && (
-          <span className="absolute h-full w-full left-0 top-0 blur-sm bg-techhut z-0 transition-all duration-200 transform-gpu opacity-0 group-hover:opacity-100 pointer-events-none"></span>
-        )}
-        <Component className={className} {...props}>
-          {variant === 'primary' && (
-            <span className="absolute h-full w-full left-0 top-0 z-10 bg-gradient-to-br from-techhut to-techhut-dark transition-all duration-200 transform-gpu opacity-0 group-hover:opacity-100 pointer-events-none"></span>
-          )}
-          <span className="z-20 relative flex gap-2 items-center transition-all">
-            {arrow === 'left' && arrowIcon}
-            {children}
-            {arrow === 'right' && arrowIcon}
-          </span>
-        </Component>
-      </div>
-    )
-  }
-
+  // No glows or gradients on brand elements — mint fills move between ramp
+  // steps on hover and otherwise hold still.
   return (
     <Component className={className} {...props}>
       {arrow === 'left' && arrowIcon}
