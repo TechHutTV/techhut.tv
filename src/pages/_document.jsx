@@ -43,13 +43,16 @@ export default function Document() {
           <meta name="impact-site-verification" value="2434c9ce-fde2-4725-bf62-d7cdc5c68e89" />
           <GoogleTagManagerHeadScript />
           <script dangerouslySetInnerHTML={{ __html: modeScript }} />
+          <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link rel="icon" href="/favicon.ico" sizes="any" />
           <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
           <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
           <link rel="manifest" href="/site.webmanifest" />
+          <meta name="theme-color" content="#EFF6F1" media="(prefers-color-scheme: light)" />
+          <meta name="theme-color" content="#0B1512" media="(prefers-color-scheme: dark)" />
       </Head>
-      <body className="font-sans bg-white antialiased dark:bg-[#0a0d0a]">
+      <body className="font-sans bg-light text-zinc-700 antialiased dark:bg-dark dark:text-ink-dim">
         <GoogleTagManagerBodyScript />
         <Main />
         <NextScript />

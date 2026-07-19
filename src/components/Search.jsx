@@ -7,7 +7,7 @@ import { articles } from '@/data/articles'
 function highlightMatch(text, query) {
   if (!query || !text) return text
   const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-  return text.replace(regex, '<mark class="underline bg-transparent text-primary-500">$1</mark>')
+  return text.replace(regex, '<mark class="underline bg-transparent text-primary-800 dark:text-primary-500">$1</mark>')
 }
 
 function searchArticles(query) {
@@ -101,7 +101,7 @@ function SearchResult({ result, query, isSelected, onClick }) {
     <li
       className={clsx(
         'group block cursor-pointer px-4 py-3 transition-colors',
-        isSelected ? 'bg-zinc-50 dark:bg-zinc-800/50' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+        isSelected ? 'bg-zinc-100 dark:bg-zinc-800/50' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
       )}
       onClick={onClick}
     >
@@ -109,7 +109,7 @@ function SearchResult({ result, query, isSelected, onClick }) {
         id={`${id}-title`}
         className={clsx(
           'text-sm font-medium',
-          isSelected ? 'text-primary-500' : 'text-zinc-900 dark:text-white'
+          isSelected ? 'text-primary-800 dark:text-primary-500' : 'text-zinc-900 dark:text-ink'
         )}
         dangerouslySetInnerHTML={{ __html: titleHtml }}
       />
@@ -144,7 +144,7 @@ function SearchResults({ results, query, selectedIndex, onSelect }) {
         <NoResultsIcon className="mx-auto h-5 w-5 stroke-zinc-900 dark:stroke-zinc-600" />
         <p className="mt-2 text-xs text-zinc-700 dark:text-zinc-400">
           Nothing found for{' '}
-          <strong className="break-words font-semibold text-zinc-900 dark:text-white">
+          <strong className="break-words font-semibold text-zinc-900 dark:text-ink">
             &lsquo;{query}&rsquo;
           </strong>
           . Please try again.
@@ -182,7 +182,7 @@ const SearchInput = forwardRef(function SearchInput(
         value={query}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
-        className="flex-auto appearance-none bg-transparent pl-10 pr-4 text-zinc-900 outline-none placeholder:text-zinc-500 focus:w-full focus:flex-none dark:text-white sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden"
+        className="flex-auto appearance-none bg-transparent pl-10 pr-4 text-zinc-900 outline-none placeholder:text-zinc-500 focus:w-full focus:flex-none dark:text-ink sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden"
       />
     </div>
   )
@@ -283,11 +283,11 @@ function SearchDialog({ open, setOpen, className }) {
           enter="ease-out duration-300"
           enterFrom="opacity-0"
           enterTo="opacity-100"
-          leave="ease-in duration-200"
+          leave="ease-in duration-base"
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm dark:bg-black/40" />
+          <div className="fixed inset-0 bg-zinc-400/25 backdrop-blur-sm dark:bg-dark/40" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-20 md:py-32 lg:px-8 lg:py-[15vh]">
@@ -296,7 +296,7 @@ function SearchDialog({ open, setOpen, className }) {
             enter="ease-out duration-300"
             enterFrom="opacity-0 scale-95"
             enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
+            leave="ease-in duration-base"
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
@@ -309,14 +309,14 @@ function SearchDialog({ open, setOpen, className }) {
                 onKeyDown={handleKeyDown}
               />
               {query.length >= 2 && (
-                <div className="border-t border-zinc-200 bg-white dark:border-zinc-100/5 dark:bg-white/2.5">
+                <div className="border-t border-zinc-200 bg-zinc-50 dark:border-zinc-100/5 dark:bg-white/2.5">
                   <SearchResults
                     results={results}
                     query={query}
                     selectedIndex={selectedIndex}
                     onSelect={handleSelect}
                   />
-                  <p className="border-t border-zinc-100 px-4 py-2 text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+                  <p className="border-t border-zinc-100 px-4 py-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:border-zinc-800 dark:text-ink-faint">
                     {results.length} result{results.length !== 1 ? 's' : ''} found
                   </p>
                 </div>
@@ -366,14 +366,14 @@ export function Search() {
     <div className="hidden lg:block lg:max-w-md lg:flex-auto">
       <button
         type="button"
-        className="hidden h-8 w-full items-center gap-2 rounded-full bg-white pl-2 pr-3 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 dark:bg-white/5 dark:text-zinc-400 dark:ring-inset dark:ring-white/10 dark:hover:ring-white/20 lg:flex focus:[&:not(:focus-visible)]:outline-none"
+        className="hidden h-8 w-full items-center gap-2 rounded-sm bg-zinc-50 pl-2 pr-3 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 dark:bg-white/5 dark:text-zinc-400 dark:ring-inset dark:ring-white/10 dark:hover:ring-white/20 lg:flex focus:[&:not(:focus-visible)]:outline-none"
         {...buttonProps}
       >
         <SearchIcon className="h-5 w-5 stroke-current" />
         Search...
-        <kbd className="ml-auto text-2xs text-zinc-400 dark:text-zinc-500">
-          <kbd className="font-sans">{modifierKey}</kbd>
-          <kbd className="font-sans">K</kbd>
+        <kbd className="ml-auto text-2xs text-zinc-500 dark:text-ink-faint">
+          <kbd className="font-mono">{modifierKey}</kbd>
+          <kbd className="font-mono">K</kbd>
         </kbd>
       </button>
       <SearchDialog className="hidden lg:block" {...dialogProps} />
@@ -392,7 +392,7 @@ export function MobileSearch() {
         aria-label="Search..."
         {...buttonProps}
       >
-        <SearchIcon className="h-5 w-5 stroke-zinc-900 dark:stroke-white" />
+        <SearchIcon className="h-5 w-5 stroke-zinc-900 dark:stroke-ink" />
       </button>
       <SearchDialog className="lg:hidden" {...dialogProps} />
     </div>

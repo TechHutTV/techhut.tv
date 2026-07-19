@@ -131,29 +131,29 @@ function getCategoryCounts() {
 }
 
 const pillBase = clsx(
-  'inline-flex items-center gap-1.5 px-4 py-2 rounded-full',
+  'inline-flex items-center gap-1.5 px-4 py-2 rounded-sm',
   'text-sm font-medium',
   'min-h-[44px]',
-  'transition-all duration-200 cursor-pointer',
+  'transition-all duration-micro cursor-pointer',
   'ring-1 ring-inset'
 )
 
 const pillDefault = clsx(
   'bg-zinc-100 text-zinc-700',
-  'hover:bg-zinc-200 hover:text-techhut',
+  'hover:bg-zinc-200 hover:text-primary-800',
   'dark:bg-zinc-800/60 dark:text-zinc-300',
-  'dark:hover:bg-zinc-700/60 dark:hover:text-techhut-light',
-  'ring-zinc-900/10 dark:ring-white/10',
-  'hover:ring-techhut/30 dark:hover:ring-techhut-light/30'
+  'dark:hover:bg-zinc-700/60 dark:hover:text-primary-500',
+  'ring-zinc-900/10 dark:ring-line',
+  'hover:ring-zinc-900/20 dark:hover:ring-line-strong'
 )
 
 const pillAll = clsx(
   'bg-zinc-200 text-zinc-900 font-semibold',
-  'hover:bg-zinc-300 hover:text-techhut',
+  'hover:bg-zinc-300 hover:text-primary-800',
   'dark:bg-zinc-700/60 dark:text-zinc-100',
-  'dark:hover:bg-zinc-600/60 dark:hover:text-techhut-light',
-  'ring-zinc-900/10 dark:ring-white/10',
-  'hover:ring-techhut/30 dark:hover:ring-techhut-light/30'
+  'dark:hover:bg-zinc-600/60 dark:hover:text-primary-500',
+  'ring-zinc-900/10 dark:ring-line',
+  'hover:ring-zinc-900/20 dark:hover:ring-line-strong'
 )
 
 export function CategoryStrip() {
@@ -161,7 +161,7 @@ export function CategoryStrip() {
 
   return (
     <div className="not-prose my-10">
-      <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-3">
+      <p className="font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint mb-3">
         Browse by Topic
       </p>
       <div className="flex flex-wrap gap-2">

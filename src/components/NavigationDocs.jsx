@@ -13,17 +13,17 @@ function NavLink({ href, active, children }) {
             href={href}
             aria-current={active ? 'page' : undefined}
             className={clsx(
-                'block py-1 pl-4 pr-2.5 text-sm transition-colors duration-200 rounded-md relative',
+                'block py-1 pl-4 pr-2.5 text-sm transition-colors duration-micro rounded-md relative',
                 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px',
                 active
-                    ? 'text-zinc-900 dark:text-white font-medium bg-primary-500/10 dark:bg-primary-500/10 before:bg-transparent'
-                    : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-500/5 dark:hover:bg-primary-500/10 before:bg-zinc-200 dark:before:bg-zinc-800'
+                    ? 'text-zinc-900 dark:text-ink font-medium bg-primary-500/10 dark:bg-primary-500/10 before:bg-transparent'
+                    : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-500/5 dark:hover:bg-primary-500/10 before:bg-zinc-200 dark:before:bg-zinc-800'
             )}
         >
             {active && (
                 <motion.span
                     layoutId="nav-active-rail"
-                    className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary-500"
+                    className="absolute left-0 top-0 bottom-0 w-[2px] bg-primary-800 dark:bg-primary-500"
                     transition={reduceMotion ? { type: false } : { type: 'spring', stiffness: 500, damping: 40 }}
                 />
             )}
@@ -38,10 +38,10 @@ function TagChip({ href, active, children }) {
             href={href}
             aria-current={active ? 'page' : undefined}
             className={clsx(
-                'px-2 py-0.5 text-xs rounded-full border transition-colors',
+                'px-2 py-0.5 text-xs rounded-sm border transition-colors',
                 active
-                    ? 'bg-primary-500/15 text-primary-600 dark:text-primary-400 border-primary-500/30'
-                    : 'bg-zinc-100 dark:bg-zinc-800/40 text-zinc-700 dark:text-zinc-400 hover:bg-primary-500/10 hover:text-primary-600 dark:hover:text-primary-400 border-transparent'
+                    ? 'bg-primary-500/15 text-primary-800 dark:text-primary-400 border-primary-500/30'
+                    : 'bg-zinc-100 dark:bg-zinc-800/40 text-zinc-700 dark:text-zinc-400 hover:bg-primary-500/10 hover:text-primary-700 dark:hover:text-primary-400 border-transparent'
             )}
         >
             {children}
@@ -146,13 +146,13 @@ function NavigationGroup({ group, className }) {
         <li className={clsx('mb-2', className)}>
             <button
                 onClick={toggleOpen}
-                className="flex items-center justify-between w-full py-1.5 px-2 text-xs font-semibold uppercase tracking-wider transition-colors text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300"
+                className="flex items-center justify-between w-full py-1.5 px-2 font-mono text-xs font-semibold uppercase tracking-wider transition-colors text-zinc-500 dark:text-ink-faint hover:text-zinc-900 dark:hover:text-zinc-300"
             >
                 <div className="flex items-center gap-2">
                     {group.icon && (
                         <span className={clsx(
                             'flex-shrink-0',
-                            hasActiveChild ? 'text-primary-500' : 'text-zinc-400 dark:text-zinc-600'
+                            hasActiveChild ? 'text-primary-800 dark:text-primary-500' : 'text-zinc-400 dark:text-zinc-600'
                         )}>
                             {group.icon}
                         </span>
@@ -164,11 +164,11 @@ function NavigationGroup({ group, className }) {
                 </div>
                 <div className="flex items-center gap-1.5">
                     {!isOpen && hasActiveChild && (
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary-500" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-primary-800 dark:bg-primary-500" />
                     )}
                     <ChevronRight
                         className={clsx(
-                            'h-3.5 w-3.5 transition-transform duration-200',
+                            'h-3.5 w-3.5 transition-transform duration-micro',
                             isOpen && 'transform rotate-90'
                         )}
                     />

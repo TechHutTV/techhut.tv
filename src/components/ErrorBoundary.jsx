@@ -21,9 +21,9 @@ export class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-white dark:bg-[#0a0d0a]">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-light dark:bg-dark">
           <div className="max-w-xl px-6 py-12 text-center">
-            <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">
+            <h1 className="font-display text-4xl font-bold text-zinc-900 dark:text-ink mb-4">
               Oops! Something went wrong
             </h1>
             <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-8">
@@ -31,7 +31,7 @@ export class ErrorBoundary extends React.Component {
             </p>
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="mt-8 text-left">
-                <summary className="cursor-pointer font-semibold text-zinc-900 dark:text-white mb-2">
+                <summary className="cursor-pointer font-semibold text-zinc-900 dark:text-ink mb-2">
                   Error Details (Development Only)
                 </summary>
                 <pre className="overflow-auto rounded-lg bg-zinc-100 dark:bg-zinc-800 p-4 text-sm text-zinc-800 dark:text-zinc-200">
@@ -42,7 +42,7 @@ export class ErrorBoundary extends React.Component {
             )}
             <button
               onClick={() => window.location.reload()}
-              className="mt-8 rounded-md bg-primary-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+              className="mt-8 rounded-md bg-primary-500 px-6 py-3 text-sm font-semibold text-dark shadow-sm hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             >
               Refresh Page
             </button>

@@ -1,38 +1,61 @@
+/* TechHut · Spearmint Ice · v1.1
+   Two hues plus green-tinted neutrals. Spearmint acts, ice informs.
+   Bright mint/ice never as text on light surfaces — drop to the 800 step. */
 :root {
-  --shiki-color-text: theme('colors.black');
-  --shiki-token-constant: theme('colors.primary.600');
-  --shiki-token-string: theme('colors.primary.600');
+  --th-brand: #0c8a60; /* sea green */
+  --th-info: #0891b2; /* deep cyan */
+  --th-surface: #eff6f1; /* mint paper */
+  --th-raised: #e2eee7;
+  --th-heading: #142420; /* ink */
+  --th-body: #3c4f48;
+  --th-muted: #5e7168;
+  --th-badge-fill: #4fe3a3; /* bright fill, dark text only */
+  --th-font-display: var(--font-display);
+  --th-font-body: var(--font-sans);
+  --th-font-mono: var(--font-mono);
+
+  --shiki-color-text: theme('colors.zinc.900');
+  --shiki-token-constant: theme('colors.primary.800');
+  --shiki-token-string: theme('colors.primary.800');
   --shiki-token-comment: theme('colors.zinc.500');
-  --shiki-token-keyword: theme('colors.sky.600');
-  --shiki-token-parameter: theme('colors.pink.600');
-  --shiki-token-function: theme('colors.violet.600');
-  --shiki-token-string-expression: theme('colors.primary.600');
-  --shiki-token-punctuation: theme('colors.zinc.800');
-  --toastify-icon-color-info: theme('colors.primary.500') !important;
-  --toastify-color-info: theme('colors.primary.500') !important;
-  --toastify-color-dark: theme('colors.white') !important;
-  --toastify-text-color-dark: theme('colors.zinc.600') !important;
-  --toastify-color-light: theme('colors.white') !important;
-  --toastify-text-color-light: theme('colors.zinc.600') !important;
+  --shiki-token-keyword: theme('colors.ice.800');
+  --shiki-token-parameter: theme('colors.ice.900');
+  --shiki-token-function: theme('colors.primary.700');
+  --shiki-token-string-expression: theme('colors.primary.800');
+  --shiki-token-punctuation: theme('colors.zinc.700');
+  --toastify-icon-color-info: theme('colors.primary.800') !important;
+  --toastify-color-info: theme('colors.primary.800') !important;
+  --toastify-color-dark: theme('colors.zinc.50') !important;
+  --toastify-text-color-dark: theme('colors.zinc.700') !important;
+  --toastify-color-light: theme('colors.zinc.50') !important;
+  --toastify-text-color-light: theme('colors.zinc.700') !important;
 }
 
 /* Dark mode styles */
 :root.dark {
-  --shiki-color-text: theme('colors.white');
-  --shiki-token-constant: theme('colors.primary.300');
-  --shiki-token-string: theme('colors.primary.300');
-  --shiki-token-comment: theme('colors.zinc.500');
-  --shiki-token-keyword: theme('colors.sky.300');
-  --shiki-token-parameter: theme('colors.pink.300');
-  --shiki-token-function: theme('colors.violet.300');
-  --shiki-token-string-expression: theme('colors.primary.300');
-  --shiki-token-punctuation: theme('colors.zinc.200');
+  --th-brand: #4fe3a3; /* spearmint */
+  --th-info: #59e0ff; /* ice */
+  --th-surface: #0b1512; /* deep */
+  --th-raised: #12211c;
+  --th-heading: #eaf4ef; /* mint white */
+  --th-body: #c7dad2;
+  --th-muted: #8fb3a6;
+
+  --shiki-color-text: theme('colors.ink.DEFAULT');
+  --shiki-token-constant: theme('colors.primary.500');
+  --shiki-token-string: theme('colors.primary.500');
+  --shiki-token-comment: theme('colors.ink.faint');
+  --shiki-token-keyword: theme('colors.ice.500');
+  --shiki-token-parameter: theme('colors.ice.300');
+  --shiki-token-function: theme('colors.primary.300');
+  --shiki-token-string-expression: theme('colors.primary.500');
+  --shiki-token-punctuation: theme('colors.ink.dim');
   --toastify-icon-color-info: theme('colors.primary.500') !important;
   --toastify-color-info: theme('colors.primary.500') !important;
-  --toastify-color-dark: theme('colors.zinc.800') !important;
-  --toastify-text-color-dark: theme('colors.zinc.300') !important;
-  --toastify-color-light: theme('colors.zinc.800') !important;
-  --toastify-text-color-light: theme('colors.zinc.300') !important;
+  --toastify-color-dark: theme('colors.dark.lighter') !important;
+  --toastify-text-color-dark: theme('colors.ink.dim') !important;
+  --toastify-color-light: theme('colors.dark.lighter') !important;
+  --toastify-text-color-light: theme('colors.ink.dim') !important;
 }
 
 @tailwind base;
@@ -42,6 +65,16 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background-color: theme('colors.primary.200');
+    color: theme('colors.zinc.900');
+  }
+
+  :root.dark ::selection {
+    background-color: theme('colors.primary.500 / 0.3');
+    color: theme('colors.ink.DEFAULT');
   }
 }
 
@@ -60,7 +93,7 @@
     display: none; /* Chrome, Safari, Opera */
   }
 
-  /* Deck-aligned global grid background — only shown in dark mode */
+  /* Quiet global grid background — only shown in dark mode */
   .deck-grid {
     display: none;
   }
@@ -71,8 +104,8 @@
     pointer-events: none;
     z-index: -1;
     background-image:
-      linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      linear-gradient(rgba(234, 244, 239, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(234, 244, 239, 0.015) 1px, transparent 1px);
     background-size: 60px 60px;
     -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
     mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);

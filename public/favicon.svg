@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- TechHut TH app icon · Spearmint Ice -->
+  <rect width="64" height="64" rx="16" fill="#4FE3A3"/>
+  <path fill="#0B1512" d="M10 18h20v7h-6.5v21h-7V25H10z"/>
+  <path fill="#0B1512" d="M34 18h7v10.5h6V18h7v28h-7V35.5h-6V46h-7z"/>
+</svg>

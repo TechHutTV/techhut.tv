@@ -23,9 +23,9 @@ export function FeaturedArticle({ article: articleProp, slug }) {
       <div
         className={clsx(
           'group relative cursor-pointer rounded-md overflow-hidden',
-          'bg-white dark:bg-white/[0.03]',
-          'ring-1 ring-inset ring-zinc-900/7.5 dark:ring-white/10',
-          'transition-shadow hover:shadow-lg hover:shadow-zinc-900/10 dark:hover:shadow-black/20',
+          'bg-zinc-50 dark:bg-dark-lighter',
+          'ring-1 ring-inset ring-zinc-900/7.5 dark:ring-line',
+          'transition-shadow hover:shadow-lg hover:shadow-zinc-900/10 dark:hover:shadow-none',
         )}
         onClick={() => router.push(article.href)}
       >
@@ -50,20 +50,20 @@ export function FeaturedArticle({ article: articleProp, slug }) {
           {/* Content */}
           <div className="flex flex-col justify-center gap-3 p-6 md:w-[40%] md:p-8">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-techhut">
+              <span className="font-mono text-2xs font-semibold uppercase tracking-wider text-primary-800 dark:text-primary-500">
                 Featured
               </span>
               {article.categories?.map((category) => (
                 <span
                   key={category}
-                  className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs px-2 py-0.5 rounded-full"
+                  className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs px-2 py-0.5 rounded-sm"
                 >
                   {category}
                 </span>
               ))}
             </div>
 
-            <h3 className="text-xl md:text-2xl font-bold text-zinc-900 dark:text-white">
+            <h3 className="font-display text-xl md:text-2xl font-bold text-zinc-900 dark:text-ink">
               {article.title}
             </h3>
 
@@ -80,7 +80,7 @@ export function FeaturedArticle({ article: articleProp, slug }) {
               {formatDate(article.date)}
             </time>
 
-            <span className="text-sm font-medium text-techhut group-hover:text-techhut-dark dark:group-hover:text-techhut-light transition-colors">
+            <span className="text-sm font-medium text-primary-800 dark:text-primary-500 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors duration-micro">
               Read article &rarr;
             </span>
           </div>

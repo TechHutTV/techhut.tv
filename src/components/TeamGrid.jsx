@@ -36,7 +36,7 @@ const socialIcons = {
 
 function MemberCard({ author }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl bg-zinc-50 p-4 ring-1 ring-inset ring-zinc-900/7.5 dark:bg-white/[0.03] dark:ring-white/10">
+    <div className="flex items-center gap-4 rounded-2xl bg-zinc-50 p-4 ring-1 ring-inset ring-zinc-900/7.5 dark:bg-dark-lighter dark:ring-line">
       <Image
         src={author.image}
         alt={author.name}
@@ -45,7 +45,7 @@ function MemberCard({ author }) {
         className="rounded-full object-cover flex-shrink-0"
       />
       <div className="min-w-0">
-        <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+        <h3 className="text-sm font-semibold text-zinc-900 dark:text-ink">
           {author.name}
         </h3>
         {author.bio && (
@@ -61,7 +61,7 @@ function MemberCard({ author }) {
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-zinc-400 transition hover:text-zinc-700 dark:hover:text-white"
+                className="text-zinc-400 transition duration-micro hover:text-zinc-700 dark:hover:text-ink"
                 aria-label={`${author.name} on ${s.platform}`}
               >
                 {socialIcons[s.platform]}

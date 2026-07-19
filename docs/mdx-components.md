@@ -18,7 +18,7 @@ Informational callout with primary brand styling.
 </Note>
 ```
 
-Renders with an info icon and orange/primary colored border.
+Renders with an info icon and a spearmint (primary) colored border.
 
 ### Warning
 
