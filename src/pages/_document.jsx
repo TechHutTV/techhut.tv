@@ -40,6 +40,7 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
+          <meta name="impact-site-verification" value="2434c9ce-fde2-4725-bf62-d7cdc5c68e89" />
           <GoogleTagManagerHeadScript />
           <script dangerouslySetInnerHTML={{ __html: modeScript }} />
           <link rel="icon" href="/favicon.ico" sizes="any" />
