@@ -66,7 +66,7 @@ Next.js configuration with MDX support:
 ### `tailwind.config.cjs`
 
 Tailwind CSS configuration:
-- TechHut brand colors (primary: `#B55400`)
+- TechHut brand colors (Spearmint Ice — primary mint `#4FE3A3` dark / `#0C8A60` light)
 - Dark mode via class strategy
 - Custom font sizes and spacing
 - Typography plugin integration

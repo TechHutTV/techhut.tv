@@ -39,7 +39,7 @@ export function ModeToggle() {
       onClick={toggleMode}
     >
       <SunIcon className="h-5 w-5 stroke-zinc-900 dark:hidden" />
-      <MoonIcon className="hidden h-5 w-5 stroke-white dark:block" />
+      <MoonIcon className="hidden h-5 w-5 stroke-ink dark:block" />
     </button>
   )
 }

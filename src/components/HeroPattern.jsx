@@ -3,7 +3,7 @@ import { GridPattern } from '@/components/GridPattern'
 export function HeroPattern() {
   return (
     <div className="absolute inset-0 -z-10 mx-0 max-w-none overflow-hidden">
-      <div className="absolute inset-0 hidden dark:block z-0" style={{ backgroundColor: '#0a0d0a' }}>
+      <div className="absolute inset-0 hidden dark:block z-0" style={{ backgroundColor: '#0B1512' }}>
         <GridPattern
           width={72}
           height={56}
@@ -23,7 +23,7 @@ export function HeroPattern() {
           viewBox="0 0 1113 440"
           preserveAspectRatio="xMidYMin slice"
           aria-hidden="true"
-          className="absolute left-1/2 top-0 -translate-x-1/2 w-full min-w-[69.5625rem] h-full fill-white blur-[26px] dark:hidden"
+          className="absolute left-1/2 top-0 -translate-x-1/2 w-full min-w-[69.5625rem] h-full fill-light blur-[26px] dark:hidden"
         >
           <path d="M.016 439.5s-9.5-300 434-300S882.516 20 882.516 20V0h230.004v439.5H.016Z" />
         </svg>

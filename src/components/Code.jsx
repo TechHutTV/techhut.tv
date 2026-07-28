@@ -64,7 +64,7 @@ function CopyButton({ code }) {
       className={clsx(
         'group/button absolute right-3 top-1/2 -translate-y-1/2 overflow-hidden rounded-md px-2 py-1 text-[10px] font-medium opacity-0 transition focus:opacity-100 group-hover:opacity-100 flex items-center justify-center min-w-[55px]',
         copied
-          ? 'bg-primary-500/20 text-primary-600 dark:text-primary-400'
+          ? 'bg-primary-500/20 text-primary-800 dark:text-primary-400'
           : 'bg-zinc-700/20 dark:bg-zinc-100/20 hover:bg-zinc-700/30 dark:hover:bg-zinc-100/30 text-zinc-700 dark:text-zinc-300'
       )}
       onClick={() => {
@@ -104,7 +104,7 @@ function CodePanelHeader({ tag, label }) {
   }
 
   return (
-    <div className="flex h-9 items-center gap-2 border-b border-zinc-300/50 dark:border-zinc-900/50 bg-zinc-200/60 dark:bg-[#242424]/60 px-3">
+    <div className="flex h-9 items-center gap-2 border-b border-zinc-300/50 dark:border-zinc-900/50 bg-zinc-200/60 dark:bg-zinc-800/60 px-3">
       {tag && (
         <div className="dark flex">
           <Tag variant="small">{tag}</Tag>
@@ -132,12 +132,12 @@ function CodePanel({ tag, label, code, children }) {
   }, [children])
 
   return (
-    <div className="group bg-white dark:bg-[#1e1e1e]">
+    <div className="group bg-zinc-50 dark:bg-dark-lighter">
       <CodePanelHeader
         tag={child.props.tag ?? tag}
         label={child.props.label ?? label}
       />
-      <div className="relative bg-white dark:bg-[#1e1e1e]">
+      <div className="relative bg-zinc-50 dark:bg-dark-lighter">
         <pre ref={preRef} className="overflow-x-auto p-4 text-xs text-zinc-900 dark:text-zinc-100">{children}</pre>
         <CopyButton code={codeText} />
       </div>
@@ -149,7 +149,7 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
   let hasTabs = Children.count(children) > 1
 
   return (
-    <div className="flex h-9 items-end justify-between gap-x-2 bg-zinc-200/80 dark:bg-[#242424] px-3 border-b border-zinc-300/50 dark:border-zinc-900/50 backdrop-blur-sm">
+    <div className="flex h-9 items-end justify-between gap-x-2 bg-zinc-200/80 dark:bg-zinc-800 px-3 border-b border-zinc-300/50 dark:border-zinc-900/50 backdrop-blur-sm">
       {/* Tabs - always show at least one */}
       {hasTabs ? (
         <Tab.List className="flex gap-0 text-xs font-medium">
@@ -158,7 +158,7 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
               className={clsx(
                 'h-9 px-3 transition focus:[&:not(:focus-visible)]:outline-none border-t border-l flex items-center gap-2',
                 childIndex === selectedIndex
-                  ? 'bg-white dark:bg-[#1e1e1e] text-zinc-900 dark:text-white font-medium border-zinc-300 dark:border-zinc-700 border-r border-r-zinc-200/50 dark:border-r-zinc-700/50'
+                  ? 'bg-zinc-50 dark:bg-dark-lighter text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 border-r border-r-zinc-200/50 dark:border-r-zinc-700/50'
                   : 'bg-zinc-100/50 dark:bg-zinc-800/30 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 border-transparent border-r border-r-transparent'
               )}
             >
@@ -177,8 +177,8 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
         </Tab.List>
       ) : (
         <div className="flex gap-0 text-xs font-medium">
-          <div className="h-9 px-3 border-t border-l border-r border-r-zinc-200/50 dark:border-r-zinc-700/50 bg-white dark:bg-[#1e1e1e] text-zinc-900 dark:text-white font-medium border-zinc-300 dark:border-zinc-700 flex items-center gap-2">
-            <span>code@techhut.tv:~</span>
+          <div className="h-9 px-3 border-t border-l border-r border-r-zinc-200/50 dark:border-r-zinc-700/50 bg-zinc-50 dark:bg-dark-lighter text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 flex items-center gap-2">
+            <span className="font-mono text-xs">code@techhut.tv:~</span>
             <button
               className="w-3.5 h-3.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition"
               aria-label="Close tab"
@@ -203,8 +203,8 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 12h2a2 2 0 002-2v-2" />
           </svg>
         </button>
-        <button className="w-5 h-5 rounded-full hover:bg-red-500/20 dark:hover:bg-red-500/20 transition flex items-center justify-center group" aria-label="Close">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-400 group-hover:text-red-600 dark:group-hover:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button className="w-5 h-5 rounded-full hover:bg-danger/20 transition flex items-center justify-center group" aria-label="Close">
+          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-400 group-hover:text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -311,7 +311,7 @@ export function CodeGroup({ children, title, ...props }) {
     <CodeGroupContext.Provider value={true}>
       <Container
         {...containerProps}
-        className="not-prose my-6 overflow-hidden rounded-xl bg-white dark:bg-[#1e1e1e] ring-1 ring-zinc-300 dark:ring-zinc-800 shadow-xl"
+        className="not-prose my-6 overflow-hidden rounded-xl bg-zinc-50 dark:bg-dark-lighter ring-1 ring-zinc-300 dark:ring-zinc-800 shadow-xl"
       >
         <CodeGroupHeader title={title} {...headerProps}>
           {children}

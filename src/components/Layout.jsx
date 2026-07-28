@@ -170,7 +170,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             onMouseEnter={() => setIsHoveringSidebar(true)}
             onMouseLeave={() => setIsHoveringSidebar(false)}
         >
-          <div className="contents lg:pointer-events-auto lg:flex lg:flex-col lg:w-56 lg:px-4 lg:pb-4 lg:pt-5 lg:bg-white/70 lg:dark:bg-[#0a0d0a]/70 lg:backdrop-blur-lg 2xl:w-60 sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-md lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
+          <div className="contents lg:pointer-events-auto lg:flex lg:flex-col lg:w-56 lg:px-4 lg:pb-4 lg:pt-5 lg:bg-zinc-50/70 lg:dark:bg-dark/70 lg:backdrop-blur-lg 2xl:w-60 sidebar-scroll lg:h-[calc(100vh-64px-2rem)] lg:rounded-md lg:border lg:border-zinc-900/10 lg:dark:border-neutral-700/30">
             <div className="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:overflow-x-visible sidebar-scroll lg:-mx-4 lg:px-4">
               <NavigationDocs />
             </div>
@@ -188,10 +188,10 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
         )}>
           <main className="py-16">
             {title && (
-              <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-3">{title}</h1>
+              <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900 dark:text-ink mb-3">{title}</h1>
             )}
             {date && (
-              <div className="flex flex-wrap gap-x-2 text-sm text-slate-500 dark:text-slate-400 mb-8">
+              <div className="flex flex-wrap gap-x-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint mb-8">
                 <time dateTime={date}>Published {formatDate(date, 'long')}</time>
                 {dateModified && dateModified !== date && (
                   <span>· Updated <time dateTime={dateModified}>{formatDate(dateModified, 'long')}</time></span>
@@ -238,14 +238,14 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
                 <div className="flex items-center justify-between mb-4">
                   <h2
                     id="on-this-page-title"
-                    className="font-display text-sm font-medium text-slate-900 dark:text-white"
+                    className="font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint"
                   >
                     On this page
                   </h2>
                   {showJumpToTop && (
                     <button
                       onClick={scrollToTop}
-                      className="text-xs text-slate-500 hover:text-primary-500 dark:text-slate-400 dark:hover:text-primary-400 transition-colors flex items-center gap-1"
+                      className="text-xs text-slate-500 hover:text-primary-700 dark:text-slate-400 dark:hover:text-primary-400 transition-colors flex items-center gap-1"
                       aria-label="Jump to top"
                     >
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,7 +263,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
                           href={`#${section.id}`}
                           className={clsx(
                             isActive(section)
-                              ? 'text-primary-500'
+                              ? 'text-primary-800 dark:text-primary-500'
                               : 'font-normal text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300'
                           )}
                         >
@@ -281,7 +281,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
                                 href={`#${subSection.id}`}
                                 className={
                                   isActive(subSection)
-                                    ? 'text-primary-500'
+                                    ? 'text-primary-800 dark:text-primary-500'
                                     : 'hover:text-slate-600 dark:hover:text-slate-300'
                                 }
                               >
@@ -299,14 +299,14 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
           </nav>
           {relatedArticles.length > 0 && (
             <div className={clsx("w-80", tableOfContents.length > 0 ? "mt-10" : "mt-0")}>
-              <h2 className="font-display text-sm font-medium text-slate-900 dark:text-white mb-4">
+              <h2 className="font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint mb-4">
                 Related
               </h2>
               <ul role="list" className="space-y-4">
                 {relatedArticles.map((article) => (
                   <li key={article.href}>
                     <Link href={article.href} className="group block">
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors leading-snug">
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary-700 dark:group-hover:text-primary-400 transition-colors leading-snug">
                         {article.title}
                       </p>
                       {article.tags && article.tags.length > 0 && (

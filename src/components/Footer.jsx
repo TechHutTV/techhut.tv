@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import { Button } from '@/components/Button'
+import { Logo } from '@/components/Logo'
 import { docsNavigation } from '@/data/docsNavigation'
 
 function flattenNavItems(items, includeGroups = false) {
@@ -32,7 +33,7 @@ function PageLink({ label, page, previous = false }) {
         href={page.href}
         tabIndex={-1}
         aria-hidden="true"
-        className="text-base font-semibold text-zinc-900 transition hover:text-zinc-600 dark:text-white dark:hover:text-zinc-300"
+        className="text-base font-semibold text-zinc-900 transition hover:text-zinc-600 dark:text-ink dark:hover:text-zinc-300"
       >
         {page.title}
       </Link>
@@ -81,7 +82,7 @@ function FooterLink({ href, children }) {
     <li>
       <Link
         href={href}
-        className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+        className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-ink"
       >
         {children}
       </Link>
@@ -95,7 +96,7 @@ function SocialLink({ href, label, children }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-zinc-500 transition hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white"
+      className="text-zinc-500 transition hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-ink"
       aria-label={label}
     >
       {children}
@@ -110,9 +111,7 @@ function FooterContent() {
         {/* Brand */}
         <div className="sm:col-span-2 lg:col-span-1">
           <Link href="/" className="inline-block">
-            <span className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              TechHut<span>.tv</span>
-            </span>
+            <Logo />
           </Link>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
             Guides, tutorials, and reviews for Linux, homelabs, and self-hosted solutions.
@@ -121,7 +120,7 @@ function FooterContent() {
 
         {/* Categories */}
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-ink">
             Categories
           </h3>
           <ul className="mt-3 space-y-2">
@@ -135,7 +134,7 @@ function FooterContent() {
 
         {/* Pages */}
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-ink">
             Pages
           </h3>
           <ul className="mt-3 space-y-2">
@@ -145,7 +144,7 @@ function FooterContent() {
             <li>
               <a
                 href="/decks"
-                className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-ink"
               >
                 Decks
               </a>
@@ -156,7 +155,7 @@ function FooterContent() {
 
         {/* Social */}
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+          <h3 className="text-sm font-semibold text-zinc-900 dark:text-ink">
             Connect
           </h3>
           <div className="mt-3 flex flex-wrap gap-3">
