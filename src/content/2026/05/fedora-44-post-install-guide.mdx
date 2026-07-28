@@ -31,13 +31,12 @@ sudo nano /etc/dnf/dnf.conf
 Drop these in under the `[main]` section:
 
 ```
-fastestmirror=True
 max_parallel_downloads=10
 defaultyes=True
 keepcache=True
 ```
 
-Real quick on what each of these does. `fastestmirror=True` picks the fastest available mirror automatically. `max_parallel_downloads=10` lets dnf grab up to 10 packages at once instead of going one at a time. `defaultyes=True` means hitting enter on a confirmation prompt accepts instead of declines, which saves a lot of typing. And `keepcache=True` keeps downloaded packages around so reinstalls don't redownload the same thing.
+Real quick on what each of these does. `max_parallel_downloads=10` lets dnf grab up to 10 packages at once instead of going one at a time. `defaultyes=True` means hitting enter on a confirmation prompt accepts instead of declines, which saves a lot of typing. And `keepcache=True` keeps downloaded packages around so reinstalls don't redownload the same thing.
 
 ## Update the System
 
