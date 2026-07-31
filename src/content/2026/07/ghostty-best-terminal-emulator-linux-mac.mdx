@@ -1,10 +1,10 @@
 export const title = "Why I Finally Switched to Ghostty"
-export const description = "Ghostty explained from a practical Linux perspective, including installation, a minimal configuration, modern terminal features, and a Superfile image-preview demonstration."
+export const description = "Ghostty explained from a practical Linux perspective, including installation, my current configuration, modern terminal features, and a Superfile image-preview demonstration."
 export const date = "2026-07-27"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Terminal"]
-export const cover = "/docs-static/img/2026/07/why-i-switched-to-ghostty/cover.jpg"
+export const cover = "/docs-static/img/2026/07/ghostty-best-terminal-emulator-linux-mac/cover.jpg"
 
 People kept recommending Ghostty to me, but I already had a terminal that worked. Switching terminal emulators just to move text around a little faster or change the window decoration did not feel urgent.
 
@@ -94,6 +94,12 @@ A few features worth trying immediately:
 
 The command palette is useful for this first pass because it exposes actions without requiring you to memorize every default keybinding.
 
+### Explore tabs, splits, and the terminal inspector
+
+Ghostty's native controls make tabs and splits approachable even before you learn the shortcuts. In the Linux interface, the tab overview provides a visual look at everything open in the window, while the adjacent controls can create a new tab or split the focused terminal up, down, left, or right. The exact presentation differs on macOS, but the same tab and split actions are available from the native menus and command palette.
+
+The terminal inspector is also worth knowing about, even if you will not leave it open during normal use. It exposes keyboard events, terminal input and output, renderer details, and live dimensions. That makes it useful for troubleshooting input problems or matching an exact window size for a screen recording.
+
 ## Create a minimal Ghostty configuration
 
 Ghostty loads its cross-platform configuration from:
@@ -133,7 +139,7 @@ List the included themes:
 ghostty +list-themes
 ```
 
-After editing the file, reload the configuration with `Ctrl+Shift+,` on Linux or `Command+Shift+,` on macOS. Some settings affect only new terminals, so open a new tab or split if an existing surface does not update.
+After editing the file, reload the configuration with `Ctrl+Shift+,` on Linux or `Command+Shift+,` on macOS. Those are the defaults; my configuration below also binds `Ctrl+Shift+R` to the same action. Some settings affect only new terminals, so open a new tab or split if an existing surface does not update.
 
 Ghostty can also print the effective configuration:
 
@@ -148,6 +154,76 @@ ghostty +show-config --default --docs
 ```
 
 That is a better source than copying a massive third-party config and trying to understand which settings still exist.
+
+### My current Ghostty configuration
+
+After spending more time with Ghostty, this is the configuration I currently use. It is still fairly small; most of the length comes from comments that explain what each setting changes.
+
+Treat it as a reference rather than a required setup. `Agave Nerd Font` must be installed before Ghostty can use it, and transparency or blur may look different depending on your desktop environment and compositor. Change the font, theme, size, and opacity to suit your own display.
+
+```ini
+# Ghostty configuration
+# Docs: https://ghostty.org/docs/config
+# List every option + default:  ghostty +show-config --default --docs
+# See what's currently loaded:  ghostty +show-config
+
+# --- Fonts ---
+font-family = "Agave Nerd Font"
+font-size = 16
+# Slightly thicken font rendering (nice on low-DPI displays)
+font-thicken = false
+
+# --- Theme & colors ---
+# List all built-in themes: ghostty +list-themes
+theme = Birds Of Paradise
+# Use different themes for system light/dark mode:
+# theme = light:Builtin Solarized Light,dark:Birds Of Paradise
+background-opacity = 0.90
+# Blur what's behind the window (needs compositor support)
+background-blur = true
+# Minimum foreground/background contrast ratio (1 allows no contrast; 3 is more readable)
+minimum-contrast = 1
+
+# --- Cursor ---
+# block, bar, underline, block_hollow
+cursor-style = block_hollow
+cursor-style-blink = true
+
+# --- Window ---
+window-padding-x = 8
+window-padding-y = 8
+# Evenly balance padding on all sides
+window-padding-balance = true
+# auto, none, client, server
+window-decoration = auto
+# Reopen windows where they left off: default, never, always
+window-save-state = default
+# New windows/tabs start in the current directory
+window-inherit-working-directory = true
+
+# --- Behavior ---
+# Copy selected text to both Linux's primary selection and regular clipboard
+copy-on-select = clipboard
+# Ask before closing a window with a running process
+confirm-close-surface = true
+mouse-hide-while-typing = true
+# Scrollback buffer size in bytes
+scrollback-limit = 10000000
+# Shell integration powers title, working directory, and prompt tracking
+shell-integration = detect
+# Keep the configured cursor shape instead of forcing a bar at shell prompts
+shell-integration-features = no-cursor
+
+# --- Keybinds ---
+# Format: keybind = trigger=action
+# List all defaults: ghostty +list-keybinds
+keybind = ctrl+shift+enter=new_split:right
+keybind = ctrl+shift+r=reload_config
+```
+
+The settings I notice most are the practical ones. Eight pixels of balanced padding keeps text away from the window edges and gives me room when I crop or zoom into a terminal recording. `copy-on-select` saves a separate copy shortcut, while `Ctrl+Shift+Enter` creates a split to the right and `Ctrl+Shift+R` quickly reloads the file while I experiment.
+
+`cursor-style` defines a default rather than an absolute override. Shells and full-screen programs can request another cursor shape. The `no-cursor` shell-integration feature stops Ghostty from forcing a bar at the prompt, but an application can still change the cursor while it is running.
 
 ## Shell integration is useful, but do not overconfigure it
 
@@ -223,10 +299,10 @@ The remote `tic` command comes from ncurses. Install the appropriate ncurses or 
 
 ### Automate it through Ghostty
 
-Ghostty 1.3 includes optional shell-integration features that can handle SSH environment and terminfo setup:
+Ghostty 1.3 includes optional shell-integration features that can handle SSH environment and terminfo setup. If you start with my configuration above, combine them with `no-cursor` on the same line:
 
 ```ini
-shell-integration-features = ssh-env,ssh-terminfo
+shell-integration-features = no-cursor,ssh-env,ssh-terminfo
 ```
 
 These features affect interactive `ssh` commands launched from the integrated shell. They do not automatically cover every program that starts SSH itself, including some uses of Git, rsync, scp, sftp, cloud CLIs, scripts, or cron. For a small number of regular servers, manually installing the terminfo entry is direct and durable.
