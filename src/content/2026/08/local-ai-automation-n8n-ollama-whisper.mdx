@@ -1,0 +1,546 @@
+export const title = "Build a Local AI Automation Stack with n8n, Ollama, and Whisper"
+export const description = "Self-host n8n with Ollama and Whisper using Docker Compose, GPU acceleration, FFmpeg, and yt-dlp, then use it to build private AI workflows."
+export const date = "2026-08-18"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "AI", "Linux"]
+export const cover = "/docs-static/img/2026/08/local-ai-automation-n8n-ollama-whisper/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+I ran n8n in my homelab for a while and built out a whole local AI stack around it with Ollama, Whisper, FFmpeg, and yt-dlp. I'm not running n8n anymore, so it doesn't really make sense to keep that config sitting in with the services I actually use day to day. The idea is still a good one though, and it's a pretty fun stack to put together if you want your automations and your AI workloads staying on your own hardware.
+
+<YouTube videoId="LMoRt-etQio" />
+
+So in this guide I'm going to rebuild that setup as a clean Docker Compose project. We'll keep n8n behind a reverse proxy, run Ollama and Whisper on the internal Docker network only, and build a custom n8n image that can actually process video with FFmpeg and yt-dlp.
+
+I'll also walk through the two workflows I used this for, a daily AI news digest and a video-to-article pipeline. My original exports had my own credential references, email addresses, internal IPs, and a few shell commands that were way too trusting of their input, so I'm not posting those raw files. We're going to cover the architecture and the nodes that matter without me handing out a personalized workflow that nobody should be importing blindly anyway.
+
+## What We're Building
+
+The stack is four pieces:
+
+- **n8n** handles the scheduling, API calls, credentials, data movement, and the visual workflows.
+- **Ollama** runs the language and vision models locally.
+- **Whisper ASR** turns audio and video into text through a local API.
+- **FFmpeg and yt-dlp** give n8n the tools it needs to download videos, check duration, and pull screenshots.
+
+The traffic flow is pretty simple:
+
+```text
+Browser -> HTTPS reverse proxy -> n8n
+                                  |-> Ollama  (internal only)
+                                  |-> Whisper (internal only)
+                                  |-> FFmpeg and yt-dlp inside n8n
+```
+
+Only n8n needs to be reachable from your browser. Ollama and Whisper don't need published ports at all, because Docker Compose hands every service an internal DNS name. From an n8n node we just use `http://ollama:11434` and `http://whisper:9000`, which is a whole lot cleaner than hardcoding a homelab IP.
+
+## Hardware and Software Requirements
+
+For the exact setup below, here's what I'd recommend:
+
+- A Linux server with Docker Engine and Docker Compose 2.30 or newer
+- An NVIDIA GPU with current drivers and the NVIDIA Container Toolkit
+- At least 16GB of system memory
+- Enough SSD space for container images, Ollama models, and temporary video files
+- A domain and HTTPS reverse proxy, or private access through something like NetBird
+
+You can run both Ollama and Whisper on a CPU, but local vision models and the bigger Whisper models get slow real quick. The GPU version of the Whisper container's also a pretty massive download. Do note that `qwen3-vl:8b` is about 6.1GB, and the optional `qwen3-coder:30b` model is around 19GB, and that's before you account for everything else.
+
+Ollama's [Docker documentation](https://docs.ollama.com/docker) covers the NVIDIA Container Toolkit setup. You should be able to run `nvidia-smi` on the host before you go any further.
+
+## Create the Project
+
+Go ahead and create a directory for the stack:
+
+```bash
+mkdir -p ~/n8n-ai/local-files
+cd ~/n8n-ai
+```
+
+When we're done, the directory looks like this:
+
+```text
+n8n-ai/
+├── .env
+├── .gitignore
+├── compose.yaml
+├── Dockerfile
+└── local-files/
+```
+
+That `local-files` directory is the only host directory n8n can use for persistent workflow files. Video frames can just live under `/tmp` inside the container and disappear whenever the container gets recreated.
+
+### Create the Environment File
+
+Generate a random encryption key first:
+
+```bash
+openssl rand -hex 32
+```
+
+Create `.env` and drop that value on in for `N8N_ENCRYPTION_KEY`:
+
+```dotenv
+N8N_VERSION=2.35.3
+OLLAMA_VERSION=0.32.5
+WHISPER_VERSION=v1.9.1-gpu
+
+N8N_DOMAIN=n8n.example.com
+N8N_ENCRYPTION_KEY=PASTE_YOUR_RANDOM_VALUE_HERE
+TIMEZONE=America/Los_Angeles
+```
+
+That encryption key is what protects the credentials n8n stores, so back it up somewhere safe. If you lose the key and your n8n data, those credentials are gone and there's no getting them back.
+
+Now create `.gitignore` so your secret and local workflow data don't end up in a public repo:
+
+```gitignore
+.env
+local-files/
+```
+
+I'm pinning the container versions that were current when I wrote this. Check the [n8n releases](https://github.com/n8n-io/n8n/releases), [Ollama releases](https://github.com/ollama/ollama/releases), and [Whisper ASR releases](https://github.com/ahmetoner/whisper-asr-webservice/releases) before a fresh deployment, then update one component at a time.
+
+## Build the Custom n8n Image
+
+The normal n8n image doesn't ship FFmpeg or yt-dlp, so we need to add them ourselves. Create a `Dockerfile` with the following:
+
+```dockerfile
+ARG N8N_VERSION=2.35.3
+FROM docker.n8n.io/n8nio/n8n:${N8N_VERSION}
+
+USER root
+
+RUN apk add --no-cache \
+      curl \
+      ffmpeg \
+      python3 \
+      py3-pip \
+    && pip3 install --no-cache-dir --break-system-packages yt-dlp
+
+USER node
+```
+
+That's all we need. The image still runs n8n as the unprivileged `node` user, but now Execute Command nodes can call `ffmpeg`, `ffprobe`, and `yt-dlp` from inside the container.
+
+## Docker Compose Configuration
+
+Create `compose.yaml`:
+
+```yaml
+services:
+  n8n:
+    build:
+      context: .
+      args:
+        N8N_VERSION: ${N8N_VERSION}
+    image: local/n8n-ai:${N8N_VERSION}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      N8N_HOST: ${N8N_DOMAIN}
+      N8N_PORT: 5678
+      N8N_PROTOCOL: https
+      N8N_EDITOR_BASE_URL: https://${N8N_DOMAIN}/
+      N8N_WEBHOOK_URL: https://${N8N_DOMAIN}/
+      N8N_PROXY_HOPS: 1
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+      N8N_RESTRICT_FILE_ACCESS_TO: /files;/tmp
+      NODES_EXCLUDE: '["n8n-nodes-base.localFileTrigger"]'
+      EXECUTIONS_DATA_PRUNE: "true"
+      EXECUTIONS_DATA_MAX_AGE: 168
+      GENERIC_TIMEZONE: ${TIMEZONE}
+      TZ: ${TIMEZONE}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./local-files:/files
+    depends_on:
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  ollama:
+    image: ollama/ollama:${OLLAMA_VERSION}
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+    volumes:
+      - ollama_data:/root/.ollama
+    gpus: all
+    healthcheck:
+      test: ["CMD-SHELL", "OLLAMA_HOST=http://127.0.0.1:11434 ollama list >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+
+  ollama-init:
+    image: ollama/ollama:${OLLAMA_VERSION}
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        echo "Pulling local AI models..."
+        ollama pull qwen3:8b
+        ollama pull qwen3-vl:8b
+        echo "Models are ready."
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:${WHISPER_VERSION}
+    restart: unless-stopped
+    environment:
+      ASR_MODEL: large
+      ASR_ENGINE: openai_whisper
+      ASR_DEVICE: cuda
+    volumes:
+      - whisper_cache:/root/.cache
+    gpus: all
+
+volumes:
+  n8n_data:
+  ollama_data:
+  whisper_cache:
+```
+
+There are a few deliberate changes in here from the first version of this stack.
+
+The Ollama health check runs `ollama list` now, so it actually fails when the API isn't up. The init container uses `set -eu`, which means a failed model download stops the deployment instead of printing a fake success message and carrying on.
+
+I also pulled the `50000` value off `N8N_FORMDATA_FILE_SIZE_MAX`. That setting is measured in MiB, so what I had really done was allow almost 49GiB in a single form-data payload. The current n8n default is 200MiB, which is already plenty generous for most workflows.
+
+And neither Ollama nor Whisper publishes a host port. That doesn't stop n8n from reaching them, but it does stop anyone else on the LAN from firing expensive model requests straight at your server.
+
+### CPU-Only Option
+
+On a CPU-only system, drop `gpus: all` from Ollama and Whisper. Then change the Whisper image and device:
+
+```dotenv
+WHISPER_VERSION=v1.9.1
+```
+
+```yaml
+environment:
+  ASR_MODEL: base
+  ASR_ENGINE: faster_whisper
+  ASR_DEVICE: cpu
+```
+
+I'd start with the `base` model on a CPU. The large model works, but you're going to be waiting a while on longer videos.
+
+## Start the Stack
+
+Validate the Compose file before you start anything:
+
+```bash
+docker compose config
+```
+
+Then build it and bring it up:
+
+```bash
+docker compose up -d --build
+docker compose ps
+```
+
+That first start's going to take a while, because Docker's got to pull the GPU images, Whisper has to cache its model, and Ollama has to grab both local models. You can watch it all come online with:
+
+```bash
+docker compose logs -f ollama-init whisper n8n
+```
+
+Once `ollama-init` exits clean and n8n reports healthy, you're good to go.
+
+You can double check the models from the host:
+
+```bash
+docker compose exec ollama ollama list
+```
+
+And if you've got the VRAM or unified memory for it and you want the coding model from my original video workflow, pull that one separately:
+
+```bash
+docker compose exec ollama ollama pull qwen3-coder:30b
+```
+
+That model's around 19GB, so I'm not going to make it a mandatory download for every system.
+
+## Put n8n Behind HTTPS
+
+The Compose file binds n8n to `127.0.0.1:5678`. Point your reverse proxy at that address and let the proxy deal with TLS for `n8n.example.com`.
+
+The last proxy in the chain needs to send these headers:
+
+```text
+X-Forwarded-For
+X-Forwarded-Host
+X-Forwarded-Proto
+```
+
+`N8N_WEBHOOK_URL` and `N8N_PROXY_HOPS=1` are what tell n8n how to build correct external webhook and OAuth callback URLs. You'll see `WEBHOOK_URL` in a lot of older guides, including my own old notes, but that one's deprecated now.
+
+If you only ever hit n8n over NetBird or another private network, you can bind port 5678 to that private interface instead of loopback. I do still recommend HTTPS, because OAuth callbacks and secure cookies are a lot less annoying when the public URL is configured correctly.
+
+Open `https://n8n.example.com`, create the owner account, and run through the initial setup. And there we go. n8n is up, the models are local, and the AI APIs aren't hanging out on every network interface.
+
+## Connect n8n to Ollama and Whisper
+
+Create an Ollama credential in n8n and use this base URL:
+
+```text
+http://ollama:11434
+```
+
+Don't use `localhost` here. Inside the n8n container, `localhost` means n8n itself. Docker resolves the `ollama` service name to the right container for you automatically.
+
+Whisper goes through an HTTP Request node instead. The base endpoint is:
+
+```text
+http://whisper:9000/asr
+```
+
+Send the audio as multipart form data on the `audio_file` field. The service can hand back text, JSON, SRT, VTT, and so on depending on the query parameters you use. The [Whisper ASR project documentation](https://github.com/ahmetoner/whisper-asr-webservice) has the complete API options.
+
+## Workflow One: A Daily AI News Digest
+
+The first workflow I built was a scheduled news report. It ran every morning, pulled stories from a few sources, summarized the useful ones with a local model, and emailed me a formatted digest.
+
+The flow looked like this:
+
+```text
+Schedule Trigger
+  -> Hacker News RSS + GitHub Trending + selected RSS feeds
+  -> normalize and deduplicate URLs
+  -> scrape each article
+  -> Ollama summary agent
+  -> aggregate summaries
+  -> convert to HTML
+  -> Gmail report
+```
+
+My version used Firecrawl to pull the article content and PostgreSQL to remember which Hacker News stories it had already processed. You can keep that design, or swap Postgres out for an n8n Data Table if you want fewer moving parts.
+
+The important part here is rate control. You'll want a short Wait node between article requests so you're not hammering the source sites or dumping a pile of simultaneous jobs into the Ollama queue. I used three seconds as a starting point and that worked fine.
+
+For the model prompt, keep the output structure simple and predictable. Ask for a short summary, why the story matters, and the original URL. Local models do a whole lot better here when you give them the exact fields you expect instead of asking for some vague newsletter.
+
+You'll need credentials for whichever pieces you go with:
+
+- Ollama at `http://ollama:11434`
+- Gmail OAuth or another email provider
+- Firecrawl if you use it for scraping
+- PostgreSQL if you keep the processed-story database
+
+One thing before you share any of this. Don't export the finished workflow and publish it without opening the JSON first. n8n strips the actual secrets, but exports can still carry credential names and IDs, personal email addresses, internal URLs, and other details you probably don't want sitting in a public repository.
+
+## Workflow Two: Turn a Video into an Article Draft
+
+This one was the more interesting build. I'd hand it a YouTube video ID and it would go collect the metadata and captions, download the video, extract frames, score the screenshots with a vision model, write an article draft, and open a pull request on GitHub.
+
+Here's the high level flow:
+
+```text
+Manual Trigger + YouTube video ID
+  -> YouTube metadata and captions
+  -> yt-dlp download
+  -> FFprobe duration
+  -> FFmpeg frame extraction every 10 seconds
+  -> Qwen3-VL screenshot scoring
+  -> article writer and formatter
+  -> GitHub blobs, tree, commit, branch, and pull request
+```
+
+This is exactly why the custom n8n image matters. Those Execute Command nodes run inside the n8n container, so the binaries have to actually exist in there.
+
+### Validate the Video ID First
+
+Execute Command is disabled by default in n8n 2.x, and for good reason, since it can run arbitrary shell commands. The Compose configuration above turns that node back on while keeping Local File Trigger blocked. I'd only do this on a single-user instance that you control.
+
+Before anything touches a shell command, run the video ID through a Code node:
+
+```javascript
+const videoID = String($json.videoID ?? "");
+
+if (!/^[A-Za-z0-9_-]{11}$/.test(videoID)) {
+  throw new Error("Invalid YouTube video ID");
+}
+
+return [{ json: { videoID } }];
+```
+
+That validation isn't optional. My old workflow interpolated the video ID and paths straight into commands, including a recursive delete, which is about as bad as it sounds. A malicious value could break out of the intended command and run something else inside the n8n container.
+
+Once it's validated, the download command can stay nice and tightly scoped:
+
+```bash
+yt-dlp \
+  -f "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]" \
+  -o "/tmp/{{ $json.videoID }}.mp4" \
+  --force-overwrites \
+  -- "https://www.youtube.com/watch?v={{ $json.videoID }}"
+```
+
+For frames, use a directory built only from that validated ID. Don't accept an arbitrary path from a form or a webhook.
+
+```bash
+frame_dir="/tmp/frames_{{ $json.videoID }}"
+mkdir -p "$frame_dir"
+find "$frame_dir" -mindepth 1 -maxdepth 1 -type f -delete
+
+ffmpeg \
+  -i "/tmp/{{ $json.videoID }}.mp4" \
+  -vf "fps=1/10" \
+  -q:v 2 \
+  "$frame_dir/frame_%04d.jpg" \
+  -y
+```
+
+The workflow encoded each frame, sent it over to `qwen3-vl:8b`, and asked for a JSON score from 1 to 10. UI screens, terminals, diagrams, and configuration pages scored high. Talking head shots, blurry transitions, and intros scored low. Then it just kept the best frames for the article.
+
+The writing stage pulled together the YouTube metadata, the cleaned captions, scraped reference links, and the selected screenshots. A second model formatted all of that into MDX before the GitHub API created a branch and opened the pull request.
+
+For GitHub, use a fine-grained token scoped to one repository with only the contents and pull request permissions it actually needs. Don't use a classic token that can touch every repo you own. And keep the whole thing on a manual trigger until you've got strict input validation, rate limits, and authentication sitting in front of it.
+
+## Security Checklist
+
+n8n's powerful because it can reach APIs, read files, store credentials, and in this case run shell commands. That's also exactly why you want to treat it like an admin service and not just another container.
+
+- Keep n8n behind authenticated HTTPS or a private network.
+- Don't publish the Ollama or Whisper ports unless another trusted system truly needs them.
+- Use one owner account with two-factor authentication.
+- Keep Execute Command disabled if you're not using the video workflow.
+- Validate every value before it reaches a shell command, file path, SQL query, or GitHub request.
+- Use least-privilege OAuth applications and fine-grained tokens.
+- Back up `n8n_data` and the n8n encryption key together.
+- Review workflow JSON before you share it.
+- Update pinned images deliberately, and test your workflows after every n8n upgrade.
+
+n8n also ships a security audit that checks risky nodes, unprotected webhooks, credentials, and instance settings. It's worth running every so often:
+
+```bash
+docker compose exec -u node n8n n8n audit
+```
+
+The official [n8n security audit documentation](https://docs.n8n.io/hosting/securing/security-audit/) explains what each part of the report covers.
+
+## Running Only n8n with PM2
+
+If you don't need Ollama, Whisper, or the custom video tooling, PM2 is a nice lightweight alternative. n8n currently supports Node.js versions from 20.19 through 24.x. Install a supported Node version with nvm, then install pinned versions of n8n and PM2:
+
+```bash
+nvm install 24
+npm install -g n8n@2.35.3 pm2
+```
+
+Create `~/n8n.config.cjs`:
+
+```javascript
+module.exports = {
+  apps: [
+    {
+      name: "n8n",
+      script: "n8n",
+      args: "start",
+      env: {
+        NODE_ENV: "production",
+        N8N_HOST: "n8n.example.com",
+        N8N_PORT: "5678",
+        N8N_PROTOCOL: "https",
+        N8N_EDITOR_BASE_URL: "https://n8n.example.com/",
+        N8N_WEBHOOK_URL: "https://n8n.example.com/",
+        N8N_PROXY_HOPS: "1",
+        GENERIC_TIMEZONE: "America/Los_Angeles",
+        TZ: "America/Los_Angeles",
+        N8N_ENCRYPTION_KEY: "PASTE_YOUR_RANDOM_VALUE_HERE",
+      },
+    },
+  ],
+};
+```
+
+Start it up and enable it on boot:
+
+```bash
+pm2 start ~/n8n.config.cjs
+pm2 startup
+pm2 save
+```
+
+PM2's going to print one extra command for you to run with `sudo`. After that, the day to day commands are pretty basic:
+
+```bash
+pm2 list
+pm2 logs n8n
+pm2 restart n8n --update-env
+pm2 stop n8n
+```
+
+Your n8n data still lives under `~/.n8n/`, separate from the PM2 process definition. I do still prefer Docker for the complete AI stack because it keeps the dependencies and the GPU services reproducible, but PM2 works really well for a simple single-service install.
+
+## Troubleshooting
+
+### Ollama or Whisper Can't See the GPU
+
+Make sure `nvidia-smi` works on the host first, then verify Docker GPU access. The [Docker Compose GPU guide](https://docs.docker.com/compose/how-tos/gpu-support/) covers the device configuration you need.
+
+```bash
+docker compose exec ollama nvidia-smi
+docker compose logs ollama whisper
+```
+
+If `gpus: all` gets rejected, update Docker Compose to 2.30 or newer.
+
+### n8n Can't Connect to Ollama
+
+Use `http://ollama:11434`, not `localhost`, and not your old homelab IP. You can test it from inside the n8n container:
+
+```bash
+docker compose exec n8n curl http://ollama:11434/api/tags
+```
+
+### The Execute Command Node Is Missing
+
+n8n 2.x blocks Execute Command by default. Confirm the `NODES_EXCLUDE` value from the Compose example is actually there, then recreate n8n:
+
+```bash
+docker compose up -d --force-recreate n8n
+```
+
+Only turn this on if you understand that anyone who can edit workflows can run commands inside the n8n container.
+
+### FFmpeg or yt-dlp Is Missing
+
+Rebuild the custom image without the old cache:
+
+```bash
+docker compose build --no-cache n8n
+docker compose up -d n8n
+```
+
+### OAuth Redirects to the Wrong URL
+
+Check `N8N_DOMAIN`, `N8N_EDITOR_BASE_URL`, `N8N_WEBHOOK_URL`, and the forwarded headers on your reverse proxy. Then restart n8n and copy the newly displayed OAuth callback URL into your provider configuration.
+
+## Final Thoughts
+
+This stack's a bit heavier than a plain n8n install, but it opens up some genuinely useful local workflows. You can summarize news without shipping article content off to a hosted LLM, transcribe media on your own GPU, score screenshots with a vision model, and still use n8n for all the normal API and scheduling work around it.
+
+And I do want to be clear about this, I'm not keeping n8n in my active homelab anymore. For me, maintaining a service I wasn't really using just didn't make sense. But if these are the kinds of workflows you want to build, Docker Compose plus local models is still a super nice way to experiment without wiring every single step together from scratch.
+
+I am really curious what you all end up automating with this, and which local models actually work best on your hardware, so let me know in the comments on the video. With all that, I do hope this one was useful, and I hope you have an absolutely beautiful day.
