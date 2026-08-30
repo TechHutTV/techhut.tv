@@ -171,7 +171,7 @@ Use absolute paths here.
 INSECURE=false
 ```
 
-Go find line 8 of your `.env`. It says `INSECURE=true` and it is not commented out. That's there so the local development setup with self-signed certs works out of the box, which is reasonable enough, but since we're using a real certificate from NGINX Proxy Manager you want it off. The README's config table claims the default is `false`, and in the compose file it technically is, but the shipped `.env.example` overrides that. Change it.
+Go find line 8 of your `.env`. It says `INSECURE=true` and it is not commented out. That's there so the local development setup with self-signed certs works out of the box, which is reasonable enough, but since we're using a real certificate from NGINX Proxy Manager you want it off. The comment sitting right above it even tells you to comment the line out on an internet facing server, which is very easy to skim straight past. Change it.
 
 **A couple more worth setting:**
 
@@ -259,42 +259,46 @@ So if you see an init error scroll by on restart number two, that's normal and b
 
 ## Optional Extras
 
-The base install is files, sharing, and search. Here's what else you can stack on, roughly in the order I'd add it.
-
-### Collabora for Document Editing
-
-If you want to open a `.docx` in the browser and edit it right there, you need Collabora:
-
-```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:weboffice/collabora.yml:external-proxy/collabora.yml
-COLLABORA_DOMAIN=collabora.example.com
-COLLABORA_SSL_ENABLE=false
-```
-
-That exposes Collabora on port 9980, and you add a second proxy host in NPM for `collabora.example.com` pointing at it. Same wildcard cert, same Block Common Exploits warning, websockets definitely on.
-
-`COLLABORA_SSL_ENABLE=false` is correct here because NPM is terminating TLS and talking plain HTTP to Collabora. You should also comment out `COLLABORA_SSL_VERIFICATION=false` in `.env` so Collabora verifies the certs it talks to.
-
-One thing that changed recently and confused a lot of people, myself included: the WOPI server used to be its own container on a `wopiserver.*` subdomain. It now runs inside the main OpenCloud process and is served on your main domain under `/wopi` and `/collaboration`. Since you're forwarding the whole domain to OpenCloud already, that's handled. If you're following an older tutorial that tells you to make a third proxy host for it, just ignore that part.
-
-Do note that Collabora and Euro Office are mutually exclusive. They both use the same WOPI service, so pick one.
+The base install gives you files, spaces, sharing, and filename search. Here's what else you can stack on, roughly in the order I'd add it.
 
 ### Full Text Search with Tika
 
-By default, search covers filenames. If you want to search inside your PDFs and documents, add Apache Tika:
+Out of the box, search only looks at filenames. Apache Tika adds search inside your documents, which on a file server is the difference between "I know I saved that thing somewhere" and finding it.
+
+Add it to your `COMPOSE_FILE` alongside whichever external-proxy file you settled on earlier:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:search/tika.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:search/tika.yml
 ```
 
-It's off by default for performance reasons and that's a fair default, since Tika extracts and indexes content on upload and that costs CPU. The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't.
+Then recreate the stack:
+
+```bash
+docker compose up -d
+```
+
+That's all the setup there is. The compose file wires everything up for you, it sets the extractor type to tika, points OpenCloud at `http://tika:9998`, turns on `FRONTEND_FULL_TEXT_SEARCH_ENABLED`, and adds a healthcheck so OpenCloud waits for Tika to come up before it starts. No config files to edit.
+
+To check that it worked, upload a PDF or a `.docx` with some distinctive word buried inside it, something that isn't in the filename. Give it a few seconds, then search that word in OpenCloud. The file should come right back. And there we go, full text search.
+
+Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed until you touch it again, so don't panic when an old document doesn't show up.
+
+The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and plain text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR on scanned documents, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't. It does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
+
+### What About Document Editing?
+
+OpenCloud does do in-browser document editing through Collabora Online, and everything for it lives in `weboffice/collabora.yml` in the repo.
+
+I'm not walking through it here though, because it's a lot more than one extra line in `COMPOSE_FILE`. It wants its own subdomain and proxy host, a one-shot service to generate the WOPI proof key, host font mounts so your documents don't render in the wrong typeface, and some fiddly SSL settings that change depending on whether your proxy is terminating TLS. That's its own guide and I'd rather do it properly than hand you half of it, so I'll link it here once it's written.
+
+If you do go poking at it, do note that Collabora and Euro Office are mutually exclusive. They both use the same WOPI service, so pick one.
 
 ### Radicale for Calendars and Contacts
 
 This is the partial answer to that scope gap I mentioned earlier:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:radicale/radicale.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:radicale/radicale.yml
 ```
 
 Every authenticated OpenCloud user gets a personal calendar and address book over CalDAV and CardDAV, which you can point Thunderbird or your phone at. If you're setting a data directory for it, the same ownership rule applies:
@@ -314,7 +318,7 @@ It's real nice and I'm glad it's in there. It's also still not Nextcloud Calenda
 If you're sharing upload links with people outside your household, scanning uploads is a reasonable idea:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:antivirus/clamav.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:antivirus/clamav.yml
 START_ADDITIONAL_SERVICES="antivirus"
 ```
 
