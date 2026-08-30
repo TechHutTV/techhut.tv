@@ -6,9 +6,9 @@ export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
 export const cover = "/docs-static/img/2026/08/self-host-opencloud-docker-compose/cover.jpg"
 
-I'm going to be upfront with you right at the top here. I'm a Nextcloud guy. I've run it for years, I like it, and it does an absurd amount of stuff for something you can install on a mini PC sitting in your closet. But I'm always willing to test out the competition, and OpenCloud has been sitting on my list for a while now.
+I'm going to be upfront with you right at the top here. [I'm a Nextcloud guy](https://youtu.be/6wMeL9xlzag). I've run it for years, I like it, and it does an absurd amount of stuff for something you can install on a mini PC sitting in your closet. But I'm always willing to test out the competition, and OpenCloud has been sitting on my list for a while now.
 
-So let's set it up properly. Real domain, real certificates, local storage on a path you control. First though, a quick word on what this thing is, because it's not just another Nextcloud clone.
+So let's set it up properly. Real domain, real certificates, files on local disk where you can get at them. First though, a quick word on what this thing is, because it's not just another Nextcloud clone.
 
 ## Where OpenCloud Comes From
 
@@ -22,7 +22,7 @@ So these aren't two forks of the same codebase. One is a decade of PHP evolution
 
 Nextcloud is a PHP monolith. MariaDB or Postgres, Redis, a cron worker, and eventually some PHP tuning. OpenCloud is Go microservices, and it stores metadata on the filesystem right next to the file data. No database instance to maintain, no schema migrations on upgrade, and no coordinating a SQL dump with a filesystem snapshot while hoping the two line up.
 
-For a homelab that's a big deal. Your backup is a copy of one directory, full stop. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
+For a homelab that's a big deal. Your backup is a copy of one directory. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
 
 You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora or Euro Office bolted on for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
 
@@ -38,8 +38,6 @@ Here's the target:
 - No S3, no MinIO, no external database
 
 That last point tripped me up at first, so let me clarify it. The compose repo has a `storage/` folder, and people see that and assume they have to pick something. You don't. That folder contains exactly one file, `decomposeds3.yml`, and all it does is switch OpenCloud over to S3-backed storage. Leave it out and you get the default `decomposed` driver writing straight to local disk.
-
-Local storage isn't a thing you turn on. It's what you get by not doing anything.
 
 ## What You Need
 
@@ -271,7 +269,7 @@ Whether that middle file is `opencloud.yml` or `opencloud-exposed.yml` depends o
 
 ### Full Text Search with Tika
 
-Out of the box, search only looks at filenames. Apache Tika adds search inside your documents, which on a file server is the difference between "I know I saved that thing somewhere" and finding it.
+By default, search only looks at filenames. Apache Tika adds search inside your documents, so you can find that one PDF when you can't remember what you named it.
 
 Append `search/tika.yml` to your `COMPOSE_FILE` line, then recreate the stack:
 
@@ -283,7 +281,7 @@ That's all the setup there is. The compose file wires everything up for you, it 
 
 To check that it worked, upload a PDF or a `.docx` with some distinctive word buried inside it, something that isn't in the filename. Give it a few seconds, then search that word in OpenCloud. The file should come right back. And there we go, full text search.
 
-Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed until you touch it again, so don't panic when an old document doesn't show up.
+Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed until you touch it again, so an old document not turning up doesn't mean anything is broken.
 
 The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and plain text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR on scanned documents, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't. It does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
 
@@ -311,7 +309,7 @@ docker compose up -d
 
 Then go add a second proxy host in NPM. Point `euro-office.example.com` at your host on port `9900`, scheme `http`, websockets on, Block Common Exploits **off** again, then your wildcard cert and Force SSL on the SSL tab.
 
-Give it a minute before you test. The healthcheck allows a 120 second start period and it genuinely uses most of that on a cold start, so don't panic when the container sits there looking unhealthy. Once it settles, create a new `.docx` from inside OpenCloud. It should open right in the browser, and there we go.
+Give it a minute before you test. The healthcheck allows a 120 second start period and it uses most of that on a cold start, so don't panic when the container sits there looking unhealthy. Once it settles, create a new `.docx` from inside OpenCloud. It should open right in the browser. Beautiful.
 
 Two things worth knowing before you walk away from this one. The `.env.example` file has a `EURO_OFFICE_JWT_SECRET` and the README tells you to change it for production, but on the version of the repo I'm running that variable isn't referenced by any compose file, so setting it doesn't do anything.
 
@@ -369,7 +367,7 @@ TRAEFIK_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory
 
 Bring it up, visit the site, click through the warning, and check the certificate issuer. If it says "Fake LE Intermediate X1" the whole flow works. Then blank that variable, `rm -f certs/acme.json`, and recreate to get the real thing. That `acme.json` file is where Traefik stores your certificates and its ACME account key, so back it up with everything else.
 
-I don't run it this way myself, but it works well and it's one less service to maintain if you truly have nothing else.
+I don't run it this way myself, but it works well and it's one less service to maintain if you've got nothing else running.
 
 ## Backups, Which Is the Whole Point
 
@@ -390,7 +388,7 @@ docker compose start opencloud
 
 Stopping the container isn't strictly required, but it gives you a guaranteed clean state and it takes all of a few seconds.
 
-If you want something better than an rsync to a spare drive, I wrote a [full Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) that covers backing up Docker hosts with the PBS client and pushing a copy offsite. That's what I'd point you at for anything you care about.
+If you want something better than an rsync to a spare drive, I've got a [full Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) that covers backing up Docker hosts with the PBS client and pushing a copy offsite. That's what I'd point you at for anything you care about.
 
 Compare any of this to backing up Nextcloud, where you need the data directory, `config.php`, and a consistent database dump taken at the same logical moment, ideally with the instance in maintenance mode. Both are doable and both get scripted eventually. But one of them has a lot fewer ways to be subtly wrong six months later when you actually need the restore to work. That's not marketing copy, that's just what having no database gets you.
 
@@ -446,7 +444,7 @@ docker compose logs -f opencloud
 
 I like it. More than I expected to, honestly.
 
-The no-database thing isn't just a talking point. It changes how this feels to run day to day. Spaces are a better sharing model than folder-based sharing. It's fast, it's light, and this compose repo is one of the cleaner modular setups I've worked with, which counts for a lot when you're the one maintaining it.
+The no-database thing changes how this feels to run day to day. Spaces are a better sharing model than folder-based sharing. It's fast, it's light, and this compose repo is one of the cleaner modular setups I've worked with, which counts for a lot when you're the one maintaining it.
 
 But I'm not moving off Nextcloud, and I want to be straight with you about why. I use Calendar, Contacts, and Deck constantly, Talk occasionally, and there's a handful of app store things I'd have to give up entirely. OpenCloud doesn't have those and isn't trying to. That's a legitimate design choice on their part, not a failing, but it means the answer for me personally is no for now.
 
@@ -458,4 +456,4 @@ And if you already run Nextcloud and it's working for you, there's no migration 
 
 I'm keeping this instance running alongside my Nextcloud box and I'll come back to it in a few releases. On-demand sync landing would be a big deal for me.
 
-If you've been running OpenCloud for a while I'm really curious how it's gone, especially with the desktop clients, so let me know in the comments on the video. And if you've got a Nextcloud setup you love, I'm right there with you. With all that, I do hope this one was useful, and I hope you have an absolutely beautiful day.
+If you've been running OpenCloud for a while I'm really curious how it's gone, especially with the desktop clients, so let me know in the comments on the video. And if you've got a Nextcloud setup you love, I'm right there with you. If you're still building out the rest of your server, I've also got a full rundown of [the homelab services I keep coming back to](/must-have-home-server-services-2025). With all that, I do hope this one was useful, and I hope you have an absolutely beautiful day.
