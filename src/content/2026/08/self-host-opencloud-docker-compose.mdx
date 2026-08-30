@@ -261,17 +261,19 @@ So if you see an init error scroll by on restart number two, that's normal and b
 
 The base install gives you files, spaces, sharing, and filename search. Here's what else you can stack on, roughly in the order I'd add it.
 
+These all work the same way. You append one more file to the `COMPOSE_FILE` line you already built, keep everything that's already on it, then run `docker compose up -d` to pick up the change. They stack, so two of them together looks like this:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:search/tika.yml:radicale/radicale.yml
+```
+
+Whether that middle file is `opencloud.yml` or `opencloud-exposed.yml` depends on the choice you made earlier, so keep whichever one you're already running and don't swap it out.
+
 ### Full Text Search with Tika
 
 Out of the box, search only looks at filenames. Apache Tika adds search inside your documents, which on a file server is the difference between "I know I saved that thing somewhere" and finding it.
 
-Add it to your `COMPOSE_FILE` alongside whichever external-proxy file you settled on earlier:
-
-```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:search/tika.yml
-```
-
-Then recreate the stack:
+Append `search/tika.yml` to your `COMPOSE_FILE` line, then recreate the stack:
 
 ```bash
 docker compose up -d
@@ -289,16 +291,15 @@ The base `apache/tika:latest` image is around 300MB and handles PDFs, Office doc
 
 OpenCloud gives you two options for editing documents in the browser, and you have to pick one, since they both run through the same WOPI service. Collabora Online is the mature choice, built on LibreOffice, been around for years. The other is Euro Office, and that's the one I'm setting up here.
 
-Euro Office is a fork of ONLYOFFICE. A consortium of nine European companies announced it in Berlin back in March, with Nextcloud, IONOS, and Proton among them, and the first stable release landed on June 9th. The reasoning was partly that ONLYOFFICE is officially a Latvian company while its development team sits largely in Russia, and partly that contributing upstream was, by the fork team's account, close to impossible with build instructions that didn't work.
+Euro Office is a fork of ONLYOFFICE. A consortium of European companies announced it in Berlin back in March, with Nextcloud, IONOS, and Proton among them, and the first stable release landed on June 9th. The reasoning was partly that ONLYOFFICE is officially a Latvian company while its development team sits largely in Russia, and partly that contributing upstream was, by the fork team's account, close to impossible with build instructions that didn't work.
 
 Do note there's an unresolved licensing fight here. ONLYOFFICE says the fork violates its AGPLv3 terms, Nextcloud says they stripped out the extra terms that conflicted with AGPLv3 to begin with. Nobody's settled that yet, so factor it in before you build a workflow on it.
 
 As for which one to run, the repo answers that itself. Open up `config/euro-office/app-registry.yaml` and you'll see `.docx`, `.xlsx`, and `.pptx` routed to Euro Office, while `.odt`, `.ods`, and `.odp` go to Collabora. Both suites open both formats, so this is about which one handles what more faithfully. If your household lives in Word files, Euro Office. If you're an OpenDocument shop, Collabora. That's about as deep as the decision needs to go for a home server.
 
-Add a DNS record for `euro-office.example.com`, which your wildcard already covers, then:
+Add a DNS record for `euro-office.example.com`, which your wildcard already covers. Then append both `weboffice/euro-office.yml` and `external-proxy/euro-office-exposed.yml` to your `COMPOSE_FILE`, and set the domain:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:weboffice/euro-office.yml:external-proxy/euro-office-exposed.yml
 EURO_OFFICE_DOMAIN=euro-office.example.com
 ```
 
@@ -312,15 +313,13 @@ Then go add a second proxy host in NPM. Point `euro-office.example.com` at your 
 
 Give it a minute before you test. The healthcheck allows a 120 second start period and it genuinely uses most of that on a cold start, so don't panic when the container sits there looking unhealthy. Once it settles, create a new `.docx` from inside OpenCloud. It should open right in the browser, and there we go.
 
-One thing worth knowing. The `.env.example` file has a `EURO_OFFICE_JWT_SECRET` and the README tells you to change it for production, but on the version of the repo I'm running that variable isn't referenced by any compose file, so setting it doesn't do anything. Not a hole by itself, since the document server is only reachable through your proxy, but don't assume it's protecting you.
+Two things worth knowing before you walk away from this one. The `.env.example` file has a `EURO_OFFICE_JWT_SECRET` and the README tells you to change it for production, but on the version of the repo I'm running that variable isn't referenced by any compose file, so setting it doesn't do anything.
+
+And because we used the `-exposed` overlay, port 9900 is bound on every interface of that box, not just localhost. Exact same rule as port 9200 earlier, so firewall it to your proxy's IP. Between those two, don't assume anything is guarding that document server for you.
 
 ### Radicale for Calendars and Contacts
 
-This is the partial answer to that scope gap I mentioned earlier:
-
-```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:radicale/radicale.yml
-```
+This is the partial answer to that scope gap I mentioned earlier. Append `radicale/radicale.yml` to your `COMPOSE_FILE`.
 
 Every authenticated OpenCloud user gets a personal calendar and address book over CalDAV and CardDAV, which you can point Thunderbird or your phone at. If you're setting a data directory for it, the same ownership rule applies:
 
@@ -336,10 +335,9 @@ It's real nice and I'm glad it's in there. It's also still not Nextcloud Calenda
 
 ### ClamAV Antivirus Scanning
 
-If you're sharing upload links with people outside your household, scanning uploads is a reasonable idea:
+If you're sharing upload links with people outside your household, scanning uploads is a reasonable idea. Append `antivirus/clamav.yml` to your `COMPOSE_FILE`, then set this as well:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:antivirus/clamav.yml
 START_ADDITIONAL_SERVICES="antivirus"
 ```
 
@@ -382,7 +380,7 @@ Everything that matters lives in two directories:
 - `/srv/opencloud/config` for the generated config and secrets
 - `/srv/opencloud/data` for all files and metadata
 
-Back those up and you've backed up OpenCloud. There's no database to dump, and nothing that has to stay in sync with anything else. The simplest possible version:
+Back those up and you've backed up OpenCloud. There's no database to dump, and nothing that has to stay in sync with anything else. If you went the Traefik route instead of NPM, add `certs/acme.json` to that list too, so a restore doesn't leave you re-issuing certificates. Same goes for `/srv/radicale` if you turned on calendars and contacts, since that data sits outside the OpenCloud directories entirely. The simplest possible version:
 
 ```bash
 docker compose stop opencloud
@@ -394,7 +392,7 @@ Stopping the container isn't strictly required, but it gives you a guaranteed cl
 
 If you want something better than an rsync to a spare drive, I wrote a [full Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) that covers backing up Docker hosts with the PBS client and pushing a copy offsite. That's what I'd point you at for anything you care about.
 
-Compare any of this to backing up Nextcloud, where you need the data directory, `config.php`, and a consistent `mysqldump` taken at the same logical moment, ideally with the instance in maintenance mode. Both are doable and both get scripted eventually. But one of them has a lot fewer ways to be subtly wrong six months later when you actually need the restore to work. That's not marketing copy, that's just what having no database gets you.
+Compare any of this to backing up Nextcloud, where you need the data directory, `config.php`, and a consistent database dump taken at the same logical moment, ideally with the instance in maintenance mode. Both are doable and both get scripted eventually. But one of them has a lot fewer ways to be subtly wrong six months later when you actually need the restore to work. That's not marketing copy, that's just what having no database gets you.
 
 ## Updating
 
