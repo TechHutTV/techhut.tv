@@ -6,9 +6,9 @@ export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
 export const cover = "/docs-static/img/2026/08/self-host-opencloud-docker-compose/cover.jpg"
 
-I'm going to be upfront with you right at the top here. I'm a Nextcloud guy. I've run it for years, I like it, and it does a genuinely absurd amount of stuff for something you can install on a mini PC sitting in your closet. But I'm always willing to test out the competition, and OpenCloud has been sitting on my list for a while now.
+I'm going to be upfront with you right at the top here. I'm a Nextcloud guy. I've run it for years, I like it, and it does an absurd amount of stuff for something you can install on a mini PC sitting in your closet. But I'm always willing to test out the competition, and OpenCloud has been sitting on my list for a while now.
 
-So let's set it up properly. Real domain, real certificates, local storage on a path you control. First though, a quick word on what this thing actually is, because it is not just another Nextcloud clone.
+So let's set it up properly. Real domain, real certificates, local storage on a path you control. First though, a quick word on what this thing is, because it's not just another Nextcloud clone.
 
 ## Where OpenCloud Comes From
 
@@ -22,9 +22,9 @@ So these aren't two forks of the same codebase. One is a decade of PHP evolution
 
 Nextcloud is a PHP monolith. MariaDB or Postgres, Redis, a cron worker, and eventually some PHP tuning. OpenCloud is Go microservices, and it stores metadata on the filesystem right next to the file data. No database instance to maintain, no schema migrations on upgrade, and no coordinating a SQL dump with a filesystem snapshot while hoping the two line up.
 
-For a homelab that's a real simplification, and I don't say that lightly. A ZFS snapshot of the data directory is your backup, full stop. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
+For a homelab that's a big deal. Your backup is a copy of one directory, full stop. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
 
-You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks at 11pm. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
+You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
 
 I'll give you my honest verdict at the end. Let's build it first.
 
@@ -50,15 +50,15 @@ Local storage isn't a thing you turn on. It's what you get by not doing anything
 
 For this I'm on a small Debian VM, but any Linux box works. Proxmox VM, bare metal mini PC, a cheap VPS, whatever you've got sitting around.
 
-If you don't have NGINX Proxy Manager set up yet, I wrote a [full guide to it over on my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy). That covers the install, Cloudflare DDNS, and the part most people actually want, which is using a DNS challenge to get real Let's Encrypt wildcard certificates for services that never touch the public internet. I'd go do that first and come back, because everything below assumes it.
+If you don't have NGINX Proxy Manager set up yet, I wrote a [full guide to it over on my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy). That covers the install, Cloudflare DDNS, and the part most people want, which is using a DNS challenge to get real Let's Encrypt wildcard certificates for services that never touch the public internet. I'd go do that first and come back, because everything below assumes it.
 
-Do note that Compose v2 is not optional here. Some distro repos, Debian 12 "Bookworm" included, still ship the old Python `docker-compose` v1, and running this repo against v1 gives you a broken deployment with genuinely confusing errors. Install from the official Docker repos:
+Do note that Compose v2 is not optional here. Some distro repos, Debian 12 "Bookworm" included, still ship the old Python `docker-compose` v1, and running this repo against v1 gives you a broken deployment with some very confusing errors. Install from the official Docker repos:
 
 ```bash
 curl -fsSL https://get.docker.com | sh
 ```
 
-Then verify what you actually got:
+Then verify what you got:
 
 ```bash
 docker compose version
@@ -92,33 +92,25 @@ Take a second and look around in there, because this repo is modular in a way I 
 - `antivirus/` is ClamAV
 - `storage/` is the S3 option we're deliberately skipping
 
-You mix and match by listing files in `COMPOSE_FILE`, and later files override earlier ones. Pretty clean design, and it makes the whole thing easy to reproduce later.
+You mix and match by listing files in `COMPOSE_FILE`, and later files override earlier ones. Pretty clean design, and it makes everything easy to reproduce later.
 
 ## Create Your Local Storage Directories
 
-This is the local storage part, and it's about as complicated as it sounds, which is to say not very:
+Two directories, owned by the right user:
 
 ```bash
 sudo mkdir -p /srv/opencloud/{config,data}
 sudo chown -R 1000:1000 /srv/opencloud
 ```
 
-That `chown` is not optional and it's the single most common thing people trip over. The OpenCloud container runs as UID and GID 1000. If those directories are owned by root, the container starts, fails to write anything, and restart-loops forever while you stare at the logs trying to figure out what's wrong.
+Pretty simple. In a minute we'll go ahead and point `OC_CONFIG_DIR` and `OC_DATA_DIR` at these paths, and Compose bind mounts them straight into the container. Leave those two variables empty and you get Docker named volumes instead, which works fine, but then your data is buried in `/var/lib/docker/volumes/` where it's harder to back up and harder to move to a bigger disk later.
 
-Two directories, two jobs:
+That `chown` is not optional and it's the number one thing people trip over. The OpenCloud container runs as UID and GID 1000. If those directories are owned by root, the container starts, fails to write anything, and restart-loops forever while you stare at the logs trying to figure out what's wrong.
 
-- `config` is where `opencloud init` writes the generated config file with all your service secrets. It's small, but it is absolutely critical. Lose it and your instance is toast.
-- `data` is where every file, all the metadata, and every space lives. This is the one that grows.
+What ends up where:
 
-If you're on ZFS or Btrfs, this is your moment. Put `/srv/opencloud` on its own dataset:
-
-```bash
-sudo zfs create -o mountpoint=/srv/opencloud tank/opencloud
-```
-
-Then your entire backup strategy becomes `zfs snapshot tank/opencloud@daily` and shipping that somewhere with `zfs send`. No database dump, no maintenance mode, no dance to make sure the DB and the files agree with each other. That's the operational win I mentioned up top, and it's real.
-
-You can skip all of this and let Docker use internal volumes. It works fine. But then your data lives somewhere in `/var/lib/docker/volumes/` and you're a lot less in control of it, so I do recommend the host path.
+- `config` gets the generated config file with all your service secrets. It's tiny, but it's absolutely critical. Lose it and your instance is toast.
+- `data` gets every file, all the metadata, and every space. This is the one that grows, so put it somewhere you have room.
 
 ## Build Your .env File
 
@@ -126,7 +118,7 @@ You can skip all of this and let Docker use internal volumes. It works fine. But
 cp .env.example .env
 ```
 
-Now open `.env` in your editor. It's long, close to 500 lines, but it's mostly comments and about 90 percent of it doesn't apply to us. Here's what actually matters.
+Now open `.env` in your editor. It's long, close to 500 lines, but it's mostly comments and about 90 percent of it doesn't apply to us. Here's what matters.
 
 **Tell Compose which files to load:**
 
@@ -136,7 +128,7 @@ COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml
 
 Core service plus the external proxy config, which exposes OpenCloud on port 9200 for NGINX Proxy Manager to forward to. Notice `storage/decomposeds3.yml` is not in that list. That's how we get local storage.
 
-Setting this in `.env` means you can just run `docker compose up -d` from here on out instead of typing `-f this -f that` every single time. Much nicer, and it makes the whole thing reproducible if you ever hand it to Ansible.
+Setting this in `.env` means you can just run `docker compose up -d` from here on out instead of typing `-f this -f that` every single time. Much nicer, and it makes everything reproducible if you ever hand it off to Ansible.
 
 Do note that `external-proxy/opencloud.yml` binds to `127.0.0.1:9200`, so it only listens on localhost. If NGINX Proxy Manager runs on the **same machine**, that's perfect and you're done. If your proxy lives on a different box, like mine does, you'll want `external-proxy/opencloud-exposed.yml` instead, which binds to all interfaces:
 
@@ -157,7 +149,7 @@ This has to match the domain you're going to put on the proxy host. It feeds `OC
 **Your admin password:**
 
 ```bash
-INITIAL_ADMIN_PASSWORD=some-genuinely-strong-password
+INITIAL_ADMIN_PASSWORD=your-strong-password-here
 ```
 
 Read this bit carefully because it's a real gotcha. This variable is only read on the very first startup. Once OpenCloud initializes, changing it in `.env` does absolutely nothing. And if you start the stack with it blank, the container will just restart-loop and you'll have to wipe the config directory and start over. So set it now, before the first `up`.
@@ -173,7 +165,7 @@ OC_DATA_DIR=/srv/opencloud/data
 
 Use absolute paths here.
 
-**And now the one that will actually bite you:**
+**And now the important one:**
 
 ```bash
 INSECURE=false
@@ -209,7 +201,7 @@ Over in NGINX Proxy Manager, go to _Hosts > Add Proxy Host_ and fill it in:
 - **Websockets Support:** on
 - **Block Common Exploits:** **off**
 
-That last one is not a typo, and I need to flag it loudly because it contradicts my own advice elsewhere.
+That last one isn't a mistake, and I need to call it out because it goes against my own advice.
 
 In my [proxy guide](https://github.com/TechHutTV/homelab/tree/main/proxy) I say that I always enable Block Common Exploits, and for basically every other service that's good advice. Not here. With it on, the OpenCloud **desktop sync client fails to authenticate with a 403**, and there is nothing in the OpenCloud logs that will point you toward the proxy as the cause. The web UI works fine, which makes it even more confusing, because you'll swear the setup is correct.
 
@@ -230,9 +222,9 @@ proxy_read_timeout 3600s;
 proxy_send_timeout 3600s;
 ```
 
-`client_max_body_size 0` removes the upload cap entirely. `proxy_request_buffering off` matters more than you'd expect, because without it nginx writes the whole upload to its own disk before forwarding a single byte, which turns a 20GB upload into a 20GB write on whatever volume NPM is living on. And the timeouts give large transfers room to actually finish.
+`client_max_body_size 0` removes the upload cap entirely. `proxy_request_buffering off` matters more than you'd expect, because without it nginx writes the whole upload to its own disk before forwarding a single byte, which turns a 20GB upload into a 20GB write on whatever volume NPM is living on. And the timeouts give big transfers room to finish.
 
-Save it, and you should be good to go.
+Save that, and you're good to go.
 
 ## Log In
 
@@ -243,7 +235,7 @@ Head to `https://cloud.example.com`.
 
 And just like that, we're in.
 
-First thing you'll notice is Spaces, which is OpenCloud's organizing concept and honestly one of my favorite things about it. Instead of "here's your home folder, now share individual directories out of it," you create project spaces with their own membership and quota. It maps to how people actually work together a lot better than folder sharing does, and it's the one area where I think OpenCloud is straightforwardly ahead of Nextcloud's model.
+First thing you'll notice is Spaces, which is OpenCloud's organizing concept and honestly one of my favorite things about it. Instead of "here's your home folder, now share individual directories out of it," you create project spaces with their own membership and quota. It maps to how people work together a lot better than folder sharing does, and it's the one area where I think OpenCloud is straightforwardly ahead of Nextcloud's model.
 
 Poke around, upload something, make a space. Then confirm it's writing where you expect:
 
@@ -271,7 +263,7 @@ The base install is files, sharing, and search. Here's what else you can stack o
 
 ### Collabora for Document Editing
 
-If you want to open a `.docx` in the browser and actually edit it, you need Collabora:
+If you want to open a `.docx` in the browser and edit it right there, you need Collabora:
 
 ```bash
 COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:weboffice/collabora.yml:external-proxy/collabora.yml
@@ -281,7 +273,7 @@ COLLABORA_SSL_ENABLE=false
 
 That exposes Collabora on port 9980, and you add a second proxy host in NPM for `collabora.example.com` pointing at it. Same wildcard cert, same Block Common Exploits warning, websockets definitely on.
 
-`COLLABORA_SSL_ENABLE=false` is correct here because NPM is terminating TLS and talking plain HTTP to Collabora. You should also comment out `COLLABORA_SSL_VERIFICATION=false` in `.env` so Collabora actually verifies the certs it talks to.
+`COLLABORA_SSL_ENABLE=false` is correct here because NPM is terminating TLS and talking plain HTTP to Collabora. You should also comment out `COLLABORA_SSL_VERIFICATION=false` in `.env` so Collabora verifies the certs it talks to.
 
 One thing that changed recently and confused a lot of people, myself included: the WOPI server used to be its own container on a `wopiserver.*` subdomain. It now runs inside the main OpenCloud process and is served on your main domain under `/wopi` and `/collaboration`. Since you're forwarding the whole domain to OpenCloud already, that's handled. If you're following an older tutorial that tells you to make a third proxy host for it, just ignore that part.
 
@@ -315,7 +307,7 @@ sudo mkdir -p /srv/radicale && sudo chown -R 1000:1000 /srv/radicale
 RADICALE_DATA_DIR=/srv/radicale
 ```
 
-It's genuinely useful and I'm glad it's in there. It's also still not Nextcloud Calendar with shared team calendars and scheduling, so set your expectations accordingly.
+It's real nice and I'm glad it's in there. It's also still not Nextcloud Calendar with shared team calendars and scheduling, so don't go in expecting that.
 
 ### ClamAV Antivirus Scanning
 
@@ -326,13 +318,13 @@ COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:antivirus/clamav.ym
 START_ADDITIONAL_SERVICES="antivirus"
 ```
 
-That second variable is really easy to miss, and without it the whole thing silently does nothing. If you're adding more than one extra service, comma separate them, like `notifications,antivirus`.
+That second variable is really easy to miss, and without it the antivirus service just sits there doing nothing. If you're adding more than one extra service, comma separate them, like `notifications,antivirus`.
 
 Heads up that ClamAV wants around 1GB of RAM for its signature database, which meaningfully changes the "runs great on low-power hardware" math. Worth it if you need it, skip it if you don't.
 
 ## No Reverse Proxy Yet? Use the Built-In Traefik
 
-If you're starting from a bare VPS with nothing on ports 80 and 443, the compose repo ships its own Traefik setup and it's genuinely the fastest path from zero to running. You don't need NGINX Proxy Manager at all.
+If you're starting from a bare VPS with nothing on ports 80 and 443, the compose repo ships its own Traefik setup and it's the fastest path from zero to running. You don't need NGINX Proxy Manager at all.
 
 Point a DNS A record at the server first, then:
 
@@ -365,14 +357,7 @@ Everything that matters lives in two directories:
 - `/srv/opencloud/config` for the generated config and secrets
 - `/srv/opencloud/data` for all files and metadata
 
-On ZFS:
-
-```bash
-sudo zfs snapshot tank/opencloud@$(date +%Y%m%d)
-sudo zfs send -i tank/opencloud@previous tank/opencloud@$(date +%Y%m%d) | ssh backup-box zfs recv tank/backups/opencloud
-```
-
-Or just rsync it somewhere:
+Back those up and you've backed up OpenCloud. There's no database to dump, and nothing that has to stay in sync with anything else. The simplest possible version:
 
 ```bash
 docker compose stop opencloud
@@ -380,9 +365,11 @@ sudo rsync -aAX /srv/opencloud/ /mnt/backup/opencloud/
 docker compose start opencloud
 ```
 
-You can snapshot live on ZFS, but stopping the container for a moment gives you a guaranteed clean state and it takes all of a few seconds.
+Stopping the container isn't strictly required, but it gives you a guaranteed clean state and it takes all of a few seconds.
 
-Compare that to backing up Nextcloud, where you need the data directory, `config.php`, and a consistent `mysqldump` taken at the same logical moment, ideally with the instance in maintenance mode. Both are doable and both get scripted eventually. But one of them has a lot fewer ways to be subtly wrong six months later when you actually need the restore to work. That's not marketing copy, that's just what having no database gets you.
+If you want something better than an rsync to a spare drive, I wrote a [full Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) that covers backing up Docker hosts with the PBS client and pushing a copy offsite. That's what I'd point you at for anything you care about.
+
+Compare any of this to backing up Nextcloud, where you need the data directory, `config.php`, and a consistent `mysqldump` taken at the same logical moment, ideally with the instance in maintenance mode. Both are doable and both get scripted eventually. But one of them has a lot fewer ways to be subtly wrong six months later when you actually need the restore to work. That's not marketing copy, that's just what having no database gets you.
 
 ## Updating
 
@@ -436,11 +423,11 @@ docker compose logs -f opencloud
 
 I like it. More than I expected to, honestly.
 
-The no-database thing is not a gimmick. It genuinely changes the operational shape of running this in a homelab. Spaces are a better sharing model than folder-based sharing. It's fast, it's light, and this compose repo is one of the cleaner modular setups I've worked with, which counts for a lot when you're the one maintaining it at midnight.
+The no-database thing isn't just a talking point. It changes how this feels to run day to day. Spaces are a better sharing model than folder-based sharing. It's fast, it's light, and this compose repo is one of the cleaner modular setups I've worked with, which counts for a lot when you're the one maintaining it.
 
 But I'm not moving off Nextcloud, and I want to be straight with you about why. I use Calendar, Contacts, and Deck constantly, Talk occasionally, and there's a handful of app store things I'd have to give up entirely. OpenCloud doesn't have those and isn't trying to. That's a legitimate design choice on their part, not a failing, but it means the answer for me personally is no for now.
 
-Where I would genuinely recommend it: you want a Drive replacement, you don't need groupware, you're running modest hardware, and you want a backup story you can explain to someone in one sentence. That's a real category of person, and OpenCloud serves it better than Nextcloud does.
+Where I do recommend it: you want a Drive replacement, you don't need groupware, you're running modest hardware, and you want a backup story you can explain to someone in one sentence. That's a lot of people, and OpenCloud serves them better than Nextcloud does.
 
 Where I'd say wait: you need polished mobile and desktop clients, you rely on third-party apps, or you need to be able to search a forum at 2am and find someone who already hit your exact error. Two years of project history against ten years is just a real gap.
 
