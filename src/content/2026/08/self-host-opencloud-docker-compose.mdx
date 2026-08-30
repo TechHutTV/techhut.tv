@@ -1,5 +1,5 @@
 export const title = "Self-Host OpenCloud with Docker Compose, and How It Compares to Nextcloud"
-export const description = "Set up OpenCloud on your own domain with Docker Compose, local storage, and real Let's Encrypt certificates, plus an honest look at how it stacks up against Nextcloud."
+export const description = "Set up OpenCloud on your own domain with Docker Compose, local storage, and NGINX Proxy Manager, plus an honest look at how it stacks up against Nextcloud."
 export const date = "2026-08-30"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
@@ -8,59 +8,33 @@ export const cover = "/docs-static/img/2026/08/self-host-opencloud-docker-compos
 
 I'm going to be upfront with you right at the top here. I'm a Nextcloud guy. I've run it for years, I like it, and it does a genuinely absurd amount of stuff for something you can install on a mini PC sitting in your closet. But I'm always willing to test out the competition, and OpenCloud has been sitting on my list for a while now.
 
-So let's actually set it up properly. Real domain, real Let's Encrypt certificates, local storage on a path you control. Then I'll tell you what I honestly think of it compared to what I'm already running.
+So let's set it up properly. Real domain, real certificates, local storage on a path you control. First though, a quick word on what this thing actually is, because it is not just another Nextcloud clone.
 
-## Where OpenCloud Actually Comes From
+## Where OpenCloud Comes From
 
-Both Nextcloud and OpenCloud descend from ownCloud, but they came off completely different branches, and that matters more than you'd think.
+Both descend from ownCloud, but off completely different branches. Nextcloud is Frank Karlitschek's 2016 PHP fork of ownCloud Server, the one that grew into the full collaboration suite we all know today, and it's AGPLv3.
 
-Nextcloud is Frank Karlitschek's 2016 PHP fork of ownCloud Server. He founded ownCloud, left, forked it, and that fork grew into the full collaboration suite we all know today. It's AGPLv3.
+OpenCloud is the continuation of ownCloud Infinite Scale, the Go rewrite meant to replace that old PHP server entirely. When Kiteworks acquired ownCloud in late 2023 the core oCIS engineering team left, and in January 2025 they relaunched the project under the Heinlein Group in Berlin. The server is Apache 2.0, the clients are GPL, and there's no CLA, which I do appreciate if you've watched what happens to projects when one company owns all the copyright.
 
-OpenCloud comes from a totally different lineage. It's the continuation of ownCloud Infinite Scale, the Go rewrite that ownCloud started as a clean-slate replacement for the old PHP server. When Kiteworks acquired ownCloud in late 2023, the core oCIS engineering team left, and in January 2025 they relaunched the project as OpenCloud under the Heinlein Group in Berlin. The server is Apache 2.0, the clients are GPL, and there's no CLA, which is a detail I do appreciate if you've ever watched what happens to a project when one company owns all the copyright.
+So these aren't two forks of the same codebase. One is a decade of PHP evolution, the other is a ground-up Go rewrite that happens to share ancestry.
 
-So these aren't two forks of the same codebase. One is a decade of PHP evolution, the other is a ground-up Go rewrite that just happens to share ancestry.
+## What That Actually Means for You
 
-## Architecture Is the Real Difference
+Nextcloud is a PHP monolith. MariaDB or Postgres, Redis, a cron worker, and eventually some PHP tuning. OpenCloud is Go microservices, and it stores metadata on the filesystem right next to the file data. No database instance to maintain, no schema migrations on upgrade, and no coordinating a SQL dump with a filesystem snapshot while hoping the two line up.
 
-Nextcloud is a PHP monolith. It needs MariaDB or Postgres, it wants Redis for file locking and caching, it needs a cron worker, and at some point you will be tuning PHP memory limits and opcache. That's just the deal, and if you run it, you've made peace with it.
+For a homelab that's a real simplification, and I don't say that lightly. A ZFS snapshot of the data directory is your backup, full stop. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
 
-OpenCloud is Go microservices, and here's the part that actually made me pay attention: it stores metadata on the filesystem right next to the file data. There's no database instance to maintain. No schema migrations on upgrade. No coordinating a database dump with a filesystem snapshot and hoping the two line up.
+You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks at 11pm. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
 
-For a homelab, that's a genuine operational simplification and I don't say that lightly. A ZFS snapshot of the data directory is your backup. That's it, that's the whole strategy. If you've ever restored a Nextcloud instance and found out your SQL dump was taken twenty minutes after your file snapshot, you know exactly why that's appealing.
-
-The tradeoff is resource use and scope. OpenCloud runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled often wants 1 to 2 GB of RAM before it feels responsive.
-
-## Scope Is the Other Real Difference
-
-Nextcloud is a workspace. Talk, Calendar, Contacts, Mail, Deck, Flow, Assistant, plus a big third-party app store. OpenCloud is files, spaces, sharing, and search, with Collabora bolted on for document editing.
-
-It does ship a Radicale integration for CalDAV and CardDAV, so you can get personal calendars and contacts out of it, and I'll show you how to turn that on later. But that's a personal calendar, not group calendaring with free/busy and room booking. If you need team workflows beyond files, Nextcloud is still the answer and it's not close.
-
-## Maturity
-
-Also not close, and I want to be fair here. Nextcloud has roughly 36,000 GitHub stars against OpenCloud's 5,700, and a decade of development versus about two years.
-
-That gap shows up in the places you'd expect. Desktop and mobile client polish, documentation depth, third-party integrations, and the sheer volume of forum posts available when something breaks at 11pm and you need someone else to have hit it first.
-
-OpenCloud is at 7.5.0 as of late August 2026 and they are shipping fast, which is fun to watch. But things like on-demand sync are still roadmap items, not features.
-
-## How I'd Pick Between Them
-
-Want a Google Drive replacement and nothing more, on modest hardware, with backups you can actually reason about? OpenCloud. Genuinely.
-
-Want to replace Drive plus Calendar plus Contacts plus Meet, and you're fine paying for that in RAM and maintenance? Nextcloud.
-
-And if you already run Nextcloud and it's working for you, there's no migration path worth the pain right now. The two share no storage format at all. This is a "spin it up alongside and poke at it" situation, not a "rip and replace on a Sunday afternoon" situation.
-
-With all that, let's dive into the actual setup.
+I'll give you my honest verdict at the end. Let's build it first.
 
 ## What We're Building
 
 Here's the target:
 
-- OpenCloud on your own public domain, something like `cloud.yourdomain.com`
-- Real Let's Encrypt certificates, issued and renewed automatically by Traefik
-- Local filesystem storage on a host path you control, so backups are just a directory
+- OpenCloud running in Docker Compose with local filesystem storage on a path you control
+- NGINX Proxy Manager out front handling the domain and the certificate
+- Real Let's Encrypt certs, and no self-signed warnings on any of your devices
 - No S3, no MinIO, no external database
 
 That last point tripped me up at first, so let me clarify it. The compose repo has a `storage/` folder, and people see that and assume they have to pick something. You don't. That folder contains exactly one file, `decomposeds3.yml`, and all it does is switch OpenCloud over to S3-backed storage. Leave it out and you get the default `decomposed` driver writing straight to local disk.
@@ -69,12 +43,14 @@ Local storage isn't a thing you turn on. It's what you get by not doing anything
 
 ## What You Need
 
-- A server with a public IP, ports 80 and 443 open and not already in use
-- Docker and Docker Compose v2
+- A server running Docker and Docker Compose v2
+- A reverse proxy. I'm using NGINX Proxy Manager, and if you don't have one yet I've got a fallback below
 - A domain you control, with access to its DNS
 - Basic Docker comfort. You don't need to be an expert, but you should know what a compose file is
 
 For this I'm on a small Debian VM, but any Linux box works. Proxmox VM, bare metal mini PC, a cheap VPS, whatever you've got sitting around.
+
+If you don't have NGINX Proxy Manager set up yet, I wrote a [full guide to it over on my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy). That covers the install, Cloudflare DDNS, and the part most people actually want, which is using a DNS challenge to get real Let's Encrypt wildcard certificates for services that never touch the public internet. I'd go do that first and come back, because everything below assumes it.
 
 Do note that Compose v2 is not optional here. Some distro repos, Debian 12 "Bookworm" included, still ship the old Python `docker-compose` v1, and running this repo against v1 gives you a broken deployment with genuinely confusing errors. Install from the official Docker repos:
 
@@ -90,21 +66,13 @@ docker compose version
 
 You want `Docker Compose version v2.x.x`. If that says command not found but `docker-compose` works, you're on v1 and you need to sort that out before going any further.
 
-## Point Your DNS at the Server
+## A Quick Note on HTTPS
 
-Before anything else, go ahead and create an A record:
+You cannot run this over plain HTTP, and I want to explain why so you don't waste an afternoon on it.
 
-```text
-cloud.yourdomain.com.    A    203.0.113.10
-```
+OpenCloud's web UI authenticates over OIDC with PKCE, which needs the browser's Web Crypto API. Browsers only expose that in a secure context, and `http://192.168.1.50` is not one. Only `localhost` gets that exemption. So login breaks before you get anywhere useful.
 
-Swap in your actual server IP. On IPv6, add an AAAA record too. Give it a minute and confirm:
-
-```bash
-dig +short cloud.yourdomain.com
-```
-
-Do this part first. Let's Encrypt uses the HTTP-01 challenge here, which means it hits `http://cloud.yourdomain.com/.well-known/acme-challenge/` and expects Traefik to answer. If DNS isn't live and those ports aren't reachable from the outside internet, cert issuance fails and you'll spend twenty minutes reading Traefik logs wondering what you broke. Ask me how I know.
+This is also why you can't just point a browser at the LAN IP and call it done. You need a hostname and a certificate, even for something that never leaves your network. That's exactly the problem the DNS challenge setup in my proxy guide solves, and it's why I'd rather send you there than have you fight self-signed certificate warnings on every phone in the house.
 
 ## Clone the Repo
 
@@ -115,8 +83,8 @@ cd opencloud-compose
 
 Take a second and look around in there, because this repo is modular in a way I really like. `docker-compose.yml` is the core OpenCloud service, and everything else is an optional layer you stack on top using the `COMPOSE_FILE` variable.
 
-- `traefik/` is the built-in reverse proxy, which is what we want
-- `external-proxy/` is for when you already run nginx or Caddy
+- `external-proxy/` is what we want, since NGINX Proxy Manager is doing the front-end work
+- `traefik/` is the built-in reverse proxy, for people who don't already have one
 - `weboffice/` is Collabora or Euro Office
 - `search/` is Apache Tika for full text search
 - `idm/` is Keycloak and LDAP for real identity management
@@ -163,18 +131,28 @@ Now open `.env` in your editor. It's long, close to 500 lines, but it's mostly c
 **Tell Compose which files to load:**
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:traefik/opencloud.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml
 ```
 
-Core service plus Traefik, and notice `storage/decomposeds3.yml` is not in that list. That's how we get local storage.
+Core service plus the external proxy config, which exposes OpenCloud on port 9200 for NGINX Proxy Manager to forward to. Notice `storage/decomposeds3.yml` is not in that list. That's how we get local storage.
 
-Setting this in `.env` means you can just run `docker compose up -d` from here on out instead of typing `-f this -f that` every single time. Much nicer, and it makes the whole thing reproducible if you ever hand it to Ansible or a CI pipeline.
+Setting this in `.env` means you can just run `docker compose up -d` from here on out instead of typing `-f this -f that` every single time. Much nicer, and it makes the whole thing reproducible if you ever hand it to Ansible.
+
+Do note that `external-proxy/opencloud.yml` binds to `127.0.0.1:9200`, so it only listens on localhost. If NGINX Proxy Manager runs on the **same machine**, that's perfect and you're done. If your proxy lives on a different box, like mine does, you'll want `external-proxy/opencloud-exposed.yml` instead, which binds to all interfaces:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml
+```
+
+That port is unauthenticated plain HTTP, so firewall it to your proxy's IP. Don't just throw it open and hope.
 
 **Your domain:**
 
 ```bash
-OC_DOMAIN=cloud.yourdomain.com
+OC_DOMAIN=cloud.example.com
 ```
+
+This has to match the domain you're going to put on the proxy host. It feeds `OC_URL`, which becomes the OIDC issuer, and if those two disagree your login will fail in a way that isn't obvious from the logs.
 
 **Your admin password:**
 
@@ -195,74 +173,70 @@ OC_DATA_DIR=/srv/opencloud/data
 
 Use absolute paths here.
 
-**Let's Encrypt:**
-
-```bash
-TRAEFIK_ACME_MAIL=you@yourdomain.com
-TRAEFIK_SERVICES_TLS_CONFIG="tls.certresolver=letsencrypt"
-```
-
-That second one is already the default, but I like setting it explicitly so it's obvious what's going on when I read this file again in six months.
-
 **And now the one that will actually bite you:**
 
 ```bash
 INSECURE=false
 ```
 
-Go find line 8 of your `.env`. It says `INSECURE=true` and it is not commented out. That's there so the local development setup with self-signed certs works out of the box, which is reasonable enough, but on an internet-facing server you need to flip it. The README's config table claims the default is `false`, and in the compose file it technically is, but the shipped `.env.example` overrides that. Change it.
+Go find line 8 of your `.env`. It says `INSECURE=true` and it is not commented out. That's there so the local development setup with self-signed certs works out of the box, which is reasonable enough, but since we're using a real certificate from NGINX Proxy Manager you want it off. The README's config table claims the default is `false`, and in the compose file it technically is, but the shipped `.env.example` overrides that. Change it.
 
 **A couple more worth setting:**
 
 ```bash
 DEMO_USERS=false
-TRAEFIK_DASHBOARD=false
 ```
 
-The demo users are `alan`, `mary`, `margaret`, `dennis`, and `lynn`, all with the password `demo`, all publicly documented. On a box reachable from the internet, that is not something you want. It defaults to false, but go confirm it anyway.
+The demo users are `alan`, `mary`, `margaret`, `dennis`, and `lynn`, all with the password `demo`, all publicly documented. That is not something you want sitting on a running instance. It defaults to false, but go confirm it anyway.
 
-## Test Certificates Against Staging First
-
-I know, you want to just start the thing. Give me thirty seconds, this'll save you a headache.
-
-Let's Encrypt rate limits are strict and they count failures. If your DNS is subtly wrong, or a firewall rule is quietly blocking port 80, you can burn through your attempts and get locked out on that domain for hours. So we test against the staging server first, which has effectively no limits.
-
-In `.env`:
-
-```bash
-TRAEFIK_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory
-```
-
-Then bring it up:
+Now start it up:
 
 ```bash
 docker compose up -d
-docker compose logs -f traefik
+docker compose logs -f opencloud
 ```
 
-Give it a minute, then hit `https://cloud.yourdomain.com` in a browser. You'll get a certificate warning, and that's expected. Click through it, look at the certificate details, and check the issuer. If it says something like "Fake LE Intermediate X1" or "(STAGING) Let's Encrypt", the whole ACME flow worked. Beautiful. Your DNS is right, your ports are open, Traefik is doing its job.
+Nothing will be reachable yet, since we haven't pointed the proxy at it. That's next.
 
-Now go get real certificates. Clear the variable:
+## Set Up the Proxy Host
 
-```bash
-TRAEFIK_ACME_CASERVER=
+Over in NGINX Proxy Manager, go to _Hosts > Add Proxy Host_ and fill it in:
+
+- **Domain Names:** `cloud.example.com`
+- **Scheme:** `http`
+- **Forward Hostname / IP:** the IP of your OpenCloud host
+- **Forward Port:** `9200`
+- **Websockets Support:** on
+- **Block Common Exploits:** **off**
+
+That last one is not a typo, and I need to flag it loudly because it contradicts my own advice elsewhere.
+
+In my [proxy guide](https://github.com/TechHutTV/homelab/tree/main/proxy) I say that I always enable Block Common Exploits, and for basically every other service that's good advice. Not here. With it on, the OpenCloud **desktop sync client fails to authenticate with a 403**, and there is nothing in the OpenCloud logs that will point you toward the proxy as the cause. The web UI works fine, which makes it even more confusing, because you'll swear the setup is correct.
+
+So turn it off for this one host. I lost a chunk of an evening to that.
+
+Then head to the **SSL** tab, pick your wildcard certificate, and enable _Force SSL_. If you followed my proxy guide you already have `*.example.com` sitting there from the DNS challenge, so there's no new certificate to request. That's the nice part about doing it that way, adding a service is just a new proxy host.
+
+### The Advanced Tab Settings You Actually Need
+
+NGINX Proxy Manager's defaults are wrong for a file sync server, and this is the part most guides skip. Out of the box NPM ships with a 2GB upload cap and 90 second proxy timeouts, which is fine for a dashboard and completely wrong for something you're going to drag a video folder into.
+
+WebDAV clients that don't support chunked uploads hold a single request open for the entire transfer, so a 90 second timeout means anything big just dies partway through. Go to the **Advanced** tab and drop this in:
+
+```nginx
+client_max_body_size 0;
+proxy_request_buffering off;
+proxy_read_timeout 3600s;
+proxy_send_timeout 3600s;
 ```
 
-Then delete the staging certs so Traefik goes and fetches fresh ones:
+`client_max_body_size 0` removes the upload cap entirely. `proxy_request_buffering off` matters more than you'd expect, because without it nginx writes the whole upload to its own disk before forwarding a single byte, which turns a 20GB upload into a 20GB write on whatever volume NPM is living on. And the timeouts give large transfers room to actually finish.
 
-```bash
-docker compose down
-rm -f certs/acme.json
-docker compose up -d
-```
-
-Quick note on that file. `certs/acme.json` is where Traefik stores your certificates and its ACME account key. It lives in the repo's `certs/` directory, which is gitignored, and it persists across restarts. Back it up with everything else, or at minimum know that deleting it means re-issuing, which counts against your rate limit.
-
-Give it another minute and reload. Green padlock, real cert, no warning. And there we go.
+Save it, and you should be good to go.
 
 ## Log In
 
-Head to `https://cloud.yourdomain.com`.
+Head to `https://cloud.example.com`.
 
 - Username: `admin`
 - Password: whatever you set in `INITIAL_ADMIN_PASSWORD`
@@ -297,27 +271,19 @@ The base install is files, sharing, and search. Here's what else you can stack o
 
 ### Collabora for Document Editing
 
-If you want to open a `.docx` in the browser and actually edit it, you need Collabora. Add a DNS A record for `collabora.yourdomain.com` pointing at the same IP, then update `.env`:
+If you want to open a `.docx` in the browser and actually edit it, you need Collabora:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:weboffice/collabora.yml:traefik/opencloud.yml:traefik/collabora.yml
-COLLABORA_DOMAIN=collabora.yourdomain.com
-```
-
-Then find these two lines and deal with them:
-
-```bash
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:weboffice/collabora.yml:external-proxy/collabora.yml
+COLLABORA_DOMAIN=collabora.example.com
 COLLABORA_SSL_ENABLE=false
-COLLABORA_SSL_VERIFICATION=false
 ```
 
-`COLLABORA_SSL_ENABLE=false` is correct for our setup, because Traefik is terminating TLS and talking plain HTTP to Collabora on the internal network. But `COLLABORA_SSL_VERIFICATION=false` should be commented out on an internet-facing server so Collabora actually verifies the certs it talks to.
+That exposes Collabora on port 9980, and you add a second proxy host in NPM for `collabora.example.com` pointing at it. Same wildcard cert, same Block Common Exploits warning, websockets definitely on.
 
-```bash
-docker compose up -d
-```
+`COLLABORA_SSL_ENABLE=false` is correct here because NPM is terminating TLS and talking plain HTTP to Collabora. You should also comment out `COLLABORA_SSL_VERIFICATION=false` in `.env` so Collabora actually verifies the certs it talks to.
 
-One thing that changed recently and confused a lot of people, myself included: the WOPI server used to be its own container on a `wopiserver.*` subdomain. It now runs inside the main OpenCloud process and gets served on your main domain under `/wopi` and `/collaboration`. So there's no extra DNS record for it, and if you're following an older tutorial that tells you to make one, just ignore that part.
+One thing that changed recently and confused a lot of people, myself included: the WOPI server used to be its own container on a `wopiserver.*` subdomain. It now runs inside the main OpenCloud process and is served on your main domain under `/wopi` and `/collaboration`. Since you're forwarding the whole domain to OpenCloud already, that's handled. If you're following an older tutorial that tells you to make a third proxy host for it, just ignore that part.
 
 Do note that Collabora and Euro Office are mutually exclusive. They both use the same WOPI service, so pick one.
 
@@ -326,7 +292,7 @@ Do note that Collabora and Euro Office are mutually exclusive. They both use the
 By default, search covers filenames. If you want to search inside your PDFs and documents, add Apache Tika:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:search/tika.yml:traefik/opencloud.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:search/tika.yml
 ```
 
 It's off by default for performance reasons and that's a fair default, since Tika extracts and indexes content on upload and that costs CPU. The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't.
@@ -336,7 +302,7 @@ It's off by default for performance reasons and that's a fair default, since Tik
 This is the partial answer to that scope gap I mentioned earlier:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:radicale/radicale.yml:traefik/opencloud.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:radicale/radicale.yml
 ```
 
 Every authenticated OpenCloud user gets a personal calendar and address book over CalDAV and CardDAV, which you can point Thunderbird or your phone at. If you're setting a data directory for it, the same ownership rule applies:
@@ -356,7 +322,7 @@ It's genuinely useful and I'm glad it's in there. It's also still not Nextcloud 
 If you're sharing upload links with people outside your household, scanning uploads is a reasonable idea:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:antivirus/clamav.yml:traefik/opencloud.yml
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml:antivirus/clamav.yml
 START_ADDITIONAL_SERVICES="antivirus"
 ```
 
@@ -364,17 +330,31 @@ That second variable is really easy to miss, and without it the whole thing sile
 
 Heads up that ClamAV wants around 1GB of RAM for its signature database, which meaningfully changes the "runs great on low-power hardware" math. Worth it if you need it, skip it if you don't.
 
-## If You Already Run a Reverse Proxy
+## No Reverse Proxy Yet? Use the Built-In Traefik
 
-Plenty of us already have nginx, Caddy, or Nginx Proxy Manager sitting on 80 and 443. In that case, skip Traefik entirely:
+If you're starting from a bare VPS with nothing on ports 80 and 443, the compose repo ships its own Traefik setup and it's genuinely the fastest path from zero to running. You don't need NGINX Proxy Manager at all.
+
+Point a DNS A record at the server first, then:
 
 ```bash
-COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml
+COMPOSE_FILE=docker-compose.yml:traefik/opencloud.yml
+OC_DOMAIN=cloud.example.com
+TRAEFIK_ACME_MAIL=you@example.com
+TRAEFIK_SERVICES_TLS_CONFIG="tls.certresolver=letsencrypt"
+INSECURE=false
 ```
 
-That exposes OpenCloud on port 9200 and you forward your domain to it from your existing proxy. Forward the whole domain, which covers the `/wopi` and `/collaboration` paths automatically.
+Traefik requests the certificate over the HTTP-01 challenge, which means ports 80 and 443 have to be reachable from the public internet. That's the tradeoff versus the DNS challenge approach.
 
-One specific gotcha that will absolutely get you if you use Nginx Proxy Manager: do not enable "Block Common Exploits" on the proxy host. It breaks desktop client authentication with a 403, and there is nothing in the OpenCloud logs that will point you toward it.
+One tip before you go live. Let's Encrypt rate limits are strict and they count failures, so test against staging first:
+
+```bash
+TRAEFIK_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory
+```
+
+Bring it up, visit the site, click through the warning, and check the certificate issuer. If it says "Fake LE Intermediate X1" the whole flow works. Then blank that variable, `rm -f certs/acme.json`, and recreate to get the real thing. That `acme.json` file is where Traefik stores your certificates and its ACME account key, so back it up with everything else.
+
+I don't run it this way myself, but it works well and it's one less service to maintain if you truly have nothing else.
 
 ## Backups, Which Is the Whole Point
 
@@ -384,7 +364,6 @@ Everything that matters lives in two directories:
 
 - `/srv/opencloud/config` for the generated config and secrets
 - `/srv/opencloud/data` for all files and metadata
-- Plus `certs/acme.json` in the repo if you want to avoid re-issuing certificates
 
 On ZFS:
 
@@ -422,23 +401,27 @@ The nice part is there are no schema migrations to sit through. New container, s
 
 ## Troubleshooting
 
+### The Desktop Client Can't Authenticate
+
+Turn off Block Common Exploits on the proxy host. This is the number one issue and the web UI working fine will send you looking in all the wrong places.
+
 ### The Container Keeps Restarting
 
 Ninety percent of the time it's one of two things. Either `INITIAL_ADMIN_PASSWORD` wasn't set before the first boot, or your data directories aren't owned by 1000:1000. Check `docker compose logs opencloud`, then check `ls -la /srv/opencloud`.
 
-### Certificates Won't Issue
+### Large Uploads Fail Partway Through
 
-Confirm DNS resolves from outside your network, not just from the server itself. Confirm 80 and 443 are open at both the firewall and any cloud provider security group. Then read `docker compose logs traefik` and look for ACME errors. If you burned through your rate limit, that's a wait, not a fix.
+That's the NPM defaults. Add the `client_max_body_size` and timeout block to the Advanced tab.
 
-### The Browser Says Not Secure Even Though Certs Issued
+### 502 Bad Gateway from the Proxy
 
-You probably still have `INSECURE=true` sitting in `.env`. Flip it and recreate the stack.
+The proxy can't reach port 9200. If OpenCloud and NPM are on different machines, you're probably still on `external-proxy/opencloud.yml`, which only binds to localhost. Switch to the exposed variant.
 
-### The Desktop Client Can't Authenticate
+### Login Redirects in a Loop or Fails Silently
 
-If you're behind an external proxy, that's the Nginx Proxy Manager "Block Common Exploits" thing. Turn it off.
+`OC_DOMAIN` doesn't match the domain on the proxy host. The OIDC issuer is built from it, so those two have to agree exactly.
 
-### Everything Looks Fine but Uploads Fail
+### Everything Looks Fine but Files Won't Save
 
 Check disk space, then check permissions on the data directory again. It's almost always permissions.
 
@@ -446,7 +429,6 @@ General debugging:
 
 ```bash
 docker compose ps
-docker compose logs -f
 docker compose logs -f opencloud
 ```
 
@@ -461,6 +443,8 @@ But I'm not moving off Nextcloud, and I want to be straight with you about why. 
 Where I would genuinely recommend it: you want a Drive replacement, you don't need groupware, you're running modest hardware, and you want a backup story you can explain to someone in one sentence. That's a real category of person, and OpenCloud serves it better than Nextcloud does.
 
 Where I'd say wait: you need polished mobile and desktop clients, you rely on third-party apps, or you need to be able to search a forum at 2am and find someone who already hit your exact error. Two years of project history against ten years is just a real gap.
+
+And if you already run Nextcloud and it's working for you, there's no migration path worth the pain right now. The two share no storage format at all, so this is a spin-it-up-alongside situation, not a rip-and-replace one.
 
 I'm keeping this instance running alongside my Nextcloud box and I'll come back to it in a few releases. On-demand sync landing would be a big deal for me.
 
