@@ -24,7 +24,7 @@ Nextcloud is a PHP monolith. MariaDB or Postgres, Redis, a cron worker, and even
 
 For a homelab that's a big deal. Your backup is a copy of one directory, full stop. It also runs comfortably on low-power hardware, where Nextcloud with a handful of apps enabled wants 1 to 2 GB of RAM before it feels responsive.
 
-You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
+You pay for that in scope and maturity. Nextcloud is a workspace with Talk, Calendar, Contacts, Mail, Deck, and a big app store behind it. OpenCloud is files, spaces, sharing, and search, with Collabora or Euro Office bolted on for document editing. And it's sitting at roughly 5,700 GitHub stars against Nextcloud's 36,000, with about two years of development against a decade. That shows up in client polish, documentation depth, and how many forum posts exist when something breaks. It's at 7.5.0 as of late August 2026 and shipping fast, but things like on-demand sync are still roadmap items rather than features.
 
 I'll give you my honest verdict at the end. Let's build it first.
 
@@ -285,13 +285,34 @@ Do note that indexing happens as files get uploaded or changed. Anything already
 
 The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and plain text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR on scanned documents, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't. It does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
 
-### What About Document Editing?
+### Document Editing with Euro Office
 
-OpenCloud does do in-browser document editing through Collabora Online, and everything for it lives in `weboffice/collabora.yml` in the repo.
+OpenCloud gives you two options for editing documents in the browser, and you have to pick one, since they both run through the same WOPI service. Collabora Online is the mature choice, built on LibreOffice, been around for years. The other is Euro Office, and that's the one I'm setting up here.
 
-I'm not walking through it here though, because it's a lot more than one extra line in `COMPOSE_FILE`. It wants its own subdomain and proxy host, a one-shot service to generate the WOPI proof key, host font mounts so your documents don't render in the wrong typeface, and some fiddly SSL settings that change depending on whether your proxy is terminating TLS. That's its own guide and I'd rather do it properly than hand you half of it, so I'll link it here once it's written.
+Euro Office is a fork of ONLYOFFICE. A consortium of nine European companies announced it in Berlin back in March, with Nextcloud, IONOS, and Proton among them, and the first stable release landed on June 9th. The reasoning was partly that ONLYOFFICE is officially a Latvian company while its development team sits largely in Russia, and partly that contributing upstream was, by the fork team's account, close to impossible with build instructions that didn't work.
 
-If you do go poking at it, do note that Collabora and Euro Office are mutually exclusive. They both use the same WOPI service, so pick one.
+Do note there's an unresolved licensing fight here. ONLYOFFICE says the fork violates its AGPLv3 terms, Nextcloud says they stripped out the extra terms that conflicted with AGPLv3 to begin with. Nobody's settled that yet, so factor it in before you build a workflow on it.
+
+As for which one to run, the repo answers that itself. Open up `config/euro-office/app-registry.yaml` and you'll see `.docx`, `.xlsx`, and `.pptx` routed to Euro Office, while `.odt`, `.ods`, and `.odp` go to Collabora. Both suites open both formats, so this is about which one handles what more faithfully. If your household lives in Word files, Euro Office. If you're an OpenDocument shop, Collabora. That's about as deep as the decision needs to go for a home server.
+
+Add a DNS record for `euro-office.example.com`, which your wildcard already covers, then:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud-exposed.yml:weboffice/euro-office.yml:external-proxy/euro-office-exposed.yml
+EURO_OFFICE_DOMAIN=euro-office.example.com
+```
+
+Do note the `-exposed` on that second file. Just like OpenCloud, `external-proxy/euro-office.yml` binds to `127.0.0.1:9900` and only works if NPM is on the same machine. Match whichever variant you picked earlier or you'll be troubleshooting a 502 for no reason.
+
+```bash
+docker compose up -d
+```
+
+Then go add a second proxy host in NPM. Point `euro-office.example.com` at your host on port `9900`, scheme `http`, websockets on, Block Common Exploits **off** again, then your wildcard cert and Force SSL on the SSL tab.
+
+Give it a minute before you test. The healthcheck allows a 120 second start period and it genuinely uses most of that on a cold start, so don't panic when the container sits there looking unhealthy. Once it settles, create a new `.docx` from inside OpenCloud. It should open right in the browser, and there we go.
+
+One thing worth knowing. The `.env.example` file has a `EURO_OFFICE_JWT_SECRET` and the README tells you to change it for production, but on the version of the repo I'm running that variable isn't referenced by any compose file, so setting it doesn't do anything. Not a hole by itself, since the document server is only reachable through your proxy, but don't assume it's protecting you.
 
 ### Radicale for Calendars and Contacts
 
