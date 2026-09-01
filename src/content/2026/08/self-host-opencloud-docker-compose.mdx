@@ -281,7 +281,13 @@ That's all the setup there is. The compose file wires everything up for you, it 
 
 To check that it worked, upload a PDF or a `.docx` with some distinctive word buried inside it, something that isn't in the filename. Give it a few seconds, then search that word in OpenCloud. The file should come right back. And there we go, full text search.
 
-Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed until you touch it again, so an old document not turning up doesn't mean anything is broken.
+Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed automatically. You can force OpenCloud to rescan every space with the current extractor configuration:
+
+```bash
+docker compose exec opencloud opencloud search index --all-spaces --force-rescan
+```
+
+That can take a while on a large library, but it saves you from opening and resaving every old document individually.
 
 The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and plain text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR on scanned documents, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't. It does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
 
@@ -434,6 +440,23 @@ Also check that OpenCloud is actually running with `docker compose ps` and `dock
 ### Everything Looks Fine but Files Won't Save
 
 Check disk space, then check permissions on the data directory again. It's almost always permissions.
+
+### Full Text Search Finds Filenames but Not PDF Contents
+
+First, make sure `search/tika.yml` is still present in `COMPOSE_FILE`, then recreate the stack with `docker compose up -d`. It is possible to have a healthy Tika container left over from an earlier deployment while the current OpenCloud container was recreated without the Tika overlay. In that state Tika is running, but OpenCloud does not have the extractor settings and will only search filenames.
+
+Check the resolved services and the environment on the running OpenCloud container:
+
+```bash
+docker compose config --services
+docker compose exec opencloud env | grep -E '^(SEARCH_EXTRACTOR|FRONTEND_FULL_TEXT)'
+```
+
+You should see `tika` in the service list along with `SEARCH_EXTRACTOR_TYPE=tika`, the Tika URL, and `FRONTEND_FULL_TEXT_SEARCH_ENABLED=true`. Once those are present, force a rescan so PDFs uploaded before Tika was enabled get their contents indexed:
+
+```bash
+docker compose exec opencloud opencloud search index --all-spaces --force-rescan
+```
 
 General debugging:
 
