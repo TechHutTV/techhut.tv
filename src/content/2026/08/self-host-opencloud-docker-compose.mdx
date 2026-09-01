@@ -295,13 +295,13 @@ Do note there's an unresolved licensing fight here. ONLYOFFICE says the fork vio
 
 As for which one to run, the repo answers that itself. Open up `config/euro-office/app-registry.yaml` and you'll see `.docx`, `.xlsx`, and `.pptx` routed to Euro Office, while `.odt`, `.ods`, and `.odp` go to Collabora. Both suites open both formats, so this is about which one handles what more faithfully. If your household lives in Word files, Euro Office. If you're an OpenDocument shop, Collabora. That's about as deep as the decision needs to go for a home server.
 
-Add a DNS record for `euro-office.example.com`, which your wildcard already covers. Then append both `weboffice/euro-office.yml` and `external-proxy/euro-office-exposed.yml` to your `COMPOSE_FILE`, and set the domain:
+Add a DNS record for `euro-office.example.com`, which your wildcard already covers. Then append `weboffice/euro-office.yml` and the matching Euro Office proxy file to your `COMPOSE_FILE`, and set the domain:
 
 ```bash
 EURO_OFFICE_DOMAIN=euro-office.example.com
 ```
 
-Do note the `-exposed` on that second file. Just like OpenCloud, `external-proxy/euro-office.yml` binds to `127.0.0.1:9900` and only works if NPM is on the same machine. Match whichever variant you picked earlier or you'll be troubleshooting a 502 for no reason.
+Do note the `-exposed` on that second file if your proxy is on a different machine. Just like OpenCloud, `external-proxy/euro-office.yml` binds to `127.0.0.1:9900` and only works if NPM is on the same machine. Use one OpenCloud proxy file and one Euro Office proxy file, not both variants for either service, because the plain and `-exposed` files publish the same container port with different bind addresses.
 
 ```bash
 docker compose up -d
@@ -424,6 +424,8 @@ That's the NPM defaults. Add the `client_max_body_size` and timeout block to the
 ### 502 Bad Gateway from the Proxy
 
 The proxy can't reach port 9200. If OpenCloud and NPM are on different machines, you're probably still on `external-proxy/opencloud.yml`, which only binds to localhost. Switch to the exposed variant.
+
+Also check that OpenCloud is actually running with `docker compose ps` and `docker compose logs opencloud`. A bad optional layer can make OpenCloud crash, and the proxy will show that as a 502. If you added Tika, look for errors around `http://tika:9998`; if you added Euro Office, make sure `EURO_OFFICE_DOMAIN` is set to the public hostname you routed to port 9900.
 
 ### Login Redirects in a Loop or Fails Silently
 
