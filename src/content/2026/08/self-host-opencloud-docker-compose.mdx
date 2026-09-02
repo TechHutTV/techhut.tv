@@ -10,6 +10,8 @@ I'm going to be upfront with you right at the top here. [I'm a Nextcloud guy](ht
 
 So let's set it up properly. Real domain, real certificates, files on local disk where you can get at them. First though, a quick word on what this thing is, because it's not just another Nextcloud clone.
 
+If you already know why you want OpenCloud and just want to build it, [skip straight to the installation](#installation).
+
 ## Where OpenCloud Comes From
 
 Both descend from ownCloud, but off completely different branches. Nextcloud is Frank Karlitschek's 2016 PHP fork of ownCloud Server, the one that grew into the full collaboration suite we all know today, and it's AGPLv3.
@@ -72,7 +74,9 @@ OpenCloud's web UI authenticates over OIDC with PKCE, which needs the browser's 
 
 This is also why you can't just point a browser at the LAN IP and call it done. You need a hostname and a certificate, even for something that never leaves your network. That's exactly the problem the DNS challenge setup in my proxy guide solves, and it's why I'd rather send you there than have you fight self-signed certificate warnings on every phone in the house.
 
-## Clone the Repo
+<span id="installation" />
+
+## Step 1 — Clone the Repo
 
 ```bash
 git clone https://github.com/opencloud-eu/opencloud-compose.git
@@ -92,7 +96,7 @@ Take a second and look around in there, because this repo is modular in a way I 
 
 You mix and match by listing files in `COMPOSE_FILE`, and later files override earlier ones. Pretty clean design, and it makes everything easy to reproduce later.
 
-## Create Your Local Storage Directories
+## Step 2 — Create Your Local Storage Directories
 
 Two directories, owned by the right user:
 
@@ -110,7 +114,7 @@ What ends up where:
 - `config` gets the generated config file with all your service secrets. It's tiny, but it's absolutely critical. Lose it and your instance is toast.
 - `data` gets every file, all the metadata, and every space. This is the one that grows, so put it somewhere you have room.
 
-## Build Your .env File
+## Step 3 — Build Your .env File
 
 ```bash
 cp .env.example .env
@@ -179,6 +183,18 @@ DEMO_USERS=false
 
 The demo users are `alan`, `mary`, `margaret`, `dennis`, and `lynn`, all with the password `demo`, all publicly documented. That is not something you want sitting on a running instance. It defaults to false, but go confirm it anyway.
 
+Before moving on, the core settings in your `.env` should look like this. Use the `-exposed` proxy file only when NGINX Proxy Manager is on another machine:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:external-proxy/opencloud.yml
+OC_DOMAIN=cloud.example.com
+INITIAL_ADMIN_PASSWORD=your-strong-password-here
+OC_CONFIG_DIR=/srv/opencloud/config
+OC_DATA_DIR=/srv/opencloud/data
+INSECURE=false
+DEMO_USERS=false
+```
+
 Now start it up:
 
 ```bash
@@ -186,9 +202,17 @@ docker compose up -d
 docker compose logs -f opencloud
 ```
 
-Nothing will be reachable yet, since we haven't pointed the proxy at it. That's next.
+Press `Ctrl+C` when you're done watching the logs. That exits the log view; it does not stop OpenCloud.
 
-## Set Up the Proxy Host
+Now check the first checkpoint:
+
+```bash
+docker compose ps
+```
+
+You should see the `opencloud` service with a status of `Up`. Nothing will be reachable through your domain yet, since we haven't pointed the proxy at it. That's next.
+
+## Step 4 — Set Up the Proxy Host
 
 Over in NGINX Proxy Manager, go to _Hosts > Add Proxy Host_ and fill it in:
 
@@ -224,7 +248,9 @@ proxy_send_timeout 3600s;
 
 Save that, and you're good to go.
 
-## Log In
+Before continuing, visit `https://cloud.example.com`. You should reach the OpenCloud sign-in page with a valid certificate, not a browser warning or a 502 error.
+
+## Step 5 — Log In and Verify Storage
 
 Head to `https://cloud.example.com`.
 
@@ -243,7 +269,9 @@ sudo ls -la /srv/opencloud/data
 
 You should see the storage tree filling in. Would you look at that. Files on disk, no database anywhere in sight.
 
-## Watch the Logs on First Run
+That is the end of the required installation. If you can sign in, upload and download a file, restart OpenCloud, and still open that file, the core deployment is working. Stop here if all you need is private file storage and sharing.
+
+## Step 6 — Know What a Normal Restart Looks Like
 
 Even when everything works, tail the logs once so you know what healthy looks like:
 
@@ -259,6 +287,8 @@ So if you see an init error scroll by on restart number two, that's normal and b
 
 The base install gives you files, spaces, sharing, and filename search. Here's what else you can stack on, roughly in the order I'd add it.
 
+Everything below is optional. Add and verify one feature at a time; you do not need any of it for the core file server.
+
 These all work the same way. You append one more file to the `COMPOSE_FILE` line you already built, keep everything that's already on it, then run `docker compose up -d` to pick up the change. They stack, so two of them together looks like this:
 
 ```bash
@@ -271,7 +301,19 @@ Whether that middle file is `opencloud.yml` or `opencloud-exposed.yml` depends o
 
 By default, search only looks at filenames. Apache Tika adds search inside your documents, so you can find that one PDF when you can't remember what you named it.
 
-Append `search/tika.yml` to your `COMPOSE_FILE` line, then force OpenCloud to be recreated. This part matters: a Tika container can be running and healthy while an older OpenCloud container is still missing the extractor settings.
+Add `search/tika.yml` to `COMPOSE_FILE`. Here are the complete values so you don't have to assemble them yourself.
+
+If NGINX Proxy Manager is on the same machine:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:search/tika.yml:external-proxy/opencloud.yml
+```
+
+If NGINX Proxy Manager is on another machine:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:search/tika.yml:external-proxy/opencloud-exposed.yml
+```
 
 Pin Tika to the version tested with this OpenCloud release instead of using the floating `latest` tag:
 
@@ -283,22 +325,17 @@ At the time of writing, `apache/tika:latest` can resolve to Tika 4.0.0. OpenClou
 
 ```bash
 docker compose up -d --force-recreate tika opencloud
+docker compose ps
 ```
 
-The compose file wires everything up for you: it sets the extractor type to Tika, points OpenCloud at `http://tika:9998`, turns on `FRONTEND_FULL_TEXT_SEARCH_ENABLED`, and adds a healthcheck so OpenCloud waits for Tika to come up before it starts. Verify those settings made it into the live container:
-
-```bash
-docker compose exec opencloud env | grep -E '^(SEARCH_EXTRACTOR|FRONTEND_FULL_TEXT)'
-```
-
-You should see `SEARCH_EXTRACTOR_TYPE=tika`, the Tika URL, and `FRONTEND_FULL_TEXT_SEARCH_ENABLED=true`. If that command prints nothing, `search/tika.yml` is not part of the active `COMPOSE_FILE`, or OpenCloud was not recreated after you added it.
+Wait until Tika reports `healthy`. The compose file sets the extractor type, points OpenCloud at `http://tika:9998`, enables full-text search in the web interface, and makes OpenCloud wait for Tika during this recreation.
 
 To check that it worked, upload a PDF or a `.docx` with some distinctive word buried inside it, something that isn't in the filename. Give it a few seconds, then search that word in OpenCloud. The file should come right back. And there we go, full text search.
 
 Do note that indexing happens as files get uploaded or changed. Anything already sitting in your storage from before you enabled Tika won't have its contents indexed automatically. You can force OpenCloud to rescan every space with the current extractor configuration:
 
 ```bash
-docker compose exec opencloud opencloud search index --all-spaces --force-rescan
+docker compose exec opencloud opencloud search index --all-spaces --force-rescan --insecure
 ```
 
 That can take a while on a large library, but it saves you from opening and resaving every old document individually. Once it finishes, hard-refresh the browser before testing because the web app reads the full-text-search feature flag when it loads.
@@ -315,27 +352,49 @@ Do note there's an unresolved licensing fight here. ONLYOFFICE says the fork vio
 
 As for which one to run, the repo answers that itself. Open up `config/euro-office/app-registry.yaml` and you'll see `.docx`, `.xlsx`, and `.pptx` routed to Euro Office, while `.odt`, `.ods`, and `.odp` go to Collabora. Both suites open both formats, so this is about which one handles what more faithfully. If your household lives in Word files, Euro Office. If you're an OpenDocument shop, Collabora. That's about as deep as the decision needs to go for a home server.
 
-Add a DNS record for `euro-office.example.com`, which your wildcard already covers. Then append `weboffice/euro-office.yml` and the matching Euro Office proxy file to your `COMPOSE_FILE`, and set the domain:
+Add a DNS record for `euro-office.example.com`, which your wildcard already covers. Then set the domain and use one of these complete Compose combinations.
 
 ```bash
 EURO_OFFICE_DOMAIN=euro-office.example.com
+EURO_OFFICE_JWT_SECRET=replace-this-with-a-long-random-secret
 ```
 
-Do note the `-exposed` on that second file if your proxy is on a different machine. Just like OpenCloud, `external-proxy/euro-office.yml` binds to `127.0.0.1:9900` and only works if NPM is on the same machine. Use one OpenCloud proxy file and one Euro Office proxy file, not both variants for either service, because the plain and `-exposed` files publish the same container port with different bind addresses.
+For NGINX Proxy Manager on the same machine:
 
 ```bash
-docker compose up -d
+COMPOSE_FILE=docker-compose.yml:weboffice/euro-office.yml:external-proxy/opencloud.yml:external-proxy/euro-office.yml
+```
+
+For NGINX Proxy Manager on another machine:
+
+```bash
+COMPOSE_FILE=docker-compose.yml:weboffice/euro-office.yml:external-proxy/opencloud-exposed.yml:external-proxy/euro-office-exposed.yml
+```
+
+If you already enabled Tika, keep `search/tika.yml` immediately after `docker-compose.yml` in either value. Use one OpenCloud proxy file and one Euro Office proxy file, not both variants for either service, because the plain and `-exposed` files publish the same container ports with different bind addresses.
+
+```bash
+docker compose up -d --force-recreate euro-office
+docker compose ps
 ```
 
 Then go add a second proxy host in NPM. Point `euro-office.example.com` at your host on port `9900`, scheme `http`, websockets on, Block Common Exploits **off** again, then your wildcard cert and Force SSL on the SSL tab.
 
-Give it a minute before you test. The healthcheck allows a 120 second start period and it uses most of that on a cold start, so don't panic when the container sits there looking unhealthy. Once it settles, create a new `.docx` from inside OpenCloud. It should open right in the browser. Beautiful.
+Wait until Euro Office reports `healthy`. Its healthcheck allows a 120 second start period and it can use most of that on a cold start, so don't panic when it initially says `health: starting`. Once it is healthy, recreate OpenCloud so collaboration discovery happens against the ready document server:
 
-Two things worth knowing before you walk away from this one. The `.env.example` file has a `EURO_OFFICE_JWT_SECRET` and the README tells you to change it for production, but on the version of the repo I'm running that variable isn't referenced by any compose file, so setting it doesn't do anything.
+```bash
+docker compose up -d --force-recreate opencloud
+```
+
+Now create a new `.docx`, type something, close it, reopen it, and confirm your edit was saved.
+
+The JWT secret is passed into Euro Office and should be unique and difficult to guess. Set it before creating the container; don't leave the example value in place.
 
 And because we used the `-exposed` overlay, port 9900 is bound on every interface of that box, not just localhost. Exact same rule as port 9200 earlier, so firewall it to your proxy's IP. Between those two, don't assume anything is guarding that document server for you.
 
 ### Radicale for Calendars and Contacts
+
+This is a configuration pointer rather than a complete client walkthrough; the OpenCloud compose README has the current client URLs and integration details.
 
 This is the partial answer to that scope gap I mentioned earlier. Append `radicale/radicale.yml` to your `COMPOSE_FILE`.
 
@@ -352,6 +411,8 @@ RADICALE_DATA_DIR=/srv/radicale
 It's real nice and I'm glad it's in there. It's also still not Nextcloud Calendar with shared team calendars and scheduling, so don't go in expecting that.
 
 ### ClamAV Antivirus Scanning
+
+This is also an optional configuration pointer. Verify the current memory and scanning settings in the compose README before enabling it on a production server.
 
 If you're sharing upload links with people outside your household, scanning uploads is a reasonable idea. Append `antivirus/clamav.yml` to your `COMPOSE_FILE`, then set this as well:
 
@@ -455,9 +516,21 @@ Also check that OpenCloud is actually running with `docker compose ps` and `dock
 
 Check disk space, then check permissions on the data directory again. It's almost always permissions.
 
+### A DOCX Sometimes Says No Preview Is Available
+
+First confirm Euro Office is healthy with `docker compose ps`. Avoid restarting the entire stack with `docker compose restart`: it starts OpenCloud, Tika, and Euro Office simultaneously, so OpenCloud can attempt discovery before its dependencies are ready.
+
+For a deliberate restart, start Euro Office first, wait until it reports `healthy`, and then restart OpenCloud. If Tika is enabled, add `tika` to the first command too.
+
+```bash
+docker compose restart euro-office
+docker compose ps
+docker compose restart opencloud
+```
+
 ### Full Text Search Finds Filenames but Not PDF Contents
 
-First, make sure `search/tika.yml` is still present in `COMPOSE_FILE`, then recreate the stack with `docker compose up -d`. It is possible to have a healthy Tika container left over from an earlier deployment while the current OpenCloud container was recreated without the Tika overlay. In that state Tika is running, but OpenCloud does not have the extractor settings and will only search filenames.
+First, confirm `TIKA_IMAGE=apache/tika:3.3.1.0` and make sure `search/tika.yml` is still present in `COMPOSE_FILE`, then run `docker compose up -d --force-recreate tika opencloud`. It is possible to have a healthy Tika container left over from an earlier deployment while the current OpenCloud container was recreated without the Tika overlay. In that state Tika is running, but OpenCloud does not have the extractor settings and will only search filenames.
 
 Check the resolved services and the environment on the running OpenCloud container:
 
@@ -469,7 +542,7 @@ docker compose exec opencloud env | grep -E '^(SEARCH_EXTRACTOR|FRONTEND_FULL_TE
 You should see `tika` in the service list along with `SEARCH_EXTRACTOR_TYPE=tika`, the Tika URL, and `FRONTEND_FULL_TEXT_SEARCH_ENABLED=true`. Once those are present, force a rescan so PDFs uploaded before Tika was enabled get their contents indexed:
 
 ```bash
-docker compose exec opencloud opencloud search index --all-spaces --force-rescan
+docker compose exec opencloud opencloud search index --all-spaces --force-rescan --insecure
 ```
 
 General debugging:
