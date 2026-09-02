@@ -273,8 +273,16 @@ By default, search only looks at filenames. Apache Tika adds search inside your 
 
 Append `search/tika.yml` to your `COMPOSE_FILE` line, then force OpenCloud to be recreated. This part matters: a Tika container can be running and healthy while an older OpenCloud container is still missing the extractor settings.
 
+Pin Tika to the version tested with this OpenCloud release instead of using the floating `latest` tag:
+
 ```bash
-docker compose up -d --force-recreate opencloud
+TIKA_IMAGE=apache/tika:3.3.1.0
+```
+
+At the time of writing, `apache/tika:latest` can resolve to Tika 4.0.0. OpenCloud 7.5.0 will connect to it and send documents for extraction without an obvious error, but the extracted content may not become searchable. Tika 3.3.1 works correctly.
+
+```bash
+docker compose up -d --force-recreate tika opencloud
 ```
 
 The compose file wires everything up for you: it sets the extractor type to Tika, points OpenCloud at `http://tika:9998`, turns on `FRONTEND_FULL_TEXT_SEARCH_ENABLED`, and adds a healthcheck so OpenCloud waits for Tika to come up before it starts. Verify those settings made it into the live container:
@@ -295,7 +303,7 @@ docker compose exec opencloud opencloud search index --all-spaces --force-rescan
 
 That can take a while on a large library, but it saves you from opening and resaving every old document individually. Once it finishes, hard-refresh the browser before testing because the web app reads the full-text-search feature flag when it loads.
 
-The base `apache/tika:latest` image is around 300MB and handles PDFs, Office docs, and plain text just fine. There's a `latest-full` variant at about 1.2GB if you need OCR on scanned documents, set with `TIKA_IMAGE=apache/tika:latest-full`, but most people won't. It does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
+The base Tika image handles PDFs, Office docs, and plain text just fine. If you need OCR on scanned documents, use the matching `apache/tika:3.3.1.0-full` image, but most people won't. Tika does cost you some CPU on every upload since each file gets run through extraction, which is why it ships turned off.
 
 ### Document Editing with Euro Office
 
