@@ -1,0 +1,109 @@
+export const title = "Technical Content Producer"
+export const description = "TechHut Media is hiring a remote, part-time contract Technical Content Producer to test Linux and homelab guides, write articles, and capture screen recordings."
+
+export const date = ""
+export const authors = []
+export const categories = []
+export const tags = []
+
+import {Button} from "@/components/Button"
+
+<div className="not-prose mb-12 border-y border-zinc-900/10 py-7 dark:border-white/10">
+  <div>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <span className="inline-flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" />
+        Open role
+      </span>
+      <span className="text-sm text-zinc-500 dark:text-zinc-400">TechHut Media LLC</span>
+    </div>
+
+    <dl className="mt-6 grid gap-x-8 gap-y-5 border-y border-zinc-900/10 py-5 text-sm dark:border-white/10 sm:grid-cols-2">
+      <div>
+        <dt className="text-zinc-500 dark:text-zinc-400">Engagement</dt>
+        <dd className="mt-1 font-semibold text-zinc-900 dark:text-white">Part-time contract</dd>
+      </div>
+      <div>
+        <dt className="text-zinc-500 dark:text-zinc-400">Location</dt>
+        <dd className="mt-1 font-semibold text-zinc-900 dark:text-white">Remote, worldwide</dd>
+      </div>
+      <div>
+        <dt className="text-zinc-500 dark:text-zinc-400">Time zones</dt>
+        <dd className="mt-1 font-semibold text-zinc-900 dark:text-white">North America preferred</dd>
+      </div>
+      <div>
+        <dt className="text-zinc-500 dark:text-zinc-400">Pay</dt>
+        <dd className="mt-1 font-semibold text-zinc-900 dark:text-white">Typically $200 to $400</dd>
+      </div>
+    </dl>
+
+    <div className="mt-6 flex flex-wrap items-center gap-4">
+      <Button href="mailto:brandon@techhut.tv?subject=Technical%20Content%20Producer%20application" variant="primary" arrow="right">
+        Apply by email
+      </Button>
+      <span className="text-sm text-zinc-500 dark:text-zinc-400">A cover letter is not needed</span>
+    </div>
+  </div>
+</div>
+
+## The short version
+
+I'm Brandon, and I run TechHut. For the last several years I've been making Linux, self-hosting, and homelab content for a community of about 280,000 people on YouTube, plus written guides on techhut.tv. I've hit the point where I can't keep up with both sides of it on my own, so I'm looking for one person to take over a big chunk of the pre and some of the post production work.
+
+This is not a writing job where you get handed notes and turn them into paragraphs. You need to actually build the thing. If we're doing a guide on setting up Immich behind a reverse proxy, you're spinning up a clean VM, running every step yourself, finding the part where the docs are wrong, and then writing it up so nobody watching gets stuck at step 12.
+
+## What you'd actually be doing
+
+- Building out test environments from scratch (VMs, containers, bare metal) and running through guides end to end on clean installs to make sure every step works
+- Writing and editing the companion articles for videos, plus standalone written guides for techhut.tv
+- Catching the gotchas. Port conflicts, permissions issues, steps that only work because something was already installed
+- Capturing clean screen recordings of the process
+- Helping shape which topics we cover based on what the community is asking for
+- Video editing, if you have the skills for it
+
+## What you need to know
+
+- **Linux.** Comfortable in the terminal, not looking things up for basic file permissions or systemd. Any distro family is fine, but you should know your way around at least Debian/Ubuntu and Fedora-adjacent systems.
+- **Docker and Docker Compose.** You should be able to read a compose file, understand what's wrong with it, and fix it. Networking, volumes, and reverse proxies included.
+- **Homelab experience, hands on.** You run stuff at home. Proxmox, TrueNAS, Unraid, a pile of Raspberry Pis, whatever it is. I want somebody who does this for fun already, because that's who catches the details.
+- **Technical writing.** Clear, direct, and organized in a way that somebody newer than you can follow without getting lost. If you've written documentation, a personal blog, or even good README files, that counts.
+- **GitHub.** The site and a number of our repos live there. Branches, pull requests, resolving a conflict without panicking, and editing markdown in a repo.
+- **AI tooling, at a moderate to advanced level.** Building automations and working with agents, not just typing questions into a chat box. The big one here is testing: pointing an agent at a written guide, having it stand up the deployment, and surfacing broken steps before you spend an afternoon doing it by hand.
+
+## Nice to have
+
+- **DaVinci Resolve.** If you can edit, that opens up a lot more work here. Cuts, b-roll assembly, on-screen callouts, basic color and audio cleanup. Fusion and heavy motion graphics are not expected.
+- Self-hosted models and local inference
+- Kubernetes, K3s, or similar
+- Networking beyond the basics (VLANs, firewalls, VPN mesh setups)
+- Your own YouTube channel or written technical content, at any size
+- Experience with static site generators and MDX
+- Basic scripting in Bash or Python for automating test environment setup
+
+## The logistics
+
+- **Part-time independent contract, paid per deliverable.** Expect a handful of deliverables a month to start. For someone based in the US, this could develop into a full time W2 position after some time, depending on channel health.
+- **Remote,** and open to applicants worldwide where TechHut can legally engage and pay independent contractors. North American time zones are preferred, and being close enough to the Vancouver/Portland area for occasional in-person work would be a real plus, but neither is required.
+- **Pay:** Typical assignments pay $200 to $400 per deliverable, depending on scope. Larger projects, specialized work, and video editing may pay more. A deliverable is typically one topic taken end to end: test environment built, guide validated, written article delivered, and screen recordings captured. Scope and price get agreed up front, before you start.
+- **Equipment:** We provide clean virtual machines or access to remote testing environments over NetBird, so you will not be responsible for sourcing hardware or routine environment setup and teardown. Having your own hardware is still a plus, but it is not required. A Resolve Studio license can be provided if editing ends up being part of your work.
+
+## How to apply
+
+Send an email to [brandon@techhut.tv](mailto:brandon@techhut.tv?subject=Technical%20Content%20Producer%20application) with:
+
+1. A short note about your homelab. What you run, what's broken right now, what you're proud of.
+2. A link to something technical you've written. Blog post, documentation, README, forum answer, anything.
+3. Your GitHub profile.
+4. An automation or agent workflow you've built. Doesn't matter how small, I just want to see how you think about the problem.
+5. If you edit video, a link to something you've cut. It does not need to be polished or professional. Skip this one if editing isn't your thing.
+6. Your resume. This one I do need.
+
+Please skip the cover letter. I'd rather read about your setup.
+
+I read every one of these myself, and I'll follow up with everybody who applies.
+
+<div className="not-prose mt-8 border-t border-zinc-900/10 pt-8 dark:border-white/10">
+  <Button href="mailto:brandon@techhut.tv?subject=Technical%20Content%20Producer%20application" variant="primary" arrow="right">
+    Apply by email
+  </Button>
+</div>

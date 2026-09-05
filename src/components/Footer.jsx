@@ -141,6 +141,7 @@ function FooterContent() {
           <ul className="mt-3 space-y-2">
             <FooterLink href="/content">All Content</FooterLink>
             <FooterLink href="/team">Team</FooterLink>
+            <FooterLink href="/jobs">Jobs</FooterLink>
             <FooterLink href="/partner">Partners</FooterLink>
             <li>
               <a
