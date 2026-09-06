@@ -104,7 +104,7 @@ function CodePanelHeader({ tag, label }) {
   }
 
   return (
-    <div className="flex h-9 items-center gap-2 border-b border-zinc-300/50 dark:border-zinc-900/50 bg-zinc-200/60 dark:bg-zinc-800/60 px-3">
+    <div className="relative z-10 shadow-[0_0_10px_1px_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.18)] dark:shadow-[0_0_12px_2px_rgba(0,0,0,0.4),0_5px_10px_rgba(0,0,0,0.6)] flex h-9 items-center gap-2 border-b border-zinc-300 dark:border-zinc-600 bg-zinc-200 dark:bg-[#1C1C1C] px-3">
       {tag && (
         <div className="dark flex">
           <Tag variant="small">{tag}</Tag>
@@ -149,7 +149,7 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
   let hasTabs = Children.count(children) > 1
 
   return (
-    <div className="flex h-9 items-end justify-between gap-x-2 bg-zinc-200/80 dark:bg-zinc-800 px-3 border-b border-zinc-300/50 dark:border-zinc-900/50 backdrop-blur-sm">
+    <div className="relative z-10 shadow-[0_0_10px_1px_rgba(0,0,0,0.12),0_4px_8px_rgba(0,0,0,0.18)] dark:shadow-[0_0_12px_2px_rgba(0,0,0,0.4),0_5px_10px_rgba(0,0,0,0.6)] flex h-9 items-end justify-between gap-x-2 bg-zinc-200 dark:bg-[#1C1C1C] px-3 border-b border-zinc-300 dark:border-zinc-600">
       {/* Tabs - always show at least one */}
       {hasTabs ? (
         <Tab.List className="flex gap-0 text-xs font-medium">
@@ -158,8 +158,8 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
               className={clsx(
                 'h-9 px-3 transition focus:[&:not(:focus-visible)]:outline-none border-t border-l flex items-center gap-2',
                 childIndex === selectedIndex
-                  ? 'bg-zinc-50 dark:bg-dark-lighter text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 border-r border-r-zinc-200/50 dark:border-r-zinc-700/50'
-                  : 'bg-zinc-100/50 dark:bg-zinc-800/30 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 border-transparent border-r border-r-transparent'
+                  ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 border-r border-r-zinc-200/50 dark:border-r-zinc-700/50'
+                  : 'bg-transparent text-zinc-600 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 border-transparent border-r border-r-transparent'
               )}
             >
               <span>{getPanelTitle(child.props)}</span>
@@ -177,7 +177,7 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
         </Tab.List>
       ) : (
         <div className="flex gap-0 text-xs font-medium">
-          <div className="h-9 px-3 border-t border-l border-r border-r-zinc-200/50 dark:border-r-zinc-700/50 bg-zinc-50 dark:bg-dark-lighter text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 flex items-center gap-2">
+          <div className="h-9 px-3 border-t border-l border-r border-r-zinc-200/50 dark:border-r-zinc-700/50 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 flex items-center gap-2">
             <span className="font-mono text-xs">code@techhut.tv:~</span>
             <button
               className="w-3.5 h-3.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition"
@@ -192,19 +192,19 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
       )}
 
       {/* GTK4 window controls */}
-      <div className="flex items-center gap-2 mb-1">
+      <div className="flex self-center items-center gap-2">
         <button className="w-5 h-5 rounded-full hover:bg-zinc-300/50 dark:hover:bg-zinc-700/50 transition flex items-center justify-center" aria-label="Minimize">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
         </button>
         <button className="w-5 h-5 rounded-full hover:bg-zinc-300/50 dark:hover:bg-zinc-700/50 transition flex items-center justify-center" aria-label="Maximize">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 12h2a2 2 0 002-2v-2" />
           </svg>
         </button>
         <button className="w-5 h-5 rounded-full hover:bg-danger/20 transition flex items-center justify-center group" aria-label="Close">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-400 group-hover:text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300 group-hover:text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
