@@ -66,7 +66,7 @@ export function AppDirectory() {
               <div className="flex flex-1 flex-col p-5">
                 <div className="mb-5 flex items-center gap-4">
                   <div className="flex h-16 w-16 flex-none items-center justify-center">
-                    {app.icon ? <Image src={app.icon} alt="" width={64} height={64} sizes="64px" className={`h-16 w-16 object-contain ${app.iconDark ? 'dark:hidden' : ''}`} /> : <span aria-hidden="true" className="font-mono text-2xl font-semibold text-zinc-700 dark:text-ink-dim">{app.name.slice(0, 2).toUpperCase()}</span>}
+                    {app.icon ? <Image src={app.icon} alt="" width={64} height={64} sizes="64px" className={`h-16 w-16 object-contain ${app.iconDark ? 'dark:hidden' : ''} ${app.iconInvertDark ? 'dark:invert' : ''} ${app.iconInvertLight ? 'invert dark:invert-0' : ''}`} /> : <span aria-hidden="true" className="font-mono text-2xl font-semibold text-zinc-700 dark:text-ink-dim">{app.name.slice(0, 2).toUpperCase()}</span>}
                     {app.iconDark && <Image src={app.iconDark} alt="" width={64} height={64} sizes="64px" className="hidden h-16 w-16 object-contain dark:block" />}
                   </div>
                   <div className="min-w-0">
@@ -101,7 +101,7 @@ export function AppDirectory() {
           <button type="button" onClick={reset} className="mt-5 min-h-11 rounded-sm bg-primary-500 px-5 text-sm font-semibold text-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Clear filters</button>
         </div>
       )}
-      <p className="mt-8 text-xs text-zinc-500 dark:text-ink-faint">Logos from <a href="https://github.com/selfhst/icons" className="underline underline-offset-4">selfh.st/icons</a> (<a href="https://creativecommons.org/licenses/by/4.0/" className="underline underline-offset-4">CC BY 4.0</a>) and <a href="https://github.com/homarr-labs/dashboard-icons" className="underline underline-offset-4">Dashboard Icons</a>. App names and logos belong to their respective owners.</p>
+      <p className="mt-8 text-xs text-zinc-500 dark:text-ink-faint">Logos from <a href="https://github.com/selfhst/icons" className="underline underline-offset-4">selfh.st/icons</a> (<a href="https://creativecommons.org/licenses/by/4.0/" className="underline underline-offset-4">CC BY 4.0</a>), <a href="https://github.com/homarr-labs/dashboard-icons" className="underline underline-offset-4">Dashboard Icons</a>, <a href="https://flathub.org" className="underline underline-offset-4">Flathub</a>, and official app projects. App names and logos belong to their respective owners.</p>
     </div>
   )
 }

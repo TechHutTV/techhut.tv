@@ -69,23 +69,8 @@
         "title": "Linux App Store for AppImages!",
         "published": "2021-12-27"
       }
-    ]
-  },
-  {
-    "id": "archfi",
-    "name": "archfi",
-    "category": "Server Management",
-    "description": "Install Arch Linux with a guided installer script.",
-    "coverage": [
-      "/installing-arch-linux-the-easy-way-archfi-guide"
     ],
-    "videos": [
-      {
-        "id": "u2l54FMgWq4",
-        "title": "Install Arch Linux the EASY WAY - Archfi Guide (2021)",
-        "published": "2021-04-13"
-      }
-    ]
+    "icon": "/app-icons/appimage-pool.png"
   },
   {
     "id": "audiobookshelf",
@@ -100,8 +85,7 @@
         "published": "2023-01-25"
       }
     ],
-    "icon": "/app-icons/audiobookshelf.png",
-    "iconDark": "/app-icons/audiobookshelf-light.png"
+    "icon": "/app-icons/audiobookshelf.png"
   },
   {
     "id": "beaver-habit-tracker",
@@ -136,34 +120,6 @@
     "iconDark": "/app-icons/beszel-light.png"
   },
   {
-    "id": "bismuth",
-    "name": "Bismuth",
-    "category": "Desktop",
-    "description": "Arrange KDE Plasma windows with automatic tiling layouts.",
-    "coverage": [],
-    "videos": [
-      {
-        "id": "-PO5gqexi8c",
-        "title": "EASY Window Tiling in KDE Plasma with Bismuth",
-        "published": "2022-01-02"
-      }
-    ]
-  },
-  {
-    "id": "boost-note",
-    "name": "Boost Note",
-    "category": "Desktop",
-    "description": "Write and organize Markdown notes in a desktop editor.",
-    "coverage": [],
-    "videos": [
-      {
-        "id": "M_Ea7zCCih4",
-        "title": "Boost Note is AWESOME Markdown Writing Application",
-        "published": "2021-01-30"
-      }
-    ]
-  },
-  {
     "id": "bottles",
     "name": "Bottles",
     "category": "Gaming & Compatibility",
@@ -175,7 +131,8 @@
         "title": "Windows Apps and GAMES in Linux",
         "published": "2022-07-24"
       }
-    ]
+    ],
+    "icon": "/app-icons/bottles.png"
   },
   {
     "id": "btop",
@@ -189,7 +146,8 @@
         "title": "STUNNING Linux System Monitor - btop++",
         "published": "2021-09-19"
       }
-    ]
+    ],
+    "icon": "/app-icons/btop.svg"
   },
   {
     "id": "bubble-card",
@@ -283,7 +241,8 @@
         "title": "AWESOME Retro Linux Terminal Emulator - cool-retro-term",
         "published": "2021-06-03"
       }
-    ]
+    ],
+    "icon": "/app-icons/cool-retro-term.png"
   },
   {
     "id": "copyparty",
@@ -314,7 +273,9 @@
         "title": "the best GNOME Extension just got BETTER!",
         "published": "2025-03-29"
       }
-    ]
+    ],
+    "icon": "/app-icons/dash-to-panel.svg",
+    "iconDark": "/app-icons/dash-to-panel-light.svg"
   },
   {
     "id": "davinci-resolve",
@@ -335,16 +296,18 @@
         "title": "Why I Switched To Resolve from Kdenlive - Best Video Editor on Linux?",
         "published": "2021-08-20"
       }
-    ]
+    ],
+    "icon": "/app-icons/davinci-resolve.png"
   },
   {
     "id": "davincibox",
     "name": "DavinciBox",
     "category": "Creative",
-    "description": "Run DaVinci Resolve in a containerized Linux environment.",
+    "description": "Container for DaVinci Resolve installation and runtime dependencies on Linux.",
     "coverage": [
       "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
-    ]
+    ],
+    "icon": "/app-icons/davincibox.png"
   },
   {
     "id": "ddterm",
@@ -358,7 +321,9 @@
         "title": "my favorite GNOME extension",
         "published": "2021-12-30"
       }
-    ]
+    ],
+    "icon": "/app-icons/ddterm.svg",
+    "iconInvertDark": true
   },
   {
     "id": "deluge",
@@ -404,7 +369,9 @@
         "title": "Stop Distro Hopping! Use this AWESOME tool on Linux",
         "published": "2023-07-15"
       }
-    ]
+    ],
+    "icon": "/app-icons/distrobox.svg",
+    "iconDark": "/app-icons/distrobox-light.svg"
   },
   {
     "id": "docker",
@@ -473,7 +440,8 @@
         "title": "You NEED to try this SSH Client",
         "published": "2022-01-09"
       }
-    ]
+    ],
+    "icon": "/app-icons/easyssh.png"
   },
   {
     "id": "edrawmax",
@@ -487,7 +455,8 @@
         "title": "AWESOME Diagramming Tool for Linux, macOS, and Windows! -  EdrawMax",
         "published": "2021-09-17"
       }
-    ]
+    ],
+    "icon": "/app-icons/edrawmax.svg"
   },
   {
     "id": "errands",
@@ -501,7 +470,8 @@
         "title": "GNOME Circle is SOOOO good - Errands To-Do App Overview",
         "published": "2024-01-04"
       }
-    ]
+    ],
+    "icon": "/app-icons/errands.png"
   },
   {
     "id": "files",
@@ -549,22 +519,6 @@
     ],
     "icon": "/app-icons/fluent-reader.png",
     "iconDark": "/app-icons/fluent-reader-light.png"
-  },
-  {
-    "id": "focalboard",
-    "name": "Focalboard",
-    "category": "Desktop",
-    "description": "Organize projects and tasks with boards, calendars and gallery views.",
-    "coverage": [],
-    "videos": [
-      {
-        "id": "eoQpEGUNYp0",
-        "title": "AWESOME project management app for Linux, Windows and Mac",
-        "published": "2022-01-22"
-      }
-    ],
-    "icon": "/app-icons/focalboard.png",
-    "iconDark": "/app-icons/focalboard-light.png"
   },
   {
     "id": "ghostty",
@@ -647,7 +601,8 @@
         "title": "GNOME 41 - Boxes and Connections are AWESOME",
         "published": "2021-09-28"
       }
-    ]
+    ],
+    "icon": "/app-icons/gnome-boxes.png"
   },
   {
     "id": "gnome-connections",
@@ -661,7 +616,8 @@
         "title": "GNOME 41 - Boxes and Connections are AWESOME",
         "published": "2021-09-28"
       }
-    ]
+    ],
+    "icon": "/app-icons/gnome-connections.png"
   },
   {
     "id": "gnome-web",
@@ -675,7 +631,8 @@
         "title": "GNOME Web actually GOOD now??",
         "published": "2023-05-21"
       }
-    ]
+    ],
+    "icon": "/app-icons/gnome-web.png"
   },
   {
     "id": "grafana",
@@ -875,7 +832,8 @@
         "title": "EASY Connect iPhone to Linux!",
         "published": "2021-11-04"
       }
-    ]
+    ],
+    "icon": "/app-icons/kde-connect.svg"
   },
   {
     "id": "kde-discover",
@@ -889,7 +847,8 @@
         "title": "KDE Discover is actually REALLY good now",
         "published": "2023-02-16"
       }
-    ]
+    ],
+    "icon": "/app-icons/kde-discover.svg"
   },
   {
     "id": "kdenlive",
@@ -913,7 +872,8 @@
         "title": "Circular Video Crop in Kdenlive - Alpha Shapes",
         "published": "2021-06-02"
       }
-    ]
+    ],
+    "icon": "/app-icons/kdenlive.png"
   },
   {
     "id": "kiwix",
@@ -973,7 +933,8 @@
         "title": "Journal with Linked! (Linux, Windows, macOS)",
         "published": "2022-03-01"
       }
-    ]
+    ],
+    "icon": "/app-icons/linked.png"
   },
   {
     "id": "lm-sensors",
@@ -996,7 +957,8 @@
         "title": "ULTIMATE Local Tuya Guide! - Holiday Lights in Home Assistant",
         "published": "2024-12-12"
       }
-    ]
+    ],
+    "icon": "/app-icons/localtuya.png"
   },
   {
     "id": "lsd",
@@ -1024,7 +986,8 @@
         "title": "FINALLY! A Good Email Client in Linux - Mailspring",
         "published": "2021-03-01"
       }
-    ]
+    ],
+    "icon": "/app-icons/mailspring.png"
   },
   {
     "id": "marktext",
@@ -1038,7 +1001,8 @@
         "title": "BEST markdown editor for Linux, Windows, and Mac?",
         "published": "2022-01-16"
       }
-    ]
+    ],
+    "icon": "/app-icons/marktext.png"
   },
   {
     "id": "material-shell",
@@ -1052,7 +1016,9 @@
         "title": "Tiling Window Manager for Everyone - Material Shell GNOME Extension",
         "published": "2021-03-23"
       }
-    ]
+    ],
+    "icon": "/app-icons/material-shell.svg",
+    "iconInvertLight": true
   },
   {
     "id": "memos",
@@ -1081,7 +1047,8 @@
         "title": "I might switch from Proxmox to MicroCloud...",
         "published": "2026-01-12"
       }
-    ]
+    ],
+    "icon": "/app-icons/microcloud.svg"
   },
   {
     "id": "microsoft-edge",
@@ -1128,7 +1095,8 @@
         "title": "Proxmox Gaming Guide - SELF-HOST Game Streaming and Servers!",
         "published": "2025-09-28"
       }
-    ]
+    ],
+    "icon": "/app-icons/moonlight.png"
   },
   {
     "id": "movavi-video-editor",
@@ -1699,7 +1667,8 @@
         "title": "Re-Enable YouTube Dislikes",
         "published": "2021-11-23"
       }
-    ]
+    ],
+    "icon": "/app-icons/return-youtube-dislike.svg"
   },
   {
     "id": "rustdesk",
@@ -1774,7 +1743,8 @@
         "title": "Sleek - An Elegant Todo App for Linux, Windows, and MacOS",
         "published": "2021-03-30"
       }
-    ]
+    ],
+    "icon": "/app-icons/sleek.png"
   },
   {
     "id": "sonarr",
@@ -1915,7 +1885,8 @@
         "title": "Windows Task Manager CLONE for Linux?",
         "published": "2021-03-01"
       }
-    ]
+    ],
+    "icon": "/app-icons/sysmontask.png"
   },
   {
     "id": "tabby",
@@ -1929,7 +1900,8 @@
         "title": "NEW kind of Terminal Emulator on Linux, MacOS, and Windows",
         "published": "2021-12-10"
       }
-    ]
+    ],
+    "icon": "/app-icons/tabby.svg"
   },
   {
     "id": "tangram",
@@ -1943,7 +1915,8 @@
         "title": "NEW Kind of Web Browser on Linux",
         "published": "2021-10-09"
       }
-    ]
+    ],
+    "icon": "/app-icons/tangram.png"
   },
   {
     "id": "tgpt",
@@ -1989,7 +1962,8 @@
         "title": "The BEST Web Browser You've NEVER Heard of",
         "published": "2023-06-05"
       }
-    ]
+    ],
+    "icon": "/app-icons/ulaa.png"
   },
   {
     "id": "ulauncher",
@@ -2003,7 +1977,8 @@
         "title": "RICE Linux with Ulauncher - Extensions and Custom Theming",
         "published": "2021-03-13"
       }
-    ]
+    ],
+    "icon": "/app-icons/ulauncher.svg"
   },
   {
     "id": "umbrel",
@@ -2064,7 +2039,8 @@
         "title": "Make a MultiBoot USB for Linux, Windows, and more!",
         "published": "2021-08-15"
       }
-    ]
+    ],
+    "icon": "/app-icons/ventoy.png"
   },
   {
     "id": "vmware",
@@ -2104,7 +2080,9 @@
         "title": "Linux Apps in Windows! - WSL Setup Guide",
         "published": "2022-03-04"
       }
-    ]
+    ],
+    "iconDark": "/app-icons/wsl-light.png",
+    "icon": "/app-icons/wsl.png"
   },
   {
     "id": "yacht",

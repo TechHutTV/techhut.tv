@@ -227,20 +227,6 @@
     "changes": "None"
   },
   {
-    "app": "audiobookshelf",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/audiobookshelf.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
-    "changes": "None"
-  },
-  {
-    "app": "audiobookshelf",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/audiobookshelf-light.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
-    "changes": "None"
-  },
-  {
     "app": "beaver-habit-tracker",
     "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/beaver-habit-tracker.png",
     "repository": "https://github.com/selfhst/icons",
@@ -890,5 +876,337 @@
     "repository": "https://github.com/selfhst/icons",
     "license": "CC-BY-4.0",
     "changes": "None"
+  },
+  {
+    "app": "bismuth",
+    "source": "https://raw.githubusercontent.com/Bismuth-Forge/bismuth/ef69afe69f615149ab347e4402862ee900452a65/img/logo.png",
+    "repository": "https://github.com/Bismuth-Forge/bismuth",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/Bismuth-Forge/bismuth/blob/ef69afe69f615149ab347e4402862ee900452a65/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "btop",
+    "source": "https://raw.githubusercontent.com/aristocratos/btop/0999c29dc19d5900daacebe03637271662679ebd/Img/icon.svg",
+    "repository": "https://github.com/aristocratos/btop",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/aristocratos/btop/blob/0999c29dc19d5900daacebe03637271662679ebd/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "bottles",
+    "source": "https://dl.flathub.org/media/com/usebottles/bottles/cccdebea67131f56d06ff9384b9b3060/icons/128x128@2/com.usebottles.bottles.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.usebottles.bottles",
+    "repository": "https://github.com/bottlesdevs/Bottles",
+    "projectLicense": "GPL-3.0-only",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "appimage-pool",
+    "source": "https://dl.flathub.org/media/io/github/prateekmedia.appimagepool/d4f5b376747061df72140daffd9d1b8c/icons/128x128@2/io.github.prateekmedia.appimagepool.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/io.github.prateekmedia.appimagepool",
+    "repository": "https://flathub.org/apps/io.github.prateekmedia.appimagepool",
+    "projectLicense": "GPL-3.0-only",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "dash-to-panel",
+    "source": "https://raw.githubusercontent.com/home-sweet-gnome/dash-to-panel/df8a15bac1e5e9fb2b4c5f2407981bd8365a72c4/media/design/svg/dash-to-panel-logo-dark.svg",
+    "repository": "https://github.com/home-sweet-gnome/dash-to-panel",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/home-sweet-gnome/dash-to-panel/blob/df8a15bac1e5e9fb2b4c5f2407981bd8365a72c4/COPYING",
+    "changes": "None"
+  },
+  {
+    "app": "cool-retro-term",
+    "source": "https://raw.githubusercontent.com/Swordfish90/cool-retro-term/1394ce82fa53d2a87d5adc4d99f9eeba598ea53d/app/icons/256x256/cool-retro-term.png",
+    "repository": "https://github.com/Swordfish90/cool-retro-term",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": null,
+    "changes": "None"
+  },
+  {
+    "app": "dash-to-panel",
+    "source": "https://raw.githubusercontent.com/home-sweet-gnome/dash-to-panel/df8a15bac1e5e9fb2b4c5f2407981bd8365a72c4/media/design/svg/dash-to-panel-logo-light.svg",
+    "repository": "https://github.com/home-sweet-gnome/dash-to-panel",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/home-sweet-gnome/dash-to-panel/blob/df8a15bac1e5e9fb2b4c5f2407981bd8365a72c4/COPYING",
+    "changes": "None"
+  },
+  {
+    "app": "ddterm",
+    "source": "https://raw.githubusercontent.com/ddterm/gnome-shell-extension-ddterm/ec59b099de70a6467d1d0b0a49941bfc812a3249/data/com.github.amezin.ddterm-symbolic.svg",
+    "repository": "https://github.com/ddterm/gnome-shell-extension-ddterm",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/ddterm/gnome-shell-extension-ddterm/blob/ec59b099de70a6467d1d0b0a49941bfc812a3249/LICENSE",
+    "changes": "Unmodified asset; CSS inversion for theme contrast"
+  },
+  {
+    "app": "distrobox",
+    "source": "https://raw.githubusercontent.com/89luca89/distrobox/e20e230efbb00e8676462d5cd0442f96ca6e4931/docs/assets/brand/svg/distrobox-logomark-dark.svg",
+    "repository": "https://github.com/89luca89/distrobox",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/89luca89/distrobox/blob/e20e230efbb00e8676462d5cd0442f96ca6e4931/COPYING.md",
+    "changes": "None"
+  },
+  {
+    "app": "distrobox",
+    "source": "https://raw.githubusercontent.com/89luca89/distrobox/e20e230efbb00e8676462d5cd0442f96ca6e4931/docs/assets/brand/svg/distrobox-logomark-light.svg",
+    "repository": "https://github.com/89luca89/distrobox",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/89luca89/distrobox/blob/e20e230efbb00e8676462d5cd0442f96ca6e4931/COPYING.md",
+    "changes": "None"
+  },
+  {
+    "app": "easyssh",
+    "source": "https://dl.flathub.org/media/com/github/muriloventuroso.easyssh/d4acf32ffa7675cc75086d4272d03e58/icons/128x128@2/com.github.muriloventuroso.easyssh.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.github.muriloventuroso.easyssh",
+    "repository": "https://github.com/muriloventuroso/easyssh",
+    "projectLicense": "GPL-3.0+",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "errands",
+    "source": "https://dl.flathub.org/media/io/github/mrvladus.List/606615ffeaf2bb74496a387c4fba2f57/icons/128x128@2/io.github.mrvladus.List.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/io.github.mrvladus.List",
+    "repository": "https://github.com/mrvladus/Errands/",
+    "projectLicense": "MIT",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "gnome-boxes",
+    "source": "https://dl.flathub.org/media/org/gnome/Boxes.desktop/21197cc56a7bd29d89fe91d2bda9b910/icons/128x128@2/org.gnome.Boxes.desktop.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/org.gnome.Boxes",
+    "repository": "https://gitlab.gnome.org/GNOME/gnome-boxes",
+    "projectLicense": "LGPL-2.1+",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "gnome-connections",
+    "source": "https://dl.flathub.org/media/org/gnome/Connections/a5b7292f0c95975d96d22e14ff38d921/icons/128x128@2/org.gnome.Connections.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/org.gnome.Connections",
+    "repository": "https://gitlab.gnome.org/GNOME/gnome-connections",
+    "projectLicense": "GPL-3.0-or-later",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "kdenlive",
+    "source": "https://dl.flathub.org/media/org/kde/kdenlive.desktop/20b0b766a2f8d1a34cf0db46159000d7/icons/128x128@2/org.kde.kdenlive.desktop.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/org.kde.kdenlive",
+    "repository": "https://invent.kde.org/multimedia/kdenlive",
+    "projectLicense": "GPL-3.0-only",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "gnome-web",
+    "source": "https://dl.flathub.org/media/org/gnome/Epiphany/951d1dd0f432e3c1c38a59f0d8570773/icons/128x128@2/org.gnome.Epiphany.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/org.gnome.Epiphany",
+    "repository": "https://gitlab.gnome.org/GNOME/epiphany",
+    "projectLicense": "GPL-3.0+",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "linked",
+    "source": "https://raw.githubusercontent.com/lostdesign/linked/94389fab45b06db5fbdf32b945e7a279899ee532/build/icons/256x256.png",
+    "repository": "https://github.com/lostdesign/linked",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/lostdesign/linked/blob/94389fab45b06db5fbdf32b945e7a279899ee532/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "localtuya",
+    "source": "https://raw.githubusercontent.com/rospogrigio/localtuya/59c95cd06c2696afc98f6bc52d5fa060f3c517da/img/icon%402x.png",
+    "repository": "https://github.com/rospogrigio/localtuya",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/rospogrigio/localtuya/blob/59c95cd06c2696afc98f6bc52d5fa060f3c517da/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "material-shell",
+    "source": "https://raw.githubusercontent.com/material-shell/material-shell/4c0cfcf370b0b1168f4a52de90ba954fed81ac50/assets/icons/on-dark-small.svg",
+    "repository": "https://github.com/material-shell/material-shell",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/material-shell/material-shell/blob/4c0cfcf370b0b1168f4a52de90ba954fed81ac50/LICENSE",
+    "changes": "Unmodified asset; CSS inversion for theme contrast"
+  },
+  {
+    "app": "microcloud",
+    "source": "https://raw.githubusercontent.com/canonical/microcloud/c5ad97f456f60fff44620f74d4205377b8fbc282/doc/images/microcloud_logo_light.svg",
+    "repository": "https://github.com/canonical/microcloud",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/canonical/microcloud/blob/c5ad97f456f60fff44620f74d4205377b8fbc282/COPYING",
+    "changes": "None"
+  },
+  {
+    "app": "moonlight",
+    "source": "https://dl.flathub.org/media/com/moonlight_stream/Moonlight/f8be001ec73b9d6ffd16ff8382a82de3/icons/128x128@2/com.moonlight_stream.Moonlight.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.moonlight_stream.Moonlight",
+    "repository": "https://flathub.org/apps/com.moonlight_stream.Moonlight",
+    "projectLicense": "GPL-3.0+",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "return-youtube-dislike",
+    "source": "https://raw.githubusercontent.com/Anarios/return-youtube-dislike/3657de9b2c5a5026d5164372c85adbe58391b02b/Extensions/combined/icons/logo.svg",
+    "repository": "https://github.com/Anarios/return-youtube-dislike",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/Anarios/return-youtube-dislike/blob/3657de9b2c5a5026d5164372c85adbe58391b02b/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "mailspring",
+    "source": "https://dl.flathub.org/media/com/getmailspring/Mailspring/cbb2a2163d8727e52d3947346fe22022/icons/128x128/com.getmailspring.Mailspring.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.getmailspring.Mailspring",
+    "repository": "https://github.com/Foundry376/Mailspring",
+    "projectLicense": "GPL-3.0+",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "marktext",
+    "source": "https://dl.flathub.org/media/com/github/marktext.marktext/1036ccd49c27e1dd1bc7c6a52fe9f5d0/icons/128x128/com.github.marktext.marktext.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.github.marktext.marktext",
+    "repository": "https://github.com/marktext/marktext",
+    "projectLicense": "MIT",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "tangram",
+    "source": "https://dl.flathub.org/media/re/sonny/Tangram/7e3e75b057214528c6ee75016e8dce00/icons/128x128@2/re.sonny.Tangram.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/re.sonny.Tangram",
+    "repository": "https://tangram.sonny.re/source",
+    "projectLicense": "GPL-3.0",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "sysmontask",
+    "source": "https://raw.githubusercontent.com/KrispyCamel4u/SysMonTask/aee8b9cace49df622909b280010ea08c952198c5/icons/SysMonTask.png",
+    "repository": "https://github.com/KrispyCamel4u/SysMonTask",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/KrispyCamel4u/SysMonTask/blob/aee8b9cace49df622909b280010ea08c952198c5/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "tabby",
+    "source": "https://raw.githubusercontent.com/Eugeny/tabby/14e2d60b9b6dee84a53c37f05eefeb803787de04/build/icons/icon.svg",
+    "repository": "https://github.com/Eugeny/tabby",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/Eugeny/tabby/blob/14e2d60b9b6dee84a53c37f05eefeb803787de04/LICENSE",
+    "changes": "Trimmed empty SVG viewBox space; artwork unchanged"
+  },
+  {
+    "app": "sleek",
+    "source": "https://dl.flathub.org/media/com/github/ransome1.sleek/b1e9c05e7b8568d106f62beb31ba767f/icons/128x128/com.github.ransome1.sleek.png",
+    "metadataSource": "https://flathub.org/api/v2/appstream/com.github.ransome1.sleek",
+    "repository": "https://flathub.org/apps/com.github.ransome1.sleek",
+    "projectLicense": "MIT",
+    "license": "App icon distributed with the project; see upstream licensing.",
+    "changes": "None"
+  },
+  {
+    "app": "ulauncher",
+    "source": "https://raw.githubusercontent.com/Ulauncher/Ulauncher/00dc34369ce72bb1c318fb6e822abfc2bb1d5640/data/icons/system/apps/ulauncher.svg",
+    "repository": "https://github.com/Ulauncher/Ulauncher",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/Ulauncher/Ulauncher/blob/00dc34369ce72bb1c318fb6e822abfc2bb1d5640/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "ventoy",
+    "source": "https://raw.githubusercontent.com/ventoy/Ventoy/6568972abca37e33e031e1f2651a68a86491082b/ICON/logo_256.png",
+    "repository": "https://github.com/ventoy/Ventoy",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/ventoy/Ventoy/blob/6568972abca37e33e031e1f2651a68a86491082b/COPYING",
+    "changes": "None"
+  },
+  {
+    "app": "wsl",
+    "source": "https://raw.githubusercontent.com/microsoft/WSL/556440f392aef150dc2e8d39152b20a4d7d5b83c/Images/Square44x44Logo.altform-lightunplated_targetsize-256.png",
+    "repository": "https://github.com/microsoft/WSL",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/microsoft/WSL/blob/556440f392aef150dc2e8d39152b20a4d7d5b83c/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "wsl",
+    "source": "https://raw.githubusercontent.com/microsoft/WSL/556440f392aef150dc2e8d39152b20a4d7d5b83c/Images/Square44x44Logo.altform-unplated_targetsize-256.png",
+    "repository": "https://github.com/microsoft/WSL",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/microsoft/WSL/blob/556440f392aef150dc2e8d39152b20a4d7d5b83c/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "edrawmax",
+    "source": "https://neveragain.allstatics.com/2019/assets/icon/logo/edraw-max-square.svg",
+    "sourcePage": "https://www.edrawsoft.com/edraw-max/",
+    "license": "Official app artwork; rights retained by the respective project or vendor.",
+    "changes": "None",
+    "sha256": "f7c8df0edee056df4b43d67d268441bc13c2efc55ba2a58b9fe062de7d4e014a"
+  },
+  {
+    "app": "kde-connect",
+    "source": "https://apps.kde.org/app-icons/org.kde.kdeconnect.svg",
+    "sourcePage": "https://apps.kde.org/kdeconnect/",
+    "license": "Official app artwork; rights retained by the respective project or vendor.",
+    "changes": "None",
+    "sha256": "c12b64a6d0b81ae0af9a919a8f99ceadc7f4b0d6a6ef764f5f751ae1636b4393"
+  },
+  {
+    "app": "kde-discover",
+    "source": "https://apps.kde.org/app-icons/org.kde.discover.svg",
+    "sourcePage": "https://apps.kde.org/discover/",
+    "license": "Official app artwork; rights retained by the respective project or vendor.",
+    "changes": "None",
+    "sha256": "a93523bea85e2e6e7609f15583b6b7a4030946e323607e6b48726713ddc63143"
+  },
+  {
+    "app": "ulaa",
+    "source": "https://ulaa.com/images/ulaa_ham.png",
+    "sourcePage": "https://ulaa.com/",
+    "license": "Official app artwork; rights retained by the respective project or vendor.",
+    "changes": "None",
+    "sha256": "6e717c0d588a2269d80733e3d8662caf3672aec452f036d65136893bc443ac9f"
+  },
+  {
+    "app": "boost-note",
+    "source": "https://raw.githubusercontent.com/BoostIO/Boostnote/HEAD/resources/app.png",
+    "repository": "https://github.com/BoostIO/Boostnote",
+    "license": "See upstream license; app branding remains the property of its owner.",
+    "licenseSource": "https://github.com/BoostIO/Boostnote/blob/HEAD/LICENSE",
+    "sha256": "0201e2b9646a2fec7ec6ab4e62a89465794e3ce1e45507ca0c1a1338038f1696",
+    "changes": "None"
+  },
+  {
+    "app": "audiobookshelf",
+    "source": "https://raw.githubusercontent.com/advplyr/audiobookshelf/0a797ab8bee15dc3ca92d1d76155259c46dbec62/client/static/icon192.png",
+    "repository": "https://github.com/advplyr/audiobookshelf",
+    "license": "See upstream GPL-3.0 license; branding remains the property of its owner.",
+    "licenseSource": "https://github.com/advplyr/audiobookshelf/blob/0a797ab8bee15dc3ca92d1d76155259c46dbec62/LICENSE",
+    "changes": "None"
+  },
+  {
+    "app": "davinci-resolve",
+    "source": "User-supplied DaVinci_Resolve_Studio.png",
+    "license": "Blackmagic Design branding; supplied by site owner.",
+    "changes": "None",
+    "sha256": "9cb6715de6d5fbe44a2d149165c59b723edee402b010bd808d0e29b4c2b391a2"
+  },
+  {
+    "app": "davincibox",
+    "source": "Custom editorial variant of user-supplied DaVinci_Resolve_Studio.png",
+    "license": "DaVinci Resolve branding belongs to Blackmagic Design; Tux depicts the Linux mascot. Unofficial directory artwork.",
+    "changes": "Built-in image generation added a Tux badge at the bottom right; transparent PNG.",
+    "sha256": "f316af99666dfb64c3c5687c9f19cbcdb0d96e6089f00e9161b68b77ca752cd6"
   }
 ]
