@@ -20,7 +20,7 @@ function TileHighlight() {
         />
       </div>
       <div
-        className="absolute inset-0 rounded-md bg-primary-500 opacity-0 transition duration-base group-hover:opacity-5 dark:group-hover:opacity-10"
+        className="absolute inset-0 rounded-md bg-zinc-900 dark:bg-white opacity-0 transition duration-base group-hover:opacity-5 dark:group-hover:opacity-5"
       />
     </div>
   )

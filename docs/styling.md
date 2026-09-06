@@ -4,7 +4,7 @@
 
 ## Overview
 
-The site uses Tailwind CSS 3.3 for styling with a custom configuration that implements the **Spearmint Ice** brand system and dark mode support. Spearmint acts (buttons, links, brand); ice informs (secondary info, metadata). Neutrals are green-tinted grays — never pure `#000` or `#FFF`.
+The site uses Tailwind CSS 3.3 for styling with a custom configuration that implements the **Spearmint Ice** brand system and dark mode support. Spearmint acts (buttons, links, brand); ice informs (secondary info, metadata). Surfaces, borders, and text use neutral grays; mint and ice are reserved for accents.
 
 ## Configuration Files
 
@@ -16,7 +16,7 @@ The site uses Tailwind CSS 3.3 for styling with a custom configuration that impl
 
 ### Primary Color Palette
 
-The TechHut brand color is spearmint. The brand reads as `primary-500` (`#4FE3A3`) on dark surfaces and `primary-800` (`#0C8A60`) on light surfaces.
+The TechHut brand color is spearmint. The brand reads as `primary-500` (`#4FE3A3`) on dark surfaces and `primary-800` (`#08734F`) on light surfaces.
 
 | Name | Hex | Usage |
 |------|-----|-------|
@@ -38,8 +38,8 @@ primary-300: #8FF0C7
 primary-400: #6FEBB6  (dark-mode hover)
 primary-500: #4FE3A3  (dark-mode brand)
 primary-600: #2FC488
-primary-700: #17A570  (light-mode hover)
-primary-800: #0C8A60  (light-mode brand)
+primary-700: #087850  (light-mode hover)
+primary-800: #08734F  (light-mode brand)
 primary-900: #0A6B4C  (darkest)
 ```
 
@@ -56,40 +56,40 @@ ice-400: #7FE8FF
 ice-500: #59E0FF  (dark-mode info)
 ice-600: #2CC3E8
 ice-700: #0FA9CE
-ice-800: #0891B2  (light-mode info)
+ice-800: #08748E  (light-mode info)
 ice-900: #0A6E86  (darkest)
 ```
 
 ### Neutrals
 
-`zinc`, `slate`, `gray`, and `neutral` are all remapped to a single green-tinted neutral ramp, so existing gray classes automatically pick up the brand tint:
+`zinc`, `slate`, `gray`, and `neutral` are all remapped to a single neutral gray ramp, so existing gray classes stay consistent without a green tint:
 
 ```
-50:  #EFF6F1  (mint paper — light surface)
-100: #E2EEE7  (paper raised)
-200: #C4D6CC
-300: #C4D6CC
-400: #8FB3A6
-500: #5E7168
-600: #5E7168
-700: #3C4F48  (light-mode body)
-800: #1E2C26
-900: #142420  (ink)
-950: #0B1512  (deep)
+50:  #FAFAFA  (off-white — light surface)
+100: #F0F0F0  (paper raised)
+200: #E5E5E5
+300: #D4D4D4
+400: #A3A3A3
+500: #737373
+600: #525252
+700: #404040  (light-mode body)
+800: #262626
+900: #171717  (ink)
+950: #080808  (deep)
 ```
 
 ### Surface & Text Tokens
 
 | Name | Hex | Usage |
 |------|-----|-------|
-| `dark` | `#0B1512` | Deep — main dark surface |
-| `dark-lighter` | `#12211C` | Deep raised — cards, nav |
-| `light` | `#EFF6F1` | Mint paper — main light surface |
-| `ink` | `#EAF4EF` | Mint white — dark-mode headings |
-| `ink-dim` | `#C7DAD2` | Dark-mode body text |
-| `ink-faint` | `#8FB3A6` | Dark-mode muted text |
-| `line` | `#1E2C26` | Hairline borders (dark) |
-| `line-strong` | `#3C4F48` | Stronger borders |
+| `dark` | `#080808` | Deep — main dark surface |
+| `dark-lighter` | `#121212` | Deep raised — cards, nav |
+| `light` | `#FAFAFA` | Off-white — main light surface |
+| `ink` | `#F5F5F5` | Soft white — dark-mode headings |
+| `ink-dim` | `#D4D4D4` | Dark-mode body text |
+| `ink-faint` | `#A3A3A3` | Dark-mode muted text |
+| `line` | `#262626` | Hairline borders (dark) |
+| `line-strong` | `#404040` | Stronger borders |
 
 ### Functional Colors
 

@@ -16,8 +16,8 @@ function NavLink({ href, active, children }) {
                 'block py-1 pl-4 pr-2.5 text-sm transition-colors duration-micro rounded-md relative',
                 'before:absolute before:left-0 before:top-0 before:bottom-0 before:w-px',
                 active
-                    ? 'text-zinc-900 dark:text-ink font-medium bg-primary-500/10 dark:bg-primary-500/10 before:bg-transparent'
-                    : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-primary-500/5 dark:hover:bg-primary-500/10 before:bg-zinc-200 dark:before:bg-zinc-800'
+                    ? 'text-zinc-900 dark:text-ink font-medium bg-zinc-900/5 dark:bg-white/5 before:bg-transparent'
+                    : 'text-zinc-700 dark:text-zinc-400 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-zinc-900/5 dark:hover:bg-white/5 before:bg-zinc-200 dark:before:bg-zinc-800'
             )}
         >
             {active && (

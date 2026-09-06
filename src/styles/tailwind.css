@@ -1,14 +1,14 @@
 /* TechHut · Spearmint Ice · v1.1
-   Two hues plus green-tinted neutrals. Spearmint acts, ice informs.
+   Two hues plus neutral grays. Spearmint acts, ice informs.
    Bright mint/ice never as text on light surfaces — drop to the 800 step. */
 :root {
-  --th-brand: #0c8a60; /* sea green */
-  --th-info: #0891b2; /* deep cyan */
-  --th-surface: #eff6f1; /* mint paper */
-  --th-raised: #e2eee7;
-  --th-heading: #142420; /* ink */
-  --th-body: #3c4f48;
-  --th-muted: #5e7168;
+  --th-brand: #08734f; /* sea green */
+  --th-info: #08748e; /* deep cyan */
+  --th-surface: #fafafa; /* off-white */
+  --th-raised: #f0f0f0;
+  --th-heading: #171717; /* ink */
+  --th-body: #404040;
+  --th-muted: #737373;
   --th-badge-fill: #4fe3a3; /* bright fill, dark text only */
   --th-font-display: var(--font-display);
   --th-font-body: var(--font-sans);
@@ -35,11 +35,11 @@
 :root.dark {
   --th-brand: #4fe3a3; /* spearmint */
   --th-info: #59e0ff; /* ice */
-  --th-surface: #0b1512; /* deep */
-  --th-raised: #12211c;
-  --th-heading: #eaf4ef; /* mint white */
-  --th-body: #c7dad2;
-  --th-muted: #8fb3a6;
+  --th-surface: #080808; /* deep */
+  --th-raised: #121212;
+  --th-heading: #f5f5f5; /* soft white */
+  --th-body: #d4d4d4;
+  --th-muted: #a3a3a3;
 
   --shiki-color-text: theme('colors.ink.DEFAULT');
   --shiki-token-constant: theme('colors.primary.500');
@@ -104,8 +104,8 @@
     pointer-events: none;
     z-index: -1;
     background-image:
-      linear-gradient(rgba(234, 244, 239, 0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(234, 244, 239, 0.015) 1px, transparent 1px);
+      linear-gradient(rgba(245, 245, 245, 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 245, 245, 0.015) 1px, transparent 1px);
     background-size: 60px 60px;
     -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
     mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);

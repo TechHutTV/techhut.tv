@@ -10,7 +10,7 @@ These components are available in MDX article files and are defined in `src/comp
 
 ### Note
 
-Informational callout with primary brand styling.
+Informational callout with ice accent styling.
 
 ```mdx
 <Note>
@@ -18,7 +18,7 @@ Informational callout with primary brand styling.
 </Note>
 ```
 
-Renders with an info icon and a spearmint (primary) colored border.
+Renders with an info icon and an ice colored border.
 
 ### Warning
 

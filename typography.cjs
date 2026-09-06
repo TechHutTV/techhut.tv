@@ -193,7 +193,7 @@ module.exports = ({ theme }) => ({
         lineHeight: '1.1111111',
       },
       'h1 strong': {
-        fontWeight: '900',
+        fontWeight: '800',
         color: 'inherit',
       },
       h2: {

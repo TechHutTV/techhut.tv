@@ -259,7 +259,7 @@ export function Property({ name, type, required, min, max, minLen, maxLen, enumL
           {type}
         </dd>
         <dt className="sr-only">Required</dt>
-          {required && <dd className="font-mono text-xs text-danger">
+          {required && <dd className="font-mono text-xs text-red-700 dark:text-danger">
           required
         </dd>}
           {!required && <dd className="font-mono text-xs text-zinc-400 dark:text-zinc-500">

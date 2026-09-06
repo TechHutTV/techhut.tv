@@ -2,7 +2,7 @@
 
 // TechHut · Spearmint Ice v1.1
 // Spearmint acts (buttons, links, brand). Ice informs (secondary info, metadata).
-// Neutrals are green-tinted grays — never pure #000 or #FFF.
+// Surfaces, borders, and text stay neutral; color is reserved for accents.
 // Bright mint/ice (500) never as text on light surfaces; use the 800 step there.
 
 // Mint ramp — 500 is dark-mode brand, 800 is light-mode brand, 400/600 are hovers
@@ -14,8 +14,8 @@ const mint = {
   400: '#6FEBB6',
   500: '#4FE3A3',
   600: '#2FC488',
-  700: '#17A570',
-  800: '#0C8A60',
+  700: '#087850',
+  800: '#08734F',
   900: '#0A6B4C',
 }
 
@@ -29,24 +29,24 @@ const ice = {
   500: '#59E0FF',
   600: '#2CC3E8',
   700: '#0FA9CE',
-  800: '#0891B2',
+  800: '#08748E',
   900: '#0A6E86',
 }
 
-// Green-tinted neutral ramp mapped onto Tailwind's numeric steps.
-// 50 mint paper · 100 paper raised · 700 light body · 900 ink · 950 deep
+// Achromatic neutral ramp mapped onto Tailwind's numeric steps.
+// 50 off-white · 100 paper raised · 700 light body · 900 ink · 950 deep
 const neutral = {
-  50: '#EFF6F1',
-  100: '#E2EEE7',
-  200: '#C4D6CC',
-  300: '#C4D6CC',
-  400: '#8FB3A6',
-  500: '#5E7168',
-  600: '#5E7168',
-  700: '#3C4F48',
-  800: '#1E2C26',
-  900: '#142420',
-  950: '#0B1512',
+  50: '#FAFAFA',
+  100: '#F0F0F0',
+  200: '#E5E5E5',
+  300: '#D4D4D4',
+  400: '#A3A3A3',
+  500: '#737373',
+  600: '#525252',
+  700: '#404040',
+  800: '#262626',
+  900: '#171717',
+  950: '#080808',
 }
 
 module.exports = {
@@ -94,26 +94,26 @@ module.exports = {
         'techhut-light': '#6FEBB6', // Mint 400 hover
         primary: mint,
         ice,
-        // Green-tinted neutrals everywhere a gray used to be
+        // Achromatic neutrals for surfaces, borders, and text
         zinc: neutral,
         slate: neutral,
         gray: neutral,
         neutral,
         dark: {
-          DEFAULT: '#0B1512', // Deep — dark surface
-          lighter: '#12211C', // Deep raised — cards, nav
+          DEFAULT: '#080808', // Deep — dark surface
+          lighter: '#121212', // Deep raised — cards, nav
         },
         light: {
-          DEFAULT: '#EFF6F1', // Mint paper — light surface
+          DEFAULT: '#FAFAFA', // Off-white — light surface
         },
         ink: {
-          DEFAULT: '#EAF4EF', // Mint white — dark-mode headings
-          dim: '#C7DAD2', // dark-mode body text
-          faint: '#8FB3A6', // dark-mode muted text
+          DEFAULT: '#F5F5F5', // Soft white — dark-mode headings
+          dim: '#D4D4D4', // dark-mode body text
+          faint: '#A3A3A3', // dark-mode muted text
         },
         line: {
-          DEFAULT: '#1E2C26',
-          strong: '#3C4F48',
+          DEFAULT: '#262626',
+          strong: '#404040',
         },
         // Functional colors (UI only — never in logos, thumbnails, marketing)
         danger: '#FF7A70',

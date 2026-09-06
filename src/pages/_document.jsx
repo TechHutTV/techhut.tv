@@ -49,8 +49,8 @@ export default function Document() {
           <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
           <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
           <link rel="manifest" href="/site.webmanifest" />
-          <meta name="theme-color" content="#EFF6F1" media="(prefers-color-scheme: light)" />
-          <meta name="theme-color" content="#0B1512" media="(prefers-color-scheme: dark)" />
+          <meta name="theme-color" content="#FAFAFA" media="(prefers-color-scheme: light)" />
+          <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
       </Head>
       <body className="font-sans bg-light text-zinc-700 antialiased dark:bg-dark dark:text-ink-dim">
         <GoogleTagManagerBodyScript />
