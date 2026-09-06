@@ -67,13 +67,13 @@ export function CoverImageBackground({
         <div className="absolute inset-0 opacity-60 bg-gradient-to-t from-zinc-900 dark:from-zinc-800 to-zinc-100 dark:to-zinc-800 mix-blend-normal" />
         
         {/* Light mode white blur overlay - makes image lighter */}
-        <div className="absolute inset-0 pointer-events-none bg-white/75 dark:hidden" />
+        <div className="absolute inset-0 pointer-events-none bg-zinc-50/75 dark:hidden" />
       </div>
 
       {/* Scroll-based blur overlay */}
       {mounted && (
         <div
-          className="fixed inset-0 pointer-events-none backdrop-blur-xl bg-zinc-100/75 dark:bg-zinc-800/60"
+          className="fixed inset-0 pointer-events-none backdrop-blur-[14px] bg-zinc-100/75 dark:bg-dark/50"
           style={{
             zIndex: -19,
             opacity: blurOpacity,

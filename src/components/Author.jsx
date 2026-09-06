@@ -56,7 +56,7 @@ function SocialLink({ platform, url }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-white transition-colors"
+      className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-ink transition-colors duration-micro"
       aria-label={`${platform} profile`}
     >
       <Icon className="h-5 w-5" />
@@ -80,7 +80,7 @@ export const Author = memo(function Author({ author }) {
       </div>
       <div className="flex-1 min-w-0 h-16 flex flex-col justify-between">
         <div className="flex-1 flex flex-col justify-center min-w-0">
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-white leading-tight">
+          <h2 className="text-base font-semibold text-zinc-900 dark:text-ink leading-tight">
             {author.name}
           </h2>
           {author.bio && (
