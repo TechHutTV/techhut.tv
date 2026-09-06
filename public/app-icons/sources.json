@@ -895,7 +895,7 @@
     "source": "https://raw.githubusercontent.com/Swordfish90/cool-retro-term/1394ce82fa53d2a87d5adc4d99f9eeba598ea53d/app/icons/256x256/cool-retro-term.png",
     "repository": "https://github.com/Swordfish90/cool-retro-term",
     "license": "See upstream license; app branding remains the property of its owner.",
-    "licenseSource": null,
+    "licenseSource": "https://github.com/Swordfish90/cool-retro-term/blob/1394ce82fa53d2a87d5adc4d99f9eeba598ea53d/gpl-3.0.txt",
     "changes": "None"
   },
   {
@@ -1151,10 +1151,10 @@
   },
   {
     "app": "boost-note",
-    "source": "https://raw.githubusercontent.com/BoostIO/Boostnote/HEAD/resources/app.png",
+    "source": "https://raw.githubusercontent.com/BoostIO/Boostnote/789926bc760628ecedbd0051ca96d190a2be234f/resources/app.png",
     "repository": "https://github.com/BoostIO/Boostnote",
     "license": "See upstream license; app branding remains the property of its owner.",
-    "licenseSource": "https://github.com/BoostIO/Boostnote/blob/HEAD/LICENSE",
+    "licenseSource": "https://github.com/BoostIO/Boostnote/blob/789926bc760628ecedbd0051ca96d190a2be234f/LICENSE",
     "sha256": "0201e2b9646a2fec7ec6ab4e62a89465794e3ce1e45507ca0c1a1338038f1696",
     "changes": "None"
   },
