@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowUpRight, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import appRecords from '@/data/apps.json'
 import { articles } from '@/data/articles'
 import { filterApps, prepareApps } from '@/lib/appDirectory'
@@ -62,8 +62,8 @@ export function AppDirectory() {
       {results.length ? (
         <ul className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
           {results.map(app => (
-            <li key={app.id} className="flex min-w-0 flex-col border border-zinc-300 bg-zinc-50 dark:border-line-strong dark:bg-dark-lighter">
-              <div className="flex flex-1 flex-col p-5">
+            <li key={app.id} className="flex min-w-0 flex-col border border-zinc-300 bg-zinc-50 transition-colors hover:border-primary-600 dark:border-line-strong dark:bg-dark-lighter dark:hover:border-primary-500">
+              <Link href={app.details?.href || app.coverage[0]?.href || `/apps/${app.id}`} className="group flex flex-1 flex-col p-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-primary-500">
                 <div className="mb-5 flex items-center gap-4">
                   <div className="flex h-16 w-16 flex-none items-center justify-center">
                     {app.icon ? <Image src={app.icon} alt="" width={64} height={64} sizes="64px" className={`h-16 w-16 object-contain ${app.iconDark ? 'dark:hidden' : ''} ${app.iconInvertDark ? 'dark:invert' : ''} ${app.iconInvertLight ? 'invert dark:invert-0' : ''}`} /> : <span aria-hidden="true" className="font-mono text-2xl font-semibold text-zinc-700 dark:text-ink-dim">{app.name.slice(0, 2).toUpperCase()}</span>}
@@ -76,23 +76,9 @@ export function AppDirectory() {
                 </div>
                 <p className="text-sm leading-6 text-zinc-600 dark:text-ink-dim">{app.description}</p>
                 <div className="mt-auto pt-6">
-                  {app.details ? <Link href={app.details.href} className="group flex items-center justify-between gap-3 border-t border-zinc-200 py-3 text-sm font-medium text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-line dark:text-primary-500"><span className="group-hover:underline group-hover:underline-offset-4">Explore {app.name}</span><ArrowUpRight aria-hidden="true" className="h-4 w-4 flex-none" /></Link> : <>
-                  {app.coverage.map(article => (
-                    <Link key={article.href} href={article.href} className="group flex items-center justify-between gap-3 border-t border-zinc-200 py-3 text-sm font-medium text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-line dark:text-primary-500">
-                      <span className="group-hover:underline group-hover:underline-offset-4">{app.coverage.length > 1 ? article.title : 'Read article'}</span>
-                      <ArrowUpRight aria-hidden="true" className="h-4 w-4 flex-none" />
-                    </Link>
-                  ))}
-                  {app.videos.length > 0 && (
-                    <a href={`https://www.youtube.com/watch?v=${app.videos[0].id}`} aria-label={`Watch ${app.name}: ${app.videos[0].title}`} className="group flex items-center justify-between gap-3 border-t border-zinc-200 py-3 text-sm font-medium text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-line dark:text-primary-500">
-                      <span className="group-hover:underline group-hover:underline-offset-4">Watch video</span>
-                      <ArrowUpRight aria-hidden="true" className="h-4 w-4 flex-none" />
-                    </a>
-                  )}
-                  </>}
-                  <p className="mt-1 font-mono text-2xs text-zinc-500 dark:text-ink-faint">Covered <time dateTime={app.latestDate}>{new Date(`${app.latestDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time></p>
+                  <p className="border-t border-zinc-200 pt-3 font-mono text-2xs text-zinc-500 dark:border-line dark:text-ink-faint">Covered <time dateTime={app.latestDate}>{new Date(`${app.latestDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time></p>
                 </div>
-              </div>
+              </Link>
             </li>
           ))}
         </ul>
