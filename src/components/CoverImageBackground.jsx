@@ -73,7 +73,7 @@ export function CoverImageBackground({
       {/* Scroll-based blur overlay */}
       {mounted && (
         <div
-          className="fixed inset-0 pointer-events-none backdrop-blur-xl bg-zinc-100/75 dark:bg-zinc-800/60"
+          className="fixed inset-0 pointer-events-none backdrop-blur-[14px] bg-zinc-100/75 dark:bg-dark/50"
           style={{
             zIndex: -19,
             opacity: blurOpacity,
