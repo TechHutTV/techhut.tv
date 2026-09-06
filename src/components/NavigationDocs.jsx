@@ -124,17 +124,19 @@ function NavigationGroup({ group, className }) {
 
     useEffect(() => {
         if (typeof window === 'undefined') return
-        const stored = window.localStorage.getItem(STORAGE_PREFIX + group.title)
-        if (stored !== null) {
-            setIsOpen(stored === 'true')
-        }
+        try {
+            const stored = window.localStorage.getItem(STORAGE_PREFIX + group.title)
+            if (stored !== null) setIsOpen(stored === 'true')
+        } catch { /* Keep the default navigation state when storage is blocked. */ }
     }, [group.title])
 
     const toggleOpen = () => {
         setIsOpen((prev) => {
             const next = !prev
             if (typeof window !== 'undefined') {
-                window.localStorage.setItem(STORAGE_PREFIX + group.title, String(next))
+                try {
+                    window.localStorage.setItem(STORAGE_PREFIX + group.title, String(next))
+                } catch { /* Navigation remains usable without persisting the choice. */ }
             }
             return next
         })
@@ -222,4 +224,3 @@ function NavigationGroup({ group, className }) {
         </li>
     )
 }
-

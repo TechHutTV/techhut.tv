@@ -1,5 +1,4 @@
 import { Head, Html, Main, NextScript } from 'next/document'
-import {GoogleTagManagerBodyScript, GoogleTagManagerHeadScript} from "@/components/GoogleTagManager";
 
 const modeScript = `
   let darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -10,7 +9,11 @@ const modeScript = `
 
   function updateMode() {
     let isSystemDarkMode = darkModeMediaQuery.matches
-    let isDarkMode = window.localStorage.isDarkMode === 'true' || (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+    let isDarkMode = isSystemDarkMode
+    try {
+      isDarkMode = window.localStorage.isDarkMode === 'true' || (!('isDarkMode' in window.localStorage) && isSystemDarkMode)
+      if (isDarkMode === isSystemDarkMode) delete window.localStorage.isDarkMode
+    } catch (_) { /* Use the system theme when storage is blocked. */ }
 
     if (isDarkMode) {
       document.documentElement.classList.add('dark')
@@ -18,9 +21,6 @@ const modeScript = `
       document.documentElement.classList.remove('dark')
     }
 
-    if (isDarkMode === isSystemDarkMode) {
-      delete window.localStorage.isDarkMode
-    }
   }
 
   function disableTransitionsTemporarily() {
@@ -41,7 +41,6 @@ export default function Document() {
     <Html lang="en">
       <Head>
           <meta name="impact-site-verification" value="2434c9ce-fde2-4725-bf62-d7cdc5c68e89" />
-          <GoogleTagManagerHeadScript />
           <script dangerouslySetInnerHTML={{ __html: modeScript }} />
           <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
           <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -53,7 +52,6 @@ export default function Document() {
           <meta name="theme-color" content="#080808" media="(prefers-color-scheme: dark)" />
       </Head>
       <body className="font-sans bg-light text-zinc-700 antialiased dark:bg-dark dark:text-ink-dim">
-        <GoogleTagManagerBodyScript />
         <Main />
         <NextScript />
       </body>

@@ -73,11 +73,19 @@ Security headers are configured in `next.config.mjs`:
 ### Content Security Policy
 
 The CSP allows:
-- Scripts from self, Google Analytics, CDN
+- Scripts from self, Matomo, CDN
 - Styles from self (inline allowed)
 - Images from self, data URIs, HTTPS sources
 - Frames from YouTube only
-- Connections to Google Analytics, Algolia
+- Connections to self, Matomo, Algolia
+
+### Search Console and analytics
+
+Google Analytics and Google Tag Manager loaders have been removed, including the no-JavaScript tracking iframe. `NEXT_PUBLIC_GTM_ID` is no longer used. Matomo, Vercel Web Analytics, Speed Insights, and YouTube embeds remain separate integrations.
+
+Search Console does not require visitor tracking when verified through DNS or an HTML verification tag/file. Keep existing DNS verification records and any verification files/tags. If a Search Console owner relies on Analytics or Tag Manager verification, establish another method before deploying this removal. See [Google's verification instructions](https://support.google.com/webmasters/answer/9008080?hl=en). Public DNS currently has a Google verification record, but the owner's active verification method must be confirmed in Search Console.
+
+This change preserves canonical URLs, structured data, robots.txt, sitemap generation, and local article/app search. It does not delete historical data in Google Analytics or change remote account settings. Review any remotely managed Matomo container tags before adding them so they do not reintroduce Google tracking.
 
 ## Deployment Workflow
 
@@ -103,6 +111,10 @@ vercel --prod
 ## Monitoring
 
 ### Vercel Analytics
+
+The public privacy policy is maintained in `src/pages/privacy.mdx` at `/privacy`. Its footer link sits beside **Analytics opt-out**; both routes are included in sitemap generation. Keep the policy's revision date and disclosures aligned with actual changes. Validate an isolated build with `node scripts/validate-privacy-build.mjs /path/to/build-copy` before deployment.
+
+The footer's **Analytics opt-out** link opens `/privacy-settings`. `AnalyticsPreferencesProvider` checks the saved browser preference before mounting Matomo, Vercel Web Analytics, or Speed Insights. Opting out persists locally and reloads the page to stop existing scripts; future loads omit all three integrations. Offline checks: `node --test tests/analyticsPreference.test.mjs`.
 
 The site includes `@vercel/analytics` for performance monitoring:
 

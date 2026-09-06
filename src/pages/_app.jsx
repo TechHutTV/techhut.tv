@@ -1,15 +1,8 @@
 import Head from 'next/head'
-import Script from 'next/script'
 import dynamic from 'next/dynamic'
-import { Analytics } from '@vercel/analytics/next'
-import { SpeedInsights } from '@vercel/speed-insights/next'
+import { AnalyticsPreferencesProvider } from '@/components/AnalyticsPreferences'
 import { Router, useRouter } from 'next/router'
 import { MDXProvider } from '@mdx-js/react'
-
-// Site configuration
-const siteConfig = {
-  googleAnalytics: 'G-D2EGVWGPYR',
-}
 
 import * as mdxComponents from '@/components/mdx'
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
@@ -24,7 +17,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import {dom} from "@fortawesome/fontawesome-svg-core";
 import {AnnouncementBannerProvider} from "@/components/announcement-banner/AnnouncementBannerProvider";
 import {JsonLd} from "@/components/JsonLd";
-import {MatomoTagManager} from "@/components/Matomo";
 
 // Lazy load ImageZoom since it's only used on click
 const ImageZoom = dynamic(
@@ -51,6 +43,7 @@ export default function App({ Component, pageProps }) {
 
   return (
     <ErrorBoundary>
+      <AnalyticsPreferencesProvider>
       <style jsx global>{`
         :root {
           --font-sans: ${inter.style.fontFamily};
@@ -61,20 +54,6 @@ export default function App({ Component, pageProps }) {
           font-family: ${inter.style.fontFamily};
         }
       `}</style>
-      {/* Google Analytics */}
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${siteConfig.googleAnalytics}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${siteConfig.googleAnalytics}');
-        `}
-      </Script>
-      <MatomoTagManager />
       <Head>
         <style>{dom.css()}</style>
         <title>{pageTitle}</title>
@@ -125,8 +104,7 @@ export default function App({ Component, pageProps }) {
       </AnnouncementBannerProvider>
       <ToastContainer />
       <ImageZoom />
-      <Analytics />
-      <SpeedInsights />
+      </AnalyticsPreferencesProvider>
     </ErrorBoundary>
   )
 }

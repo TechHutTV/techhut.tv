@@ -18,10 +18,12 @@ export function disableTransitionsTemporarily() {
  * @param {boolean} isSystemDarkMode - Whether system prefers dark mode
  */
 export function updateDarkModeStorage(isDarkMode, isSystemDarkMode) {
-  if (isDarkMode === isSystemDarkMode) {
-    delete window.localStorage.isDarkMode
-  } else {
-    // Store as string for consistency with how it's read in _document.jsx
-    window.localStorage.isDarkMode = isDarkMode.toString()
-  }
+  try {
+    if (isDarkMode === isSystemDarkMode) {
+      delete window.localStorage.isDarkMode
+    } else {
+      // Store as string for consistency with how it's read in _document.jsx
+      window.localStorage.isDarkMode = isDarkMode.toString()
+    }
+  } catch { /* Theme changes still work for this page when storage is blocked. */ }
 }

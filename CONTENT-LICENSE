@@ -1,0 +1,39 @@
+TechHut editorial content
+========================
+
+TechHut names, logos, and other brand assets are separately reserved under
+BRANDING.md and are also excluded from the software license.
+
+Copyright (c) TechHut Media and the respective authors.
+All rights reserved, except where a separate license or permission is stated.
+
+The website's open-source software license does not license its original
+editorial content for reuse. Protected content includes written articles,
+tutorials, guides, reviews, app descriptions, and original accompanying
+illustrations, photographs, and other media owned by TechHut or its authors.
+
+This notice applies regardless of storage format or location, including:
+
+- Article text and editorial material in src/content/.
+- Editorial prose in src/pages/, src/data/apps.json, and
+  src/data/app-details/.
+- Original editorial media in public/.
+- Copies and excerpts of that content in generated metadata, feeds, indexes,
+  and rendered pages.
+
+Unless separately authorized, copying, republishing, translating, adapting,
+or distributing this content requires permission from the relevant rights
+holder, except as permitted by applicable law, including fair use and other
+copyright exceptions. Attribution alone does not grant permission.
+
+This notice does not restrict facts, ideas, or other material that copyright
+does not protect. Third-party materials remain subject to their owners'
+rights and applicable licenses. Any permissions or licenses already granted
+for particular material remain governed by their terms; this notice does
+not revoke them.
+
+The website's original software code, reusable UI components, layouts,
+styles, scripts, configuration, tests, and developer documentation remain
+available under the BSD 3-Clause License in LICENSE. When a file mixes code
+and editorial content, those terms apply separately to the respective
+portions.
