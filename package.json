@@ -10,6 +10,7 @@
     "gen:slugmap": "node scripts/generate-slug-map.js",
     "gen:sitemap": "node scripts/generate-sitemap.mjs",
     "gen:rss": "node scripts/generate-rss.mjs",
+    "refresh:stars": "node scripts/refresh-github-stars.mjs",
     "start": "next start",
     "lint": "eslint src/"
   },

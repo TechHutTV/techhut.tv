@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { FeaturedArticle } from '@/components/FeaturedArticle'
 import { AppVideo } from '@/components/AppVideo'
+import { GitHubStars } from '@/components/GitHubStars'
 
 const formatDate = value => new Date(`${value.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
 const linkStyle = 'inline-flex min-h-11 items-center justify-center gap-2 border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-800 transition-colors hover:border-primary-600 hover:text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-500 dark:border-line-strong dark:text-ink dark:hover:border-primary-500 dark:hover:text-primary-500'
@@ -30,7 +31,10 @@ export function AppDetail({ app }) {
         </div>
 
         <div className="mt-7 flex flex-wrap gap-2" aria-label="Project links">
-          {details.links.map(link => <a key={link.url} href={link.url} className={linkStyle}>{link.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" /></a>)}
+          {details.links.map(link => <a key={link.url} href={link.url} className={`${linkStyle} flex-wrap`}>
+            {link.label}<ArrowUpRight aria-hidden="true" className="h-4 w-4" />
+            {app.githubStars?.link === link.url && <GitHubStars stats={app.githubStars} />}
+          </a>)}
         </div>
 
         <dl className="mt-8 grid gap-6 border-t border-zinc-200 pt-6 text-sm dark:border-line sm:grid-cols-3">

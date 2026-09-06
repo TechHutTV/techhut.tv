@@ -1234,5 +1234,15 @@
     "license": "Upstream project artwork; branding rights retained by the respective owner.",
     "changes": "ICO converted to PNG",
     "sha256": "5b5a8a8d9df36b683da1d4fbf0c89dc0f12ad61c5592581f37f2aad37cd28c9a"
+  },
+  {
+    "app": "whisper",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/svg/openai.svg",
+    "repository": "https://github.com/selfhst/icons",
+    "provenance": "OpenAI logo from the existing pinned icon collection, selected by the site owner for Whisper.",
+    "license": "CC-BY-4.0 (icon collection); OpenAI branding remains the property of its owner. This is not the Whisper software license.",
+    "licenseSource": "https://github.com/selfhst/icons/blob/4798f7b385ce4d9b18520e4f2091635be6370bc4/LICENSE",
+    "changes": "Unmodified SVG; CSS inversion in dark theme for contrast.",
+    "sha256": "d710c4424318f666f2aa63e9a9baeeae28cfa4c636dda8449b12cd6adf09a4aa"
   }
 ]

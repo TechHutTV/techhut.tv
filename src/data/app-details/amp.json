@@ -15,6 +15,10 @@
     {
       "label": "Official site",
       "url": "https://cubecoders.com/AMP"
+    },
+    {
+      "label": "Official issue tracker",
+      "url": "https://github.com/CubeCoders/AMP"
     }
   ],
   "features": [
@@ -24,6 +28,7 @@
   ],
   "sources": [
     "https://cubecoders.com/AMP",
-    "https://cubecoders.com/TermsOfSale"
+    "https://cubecoders.com/TermsOfSale",
+    "https://github.com/CubeCoders/AMP"
   ]
 }

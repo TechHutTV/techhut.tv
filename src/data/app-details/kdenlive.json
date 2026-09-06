@@ -20,6 +20,10 @@
     {
       "label": "GitLab",
       "url": "https://invent.kde.org/multimedia/kdenlive"
+    },
+    {
+      "label": "GitHub mirror",
+      "url": "https://github.com/kde/kdenlive"
     }
   ],
   "features": [
@@ -29,6 +33,7 @@
   ],
   "sources": [
     "https://kdenlive.org/",
-    "https://invent.kde.org/multimedia/kdenlive/-/blob/master/COPYING"
+    "https://invent.kde.org/multimedia/kdenlive/-/blob/master/COPYING",
+    "https://github.com/kde/kdenlive"
   ]
 }

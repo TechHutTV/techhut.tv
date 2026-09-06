@@ -1,0 +1,1205 @@
+{
+  "adguard-home": {
+    "repository": "adguardteam/adguardhome",
+    "label": "AdGuard Home",
+    "link": "https://github.com/AdguardTeam/AdGuardHome",
+    "reason": "Official AdGuard Home software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/AdguardTeam/AdGuardHome",
+      "https://api.github.com/repos/AdguardTeam/AdGuardHome"
+    ]
+  },
+  "amp": {
+    "repository": "cubecoders/amp",
+    "label": "AMP official issue tracker",
+    "link": "https://github.com/CubeCoders/AMP",
+    "reason": "Selected by the site owner. CubeCoders identifies this repository as AMP issue tracking and documentation. Count this official project tracker without implying that the proprietary application source is public.",
+    "sources": [
+      "https://github.com/CubeCoders/AMP",
+      "https://github.com/CubeCoders/AMP#readme",
+      "https://api.github.com/repos/CubeCoders/AMP"
+    ]
+  },
+  "ansible": {
+    "repository": "ansible/ansible",
+    "label": "Ansible",
+    "link": "https://github.com/ansible/ansible",
+    "reason": "Official Ansible software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ansible/ansible",
+      "https://api.github.com/repos/ansible/ansible"
+    ]
+  },
+  "apache-http-server": {
+    "repository": "apache/httpd",
+    "label": "Apache HTTP Server mirror",
+    "link": "https://github.com/apache/httpd",
+    "reason": "The Apache project publishes this official GitHub mirror. These are mirror stars; contribution tracking remains upstream.",
+    "sources": [
+      "https://github.com/apache/httpd",
+      "https://api.github.com/repos/apache/httpd"
+    ]
+  },
+  "appimage-pool": {
+    "repository": "prateekmedia/appimagepool",
+    "label": "AppImage Pool",
+    "link": "https://github.com/prateekmedia/appimagepool",
+    "reason": "Official AppImage Pool software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/prateekmedia/appimagepool",
+      "https://api.github.com/repos/prateekmedia/appimagepool"
+    ]
+  },
+  "audiobookshelf": {
+    "repository": "advplyr/audiobookshelf",
+    "label": "Audiobookshelf",
+    "link": "https://github.com/advplyr/audiobookshelf",
+    "reason": "Official Audiobookshelf software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/advplyr/audiobookshelf",
+      "https://api.github.com/repos/advplyr/audiobookshelf"
+    ]
+  },
+  "beaver-habit-tracker": {
+    "repository": "daya0576/beaverhabits",
+    "label": "Beaver Habit Tracker",
+    "link": "https://github.com/daya0576/beaverhabits",
+    "reason": "Official Beaver Habit Tracker software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/daya0576/beaverhabits",
+      "https://api.github.com/repos/daya0576/beaverhabits"
+    ]
+  },
+  "beszel": {
+    "repository": "henrygd/beszel",
+    "label": "Beszel",
+    "link": "https://github.com/henrygd/beszel",
+    "reason": "Official Beszel software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/henrygd/beszel",
+      "https://api.github.com/repos/henrygd/beszel"
+    ]
+  },
+  "bottles": {
+    "repository": "bottlesdevs/bottles",
+    "label": "Bottles",
+    "link": "https://github.com/bottlesdevs/Bottles",
+    "reason": "Official Bottles software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/bottlesdevs/Bottles",
+      "https://api.github.com/repos/bottlesdevs/Bottles"
+    ]
+  },
+  "btop": {
+    "repository": "aristocratos/btop",
+    "label": "btop",
+    "link": "https://github.com/aristocratos/btop",
+    "reason": "Official btop software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/aristocratos/btop",
+      "https://api.github.com/repos/aristocratos/btop"
+    ]
+  },
+  "bubble-card": {
+    "repository": "clooos/bubble-card",
+    "label": "Bubble Card",
+    "link": "https://github.com/Clooos/Bubble-Card",
+    "reason": "Official Bubble Card software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Clooos/Bubble-Card",
+      "https://api.github.com/repos/Clooos/Bubble-Card"
+    ]
+  },
+  "caprover": {
+    "repository": "caprover/caprover",
+    "label": "CapRover",
+    "link": "https://github.com/caprover/caprover",
+    "reason": "Official CapRover software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/caprover/caprover",
+      "https://api.github.com/repos/caprover/caprover"
+    ]
+  },
+  "casaos": {
+    "repository": "icewhaletech/casaos",
+    "label": "CasaOS",
+    "link": "https://github.com/IceWhaleTech/CasaOS",
+    "reason": "Official CasaOS software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/IceWhaleTech/CasaOS",
+      "https://api.github.com/repos/IceWhaleTech/CasaOS"
+    ]
+  },
+  "cloudreve": {
+    "repository": "cloudreve/cloudreve",
+    "label": "Cloudreve",
+    "link": "https://github.com/cloudreve/Cloudreve",
+    "reason": "Official Cloudreve software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/cloudreve/cloudreve",
+      "https://api.github.com/repos/cloudreve/Cloudreve"
+    ]
+  },
+  "cockpit": {
+    "repository": "cockpit-project/cockpit",
+    "label": "Cockpit",
+    "link": "https://github.com/cockpit-project/cockpit",
+    "reason": "Official Cockpit software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/cockpit-project/cockpit",
+      "https://api.github.com/repos/cockpit-project/cockpit"
+    ]
+  },
+  "cool-retro-term": {
+    "repository": "swordfish90/cool-retro-term",
+    "label": "cool-retro-term",
+    "link": "https://github.com/Swordfish90/cool-retro-term",
+    "reason": "Official cool-retro-term software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Swordfish90/cool-retro-term",
+      "https://api.github.com/repos/Swordfish90/cool-retro-term"
+    ]
+  },
+  "copyparty": {
+    "repository": "9001/copyparty",
+    "label": "Copyparty",
+    "link": "https://github.com/9001/copyparty",
+    "reason": "Official Copyparty software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/9001/copyparty",
+      "https://api.github.com/repos/9001/copyparty"
+    ]
+  },
+  "dash-to-panel": {
+    "repository": "home-sweet-gnome/dash-to-panel",
+    "label": "Dash to Panel",
+    "link": "https://github.com/home-sweet-gnome/dash-to-panel",
+    "reason": "Official Dash to Panel software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/home-sweet-gnome/dash-to-panel",
+      "https://api.github.com/repos/home-sweet-gnome/dash-to-panel"
+    ]
+  },
+  "davinci-resolve": {
+    "repository": null,
+    "reason": "Proprietary Blackmagic Design application; no public application source repository.",
+    "sources": [
+      "https://www.blackmagicdesign.com/products/davinciresolve"
+    ]
+  },
+  "davincibox": {
+    "repository": "zelikos/davincibox",
+    "label": "DavinciBox",
+    "link": "https://github.com/zelikos/davincibox",
+    "reason": "Official DavinciBox software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/zelikos/davincibox",
+      "https://api.github.com/repos/zelikos/davincibox"
+    ]
+  },
+  "ddterm": {
+    "repository": "ddterm/gnome-shell-extension-ddterm",
+    "label": "ddterm",
+    "link": "https://github.com/ddterm/gnome-shell-extension-ddterm",
+    "reason": "Official ddterm software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ddterm/gnome-shell-extension-ddterm",
+      "https://api.github.com/repos/ddterm/gnome-shell-extension-ddterm"
+    ]
+  },
+  "deluge": {
+    "repository": null,
+    "reason": "Project source is hosted at git.deluge-torrent.org; no GitHub count assigned.",
+    "sources": [
+      "https://deluge-torrent.org/"
+    ]
+  },
+  "discourse": {
+    "repository": "discourse/discourse",
+    "label": "Discourse",
+    "link": "https://github.com/discourse/discourse",
+    "reason": "Official Discourse software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/discourse/discourse",
+      "https://api.github.com/repos/discourse/discourse"
+    ]
+  },
+  "distrobox": {
+    "repository": "89luca89/distrobox",
+    "label": "Distrobox",
+    "link": "https://github.com/89luca89/distrobox",
+    "reason": "Official Distrobox software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/89luca89/distrobox",
+      "https://api.github.com/repos/89luca89/distrobox"
+    ]
+  },
+  "docker": {
+    "repository": "docker/compose",
+    "label": "Docker Compose",
+    "link": "https://github.com/docker/compose",
+    "reason": "Selected by the site owner to represent Docker. Count only Compose, which is used throughout the covered multi-container guides; do not aggregate Engine, Desktop, or other Docker repositories.",
+    "sources": [
+      "https://github.com/docker/compose",
+      "https://api.github.com/repos/docker/compose"
+    ]
+  },
+  "dockhand": {
+    "repository": "finsys/dockhand",
+    "label": "Dockhand",
+    "link": "https://github.com/Finsys/dockhand",
+    "reason": "Official Dockhand software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Finsys/dockhand",
+      "https://api.github.com/repos/Finsys/dockhand"
+    ]
+  },
+  "duplicati": {
+    "repository": "duplicati/duplicati",
+    "label": "Duplicati",
+    "link": "https://github.com/duplicati/duplicati",
+    "reason": "Official Duplicati software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/duplicati/duplicati",
+      "https://api.github.com/repos/duplicati/duplicati"
+    ]
+  },
+  "easyssh": {
+    "repository": "muriloventuroso/easyssh",
+    "label": "EasySSH",
+    "link": "https://github.com/muriloventuroso/easyssh",
+    "reason": "Official EasySSH software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/muriloventuroso/easyssh",
+      "https://api.github.com/repos/muriloventuroso/easyssh"
+    ]
+  },
+  "edrawmax": {
+    "repository": null,
+    "reason": "Proprietary EdrawMax application; no applicable public software repository verified.",
+    "sources": [
+      "https://www.edrawsoft.com/edraw-max/"
+    ]
+  },
+  "errands": {
+    "repository": "mrvladus/errands",
+    "label": "Errands",
+    "link": "https://github.com/mrvladus/Errands",
+    "reason": "Official Errands software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/mrvladus/Errands",
+      "https://api.github.com/repos/mrvladus/Errands"
+    ]
+  },
+  "files": {
+    "repository": "files-community/files",
+    "label": "Files",
+    "link": "https://github.com/files-community/Files",
+    "reason": "Official Files software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/files-community/Files",
+      "https://api.github.com/repos/files-community/Files"
+    ]
+  },
+  "filezilla": {
+    "repository": null,
+    "reason": "Project uses its own source distribution and upstream version control, not a verified GitHub application repository.",
+    "sources": [
+      "https://filezilla-project.org/"
+    ]
+  },
+  "fluent-reader": {
+    "repository": "yang991178/fluent-reader",
+    "label": "Fluent Reader",
+    "link": "https://github.com/yang991178/fluent-reader",
+    "reason": "Official Fluent Reader software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/yang991178/fluent-reader",
+      "https://api.github.com/repos/yang991178/fluent-reader"
+    ]
+  },
+  "ghostty": {
+    "repository": "ghostty-org/ghostty",
+    "label": "Ghostty",
+    "link": "https://github.com/ghostty-org/ghostty",
+    "reason": "Official Ghostty software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ghostty-org/ghostty",
+      "https://api.github.com/repos/ghostty-org/ghostty"
+    ]
+  },
+  "git": {
+    "repository": "git/git",
+    "label": "Git source mirror",
+    "link": "https://github.com/git/git",
+    "reason": "The Git project publishes this official source mirror; count its stars without implying GitHub is the upstream patch submission system.",
+    "sources": [
+      "https://github.com/git/git",
+      "https://api.github.com/repos/git/git"
+    ]
+  },
+  "glance": {
+    "repository": "glanceapp/glance",
+    "label": "Glance",
+    "link": "https://github.com/glanceapp/glance",
+    "reason": "Official Glance software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/glanceapp/glance",
+      "https://api.github.com/repos/glanceapp/glance"
+    ]
+  },
+  "gluetun": {
+    "repository": "passteque/gluetun",
+    "label": "Gluetun",
+    "link": "https://github.com/qdm12/gluetun",
+    "reason": "Official Gluetun software repository linked from the app metadata; current upstream repository identity and description verified through GitHub. The existing project link redirects from qdm12/gluetun to passteque/gluetun.",
+    "sources": [
+      "https://github.com/passteque/gluetun",
+      "https://api.github.com/repos/qdm12/gluetun"
+    ]
+  },
+  "gnome-boxes": {
+    "repository": null,
+    "reason": "Current source is hosted on GNOME GitLab.",
+    "sources": [
+      "https://apps.gnome.org/Boxes/",
+      "https://gitlab.gnome.org/felipeborges/boxes"
+    ]
+  },
+  "gnome-connections": {
+    "repository": null,
+    "reason": "Source is hosted on GNOME GitLab.",
+    "sources": [
+      "https://apps.gnome.org/Connections/",
+      "https://gitlab.gnome.org/GNOME/gnome-connections"
+    ]
+  },
+  "gnome-web": {
+    "repository": null,
+    "reason": "Epiphany source is hosted on GNOME GitLab.",
+    "sources": [
+      "https://apps.gnome.org/Epiphany/",
+      "https://gitlab.gnome.org/GNOME/epiphany"
+    ]
+  },
+  "grafana": {
+    "repository": "grafana/grafana",
+    "label": "Grafana",
+    "link": "https://github.com/grafana/grafana",
+    "reason": "Official Grafana software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/grafana/grafana",
+      "https://api.github.com/repos/grafana/grafana"
+    ]
+  },
+  "homarr": {
+    "repository": "homarr-labs/homarr",
+    "label": "Homarr",
+    "link": "https://github.com/homarr-labs/homarr",
+    "reason": "Official Homarr software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/homarr-labs/homarr",
+      "https://api.github.com/repos/homarr-labs/homarr"
+    ]
+  },
+  "home-assistant": {
+    "repository": "home-assistant/core",
+    "label": "Home Assistant Core",
+    "link": "https://github.com/home-assistant/core",
+    "reason": "Count the main Core application, not the operating system, supervisor, frontend, or integrations separately.",
+    "sources": [
+      "https://github.com/home-assistant/core",
+      "https://api.github.com/repos/home-assistant/core"
+    ]
+  },
+  "immich": {
+    "repository": "immich-app/immich",
+    "label": "Immich",
+    "link": "https://github.com/immich-app/immich",
+    "reason": "Official Immich software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/immich-app/immich",
+      "https://api.github.com/repos/immich-app/immich"
+    ]
+  },
+  "influxdb": {
+    "repository": "influxdata/influxdb",
+    "label": "InfluxDB",
+    "link": "https://github.com/influxdata/influxdb",
+    "reason": "Count the main InfluxDB repository, now containing Core. Historical version 2 coverage remains unchanged; this is not a version-specific count.",
+    "sources": [
+      "https://github.com/influxdata/influxdb",
+      "https://api.github.com/repos/influxdata/influxdb"
+    ]
+  },
+  "jellyfin": {
+    "repository": "jellyfin/jellyfin",
+    "label": "Jellyfin Server",
+    "link": "https://github.com/jellyfin/jellyfin",
+    "reason": "Count the server repository; client applications have separate repositories.",
+    "sources": [
+      "https://github.com/jellyfin/jellyfin",
+      "https://api.github.com/repos/jellyfin/jellyfin"
+    ]
+  },
+  "jellystat": {
+    "repository": "cyfershepard/jellystat",
+    "label": "Jellystat",
+    "link": "https://github.com/CyferShepard/Jellystat",
+    "reason": "Official Jellystat software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/CyferShepard/Jellystat",
+      "https://api.github.com/repos/CyferShepard/Jellystat"
+    ]
+  },
+  "jp2a": {
+    "repository": "talinx/jp2a",
+    "label": "jp2a",
+    "link": "https://github.com/Talinx/jp2a",
+    "reason": "The current maintainer README explicitly identifies Talinx/jp2a as the source, formerly on SourceForge. GitHub marks its lineage as a fork.",
+    "sources": [
+      "https://github.com/Talinx/jp2a",
+      "https://api.github.com/repos/Talinx/jp2a"
+    ]
+  },
+  "k3s": {
+    "repository": "k3s-io/k3s",
+    "label": "k3s",
+    "link": "https://github.com/k3s-io/k3s",
+    "reason": "Official k3s software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/k3s-io/k3s",
+      "https://api.github.com/repos/k3s-io/k3s"
+    ]
+  },
+  "kde-connect": {
+    "repository": null,
+    "reason": "Source is hosted on KDE Invent (GitLab).",
+    "sources": [
+      "https://kdeconnect.kde.org/",
+      "https://invent.kde.org/network/kdeconnect-kde"
+    ]
+  },
+  "kde-discover": {
+    "repository": null,
+    "reason": "Source is hosted on KDE Invent (GitLab).",
+    "sources": [
+      "https://apps.kde.org/discover/",
+      "https://invent.kde.org/plasma/discover"
+    ]
+  },
+  "kdenlive": {
+    "repository": "kde/kdenlive",
+    "label": "Kdenlive GitHub mirror",
+    "link": "https://github.com/kde/kdenlive",
+    "reason": "Selected by the site owner. The KDE organization publishes this official mirror; its homepage points to the existing KDE Invent upstream. Count mirror stars while retaining the upstream GitLab link.",
+    "sources": [
+      "https://github.com/kde/kdenlive",
+      "https://github.com/kde/kdenlive#readme",
+      "https://api.github.com/repos/kde/kdenlive"
+    ]
+  },
+  "kiwix": {
+    "repository": "kiwix/kiwix-tools",
+    "label": "Kiwix tools",
+    "link": "https://github.com/kiwix/kiwix-tools",
+    "reason": "Count kiwix-tools, including kiwix-serve used for the covered self-hosted library workflow; do not sum desktop or mobile clients.",
+    "sources": [
+      "https://github.com/kiwix/kiwix-tools",
+      "https://api.github.com/repos/kiwix/kiwix-tools"
+    ]
+  },
+  "libation": {
+    "repository": "rmcrackan/libation",
+    "label": "Libation",
+    "link": "https://github.com/rmcrackan/Libation",
+    "reason": "Official Libation software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/rmcrackan/Libation",
+      "https://api.github.com/repos/rmcrackan/Libation"
+    ]
+  },
+  "linked": {
+    "repository": "lostdesign/linked",
+    "label": "Linked",
+    "link": "https://github.com/lostdesign/linked",
+    "reason": "Official Linked software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/lostdesign/linked",
+      "https://api.github.com/repos/lostdesign/linked"
+    ]
+  },
+  "lm-sensors": {
+    "repository": "lm-sensors/lm-sensors",
+    "label": "lm_sensors",
+    "link": "https://github.com/lm-sensors/lm-sensors",
+    "reason": "Official lm_sensors software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/lm-sensors/lm-sensors",
+      "https://api.github.com/repos/lm-sensors/lm-sensors"
+    ]
+  },
+  "localtuya": {
+    "repository": "rospogrigio/localtuya",
+    "label": "LocalTuya",
+    "link": "https://github.com/rospogrigio/localtuya",
+    "reason": "The covered integration is rospogrigio/localtuya; its README explains its refactored fork lineage. Do not substitute another Tuya integration.",
+    "sources": [
+      "https://github.com/rospogrigio/localtuya",
+      "https://api.github.com/repos/rospogrigio/localtuya"
+    ]
+  },
+  "lsd": {
+    "repository": "lsd-rs/lsd",
+    "label": "LSD",
+    "link": "https://github.com/lsd-rs/lsd",
+    "reason": "Official LSD software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/lsd-rs/lsd",
+      "https://api.github.com/repos/lsd-rs/lsd"
+    ]
+  },
+  "mailspring": {
+    "repository": "foundry376/mailspring",
+    "label": "Mailspring",
+    "link": "https://github.com/Foundry376/Mailspring",
+    "reason": "Official Mailspring software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Foundry376/Mailspring",
+      "https://api.github.com/repos/Foundry376/Mailspring"
+    ]
+  },
+  "marktext": {
+    "repository": "marktext/marktext",
+    "label": "MarkText",
+    "link": "https://github.com/marktext/marktext",
+    "reason": "Official MarkText software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/marktext/marktext",
+      "https://api.github.com/repos/marktext/marktext"
+    ]
+  },
+  "material-shell": {
+    "repository": "material-shell/material-shell",
+    "label": "Material Shell",
+    "link": "https://github.com/material-shell/material-shell",
+    "reason": "Official Material Shell software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/material-shell/material-shell",
+      "https://api.github.com/repos/material-shell/material-shell"
+    ]
+  },
+  "memos": {
+    "repository": "usememos/memos",
+    "label": "Memos",
+    "link": "https://github.com/usememos/memos",
+    "reason": "Official Memos software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/usememos/memos",
+      "https://api.github.com/repos/usememos/memos"
+    ]
+  },
+  "microcloud": {
+    "repository": "canonical/microcloud",
+    "label": "MicroCloud",
+    "link": "https://github.com/canonical/microcloud",
+    "reason": "Official MicroCloud software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/canonical/microcloud",
+      "https://api.github.com/repos/canonical/microcloud"
+    ]
+  },
+  "microsoft-edge": {
+    "repository": null,
+    "reason": "Proprietary browser; Chromium and WebView tooling are not the Edge application repository.",
+    "sources": [
+      "https://www.microsoft.com/edge"
+    ]
+  },
+  "moonlight": {
+    "repository": "moonlight-stream/moonlight-qt",
+    "label": "Moonlight Qt",
+    "link": "https://github.com/moonlight-stream/moonlight-qt",
+    "reason": "Count the desktop Qt client covered by this directory, not mobile clients or the Sunshine server.",
+    "sources": [
+      "https://github.com/moonlight-stream/moonlight-qt",
+      "https://api.github.com/repos/moonlight-stream/moonlight-qt"
+    ]
+  },
+  "n8n": {
+    "repository": "n8n-io/n8n",
+    "label": "n8n",
+    "link": "https://github.com/n8n-io/n8n",
+    "reason": "Official n8n software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/n8n-io/n8n",
+      "https://api.github.com/repos/n8n-io/n8n"
+    ]
+  },
+  "nala": {
+    "repository": "volitank/nala",
+    "label": "Nala on GitHub",
+    "link": "https://github.com/volitank/nala",
+    "reason": "Selected by the site owner. The maintainer repository now describes a Rust rewrite and retains Python-era sources under legacy/python. Count this repository while preserving the historical guide and existing GitLab link.",
+    "sources": [
+      "https://github.com/volitank/nala",
+      "https://github.com/volitank/nala#readme",
+      "https://api.github.com/repos/volitank/nala"
+    ]
+  },
+  "navidrome": {
+    "repository": "navidrome/navidrome",
+    "label": "Navidrome",
+    "link": "https://github.com/navidrome/navidrome",
+    "reason": "Official Navidrome software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/navidrome/navidrome",
+      "https://api.github.com/repos/navidrome/navidrome"
+    ]
+  },
+  "netbird": {
+    "repository": "netbirdio/netbird",
+    "label": "NetBird",
+    "link": "https://github.com/netbirdio/netbird",
+    "reason": "Official NetBird software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/netbirdio/netbird",
+      "https://api.github.com/repos/netbirdio/netbird"
+    ]
+  },
+  "nextcloud": {
+    "repository": "nextcloud/server",
+    "label": "Nextcloud Server",
+    "link": "https://github.com/nextcloud/server",
+    "reason": "Count the server repository, not the collection of desktop clients and apps.",
+    "sources": [
+      "https://github.com/nextcloud/server",
+      "https://api.github.com/repos/nextcloud/server"
+    ]
+  },
+  "nginx-proxy-manager": {
+    "repository": "nginxproxymanager/nginx-proxy-manager",
+    "label": "Nginx Proxy Manager",
+    "link": "https://github.com/NginxProxyManager/nginx-proxy-manager",
+    "reason": "Official Nginx Proxy Manager software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/NginxProxyManager/nginx-proxy-manager",
+      "https://api.github.com/repos/NginxProxyManager/nginx-proxy-manager"
+    ]
+  },
+  "nut": {
+    "repository": "networkupstools/nut",
+    "label": "Network UPS Tools",
+    "link": "https://github.com/networkupstools/nut",
+    "reason": "Official Network UPS Tools software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/networkupstools/nut",
+      "https://api.github.com/repos/networkupstools/nut"
+    ]
+  },
+  "octoprint": {
+    "repository": "octoprint/octoprint",
+    "label": "OctoPrint",
+    "link": "https://github.com/OctoPrint/OctoPrint",
+    "reason": "Official OctoPrint software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/OctoPrint/OctoPrint",
+      "https://api.github.com/repos/OctoPrint/OctoPrint"
+    ]
+  },
+  "ollama": {
+    "repository": "ollama/ollama",
+    "label": "Ollama",
+    "link": "https://github.com/ollama/ollama",
+    "reason": "Official Ollama software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ollama/ollama",
+      "https://api.github.com/repos/ollama/ollama"
+    ]
+  },
+  "onlyoffice-desktop": {
+    "repository": "onlyoffice/desktopeditors",
+    "label": "ONLYOFFICE Desktop Editors",
+    "link": "https://github.com/ONLYOFFICE/DesktopEditors",
+    "reason": "Official ONLYOFFICE Desktop Editors software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ONLYOFFICE/DesktopEditors",
+      "https://api.github.com/repos/ONLYOFFICE/DesktopEditors"
+    ]
+  },
+  "onlyoffice-workspace": {
+    "repository": "onlyoffice/communityserver",
+    "label": "ONLYOFFICE Community Server",
+    "link": "https://github.com/ONLYOFFICE/CommunityServer",
+    "reason": "Count the CommunityServer component linked from this app page; do not aggregate Docs, mail, or other Workspace components.",
+    "sources": [
+      "https://github.com/ONLYOFFICE/CommunityServer",
+      "https://api.github.com/repos/ONLYOFFICE/CommunityServer"
+    ]
+  },
+  "open-webui": {
+    "repository": "open-webui/open-webui",
+    "label": "Open WebUI",
+    "link": "https://github.com/open-webui/open-webui",
+    "reason": "Official Open WebUI software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/open-webui/open-webui",
+      "https://api.github.com/repos/open-webui/open-webui"
+    ]
+  },
+  "pi-hole": {
+    "repository": "pi-hole/pi-hole",
+    "label": "Pi-hole",
+    "link": "https://github.com/pi-hole/pi-hole",
+    "reason": "Official Pi-hole software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/pi-hole/pi-hole",
+      "https://api.github.com/repos/pi-hole/pi-hole"
+    ]
+  },
+  "plausible": {
+    "repository": "plausible/analytics",
+    "label": "Plausible",
+    "link": "https://github.com/plausible/analytics",
+    "reason": "Official Plausible software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/plausible/analytics",
+      "https://api.github.com/repos/plausible/analytics"
+    ]
+  },
+  "plex": {
+    "repository": "plexinc/pms-docker",
+    "label": "Plex official Docker image",
+    "link": "https://github.com/plexinc/pms-docker",
+    "reason": "Selected by the site owner. This is the official Plex Media Server Docker packaging repository, confirmed by its README. Its stars do not represent public source code for the proprietary Plex Media Server application.",
+    "sources": [
+      "https://github.com/plexinc/pms-docker",
+      "https://github.com/plexinc/pms-docker#readme",
+      "https://api.github.com/repos/plexinc/pms-docker"
+    ]
+  },
+  "pocket-id": {
+    "repository": "pocket-id/pocket-id",
+    "label": "Pocket ID",
+    "link": "https://github.com/pocket-id/pocket-id",
+    "reason": "Official Pocket ID software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/pocket-id/pocket-id",
+      "https://api.github.com/repos/pocket-id/pocket-id"
+    ]
+  },
+  "podgrab": {
+    "repository": "akhilrex/podgrab",
+    "label": "Podgrab",
+    "link": "https://github.com/akhilrex/podgrab",
+    "reason": "Official Podgrab software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/akhilrex/podgrab",
+      "https://api.github.com/repos/akhilrex/podgrab"
+    ]
+  },
+  "podman": {
+    "repository": "podman-container-tools/podman",
+    "label": "Podman",
+    "link": "https://github.com/containers/podman",
+    "reason": "Official Podman software repository linked from the app metadata; current upstream repository identity and description verified through GitHub. The existing project link redirects from containers/podman to podman-container-tools/podman.",
+    "sources": [
+      "https://github.com/podman-container-tools/podman",
+      "https://api.github.com/repos/containers/podman"
+    ]
+  },
+  "portainer": {
+    "repository": "portainer/portainer",
+    "label": "Portainer",
+    "link": "https://github.com/portainer/portainer",
+    "reason": "Official Portainer software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/portainer/portainer",
+      "https://api.github.com/repos/portainer/portainer"
+    ]
+  },
+  "powertoys": {
+    "repository": "microsoft/powertoys",
+    "label": "Microsoft PowerToys",
+    "link": "https://github.com/microsoft/PowerToys",
+    "reason": "Official Microsoft PowerToys software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/microsoft/PowerToys",
+      "https://api.github.com/repos/microsoft/PowerToys"
+    ]
+  },
+  "project-nomad": {
+    "repository": "crosstalk-solutions/project-nomad",
+    "label": "Project Nomad",
+    "link": "https://github.com/Crosstalk-Solutions/project-nomad",
+    "reason": "Official Project Nomad software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Crosstalk-Solutions/project-nomad",
+      "https://api.github.com/repos/Crosstalk-Solutions/project-nomad"
+    ]
+  },
+  "prometheus": {
+    "repository": "prometheus/prometheus",
+    "label": "Prometheus",
+    "link": "https://github.com/prometheus/prometheus",
+    "reason": "Official Prometheus software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/prometheus/prometheus",
+      "https://api.github.com/repos/prometheus/prometheus"
+    ]
+  },
+  "prowlarr": {
+    "repository": "prowlarr/prowlarr",
+    "label": "Prowlarr",
+    "link": "https://github.com/Prowlarr/Prowlarr",
+    "reason": "Official Prowlarr software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Prowlarr/Prowlarr",
+      "https://api.github.com/repos/Prowlarr/Prowlarr"
+    ]
+  },
+  "proxmox-backup-server": {
+    "repository": null,
+    "reason": "Source is hosted in Proxmox Git repositories; do not substitute unofficial GitHub mirrors.",
+    "sources": [
+      "https://www.proxmox.com/en/products/proxmox-backup-server/overview"
+    ]
+  },
+  "proxmox-ve": {
+    "repository": null,
+    "reason": "Source is hosted in multiple Proxmox Git repositories; no single applicable GitHub repository.",
+    "sources": [
+      "https://www.proxmox.com/en/products/proxmox-virtual-environment/overview"
+    ]
+  },
+  "psensor": {
+    "repository": null,
+    "reason": "Source is hosted on GitLab.",
+    "sources": [
+      "https://gitlab.com/jeanfi/psensor"
+    ]
+  },
+  "putty": {
+    "repository": null,
+    "reason": "Source is hosted at the upstream Tatham Git server; do not substitute unofficial GitHub mirrors.",
+    "sources": [
+      "https://www.chiark.greenend.org.uk/~sgtatham/putty/"
+    ]
+  },
+  "qbittorrent": {
+    "repository": "qbittorrent/qbittorrent",
+    "label": "qBittorrent",
+    "link": "https://github.com/qbittorrent/qBittorrent",
+    "reason": "Official qBittorrent software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/qbittorrent/qBittorrent",
+      "https://api.github.com/repos/qbittorrent/qBittorrent"
+    ]
+  },
+  "radarr": {
+    "repository": "radarr/radarr",
+    "label": "Radarr",
+    "link": "https://github.com/Radarr/Radarr",
+    "reason": "Official Radarr software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Radarr/Radarr",
+      "https://api.github.com/repos/Radarr/Radarr"
+    ]
+  },
+  "retropie": {
+    "repository": "retropie/retropie-setup",
+    "label": "RetroPie",
+    "link": "https://github.com/RetroPie/RetroPie-Setup",
+    "reason": "Official RetroPie software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/RetroPie/RetroPie-Setup",
+      "https://api.github.com/repos/RetroPie/RetroPie-Setup"
+    ]
+  },
+  "return-youtube-dislike": {
+    "repository": "anarios/return-youtube-dislike",
+    "label": "Return YouTube Dislike",
+    "link": "https://github.com/Anarios/return-youtube-dislike",
+    "reason": "Official Return YouTube Dislike software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Anarios/return-youtube-dislike",
+      "https://api.github.com/repos/Anarios/return-youtube-dislike"
+    ]
+  },
+  "rustdesk": {
+    "repository": "rustdesk/rustdesk",
+    "label": "RustDesk",
+    "link": "https://github.com/rustdesk/rustdesk",
+    "reason": "Official RustDesk software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/rustdesk/rustdesk",
+      "https://api.github.com/repos/rustdesk/rustdesk"
+    ]
+  },
+  "samba": {
+    "repository": null,
+    "reason": "Source is hosted at git.samba.org; no GitHub count assigned.",
+    "sources": [
+      "https://www.samba.org/"
+    ]
+  },
+  "search-light": {
+    "repository": "icedman/search-light",
+    "label": "Search Light",
+    "link": "https://github.com/icedman/search-light",
+    "reason": "Official Search Light software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/icedman/search-light",
+      "https://api.github.com/repos/icedman/search-light"
+    ]
+  },
+  "seerr": {
+    "repository": "seerr-team/seerr",
+    "label": "Seerr",
+    "link": "https://github.com/seerr-team/seerr",
+    "reason": "Official Seerr software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/seerr-team/seerr",
+      "https://api.github.com/repos/seerr-team/seerr"
+    ]
+  },
+  "sleek": {
+    "repository": "ransome1/sleek",
+    "label": "sleek",
+    "link": "https://github.com/ransome1/sleek",
+    "reason": "Official sleek software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ransome1/sleek",
+      "https://api.github.com/repos/ransome1/sleek"
+    ]
+  },
+  "sonarr": {
+    "repository": "sonarr/sonarr",
+    "label": "Sonarr",
+    "link": "https://github.com/Sonarr/Sonarr",
+    "reason": "Official Sonarr software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Sonarr/Sonarr",
+      "https://api.github.com/repos/Sonarr/Sonarr"
+    ]
+  },
+  "startallback": {
+    "repository": null,
+    "reason": "Proprietary Windows application; no applicable public software repository verified.",
+    "sources": [
+      "https://www.startallback.com/"
+    ]
+  },
+  "sunshine": {
+    "repository": "lizardbyte/sunshine",
+    "label": "Sunshine",
+    "link": "https://github.com/LizardByte/Sunshine",
+    "reason": "Official Sunshine software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/LizardByte/Sunshine",
+      "https://api.github.com/repos/LizardByte/Sunshine"
+    ]
+  },
+  "super-productivity": {
+    "repository": "super-productivity/super-productivity",
+    "label": "Super Productivity",
+    "link": "https://github.com/johannesjo/super-productivity",
+    "reason": "Official Super Productivity software repository linked from the app metadata; current upstream repository identity and description verified through GitHub. The existing project link redirects from johannesjo/super-productivity to super-productivity/super-productivity.",
+    "sources": [
+      "https://github.com/super-productivity/super-productivity",
+      "https://api.github.com/repos/johannesjo/super-productivity"
+    ]
+  },
+  "superfile": {
+    "repository": "yorukot/superfile",
+    "label": "superfile",
+    "link": "https://github.com/yorukot/superfile",
+    "reason": "Official superfile software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/yorukot/superfile",
+      "https://api.github.com/repos/yorukot/superfile"
+    ]
+  },
+  "synaptic": {
+    "repository": "mvo5/synaptic",
+    "label": "Synaptic",
+    "link": "https://github.com/mvo5/synaptic",
+    "reason": "Official Synaptic software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/mvo5/synaptic",
+      "https://api.github.com/repos/mvo5/synaptic"
+    ]
+  },
+  "synology-surveillance-station": {
+    "repository": null,
+    "reason": "Proprietary Synology package; no applicable public software repository verified.",
+    "sources": [
+      "https://www.synology.com/en-global/surveillance"
+    ]
+  },
+  "synth-shell": {
+    "repository": "andresgongora/synth-shell",
+    "label": "synth-shell",
+    "link": "https://github.com/andresgongora/synth-shell",
+    "reason": "Official synth-shell software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/andresgongora/synth-shell",
+      "https://api.github.com/repos/andresgongora/synth-shell"
+    ]
+  },
+  "sysmontask": {
+    "repository": "krispycamel4u/sysmontask",
+    "label": "SysMonTask",
+    "link": "https://github.com/KrispyCamel4u/SysMonTask",
+    "reason": "Official SysMonTask software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/KrispyCamel4u/SysMonTask",
+      "https://api.github.com/repos/KrispyCamel4u/SysMonTask"
+    ]
+  },
+  "tabby": {
+    "repository": "eugeny/tabby",
+    "label": "Tabby",
+    "link": "https://github.com/Eugeny/tabby",
+    "reason": "Official Tabby software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Eugeny/tabby",
+      "https://api.github.com/repos/Eugeny/tabby"
+    ]
+  },
+  "tangram": {
+    "repository": "sonnyp/tangram",
+    "label": "Tangram",
+    "link": "https://github.com/sonnyp/Tangram",
+    "reason": "Official Tangram software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/sonnyp/Tangram",
+      "https://api.github.com/repos/sonnyp/Tangram"
+    ]
+  },
+  "tgpt": {
+    "repository": "aandrew-me/tgpt",
+    "label": "tgpt",
+    "link": "https://github.com/aandrew-me/tgpt",
+    "reason": "Official tgpt software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/aandrew-me/tgpt",
+      "https://api.github.com/repos/aandrew-me/tgpt"
+    ]
+  },
+  "twingate": {
+    "repository": null,
+    "reason": "Proprietary service and clients; public examples and deployment tools are not the application.",
+    "sources": [
+      "https://www.twingate.com/"
+    ]
+  },
+  "ulaa": {
+    "repository": null,
+    "reason": "Proprietary Zoho browser; no applicable public software repository verified.",
+    "sources": [
+      "https://ulaa.com/"
+    ]
+  },
+  "ulauncher": {
+    "repository": "ulauncher/ulauncher",
+    "label": "Ulauncher",
+    "link": "https://github.com/Ulauncher/Ulauncher",
+    "reason": "Official Ulauncher software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/Ulauncher/Ulauncher",
+      "https://api.github.com/repos/Ulauncher/Ulauncher"
+    ]
+  },
+  "umbrel": {
+    "repository": "getumbrel/umbrel",
+    "label": "Umbrel",
+    "link": "https://github.com/getumbrel/umbrel",
+    "reason": "Official Umbrel software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/getumbrel/umbrel",
+      "https://api.github.com/repos/getumbrel/umbrel"
+    ]
+  },
+  "unbound": {
+    "repository": "nlnetlabs/unbound",
+    "label": "Unbound",
+    "link": "https://github.com/NLnetLabs/unbound",
+    "reason": "Official Unbound software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/NLnetLabs/unbound",
+      "https://api.github.com/repos/NLnetLabs/unbound"
+    ]
+  },
+  "unifi-os-server": {
+    "repository": null,
+    "reason": "Proprietary Ubiquiti application; no applicable public software repository verified.",
+    "sources": [
+      "https://ui.com/download/software/unifi-os-server"
+    ]
+  },
+  "ventoy": {
+    "repository": "ventoy/ventoy",
+    "label": "Ventoy",
+    "link": "https://github.com/ventoy/Ventoy",
+    "reason": "Official Ventoy software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/ventoy/Ventoy",
+      "https://api.github.com/repos/ventoy/Ventoy"
+    ]
+  },
+  "vmware": {
+    "repository": null,
+    "reason": "Proprietary Workstation and Fusion applications; public VMware tools do not represent them.",
+    "sources": [
+      "https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion"
+    ]
+  },
+  "whisper": {
+    "repository": "openai/whisper",
+    "label": "Whisper",
+    "link": "https://github.com/openai/whisper",
+    "reason": "Official Whisper software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/openai/whisper",
+      "https://api.github.com/repos/openai/whisper"
+    ]
+  },
+  "wsl": {
+    "repository": "microsoft/wsl",
+    "label": "Windows Subsystem for Linux",
+    "link": "https://github.com/microsoft/WSL",
+    "reason": "Official Windows Subsystem for Linux software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/microsoft/WSL",
+      "https://api.github.com/repos/microsoft/WSL"
+    ]
+  },
+  "yacht": {
+    "repository": null,
+    "reason": "The linked SelfhostedPro/Yacht repository is now a fork of Yacht-sh/Yacht and its README points to further rewrites. Omit stars until the canonical repository for the covered app is settled.",
+    "sources": [
+      "https://github.com/SelfhostedPro/Yacht"
+    ]
+  },
+  "zen-browser": {
+    "repository": "zen-browser/desktop",
+    "label": "Zen Browser",
+    "link": "https://github.com/zen-browser/desktop",
+    "reason": "Official Zen Browser software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/zen-browser/desktop",
+      "https://api.github.com/repos/zen-browser/desktop"
+    ]
+  },
+  "zerobyte": {
+    "repository": "nicotsx/zerobyte",
+    "label": "Zerobyte",
+    "link": "https://github.com/nicotsx/zerobyte",
+    "reason": "Official Zerobyte software repository linked from the app metadata; current upstream repository identity and description verified through GitHub.",
+    "sources": [
+      "https://github.com/nicotsx/zerobyte",
+      "https://api.github.com/repos/nicotsx/zerobyte"
+    ]
+  }
+}

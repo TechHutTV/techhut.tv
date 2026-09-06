@@ -16,6 +16,11 @@ export function filterApps(apps, { query = '', category = 'All', sort = 'name' }
     const text = `${app.name} ${app.description} ${app.category}`.toLowerCase()
     return terms.every(term => text.includes(term))
   }).sort((a, b) => {
+    if (sort === 'stars') {
+      const count = app => Number.isSafeInteger(app.githubStars?.stars) && app.githubStars.stars >= 0 ? app.githubStars.stars : -1
+      const difference = count(b) - count(a)
+      if (difference) return difference
+    }
     if (sort === 'recent') {
       const difference = b.latestDate.localeCompare(a.latestDate)
       if (difference) return difference

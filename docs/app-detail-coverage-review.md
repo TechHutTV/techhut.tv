@@ -40,7 +40,7 @@ Notable distinctions: Dockhand uses BSL-1.1; n8n has Sustainable Use and Enterpr
 
 DaVinci Resolve's license source is its official installer/support distribution, and StartAllBack's is its official download/purchase page; a separate public EULA permalink was not verified for those two products. Microsoft Edge exposes its software terms through its official download flow. These are labeled proprietary; no open-source or permissive license is inferred from their dependencies or artwork. Platform labels describe the documented deployment scope, not a promise that every feature works on every platform. Superfile's partial Windows support is explicit. Current Boxes uses Flatpak, and Podman on macOS/Windows uses a Linux VM. Existing Yacht-era video guidance is historical; the Yacht summary retains the upstream alpha caveat.
 
-Nine existing artwork gaps remain: jp2a, lm_sensors, LSD, Nala, Psensor, Search Light, synth-shell, tgpt, and Whisper. They use initials. No artwork was downloaded into the site, recolored, or replaced, so icon provenance is unchanged.
+The original detail-page audit left nine artwork gaps: jp2a, lm_sensors, LSD, Nala, Psensor, Search Light, synth-shell, tgpt, and Whisper. The subsequent star-count work added the site owner's selected OpenAI logo for Whisper, with provenance in `public/app-icons/sources.json`. The other eight apps still use initials.
 
 The optional research archives were used only as leads. They are not imported by routes, scripts, or tests. No maintenance status is inferred from a successful HTTP response.
 

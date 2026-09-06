@@ -14,6 +14,10 @@
     {
       "label": "GitLab",
       "url": "https://gitlab.com/volian/nala"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/volitank/nala"
     }
   ],
   "features": [
@@ -23,6 +27,7 @@
   ],
   "sources": [
     "https://gitlab.com/volian/nala",
-    "https://gitlab.com/volian/nala/-/blob/main/LICENSE"
+    "https://gitlab.com/volian/nala/-/blob/main/LICENSE",
+    "https://github.com/volitank/nala"
   ]
 }

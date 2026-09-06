@@ -5,8 +5,12 @@ import { Search, X } from 'lucide-react'
 import appRecords from '@/data/apps.json'
 import { articles } from '@/data/articles'
 import { filterApps, prepareApps } from '@/lib/appDirectory'
+import { GitHubStars } from '@/components/GitHubStars'
+import { getAppStars } from '@/lib/appStars'
+import repositories from '@/data/app-repositories.json'
+import starSnapshot from '@/data/github-stars.json'
 
-const apps = prepareApps(appRecords, articles)
+const apps = prepareApps(appRecords, articles).map(app => ({ ...app, githubStars: getAppStars(app.id, repositories, starSnapshot) }))
 const categories = [...new Set(apps.map(app => app.category))].sort()
 const controlStyle = 'rounded-sm border border-zinc-300 bg-zinc-50 text-sm text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-800 dark:border-line-strong dark:bg-dark-lighter dark:text-ink dark:focus-visible:outline-primary-500'
 
@@ -50,9 +54,12 @@ export function AppDirectory() {
           <select id="app-sort" value={sort} onChange={event => setSort(event.target.value)} className={`${controlStyle} h-11 w-full px-3`}>
             <option value="name">Name: A–Z</option>
             <option value="recent">Recently covered</option>
+            <option value="stars">Most GitHub stars</option>
           </select>
         </div>
       </div>
+
+      <p className="mt-4 text-xs leading-5 text-zinc-500 dark:text-ink-faint">Star counts are shown for verified GitHub repositories. Some apps are hosted elsewhere or have no public repository. {sort === 'stars' && 'Apps without a count appear last.'}</p>
 
       <div className="my-5 flex min-h-8 flex-wrap items-center justify-between gap-2">
         <p role="status" aria-live="polite" className="text-sm text-zinc-500 dark:text-ink-faint">Showing {results.length} of {apps.length} apps</p>
@@ -75,9 +82,9 @@ export function AppDirectory() {
                   </div>
                 </div>
                 <p className="text-sm leading-6 text-zinc-600 dark:text-ink-dim">{app.description}</p>
-                <div className="mt-auto pt-6">
-                  <p className="border-t border-zinc-200 pt-3 font-mono text-2xs text-zinc-500 dark:border-line dark:text-ink-faint">Covered <time dateTime={app.latestDate}>{new Date(`${app.latestDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time></p>
-                </div>
+                {app.githubStars && <div className="mt-auto pt-6">
+                  <p className="border-t border-zinc-200 pt-3 dark:border-line"><GitHubStars stats={app.githubStars} /></p>
+                </div>}
               </Link>
             </li>
           ))}

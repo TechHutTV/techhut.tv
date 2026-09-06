@@ -17,6 +17,10 @@
     {
       "label": "Official site",
       "url": "https://www.plex.tv/"
+    },
+    {
+      "label": "Official Docker image",
+      "url": "https://github.com/plexinc/pms-docker"
     }
   ],
   "features": [
@@ -26,6 +30,7 @@
   ],
   "sources": [
     "https://www.plex.tv/",
-    "https://www.plex.tv/about/privacy-legal/plex-terms-of-service/"
+    "https://www.plex.tv/about/privacy-legal/plex-terms-of-service/",
+    "https://github.com/plexinc/pms-docker"
   ]
 }

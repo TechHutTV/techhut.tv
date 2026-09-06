@@ -17,8 +17,12 @@
       "url": "https://docs.docker.com/"
     },
     {
-      "label": "GitHub",
+      "label": "Docker Engine source",
       "url": "https://github.com/moby/moby"
+    },
+    {
+      "label": "Docker Compose",
+      "url": "https://github.com/docker/compose"
     },
     {
       "label": "Desktop license",
@@ -31,6 +35,7 @@
     "Volumes and networks"
   ],
   "sources": [
+    "https://github.com/docker/compose",
     "https://github.com/moby/moby#readme",
     "https://github.com/moby/moby/blob/HEAD/LICENSE",
     "https://docs.docker.com/",

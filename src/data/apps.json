@@ -2409,7 +2409,9 @@
     ],
     "details": {
       "href": "/apps/whisper"
-    }
+    },
+    "icon": "/app-icons/whisper.svg",
+    "iconInvertDark": true
   },
   {
     "id": "wsl",
