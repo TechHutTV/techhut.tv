@@ -1,0 +1,33 @@
+{
+  "summary": "Administer Linux machines through a web browser, including services, storage, networking, logs, and an interactive terminal.",
+  "overview": "Cockpit works with the machine's existing operating-system services, so changes made through the web interface are part of the same system you administer from the command line. You can inspect logs, manage services, and work with storage without moving between separate tools. Its browser terminal also keeps a shell close at hand when a task needs a command.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "LGPL-2.1-or-later and component licenses",
+    "type": "Open source",
+    "url": "https://github.com/cockpit-project/cockpit/tree/main/LICENSES"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "http://www.cockpit-project.org/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/cockpit-project/cockpit"
+    }
+  ],
+  "features": [
+    "Service management",
+    "Storage administration",
+    "System logs"
+  ],
+  "sources": [
+    "http://www.cockpit-project.org/",
+    "https://github.com/cockpit-project/cockpit#readme",
+    "https://github.com/cockpit-project/cockpit/tree/main/LICENSES"
+  ]
+}

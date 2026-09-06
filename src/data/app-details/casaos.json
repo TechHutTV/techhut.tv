@@ -1,0 +1,33 @@
+{
+  "summary": "Manage home server applications and Docker containers through a web dashboard.",
+  "overview": "CasaOS provides a graphical starting point for managing a home server, with an app store, container controls, and file management in the browser. It brings common tasks such as finding an application and managing its deployment into one place. The underlying services still run on your machine, while the dashboard gives you a more approachable way to work with them.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/IceWhaleTech/CasaOS/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://casaos.zimaspace.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/IceWhaleTech/CasaOS"
+    }
+  ],
+  "features": [
+    "App store",
+    "Docker management",
+    "File management"
+  ],
+  "sources": [
+    "https://casaos.zimaspace.com",
+    "https://github.com/IceWhaleTech/CasaOS#readme",
+    "https://github.com/IceWhaleTech/CasaOS/blob/HEAD/LICENSE"
+  ]
+}

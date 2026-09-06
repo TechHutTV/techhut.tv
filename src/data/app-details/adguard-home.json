@@ -1,0 +1,36 @@
+{
+  "summary": "Filter ads and trackers across your network with a self-hosted DNS server.",
+  "overview": "Devices on your network send their DNS requests to AdGuard Home, which checks the requested domains against filtering rules before answering. Its web interface lets you review queries and apply different policies to individual clients. This gives you a central place to manage domain blocking for computers, phones, and other connected devices, alongside options for encrypted upstream DNS.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "FreeBSD",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://adguard.com/adguard-home/overview.html"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/AdguardTeam/AdGuardHome"
+    }
+  ],
+  "features": [
+    "DNS filtering",
+    "Encrypted DNS",
+    "Per-client rules"
+  ],
+  "sources": [
+    "https://adguard.com/adguard-home/overview.html",
+    "https://github.com/AdguardTeam/AdGuardHome#readme",
+    "https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt"
+  ]
+}

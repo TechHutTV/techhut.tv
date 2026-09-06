@@ -1,0 +1,36 @@
+{
+  "summary": "Manage indexers for a self-hosted media automation stack.",
+  "overview": "Prowlarr centralizes the configuration of supported torrent and Usenet indexers, then synchronizes that information with compatible media-management applications. This reduces the need to maintain the same indexer settings separately in each application. It occupies the search-source part of a media stack, working alongside library managers and download clients that handle the other parts of the process.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Prowlarr/Prowlarr/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://prowlarr.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Prowlarr/Prowlarr"
+    }
+  ],
+  "features": [
+    "Indexer management",
+    "Usenet and torrent support",
+    "Arr app sync"
+  ],
+  "sources": [
+    "https://prowlarr.com",
+    "https://github.com/Prowlarr/Prowlarr#readme",
+    "https://github.com/Prowlarr/Prowlarr/blob/HEAD/LICENSE"
+  ]
+}

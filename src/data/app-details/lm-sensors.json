@@ -1,0 +1,28 @@
+{
+  "summary": "Read CPU temperature sensors from the Linux command line.",
+  "overview": "lm_sensors detects supported sensor hardware and exposes readings such as temperatures and fan speeds through command-line tools. It is often part of the foundation beneath other Linux monitoring interfaces, providing measurements that can be displayed or collected elsewhere. The readings available depend on the hardware and drivers, so the detection step helps establish what your particular machine can report.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-2.0 / LGPL-2.1 (library)",
+    "type": "Open source",
+    "url": "https://github.com/lm-sensors/lm-sensors/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/lm-sensors/lm-sensors"
+    }
+  ],
+  "features": [
+    "Temperature readings",
+    "Fan speed readings",
+    "Sensor detection"
+  ],
+  "sources": [
+    "https://github.com/lm-sensors/lm-sensors#readme",
+    "https://github.com/lm-sensors/lm-sensors/blob/master/COPYING"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "summary": "Deploy and manage Docker containers through a web interface.",
+  "overview": "Portainer gives containers, images, and application stacks a graphical administration interface. You can deploy a Compose stack and then return to the same environment to inspect or manage the running workloads. Support for multiple environments helps when services are spread across more than one host, keeping everyday container administration accessible without opening a shell on each machine.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux/Windows containers"
+  ],
+  "license": {
+    "name": "Zlib (Community Edition)",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://github.com/portainer/portainer/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.portainer.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/portainer/portainer"
+    }
+  ],
+  "features": [
+    "Container management",
+    "Stack deployment",
+    "Multiple environments"
+  ],
+  "sources": [
+    "https://www.portainer.io",
+    "https://github.com/portainer/portainer#readme",
+    "https://github.com/portainer/portainer/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "summary": "Schedule and manage encrypted backups across storage destinations.",
+  "overview": "Zerobyte provides a web interface for backup jobs built around Restic, including scheduling, encryption, and supported storage destinations. You can use it to organize recurring backups and review how those jobs are running. It brings the management side of a backup workflow into a browser, while the backup engine handles storing and recovering the protected data.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/nicotsx/zerobyte/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://zerobyte.app"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/nicotsx/zerobyte"
+    }
+  ],
+  "features": [
+    "Encrypted backups",
+    "Scheduled jobs",
+    "Multiple storage backends"
+  ],
+  "sources": [
+    "https://zerobyte.app",
+    "https://github.com/nicotsx/zerobyte#readme",
+    "https://github.com/nicotsx/zerobyte/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "summary": "Add window layouts, a launcher and other productivity tools to Windows.",
+  "overview": "PowerToys is a collection of Windows utilities that addresses small but recurring desktop tasks. Window layouts help organize applications on a display, keyboard remapping adjusts input behavior, and bulk renaming simplifies work with groups of files. You can choose the utilities that fit your workflow, making it useful for improving several everyday interactions without changing the entire desktop environment.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/microsoft/PowerToys/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/microsoft/PowerToys"
+    }
+  ],
+  "features": [
+    "Window layouts",
+    "Keyboard remapping",
+    "Bulk file renaming"
+  ],
+  "sources": [
+    "https://github.com/microsoft/PowerToys#readme",
+    "https://github.com/microsoft/PowerToys/blob/HEAD/LICENSE"
+  ]
+}

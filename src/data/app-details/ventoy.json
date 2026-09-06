@@ -1,0 +1,33 @@
+{
+  "summary": "Create a multiboot USB drive by copying disk images onto it.",
+  "overview": "Ventoy prepares a USB drive so that you can place multiple supported disk images on it and choose between them at boot. Adding another image usually becomes a file-copy task rather than writing a new installer across the whole drive. It is useful for keeping operating-system installers and recovery media together, with boot compatibility depending on the image and target machine.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux/Windows installer"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/ventoy/Ventoy/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.ventoy.net"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ventoy/Ventoy"
+    }
+  ],
+  "features": [
+    "Multiboot USB",
+    "ISO file booting",
+    "BIOS and UEFI support"
+  ],
+  "sources": [
+    "https://www.ventoy.net",
+    "https://github.com/ventoy/Ventoy#readme",
+    "https://github.com/ventoy/Ventoy/blob/master/COPYING"
+  ]
+}

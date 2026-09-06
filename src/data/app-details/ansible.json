@@ -1,0 +1,33 @@
+{
+  "summary": "Automate recurring maintenance and configuration across homelab hosts.",
+  "overview": "Ansible describes administration tasks in YAML playbooks that you can apply to one machine or a whole inventory of hosts. It commonly connects over SSH, making it a practical fit for maintaining Linux servers without installing a dedicated management agent on each one. Playbooks can turn repeated configuration and maintenance steps into a process you can review, version, and run again.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux/macOS control node"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/ansible/ansible/blob/devel/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.ansible.com/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ansible/ansible"
+    }
+  ],
+  "features": [
+    "YAML playbooks",
+    "SSH automation",
+    "Configuration management"
+  ],
+  "sources": [
+    "https://www.ansible.com/",
+    "https://github.com/ansible/ansible#readme",
+    "https://github.com/ansible/ansible/blob/devel/COPYING"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "summary": "Organize and stream your own movies, shows and music.",
+  "overview": "Jellyfin scans your media into libraries and makes those libraries available to playback clients. Separate user accounts let different people access the server, while transcoding can adapt media when the playback device cannot use the original format directly. You supply the media and server storage, then use Jellyfin as the interface for browsing and watching or listening to the collection.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/jellyfin/jellyfin/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://jellyfin.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/jellyfin/jellyfin"
+    }
+  ],
+  "features": [
+    "Media libraries",
+    "User accounts",
+    "Transcoding"
+  ],
+  "sources": [
+    "https://jellyfin.org",
+    "https://github.com/jellyfin/jellyfin#readme",
+    "https://github.com/jellyfin/jellyfin/blob/HEAD/LICENSE"
+  ]
+}

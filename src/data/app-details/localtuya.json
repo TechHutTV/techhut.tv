@@ -1,0 +1,28 @@
+{
+  "summary": "Control compatible Tuya devices locally through Home Assistant.",
+  "overview": "LocalTuya connects supported Tuya devices to Home Assistant over the local network. Configuration maps the device's capabilities to entities that Home Assistant can display and use in automations. It is useful when you want compatible devices to participate in your local automation setup, though the exact capabilities and setup requirements depend on the individual device and its configuration.",
+  "kind": "Extension",
+  "platforms": [
+    "Home Assistant"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/rospogrigio/localtuya/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/rospogrigio/localtuya"
+    }
+  ],
+  "features": [
+    "Local Tuya control",
+    "Entity configuration",
+    "Device discovery"
+  ],
+  "sources": [
+    "https://github.com/rospogrigio/localtuya#readme",
+    "https://github.com/rospogrigio/localtuya/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "summary": "Monitor temperatures with a graphical sensor interface on Linux.",
+  "overview": "Psensor displays hardware sensor readings as graphs so you can follow temperature and fan behavior while using a Linux machine. Threshold alerts can draw attention to readings that need a closer look. It provides a graphical companion to the system's sensor support, with the measurements available depending on the hardware and the sensor interfaces exposed by its drivers.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later",
+    "type": "Open source",
+    "url": "https://gitlab.com/jeanfi/psensor/-/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitLab",
+      "url": "https://gitlab.com/jeanfi/psensor"
+    }
+  ],
+  "features": [
+    "Temperature graphs",
+    "Fan monitoring",
+    "Threshold alerts"
+  ],
+  "sources": [
+    "https://gitlab.com/jeanfi/psensor",
+    "https://gitlab.com/jeanfi/psensor/-/blob/master/COPYING"
+  ]
+}

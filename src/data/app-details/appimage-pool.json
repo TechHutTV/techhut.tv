@@ -1,0 +1,33 @@
+{
+  "summary": "Browse and download AppImage applications through a desktop interface.",
+  "overview": "AppImage Pool brings application discovery, version downloads, and desktop integration into one interface for Linux users who work with AppImages. You can browse available software and manage its downloaded application files without handling each project's release page separately. It focuses on the AppImage workflow, so it can complement the package manager and software store already supplied by your distribution.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/prateekmedia/appimagepool/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.pling.com/p/1547076/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/prateekmedia/appimagepool"
+    }
+  ],
+  "features": [
+    "AppImage discovery",
+    "Version downloads",
+    "Desktop integration"
+  ],
+  "sources": [
+    "https://www.pling.com/p/1547076/",
+    "https://github.com/prateekmedia/appimagepool#readme",
+    "https://github.com/prateekmedia/appimagepool/blob/HEAD/LICENSE"
+  ]
+}

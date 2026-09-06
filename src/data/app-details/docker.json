@@ -1,0 +1,45 @@
+{
+  "summary": "Build and run applications in containers, with Compose for multi-service stacks. Docker Engine is open source; Docker Desktop adds a desktop environment under separate subscription terms.",
+  "overview": "Docker packages an application and its runtime into an image, then runs instances of that image as containers. Volumes keep application data separate from a container's lifecycle, and networks let services communicate. Compose describes a group of related services in a configuration file, which is especially useful for self-hosted applications that need a database or other supporting components.",
+  "kind": "Container tool",
+  "platforms": [
+    "Linux (Engine)",
+    "Linux/macOS/Windows (Desktop)"
+  ],
+  "license": {
+    "name": "Apache-2.0 (Engine); proprietary (Desktop)",
+    "type": "Mixed open-source / proprietary",
+    "url": "https://github.com/moby/moby/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Documentation",
+      "url": "https://docs.docker.com/"
+    },
+    {
+      "label": "Docker Engine source",
+      "url": "https://github.com/moby/moby"
+    },
+    {
+      "label": "Docker Compose",
+      "url": "https://github.com/docker/compose"
+    },
+    {
+      "label": "Desktop license",
+      "url": "https://docs.docker.com/subscription/desktop-license/"
+    }
+  ],
+  "features": [
+    "Container images",
+    "Compose services",
+    "Volumes and networks"
+  ],
+  "sources": [
+    "https://github.com/docker/compose",
+    "https://github.com/moby/moby#readme",
+    "https://github.com/moby/moby/blob/HEAD/LICENSE",
+    "https://docs.docker.com/",
+    "https://github.com/moby/moby",
+    "https://docs.docker.com/subscription/desktop-license/"
+  ]
+}

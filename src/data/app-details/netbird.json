@@ -1,0 +1,38 @@
+{
+  "summary": "Connect devices through a WireGuard-based private network with centrally managed access policies. Use the hosted service or deploy the management server yourself.",
+  "overview": "NetBird handles peer connectivity and gives you policies for deciding which devices can reach which resources. Identity-provider integration connects access to user accounts, while the management layer coordinates the private network. In a homelab, this can provide a way to reach services across locations without making each individual application directly accessible from the public internet.",
+  "kind": "Private networking",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS",
+    "Linux (self-hosted server)"
+  ],
+  "license": {
+    "name": "BSD-3-Clause / AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/netbirdio/netbird/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://netbird.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/netbirdio/netbird"
+    }
+  ],
+  "features": [
+    "WireGuard networking",
+    "Access policies",
+    "Identity provider integration"
+  ],
+  "sources": [
+    "https://netbird.io",
+    "https://github.com/netbirdio/netbird#readme",
+    "https://github.com/netbirdio/netbird/blob/HEAD/LICENSE"
+  ]
+}

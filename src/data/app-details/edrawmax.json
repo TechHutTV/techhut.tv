@@ -1,0 +1,31 @@
+{
+  "summary": "Create diagrams, flowcharts and other visual documents on the desktop.",
+  "overview": "EdrawMax provides a visual workspace for turning processes, systems, and ideas into diagrams. Templates give you starting points for common document types, and Visio file support helps when exchanging diagrams with people using other software. You can use it to document a workflow or communicate a system's structure in a form that is easier to follow than a written description alone.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Windows",
+    "macOS",
+    "Linux",
+    "Web"
+  ],
+  "license": {
+    "name": "Proprietary commercial license",
+    "type": "Proprietary",
+    "url": "https://www.edrawsoft.com/user-license-agreement.html"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.edrawsoft.com/edraw-max/"
+    }
+  ],
+  "features": [
+    "Flowcharts",
+    "Diagram templates",
+    "Visio file support"
+  ],
+  "sources": [
+    "https://www.edrawsoft.com/edraw-max/",
+    "https://www.edrawsoft.com/user-license-agreement.html"
+  ]
+}

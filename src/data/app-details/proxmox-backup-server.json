@@ -1,0 +1,28 @@
+{
+  "summary": "Back up your homelab with deduplication, retention, and offsite storage.",
+  "overview": "Proxmox Backup Server stores backups in a format that can reuse data across snapshots through deduplication. Retention policies help manage how much history you keep, and client-side encryption provides an option for protecting backup contents. Its integration with Proxmox environments makes it particularly relevant to virtual-machine and container backups, with restore workflows forming the other half of the setup.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Debian-based server)"
+  ],
+  "license": {
+    "name": "AGPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://git.proxmox.com/?p=proxmox-backup.git;a=blob;f=debian/copyright;hb=HEAD"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.proxmox.com/en/products/proxmox-backup-server/overview"
+    }
+  ],
+  "features": [
+    "Deduplicated backups",
+    "Client-side encryption",
+    "Retention policies"
+  ],
+  "sources": [
+    "https://www.proxmox.com/en/products/proxmox-backup-server/overview",
+    "https://git.proxmox.com/?p=proxmox-backup.git;a=blob;f=debian/copyright;hb=HEAD"
+  ]
+}

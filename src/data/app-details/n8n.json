@@ -1,0 +1,35 @@
+{
+  "summary": "Build workflows that connect services and automate repetitive tasks.",
+  "overview": "n8n builds automations from connected steps that pass data between services. A workflow can start from a webhook or another trigger, transform the incoming information, and send the result to another application. The visual editor helps you follow that flow, making it useful for linking homelab services, handling routine data processing, or adding AI services to an existing process.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker",
+    "Node.js",
+    "Hosted service"
+  ],
+  "license": {
+    "name": "Sustainable Use / Enterprise",
+    "type": "Source available",
+    "url": "https://github.com/n8n-io/n8n/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://n8n.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/n8n-io/n8n"
+    }
+  ],
+  "features": [
+    "Visual workflows",
+    "Service integrations",
+    "Webhooks"
+  ],
+  "sources": [
+    "https://n8n.io",
+    "https://github.com/n8n-io/n8n#readme",
+    "https://github.com/n8n-io/n8n/blob/master/LICENSE.md"
+  ]
+}

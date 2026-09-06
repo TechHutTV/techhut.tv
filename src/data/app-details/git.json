@@ -1,0 +1,30 @@
+{
+  "summary": "Track file changes and collaborate using version control.",
+  "overview": "Git records changes as commits, creating a history you can inspect as a project develops. Branches let you work on separate changes before combining them through a merge, and each clone carries a local repository. It is useful beyond software development: configuration files, documentation, and homelab setup instructions can also benefit from a history of what changed and why.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/git/git/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/git/git"
+    }
+  ],
+  "features": [
+    "Local commit history",
+    "Branches and merges",
+    "Distributed repositories"
+  ],
+  "sources": [
+    "https://github.com/git/git#readme",
+    "https://github.com/git/git/blob/master/COPYING"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "summary": "Manage files and folders in a keyboard-driven terminal interface.",
+  "overview": "Superfile provides a navigable file-manager interface inside the terminal, with previews to help you inspect items as you move through directories. Configurable hotkeys let you adapt the navigation and file-operation workflow to your habits. It is useful when you already spend much of a session in the terminal but want more visual context than a sequence of directory listings provides.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows (partial support)"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/yorukot/superfile/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://superfile.dev"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/yorukot/superfile"
+    }
+  ],
+  "features": [
+    "Terminal file navigation",
+    "File previews",
+    "Custom hotkeys"
+  ],
+  "sources": [
+    "https://superfile.dev",
+    "https://github.com/yorukot/superfile#readme",
+    "https://github.com/yorukot/superfile/blob/HEAD/LICENSE"
+  ]
+}

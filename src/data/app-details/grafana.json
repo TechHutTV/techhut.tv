@@ -1,0 +1,36 @@
+{
+  "summary": "Build dashboards for your home server metrics.",
+  "overview": "Grafana connects to data sources and turns their measurements into dashboards that you can explore over different time periods. In a homelab, that can mean putting resource use, storage activity, and service health in the same view. Alerting adds a way to surface conditions that need attention, while the underlying data stays in systems such as Prometheus or InfluxDB.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://github.com/grafana/grafana/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://grafana.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/grafana/grafana"
+    }
+  ],
+  "features": [
+    "Dashboards",
+    "Data source integrations",
+    "Alerting"
+  ],
+  "sources": [
+    "https://grafana.com",
+    "https://github.com/grafana/grafana#readme",
+    "https://github.com/grafana/grafana/blob/HEAD/LICENSE"
+  ]
+}

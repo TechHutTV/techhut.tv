@@ -1,0 +1,33 @@
+{
+  "summary": "Display dislike estimates on YouTube through a browser extension.",
+  "overview": "Return YouTube Dislike adds an estimated dislike count back to the YouTube interface. It draws on available historical information and community voting data to reconstruct a signal that is no longer shown publicly in the same way. The result is an estimate rather than an authoritative live count from YouTube, which is useful context when interpreting the displayed rating.",
+  "kind": "Extension",
+  "platforms": [
+    "Firefox/Chromium browser extension"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Anarios/return-youtube-dislike/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://returnyoutubedislike.com/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Anarios/return-youtube-dislike"
+    }
+  ],
+  "features": [
+    "Dislike estimates",
+    "Rating display",
+    "Community vote data"
+  ],
+  "sources": [
+    "https://returnyoutubedislike.com/",
+    "https://github.com/Anarios/return-youtube-dislike#readme",
+    "https://github.com/Anarios/return-youtube-dislike/blob/HEAD/LICENSE"
+  ]
+}

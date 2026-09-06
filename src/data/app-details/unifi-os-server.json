@@ -1,0 +1,30 @@
+{
+  "summary": "Self-host the management interface for UniFi network devices.",
+  "overview": "UniFi OS Server brings the UniFi management environment to hardware you supply yourself. It gives supported deployments access to UniFi Network administration and remote site-management features without requiring the management software to live on a dedicated UniFi console. The role of this server is managing the network environment; the connected network devices still handle their own networking functions.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "Proprietary Ubiquiti license",
+    "type": "Proprietary",
+    "url": "https://www.ui.com/legal/eula/"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://ui.com/download/software/unifi-os-server"
+    }
+  ],
+  "features": [
+    "UniFi Network management",
+    "Remote site management",
+    "Site migration"
+  ],
+  "sources": [
+    "https://ui.com/download/software/unifi-os-server",
+    "https://www.ui.com/legal/eula/"
+  ]
+}

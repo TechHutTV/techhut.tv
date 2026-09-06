@@ -1,0 +1,34 @@
+{
+  "summary": "Store and query time-series data such as sensor readings and server metrics. The historical TechHut monitoring guide uses InfluxDB 2; current Core releases use a different query and storage architecture.",
+  "overview": "InfluxDB is designed around measurements associated with timestamps, making it useful for data that arrives continuously and needs to be examined over time. A monitoring setup can send measurements into the database and use a dashboard tool to explore them. Understanding which InfluxDB generation you are running matters when following a guide, because its configuration and query workflow need to match your installation.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT or Apache-2.0 (Core)",
+    "type": "Open source",
+    "url": "https://github.com/influxdata/influxdb/blob/main/LICENSE-APACHE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://influxdata.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/influxdata/influxdb"
+    }
+  ],
+  "features": [
+    "Time-series storage",
+    "Data ingestion",
+    "Time-based queries"
+  ],
+  "sources": [
+    "https://influxdata.com",
+    "https://github.com/influxdata/influxdb#readme",
+    "https://github.com/influxdata/influxdb/blob/main/LICENSE-APACHE"
+  ]
+}

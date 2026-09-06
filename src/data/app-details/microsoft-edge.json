@@ -1,0 +1,32 @@
+{
+  "summary": "Explore Microsoft’s browser on Linux in TechHut’s dedicated coverage.",
+  "overview": "Microsoft Edge combines a Chromium-based browsing engine with features for organizing tabs and using browser profiles. Vertical tabs change how you navigate a large collection of open pages, while profile synchronization can carry supported browser data between signed-in installations. The Linux version makes it an option for people who want to use the same browser across different desktop operating systems.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "Proprietary Microsoft license",
+    "type": "Proprietary",
+    "url": "https://www.microsoft.com/en-us/edge/business/download"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.microsoft.com/edge"
+    }
+  ],
+  "features": [
+    "Chromium browsing",
+    "Vertical tabs",
+    "Profile sync"
+  ],
+  "sources": [
+    "https://www.microsoft.com/edge",
+    "https://www.microsoft.com/en-us/edge/business/download"
+  ]
+}

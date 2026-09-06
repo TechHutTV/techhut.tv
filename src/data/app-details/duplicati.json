@@ -1,0 +1,30 @@
+{
+  "summary": "Schedule encrypted backups and restore files through a graphical interface.",
+  "overview": "Duplicati backs up files to supported storage destinations using encryption and incremental transfers. A schedule can keep backups running regularly, while its interface lets you inspect jobs and restore files when needed. Incremental backups reduce the amount transferred after the initial copy, making it useful for protecting folders whose contents change over time without repeatedly uploading everything.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/duplicati/duplicati/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/duplicati/duplicati"
+    }
+  ],
+  "features": [
+    "Encrypted backups",
+    "Incremental backups",
+    "Scheduled jobs"
+  ],
+  "sources": [
+    "https://github.com/duplicati/duplicati#readme",
+    "https://github.com/duplicati/duplicati/blob/HEAD/LICENSE"
+  ]
+}

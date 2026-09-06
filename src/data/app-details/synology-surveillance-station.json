@@ -1,0 +1,29 @@
+{
+  "summary": "Manage IP cameras, recordings and surveillance events on a Synology NAS.",
+  "overview": "Surveillance Station connects supported IP cameras to a recording and monitoring system on Synology hardware. Its interface brings camera views, recorded footage, and event notifications together so you can review what happened as well as watch live activity. The setup depends on compatible cameras and the licensing for your installation, with desktop clients providing another way to access the system.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Synology NAS/NVR",
+    "Windows/macOS clients"
+  ],
+  "license": {
+    "name": "Proprietary Synology license",
+    "type": "Proprietary",
+    "url": "https://www.synology.com/en-global/company/legal/terms_EULA"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.synology.com/en-global/surveillance"
+    }
+  ],
+  "features": [
+    "Camera management",
+    "Recording playback",
+    "Event notifications"
+  ],
+  "sources": [
+    "https://www.synology.com/en-global/surveillance",
+    "https://www.synology.com/en-global/company/legal/terms_EULA"
+  ]
+}

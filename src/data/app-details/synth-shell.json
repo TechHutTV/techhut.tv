@@ -1,0 +1,28 @@
+{
+  "summary": "Customize a Bash prompt with colors and status information.",
+  "overview": "synth-shell is a collection of Bash scripts and aliases that changes how information appears at the command line. Its prompt can surface context such as Git status, while the accompanying shell conveniences reduce repetition in common tasks. You can choose the pieces that are useful to you, shaping the presentation of an existing Bash environment rather than replacing the shell itself.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux (Bash)"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/andresgongora/synth-shell/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/andresgongora/synth-shell"
+    }
+  ],
+  "features": [
+    "Custom prompt",
+    "Git status",
+    "Shell aliases"
+  ],
+  "sources": [
+    "https://github.com/andresgongora/synth-shell#readme",
+    "https://github.com/andresgongora/synth-shell/blob/HEAD/LICENSE"
+  ]
+}

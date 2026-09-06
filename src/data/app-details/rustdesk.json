@@ -1,0 +1,37 @@
+{
+  "summary": "Connect to remote desktops using a client and self-hosted relay server.",
+  "overview": "RustDesk lets you view and control another device's desktop and transfer files between supported systems. A self-hosted server option gives you control over the relay infrastructure used by the clients. It is useful for remote administration or helping someone on another computer, with the capabilities available depending on the client platform and the server edition you choose.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://github.com/rustdesk/rustdesk/blob/master/LICENCE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://rustdesk.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/rustdesk/rustdesk"
+    }
+  ],
+  "features": [
+    "Remote desktop",
+    "File transfer",
+    "Self-hosted relay option"
+  ],
+  "sources": [
+    "https://rustdesk.com",
+    "https://github.com/rustdesk/rustdesk#readme",
+    "https://github.com/rustdesk/rustdesk/blob/master/LICENCE"
+  ]
+}

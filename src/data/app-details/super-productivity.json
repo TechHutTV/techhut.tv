@@ -1,0 +1,36 @@
+{
+  "summary": "Plan tasks, track time and organize projects in one application.",
+  "overview": "Super Productivity combines a task list with tools for planning when to work and recording the time you spend. Timeboxing gives tasks a place in a work session, while time tracking helps you review how that session actually went. It suits people who want their planning and activity records connected, rather than keeping a to-do list and timer in separate applications.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Web"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/johannesjo/super-productivity/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "http://super-productivity.com?ref=github"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/johannesjo/super-productivity"
+    }
+  ],
+  "features": [
+    "Task planning",
+    "Time tracking",
+    "Timeboxing"
+  ],
+  "sources": [
+    "http://super-productivity.com?ref=github",
+    "https://github.com/johannesjo/super-productivity#readme",
+    "https://github.com/johannesjo/super-productivity/blob/HEAD/LICENSE"
+  ]
+}

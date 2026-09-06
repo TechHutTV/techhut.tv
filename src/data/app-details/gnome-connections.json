@@ -1,0 +1,32 @@
+{
+  "summary": "Connect to remote desktops using VNC or RDP.",
+  "overview": "Connections gives you a graphical view of another machine's desktop through RDP or VNC. You can keep multiple remote desktops available in one application and interact with the software running on those machines. It is useful for reaching a server's graphical session or another computer from GNOME, provided that the remote machine already has the appropriate remote-desktop service configured.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://gitlab.gnome.org/GNOME/gnome-connections/-/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://apps.gnome.org/Connections/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://gitlab.gnome.org/GNOME/gnome-connections"
+    }
+  ],
+  "features": [
+    "RDP connections",
+    "VNC connections",
+    "Multiple remote desktops"
+  ],
+  "sources": [
+    "https://apps.gnome.org/Connections/",
+    "https://gitlab.gnome.org/GNOME/gnome-connections/-/blob/master/COPYING"
+  ]
+}

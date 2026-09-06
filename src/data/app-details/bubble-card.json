@@ -1,0 +1,28 @@
+{
+  "summary": "Customize Home Assistant dashboards with cards and controls.",
+  "overview": "Bubble Card adds configurable controls and popup layouts to Home Assistant dashboards. It lets you bring related entities together and expose additional controls when needed, while adjusting the appearance to suit your dashboard. Because it is a collection of dashboard cards, it builds on the devices and entities already configured in Home Assistant rather than replacing the automation system itself.",
+  "kind": "Extension",
+  "platforms": [
+    "Home Assistant dashboard"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/Clooos/Bubble-Card/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Clooos/Bubble-Card"
+    }
+  ],
+  "features": [
+    "Popup cards",
+    "Entity controls",
+    "Custom styles"
+  ],
+  "sources": [
+    "https://github.com/Clooos/Bubble-Card#readme",
+    "https://github.com/Clooos/Bubble-Card/blob/HEAD/LICENSE"
+  ]
+}

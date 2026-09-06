@@ -1,0 +1,28 @@
+{
+  "summary": "Open a Spotlight-style search interface on GNOME.",
+  "overview": "Search Light brings GNOME's search interface into a popup that you can open while working on the desktop. Appearance settings let you adjust how that search box fits into your setup, and multi-monitor support helps place it in a useful location. It is a focused extension for people who prefer reaching desktop search through a compact overlay.",
+  "kind": "Extension",
+  "platforms": [
+    "Linux (GNOME Shell)"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/icedman/search-light/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/icedman/search-light"
+    }
+  ],
+  "features": [
+    "Popup search",
+    "Custom appearance",
+    "Multi-monitor support"
+  ],
+  "sources": [
+    "https://github.com/icedman/search-light#readme",
+    "https://github.com/icedman/search-light/blob/HEAD/LICENSE"
+  ]
+}

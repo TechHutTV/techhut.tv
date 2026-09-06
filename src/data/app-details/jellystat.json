@@ -1,0 +1,28 @@
+{
+  "summary": "Track playback activity and library statistics for a Jellyfin server.",
+  "overview": "Jellystat adds a reporting view around a Jellyfin installation, collecting playback activity so you can explore how the server is being used. It helps connect users, library content, and listening or viewing activity over time. It runs alongside the media server, giving administrators a place to review usage patterns while Jellyfin continues to handle the libraries and playback itself.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/CyferShepard/Jellystat/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/CyferShepard/Jellystat"
+    }
+  ],
+  "features": [
+    "Playback statistics",
+    "User activity",
+    "Library analytics"
+  ],
+  "sources": [
+    "https://github.com/CyferShepard/Jellystat#readme",
+    "https://github.com/CyferShepard/Jellystat/blob/HEAD/LICENSE"
+  ]
+}

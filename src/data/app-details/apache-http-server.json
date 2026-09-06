@@ -1,0 +1,35 @@
+{
+  "summary": "Serve websites and applications with a modular HTTP server supporting virtual hosts, TLS, and configurable request handling.",
+  "overview": "Apache receives HTTP requests and serves content according to the configuration for each website. Virtual hosts let one server handle multiple sites, while modules provide additional behavior such as TLS and application integration. Its configuration files give administrators detailed control over how requests are handled, making it relevant both to a small personal website and to more involved hosting setups.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Windows",
+    "Unix"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/apache/httpd/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://httpd.apache.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/apache/httpd"
+    }
+  ],
+  "features": [
+    "Virtual hosts",
+    "TLS",
+    "Loadable modules"
+  ],
+  "sources": [
+    "https://httpd.apache.org",
+    "https://github.com/apache/httpd#readme",
+    "https://github.com/apache/httpd/blob/HEAD/LICENSE"
+  ]
+}

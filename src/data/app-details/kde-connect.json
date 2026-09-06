@@ -1,0 +1,36 @@
+{
+  "summary": "Connect a phone and Linux desktop for file sharing and remote controls.",
+  "overview": "KDE Connect pairs devices so they can exchange information and provide controls for one another. Depending on the clients involved, that can include moving files and using a device as remote input for another computer. It is useful for connecting the phone and desktop parts of your daily workflow, with the available features depending on each platform's implementation.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "Windows",
+    "macOS",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later",
+    "type": "Open source",
+    "url": "https://invent.kde.org/network/kdeconnect-kde/-/blob/master/LICENSES/GPL-2.0-or-later.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://kdeconnect.kde.org/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://invent.kde.org/network/kdeconnect-kde"
+    }
+  ],
+  "features": [
+    "File sharing",
+    "Remote input",
+    "Device pairing"
+  ],
+  "sources": [
+    "https://kdeconnect.kde.org/",
+    "https://invent.kde.org/network/kdeconnect-kde/-/blob/master/LICENSES/GPL-2.0-or-later.txt"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "summary": "Stream a personal music library from a self-hosted server.",
+  "overview": "Navidrome scans a music collection and makes it available for streaming through a web interface and compatible clients. Support for the Subsonic API gives you options for the playback applications you use, and multiple users can access the server. It focuses on a personal music library, making it a good fit when your collection is already stored as local audio files.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/navidrome/navidrome/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.navidrome.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/navidrome/navidrome"
+    }
+  ],
+  "features": [
+    "Music streaming",
+    "Multiple users",
+    "Subsonic API"
+  ],
+  "sources": [
+    "https://www.navidrome.org",
+    "https://github.com/navidrome/navidrome#readme",
+    "https://github.com/navidrome/navidrome/blob/HEAD/LICENSE"
+  ]
+}

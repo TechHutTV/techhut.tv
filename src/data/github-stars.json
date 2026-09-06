@@ -1,0 +1,524 @@
+{
+  "repositories": {
+    "89luca89/distrobox": {
+      "repository": "89luca89/distrobox",
+      "stars": 12956,
+      "fetchedAt": "2026-09-06T14:21:47.463Z"
+    },
+    "9001/copyparty": {
+      "repository": "9001/copyparty",
+      "stars": 46532,
+      "fetchedAt": "2026-09-06T14:21:45.108Z"
+    },
+    "aandrew-me/tgpt": {
+      "repository": "aandrew-me/tgpt",
+      "stars": 3255,
+      "fetchedAt": "2026-09-06T14:22:18.990Z"
+    },
+    "adguardteam/adguardhome": {
+      "repository": "adguardteam/adguardhome",
+      "stars": 36717,
+      "fetchedAt": "2026-09-06T14:21:38.561Z"
+    },
+    "advplyr/audiobookshelf": {
+      "repository": "advplyr/audiobookshelf",
+      "stars": 14250,
+      "fetchedAt": "2026-09-06T14:21:40.225Z"
+    },
+    "akhilrex/podgrab": {
+      "repository": "akhilrex/podgrab",
+      "stars": 1992,
+      "fetchedAt": "2026-09-06T14:22:09.184Z"
+    },
+    "anarios/return-youtube-dislike": {
+      "repository": "anarios/return-youtube-dislike",
+      "stars": 13733,
+      "fetchedAt": "2026-09-06T14:22:13.471Z"
+    },
+    "andresgongora/synth-shell": {
+      "repository": "andresgongora/synth-shell",
+      "stars": 1133,
+      "fetchedAt": "2026-09-06T14:22:17.517Z"
+    },
+    "ansible/ansible": {
+      "repository": "ansible/ansible",
+      "stars": 70597,
+      "fetchedAt": "2026-09-06T14:38:07.081Z"
+    },
+    "apache/httpd": {
+      "repository": "apache/httpd",
+      "stars": 4054,
+      "fetchedAt": "2026-09-06T14:21:39.464Z"
+    },
+    "aristocratos/btop": {
+      "repository": "aristocratos/btop",
+      "stars": 34423,
+      "fetchedAt": "2026-09-06T14:21:41.717Z"
+    },
+    "bottlesdevs/bottles": {
+      "repository": "bottlesdevs/bottles",
+      "stars": 8784,
+      "fetchedAt": "2026-09-06T14:21:41.318Z"
+    },
+    "canonical/microcloud": {
+      "repository": "canonical/microcloud",
+      "stars": 532,
+      "fetchedAt": "2026-09-06T14:22:01.699Z"
+    },
+    "caprover/caprover": {
+      "repository": "caprover/caprover",
+      "stars": 15155,
+      "fetchedAt": "2026-09-06T14:21:42.547Z"
+    },
+    "clooos/bubble-card": {
+      "repository": "clooos/bubble-card",
+      "stars": 4554,
+      "fetchedAt": "2026-09-06T14:21:42.137Z"
+    },
+    "cloudreve/cloudreve": {
+      "repository": "cloudreve/cloudreve",
+      "stars": 28672,
+      "fetchedAt": "2026-09-06T14:21:43.777Z"
+    },
+    "cockpit-project/cockpit": {
+      "repository": "cockpit-project/cockpit",
+      "stars": 15038,
+      "fetchedAt": "2026-09-06T14:21:44.287Z"
+    },
+    "crosstalk-solutions/project-nomad": {
+      "repository": "crosstalk-solutions/project-nomad",
+      "stars": 36529,
+      "fetchedAt": "2026-09-06T14:22:10.751Z"
+    },
+    "cubecoders/amp": {
+      "repository": "cubecoders/amp",
+      "stars": 246,
+      "fetchedAt": "2026-09-06T14:47:23.751Z"
+    },
+    "cyfershepard/jellystat": {
+      "repository": "cyfershepard/jellystat",
+      "stars": 2459,
+      "fetchedAt": "2026-09-06T14:21:55.798Z"
+    },
+    "daya0576/beaverhabits": {
+      "repository": "daya0576/beaverhabits",
+      "stars": 1834,
+      "fetchedAt": "2026-09-06T14:21:40.583Z"
+    },
+    "ddterm/gnome-shell-extension-ddterm": {
+      "repository": "ddterm/gnome-shell-extension-ddterm",
+      "stars": 456,
+      "fetchedAt": "2026-09-06T14:21:46.438Z"
+    },
+    "discourse/discourse": {
+      "repository": "discourse/discourse",
+      "stars": 47790,
+      "fetchedAt": "2026-09-06T14:21:47.012Z"
+    },
+    "docker/compose": {
+      "repository": "docker/compose",
+      "stars": 38120,
+      "fetchedAt": "2026-09-06T14:31:49.696Z"
+    },
+    "duplicati/duplicati": {
+      "repository": "duplicati/duplicati",
+      "stars": 14971,
+      "fetchedAt": "2026-09-06T14:21:48.777Z"
+    },
+    "eugeny/tabby": {
+      "repository": "eugeny/tabby",
+      "stars": 74357,
+      "fetchedAt": "2026-09-06T14:22:18.269Z"
+    },
+    "files-community/files": {
+      "repository": "files-community/files",
+      "stars": 44908,
+      "fetchedAt": "2026-09-06T14:21:50.022Z"
+    },
+    "finsys/dockhand": {
+      "repository": "finsys/dockhand",
+      "stars": 6027,
+      "fetchedAt": "2026-09-06T14:21:48.384Z"
+    },
+    "foundry376/mailspring": {
+      "repository": "foundry376/mailspring",
+      "stars": 17775,
+      "fetchedAt": "2026-09-06T14:21:59.747Z"
+    },
+    "getumbrel/umbrel": {
+      "repository": "getumbrel/umbrel",
+      "stars": 11897,
+      "fetchedAt": "2026-09-06T14:22:19.924Z"
+    },
+    "ghostty-org/ghostty": {
+      "repository": "ghostty-org/ghostty",
+      "stars": 60769,
+      "fetchedAt": "2026-09-06T14:21:50.842Z"
+    },
+    "git/git": {
+      "repository": "git/git",
+      "stars": 63019,
+      "fetchedAt": "2026-09-06T14:21:51.353Z"
+    },
+    "glanceapp/glance": {
+      "repository": "glanceapp/glance",
+      "stars": 36882,
+      "fetchedAt": "2026-09-06T14:21:51.864Z"
+    },
+    "grafana/grafana": {
+      "repository": "grafana/grafana",
+      "stars": 76631,
+      "fetchedAt": "2026-09-06T14:38:14.840Z"
+    },
+    "henrygd/beszel": {
+      "repository": "henrygd/beszel",
+      "stars": 25115,
+      "fetchedAt": "2026-09-06T14:38:15.128Z"
+    },
+    "homarr-labs/homarr": {
+      "repository": "homarr-labs/homarr",
+      "stars": 4662,
+      "fetchedAt": "2026-09-06T14:21:53.402Z"
+    },
+    "home-assistant/core": {
+      "repository": "home-assistant/core",
+      "stars": 90280,
+      "fetchedAt": "2026-09-06T14:38:15.822Z"
+    },
+    "home-sweet-gnome/dash-to-panel": {
+      "repository": "home-sweet-gnome/dash-to-panel",
+      "stars": 4434,
+      "fetchedAt": "2026-09-06T14:21:45.617Z"
+    },
+    "icedman/search-light": {
+      "repository": "icedman/search-light",
+      "stars": 677,
+      "fetchedAt": "2026-09-06T14:22:14.186Z"
+    },
+    "icewhaletech/casaos": {
+      "repository": "icewhaletech/casaos",
+      "stars": 37204,
+      "fetchedAt": "2026-09-06T14:21:43.262Z"
+    },
+    "immich-app/immich": {
+      "repository": "immich-app/immich",
+      "stars": 113510,
+      "fetchedAt": "2026-09-06T14:21:54.428Z"
+    },
+    "influxdata/influxdb": {
+      "repository": "influxdata/influxdb",
+      "stars": 31733,
+      "fetchedAt": "2026-09-06T14:21:54.941Z"
+    },
+    "jellyfin/jellyfin": {
+      "repository": "jellyfin/jellyfin",
+      "stars": 56579,
+      "fetchedAt": "2026-09-06T14:21:55.449Z"
+    },
+    "k3s-io/k3s": {
+      "repository": "k3s-io/k3s",
+      "stars": 33893,
+      "fetchedAt": "2026-09-06T14:21:56.781Z"
+    },
+    "kde/kdenlive": {
+      "repository": "kde/kdenlive",
+      "stars": 5616,
+      "fetchedAt": "2026-09-06T14:39:54.521Z"
+    },
+    "kiwix/kiwix-tools": {
+      "repository": "kiwix/kiwix-tools",
+      "stars": 943,
+      "fetchedAt": "2026-09-06T14:21:57.274Z"
+    },
+    "krispycamel4u/sysmontask": {
+      "repository": "krispycamel4u/sysmontask",
+      "stars": 740,
+      "fetchedAt": "2026-09-06T14:22:17.871Z"
+    },
+    "lizardbyte/sunshine": {
+      "repository": "lizardbyte/sunshine",
+      "stars": 40925,
+      "fetchedAt": "2026-09-06T14:38:19.102Z"
+    },
+    "lm-sensors/lm-sensors": {
+      "repository": "lm-sensors/lm-sensors",
+      "stars": 1152,
+      "fetchedAt": "2026-09-06T14:21:58.462Z"
+    },
+    "lostdesign/linked": {
+      "repository": "lostdesign/linked",
+      "stars": 1018,
+      "fetchedAt": "2026-09-06T14:21:58.064Z"
+    },
+    "lsd-rs/lsd": {
+      "repository": "lsd-rs/lsd",
+      "stars": 16216,
+      "fetchedAt": "2026-09-06T14:38:20.024Z"
+    },
+    "marktext/marktext": {
+      "repository": "marktext/marktext",
+      "stars": 61078,
+      "fetchedAt": "2026-09-06T14:22:00.157Z"
+    },
+    "material-shell/material-shell": {
+      "repository": "material-shell/material-shell",
+      "stars": 7249,
+      "fetchedAt": "2026-09-06T14:22:00.667Z"
+    },
+    "microsoft/powertoys": {
+      "repository": "microsoft/powertoys",
+      "stars": 138446,
+      "fetchedAt": "2026-09-06T14:22:02.413Z"
+    },
+    "microsoft/wsl": {
+      "repository": "microsoft/wsl",
+      "stars": 33623,
+      "fetchedAt": "2026-09-06T14:22:21.594Z"
+    },
+    "moonlight-stream/moonlight-qt": {
+      "repository": "moonlight-stream/moonlight-qt",
+      "stars": 18549,
+      "fetchedAt": "2026-09-06T14:22:02.820Z"
+    },
+    "mrvladus/errands": {
+      "repository": "mrvladus/errands",
+      "stars": 521,
+      "fetchedAt": "2026-09-06T14:21:49.513Z"
+    },
+    "muriloventuroso/easyssh": {
+      "repository": "muriloventuroso/easyssh",
+      "stars": 552,
+      "fetchedAt": "2026-09-06T14:21:49.122Z"
+    },
+    "mvo5/synaptic": {
+      "repository": "mvo5/synaptic",
+      "stars": 244,
+      "fetchedAt": "2026-09-06T14:22:17.173Z"
+    },
+    "n8n-io/n8n": {
+      "repository": "n8n-io/n8n",
+      "stars": 203522,
+      "fetchedAt": "2026-09-06T14:38:22.997Z"
+    },
+    "navidrome/navidrome": {
+      "repository": "navidrome/navidrome",
+      "stars": 23371,
+      "fetchedAt": "2026-09-06T14:38:23.245Z"
+    },
+    "netbirdio/netbird": {
+      "repository": "netbirdio/netbird",
+      "stars": 28948,
+      "fetchedAt": "2026-09-06T14:22:04.037Z"
+    },
+    "networkupstools/nut": {
+      "repository": "networkupstools/nut",
+      "stars": 4325,
+      "fetchedAt": "2026-09-06T14:22:04.461Z"
+    },
+    "nextcloud/server": {
+      "repository": "nextcloud/server",
+      "stars": 36737,
+      "fetchedAt": "2026-09-06T14:38:24.226Z"
+    },
+    "nginxproxymanager/nginx-proxy-manager": {
+      "repository": "nginxproxymanager/nginx-proxy-manager",
+      "stars": 34077,
+      "fetchedAt": "2026-09-06T14:22:05.444Z"
+    },
+    "nicotsx/zerobyte": {
+      "repository": "nicotsx/zerobyte",
+      "stars": 6904,
+      "fetchedAt": "2026-09-06T14:22:22.905Z"
+    },
+    "nlnetlabs/unbound": {
+      "repository": "nlnetlabs/unbound",
+      "stars": 4855,
+      "fetchedAt": "2026-09-06T14:22:20.318Z"
+    },
+    "octoprint/octoprint": {
+      "repository": "octoprint/octoprint",
+      "stars": 9086,
+      "fetchedAt": "2026-09-06T14:22:05.896Z"
+    },
+    "ollama/ollama": {
+      "repository": "ollama/ollama",
+      "stars": 180272,
+      "fetchedAt": "2026-09-06T14:22:06.313Z"
+    },
+    "onlyoffice/communityserver": {
+      "repository": "onlyoffice/communityserver",
+      "stars": 3164,
+      "fetchedAt": "2026-09-06T14:22:07.163Z"
+    },
+    "onlyoffice/desktopeditors": {
+      "repository": "onlyoffice/desktopeditors",
+      "stars": 5346,
+      "fetchedAt": "2026-09-06T14:22:06.736Z"
+    },
+    "open-webui/open-webui": {
+      "repository": "open-webui/open-webui",
+      "stars": 151102,
+      "fetchedAt": "2026-09-06T14:38:26.475Z"
+    },
+    "openai/whisper": {
+      "repository": "openai/whisper",
+      "stars": 108584,
+      "fetchedAt": "2026-09-06T14:38:26.789Z"
+    },
+    "passteque/gluetun": {
+      "repository": "passteque/gluetun",
+      "stars": 15410,
+      "fetchedAt": "2026-09-06T14:21:52.473Z"
+    },
+    "pi-hole/pi-hole": {
+      "repository": "pi-hole/pi-hole",
+      "stars": 60775,
+      "fetchedAt": "2026-09-06T14:22:07.996Z"
+    },
+    "plausible/analytics": {
+      "repository": "plausible/analytics",
+      "stars": 28902,
+      "fetchedAt": "2026-09-06T14:22:08.398Z"
+    },
+    "plexinc/pms-docker": {
+      "repository": "plexinc/pms-docker",
+      "stars": 4025,
+      "fetchedAt": "2026-09-06T14:40:43.680Z"
+    },
+    "pocket-id/pocket-id": {
+      "repository": "pocket-id/pocket-id",
+      "stars": 9116,
+      "fetchedAt": "2026-09-06T14:22:08.812Z"
+    },
+    "podman-container-tools/podman": {
+      "repository": "podman-container-tools/podman",
+      "stars": 32789,
+      "fetchedAt": "2026-09-06T14:22:09.888Z"
+    },
+    "portainer/portainer": {
+      "repository": "portainer/portainer",
+      "stars": 38443,
+      "fetchedAt": "2026-09-06T14:22:10.324Z"
+    },
+    "prateekmedia/appimagepool": {
+      "repository": "prateekmedia/appimagepool",
+      "stars": 722,
+      "fetchedAt": "2026-09-06T14:21:39.827Z"
+    },
+    "prometheus/prometheus": {
+      "repository": "prometheus/prometheus",
+      "stars": 65967,
+      "fetchedAt": "2026-09-06T14:22:11.184Z"
+    },
+    "prowlarr/prowlarr": {
+      "repository": "prowlarr/prowlarr",
+      "stars": 7156,
+      "fetchedAt": "2026-09-06T14:22:11.812Z"
+    },
+    "qbittorrent/qbittorrent": {
+      "repository": "qbittorrent/qbittorrent",
+      "stars": 39947,
+      "fetchedAt": "2026-09-06T14:22:12.247Z"
+    },
+    "radarr/radarr": {
+      "repository": "radarr/radarr",
+      "stars": 14285,
+      "fetchedAt": "2026-09-06T14:22:12.680Z"
+    },
+    "ransome1/sleek": {
+      "repository": "ransome1/sleek",
+      "stars": 2031,
+      "fetchedAt": "2026-09-06T14:22:14.991Z"
+    },
+    "retropie/retropie-setup": {
+      "repository": "retropie/retropie-setup",
+      "stars": 10415,
+      "fetchedAt": "2026-09-06T14:22:13.109Z"
+    },
+    "rmcrackan/libation": {
+      "repository": "rmcrackan/libation",
+      "stars": 6147,
+      "fetchedAt": "2026-09-06T14:21:57.703Z"
+    },
+    "rospogrigio/localtuya": {
+      "repository": "rospogrigio/localtuya",
+      "stars": 3964,
+      "fetchedAt": "2026-09-06T14:21:58.933Z"
+    },
+    "rustdesk/rustdesk": {
+      "repository": "rustdesk/rustdesk",
+      "stars": 122746,
+      "fetchedAt": "2026-09-06T14:38:31.174Z"
+    },
+    "seerr-team/seerr": {
+      "repository": "seerr-team/seerr",
+      "stars": 12490,
+      "fetchedAt": "2026-09-06T14:22:14.597Z"
+    },
+    "sonarr/sonarr": {
+      "repository": "sonarr/sonarr",
+      "stars": 15376,
+      "fetchedAt": "2026-09-06T14:22:15.403Z"
+    },
+    "sonnyp/tangram": {
+      "repository": "sonnyp/tangram",
+      "stars": 1000,
+      "fetchedAt": "2026-09-06T14:22:18.636Z"
+    },
+    "super-productivity/super-productivity": {
+      "repository": "super-productivity/super-productivity",
+      "stars": 21833,
+      "fetchedAt": "2026-09-06T14:22:16.467Z"
+    },
+    "swordfish90/cool-retro-term": {
+      "repository": "swordfish90/cool-retro-term",
+      "stars": 25981,
+      "fetchedAt": "2026-09-06T14:21:44.657Z"
+    },
+    "talinx/jp2a": {
+      "repository": "talinx/jp2a",
+      "stars": 101,
+      "fetchedAt": "2026-09-06T14:21:56.268Z"
+    },
+    "ulauncher/ulauncher": {
+      "repository": "ulauncher/ulauncher",
+      "stars": 4508,
+      "fetchedAt": "2026-09-06T14:22:19.437Z"
+    },
+    "usememos/memos": {
+      "repository": "usememos/memos",
+      "stars": 62793,
+      "fetchedAt": "2026-09-06T14:38:33.389Z"
+    },
+    "ventoy/ventoy": {
+      "repository": "ventoy/ventoy",
+      "stars": 79167,
+      "fetchedAt": "2026-09-06T14:22:20.677Z"
+    },
+    "volitank/nala": {
+      "repository": "volitank/nala",
+      "stars": 1891,
+      "fetchedAt": "2026-09-06T14:39:54.883Z"
+    },
+    "yang991178/fluent-reader": {
+      "repository": "yang991178/fluent-reader",
+      "stars": 9648,
+      "fetchedAt": "2026-09-06T14:21:50.378Z"
+    },
+    "yorukot/superfile": {
+      "repository": "yorukot/superfile",
+      "stars": 23110,
+      "fetchedAt": "2026-09-06T14:22:16.820Z"
+    },
+    "zelikos/davincibox": {
+      "repository": "zelikos/davincibox",
+      "stars": 980,
+      "fetchedAt": "2026-09-06T14:21:45.963Z"
+    },
+    "zen-browser/desktop": {
+      "repository": "zen-browser/desktop",
+      "stars": 44283,
+      "fetchedAt": "2026-09-06T14:22:22.530Z"
+    }
+  }
+}

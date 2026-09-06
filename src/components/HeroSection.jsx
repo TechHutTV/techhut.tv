@@ -30,9 +30,9 @@ export function HeroSection({
         <Button
           variant="primary"
           arrow="right"
-          href="https://youtube.com/@techhut"
+          href="/apps"
         >
-          Subscribe on YouTube
+          Explore Apps
         </Button>
         <Button
           variant="outline-arrow"

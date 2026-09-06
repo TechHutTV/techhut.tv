@@ -1,0 +1,32 @@
+{
+  "summary": "Keep web applications in separate persistent browser tabs.",
+  "overview": "Tangram keeps frequently used websites in persistent tabs with separate sessions, allowing different web applications or accounts to stay organized. Desktop notifications help those services participate in your normal desktop workflow. It is useful for turning a set of regularly visited web tools into a dedicated workspace, without mixing them into all of your general-purpose browsing tabs.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://github.com/sonnyp/Tangram/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://apps.gnome.org/Tangram/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/sonnyp/Tangram"
+    }
+  ],
+  "features": [
+    "Persistent web tabs",
+    "Independent sessions",
+    "Desktop notifications"
+  ],
+  "sources": [
+    "https://apps.gnome.org/Tangram/",
+    "https://github.com/sonnyp/Tangram/blob/master/COPYING"
+  ]
+}

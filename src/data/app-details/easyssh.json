@@ -1,0 +1,28 @@
+{
+  "summary": "Save and manage SSH connections in a tabbed terminal client.",
+  "overview": "EasySSH stores connection settings and groups hosts so that you can return to frequently used machines without entering the same details each time. Multiple sessions let you work on more than one host from the same application. It is a desktop tool for organizing your SSH workflow, particularly when your homelab has grown beyond a handful of memorable addresses.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/muriloventuroso/easyssh/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/muriloventuroso/easyssh"
+    }
+  ],
+  "features": [
+    "Saved SSH connections",
+    "Connection groups",
+    "Multiple sessions"
+  ],
+  "sources": [
+    "https://github.com/muriloventuroso/easyssh#readme",
+    "https://github.com/muriloventuroso/easyssh/blob/HEAD/LICENSE"
+  ]
+}

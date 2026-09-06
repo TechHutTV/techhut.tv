@@ -1,0 +1,30 @@
+{
+  "summary": "Manage torrent transfers with a client that can run behind a VPN container.",
+  "overview": "Deluge provides a BitTorrent client with both a desktop interface and a web interface, giving you options for local use or managing transfers on another machine. Plugins extend the client's behavior, and a server deployment can sit alongside other self-hosted tools. The TechHut coverage explores it in a container networking setup where a separate VPN container handles the connection.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://git.deluge-torrent.org/deluge/tree/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://deluge-torrent.org/"
+    }
+  ],
+  "features": [
+    "BitTorrent downloads",
+    "Web interface",
+    "Plugins"
+  ],
+  "sources": [
+    "https://deluge-torrent.org/",
+    "https://git.deluge-torrent.org/deluge/tree/LICENSE"
+  ]
+}

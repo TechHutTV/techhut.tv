@@ -1,0 +1,69 @@
+name: Refresh app GitHub stars
+
+on:
+  schedule:
+    - cron: '23 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: refresh-app-stars
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    # Enable only after the owner configures the token and verifies Vercel access.
+    if: github.repository == 'TechHutTV/techhut.tv' && github.ref == 'refs/heads/main' && vars.APP_STARS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check publishing configuration
+        env:
+          PUSH_TOKEN: ${{ secrets.APP_STARS_PUSH_TOKEN }}
+          COMMIT_NAME: ${{ vars.APP_STARS_COMMIT_NAME }}
+          COMMIT_EMAIL: ${{ vars.APP_STARS_COMMIT_EMAIL }}
+        run: |
+          test -n "$PUSH_TOKEN" || { echo 'Missing APP_STARS_PUSH_TOKEN'; exit 1; }
+          test -n "$COMMIT_NAME" || { echo 'Missing APP_STARS_COMMIT_NAME'; exit 1; }
+          test -n "$COMMIT_EMAIL" || { echo 'Missing APP_STARS_COMMIT_EMAIL'; exit 1; }
+
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+          # A fine-grained PAT makes a normal push through the existing Vercel
+          # Git integration; do not substitute the workflow's GITHUB_TOKEN.
+          token: ${{ secrets.APP_STARS_PUSH_TOKEN }}
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+
+      - name: Refresh cached counts
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: npm run refresh:stars
+
+      - name: Validate data and content dates
+        run: node --test tests/appStars.test.mjs tests/appDirectory.test.mjs
+
+      - name: Publish only a changed snapshot
+        env:
+          COMMIT_NAME: ${{ vars.APP_STARS_COMMIT_NAME }}
+          COMMIT_EMAIL: ${{ vars.APP_STARS_COMMIT_EMAIL }}
+        run: |
+          if git diff --quiet -- src/data/github-stars.json; then
+            echo 'Counts unchanged; no commit or deployment needed.'
+            exit 0
+          fi
+          git diff --check
+          git config user.name "$COMMIT_NAME"
+          git config user.email "$COMMIT_EMAIL"
+          git add -- src/data/github-stars.json
+          test "$(git diff --cached --name-only)" = 'src/data/github-stars.json'
+          git commit -m 'Update cached app GitHub stars'
+          # No force push or branch-protection bypass. If main advanced while
+          # refreshing, this fails safely; rerun against its current mapping.
+          git push origin HEAD:main

@@ -1,0 +1,34 @@
+{
+  "summary": "Host and organize your audiobook and podcast libraries.",
+  "overview": "Audiobookshelf combines a personal media library with playback tools designed around longer listening sessions. It keeps track of listening progress for individual users and can download podcast episodes as well as stream audiobooks. Running the server yourself gives you a place to organize your collection and make it accessible through supported clients, with progress carried between devices.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/advplyr/audiobookshelf/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://audiobookshelf.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/advplyr/audiobookshelf"
+    }
+  ],
+  "features": [
+    "Audiobook streaming",
+    "Podcast downloads",
+    "Listening progress sync"
+  ],
+  "sources": [
+    "https://audiobookshelf.org",
+    "https://github.com/advplyr/audiobookshelf#readme",
+    "https://github.com/advplyr/audiobookshelf/blob/HEAD/LICENSE"
+  ]
+}

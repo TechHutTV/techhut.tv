@@ -1,0 +1,36 @@
+{
+  "summary": "Host a game streaming session for Moonlight clients.",
+  "overview": "Sunshine runs on the machine that hosts your games and turns its output into a stream for Moonlight clients. Hardware encoding uses supported GPU capabilities to prepare that stream, while pairing connects the host to the devices you want to use. Together, the host and client let you play from another device while the game itself continues running on the host.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "FreeBSD"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/LizardByte/Sunshine/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "http://app.lizardbyte.dev/Sunshine/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/LizardByte/Sunshine"
+    }
+  ],
+  "features": [
+    "Game streaming host",
+    "Hardware encoding",
+    "Moonlight pairing"
+  ],
+  "sources": [
+    "http://app.lizardbyte.dev/Sunshine/",
+    "https://github.com/LizardByte/Sunshine#readme",
+    "https://github.com/LizardByte/Sunshine/blob/HEAD/LICENSE"
+  ]
+}

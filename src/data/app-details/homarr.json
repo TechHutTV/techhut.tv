@@ -1,0 +1,33 @@
+{
+  "summary": "Organize home server applications and integrations on a dashboard.",
+  "overview": "Homarr brings links to your self-hosted applications together with integrations that show information from supported services. You can arrange a dashboard around the applications you actually use and apply user access controls when sharing it. It serves as a front door to a homelab, helping people find the right application without remembering its address or port number.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/homarr-labs/homarr/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://homarr.dev"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/homarr-labs/homarr"
+    }
+  ],
+  "features": [
+    "Service dashboard",
+    "App integrations",
+    "User access controls"
+  ],
+  "sources": [
+    "https://homarr.dev",
+    "https://github.com/homarr-labs/homarr#readme",
+    "https://github.com/homarr-labs/homarr/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "summary": "Run a lightweight Kubernetes cluster on homelab hardware.",
+  "overview": "k3s packages Kubernetes with components that simplify getting a cluster running on Linux machines. You still work with Kubernetes workloads and configuration, but the distribution is designed to reduce the setup involved in assembling the cluster's supporting pieces. It gives homelab users a way to learn orchestration or run a small cluster while staying within the Kubernetes ecosystem.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/k3s-io/k3s/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://k3s.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/k3s-io/k3s"
+    }
+  ],
+  "features": [
+    "Kubernetes workloads",
+    "Packaged networking",
+    "Lightweight cluster setup"
+  ],
+  "sources": [
+    "https://k3s.io",
+    "https://github.com/k3s-io/k3s#readme",
+    "https://github.com/k3s-io/k3s/blob/HEAD/LICENSE"
+  ]
+}

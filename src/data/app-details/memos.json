@@ -1,0 +1,33 @@
+{
+  "summary": "Keep notes in a self-hosted timeline with formatting and search.",
+  "overview": "Memos gives short notes a place in a self-hosted timeline, where you can write in Markdown and add attachments. Tags provide a way to group related entries without needing a folder hierarchy for every idea. It is a convenient format for collecting snippets, observations, and small pieces of information that you want to find again later.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/usememos/memos/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://usememos.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/usememos/memos"
+    }
+  ],
+  "features": [
+    "Markdown notes",
+    "Tags",
+    "Attachments"
+  ],
+  "sources": [
+    "https://usememos.com",
+    "https://github.com/usememos/memos#readme",
+    "https://github.com/usememos/memos/blob/HEAD/LICENSE"
+  ]
+}

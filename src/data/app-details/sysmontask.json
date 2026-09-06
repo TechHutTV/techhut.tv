@@ -1,0 +1,28 @@
+{
+  "summary": "Inspect Linux processes and resource use in a graphical system monitor.",
+  "overview": "SysMonTask brings process inspection and resource graphs into a Linux desktop application with a layout influenced by Windows Task Manager. You can compare overall activity with the processes running on the machine and stop a process when appropriate. It offers a graphical way to investigate workloads for users who prefer a familiar task-manager view over terminal-based monitoring tools.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "BSD-3-Clause",
+    "type": "Open source",
+    "url": "https://github.com/KrispyCamel4u/SysMonTask/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/KrispyCamel4u/SysMonTask"
+    }
+  ],
+  "features": [
+    "Process list",
+    "Resource graphs",
+    "Process termination"
+  ],
+  "sources": [
+    "https://github.com/KrispyCamel4u/SysMonTask#readme",
+    "https://github.com/KrispyCamel4u/SysMonTask/blob/HEAD/LICENSE"
+  ]
+}

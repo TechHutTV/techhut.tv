@@ -1,0 +1,34 @@
+{
+  "summary": "Use a GPU-accelerated terminal with native Linux and macOS interfaces, configurable key bindings, tabs, and split panes.",
+  "overview": "Ghostty provides the window into your shell, combining terminal rendering with interface features such as tabs and split panes. Those features let you keep a command running in one area while working in another, with key bindings to shape how you move around. Its native interfaces are intended to fit into the surrounding desktop while supporting demanding terminal applications.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/ghostty-org/ghostty/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://ghostty.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ghostty-org/ghostty"
+    }
+  ],
+  "features": [
+    "GPU rendering",
+    "Split panes",
+    "Native platform interface"
+  ],
+  "sources": [
+    "https://ghostty.org",
+    "https://github.com/ghostty-org/ghostty#readme",
+    "https://github.com/ghostty-org/ghostty/blob/HEAD/LICENSE"
+  ]
+}

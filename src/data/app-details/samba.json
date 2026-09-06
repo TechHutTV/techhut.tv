@@ -1,0 +1,29 @@
+{
+  "summary": "Share Linux server folders with other computers using SMB.",
+  "overview": "Samba implements SMB services so a Linux or Unix machine can share files with compatible clients, including Windows computers. Its configuration controls which directories are shared and how people access them. Beyond a simple home-server file share, Samba also supports print sharing and Active Directory integration for environments that need more coordinated identity and resource management.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Unix"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://www.samba.org/samba/docs/GPL.html"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.samba.org/"
+    }
+  ],
+  "features": [
+    "SMB file sharing",
+    "Print sharing",
+    "Active Directory integration"
+  ],
+  "sources": [
+    "https://www.samba.org/",
+    "https://www.samba.org/samba/docs/GPL.html"
+  ]
+}

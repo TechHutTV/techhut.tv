@@ -1,0 +1,34 @@
+{
+  "summary": "Edit and finish video with tools for cutting, color grading, visual effects, and audio post-production. Available in a free edition and the paid Resolve Studio edition.",
+  "overview": "Resolve brings the main stages of video production into one application, from assembling clips on a timeline to grading the image and finishing the soundtrack. Fusion provides tools for effects and compositing, while Fairlight handles audio work. This makes it possible to develop a project through several stages without moving everything between separate editing, effects, and audio applications.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "Proprietary (Resolve / Resolve Studio)",
+    "type": "Proprietary · Freemium",
+    "url": "https://www.blackmagicdesign.com/support/family/davinci-resolve-and-fusion"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.blackmagicdesign.com/products/davinciresolve"
+    }
+  ],
+  "features": [
+    "Video editing",
+    "Color grading",
+    "Fusion effects",
+    "Fairlight audio"
+  ],
+  "sources": [
+    "https://www.blackmagicdesign.com/products/davinciresolve",
+    "https://www.blackmagicdesign.com/support/family/davinci-resolve-and-fusion"
+  ],
+  "coverageNotes": {
+    "/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora": "Outdated guide: retained for historical reference. Use the newer DavinciBox guide for current installation guidance."
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "summary": "Use a terminal emulator with customizable retro display effects.",
+  "overview": "cool-retro-term recreates the appearance of older CRT displays while still providing a terminal for your usual shell and command-line tools. Its settings let you adjust colors, fonts, and visual effects to change the look of the session. The appeal is largely in how it presents terminal output, whether you want a subtle vintage style or a more pronounced retro display.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS"
+  ],
+  "license": {
+    "name": "GPL-2.0 / GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Swordfish90/cool-retro-term/blob/master/gpl-3.0.txt"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Swordfish90/cool-retro-term"
+    }
+  ],
+  "features": [
+    "CRT effects",
+    "Color profiles",
+    "Configurable fonts"
+  ],
+  "sources": [
+    "https://github.com/Swordfish90/cool-retro-term#readme",
+    "https://github.com/Swordfish90/cool-retro-term/blob/master/gpl-3.0.txt"
+  ]
+}

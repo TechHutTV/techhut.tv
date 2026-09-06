@@ -1,0 +1,36 @@
+{
+  "summary": "Organize a personal media library and stream it to Plex playback apps. Some playback and server features require a paid Plex subscription.",
+  "overview": "Plex adds a browsing and playback layer around the media files on your server, using library metadata to make the collection easier to navigate. Playback apps provide access from supported devices, so the machine holding the media can stay separate from the one you use to watch it. The features available depend on the clients and Plex plan involved.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Supported NAS devices"
+  ],
+  "license": {
+    "name": "Proprietary Plex license",
+    "type": "Proprietary · Freemium",
+    "url": "https://www.plex.tv/about/privacy-legal/plex-terms-of-service/"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.plex.tv/"
+    },
+    {
+      "label": "Official Docker image",
+      "url": "https://github.com/plexinc/pms-docker"
+    }
+  ],
+  "features": [
+    "Personal media libraries",
+    "Playback apps",
+    "Library metadata"
+  ],
+  "sources": [
+    "https://www.plex.tv/",
+    "https://www.plex.tv/about/privacy-legal/plex-terms-of-service/",
+    "https://github.com/plexinc/pms-docker"
+  ]
+}

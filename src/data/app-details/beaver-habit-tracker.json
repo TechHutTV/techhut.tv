@@ -1,0 +1,29 @@
+{
+  "summary": "Track daily habits with a self-hosted list and calendar.",
+  "overview": "Beaver Habit Tracker centers on recording everyday habits and reviewing their history through a list and calendar. You can see which activities you have kept up with over time without first building a complex project or goal structure. Self-hosting keeps the application under your control, and its export tools give you a way to take your tracking data elsewhere.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker",
+    "Web service"
+  ],
+  "license": {
+    "name": "BSD-3-Clause",
+    "type": "Open source",
+    "url": "https://github.com/daya0576/beaverhabits/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/daya0576/beaverhabits"
+    }
+  ],
+  "features": [
+    "Habit calendar",
+    "Progress history",
+    "Data export"
+  ],
+  "sources": [
+    "https://github.com/daya0576/beaverhabits#readme",
+    "https://github.com/daya0576/beaverhabits/blob/HEAD/LICENSE"
+  ]
+}

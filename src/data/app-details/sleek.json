@@ -1,0 +1,30 @@
+{
+  "summary": "Manage to-do lists using projects, tags and the todo.txt format.",
+  "overview": "sleek keeps tasks in the todo.txt format while adding a graphical interface for grouping and filtering them. Tags and project information help narrow a list down to the work you want to see. Because the underlying format is plain text, it suits a task-management setup where you want the convenience of an application while keeping the list portable.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/ransome1/sleek/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ransome1/sleek"
+    }
+  ],
+  "features": [
+    "todo.txt files",
+    "Tag filters",
+    "Task grouping"
+  ],
+  "sources": [
+    "https://github.com/ransome1/sleek#readme",
+    "https://github.com/ransome1/sleek/blob/HEAD/LICENSE"
+  ]
+}

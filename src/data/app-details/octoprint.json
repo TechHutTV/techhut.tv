@@ -1,0 +1,35 @@
+{
+  "summary": "Monitor and control a 3D printer through a self-hosted web interface.",
+  "overview": "OctoPrint connects a compatible 3D printer to a web interface where you can upload G-code and control the printing workflow. Keeping that interface on a separate host lets you manage the printer from another device on the network. Its plugin system adds ways to adapt the installation, while the core application provides the connection between the browser and printer.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/OctoPrint/OctoPrint/blob/dev/LICENSE.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://octoprint.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/OctoPrint/OctoPrint"
+    }
+  ],
+  "features": [
+    "Printer web controls",
+    "G-code uploads",
+    "Plugins"
+  ],
+  "sources": [
+    "https://octoprint.org",
+    "https://github.com/OctoPrint/OctoPrint#readme",
+    "https://github.com/OctoPrint/OctoPrint/blob/dev/LICENSE.txt"
+  ]
+}

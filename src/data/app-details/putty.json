@@ -1,0 +1,29 @@
+{
+  "summary": "Connect to remote Linux systems with an SSH client on Windows.",
+  "overview": "PuTTY provides terminal access to remote systems over SSH and can also work with serial connections. Saved sessions keep connection details available for machines you use regularly, so you can reconnect without rebuilding the configuration. It is useful for administering Linux hosts from Windows or interacting with equipment that exposes a text console through a serial interface.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Windows",
+    "Unix"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/"
+    }
+  ],
+  "features": [
+    "SSH sessions",
+    "Serial connections",
+    "Saved session settings"
+  ],
+  "sources": [
+    "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
+    "https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html"
+  ]
+}

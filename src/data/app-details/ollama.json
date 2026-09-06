@@ -1,0 +1,36 @@
+{
+  "summary": "Run local language models for private AI workflows.",
+  "overview": "Ollama manages model downloads and provides a local service for running supported language models. You can interact with it directly or connect another application through its HTTP API, making it a building block for chat interfaces and automation workflows. The model you choose and the hardware available determine what you can run comfortably and how quickly it responds.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/ollama/ollama/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://ollama.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ollama/ollama"
+    }
+  ],
+  "features": [
+    "Local model execution",
+    "Model downloads",
+    "HTTP API"
+  ],
+  "sources": [
+    "https://ollama.com",
+    "https://github.com/ollama/ollama#readme",
+    "https://github.com/ollama/ollama/blob/HEAD/LICENSE"
+  ]
+}

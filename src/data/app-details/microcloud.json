@@ -1,0 +1,33 @@
+{
+  "summary": "Manage containers and virtual machines across a server cluster.",
+  "overview": "MicroCloud brings several machines together into a private cloud using components for virtualization, distributed storage, and networking. Its initialization workflow helps set up the cluster so that you can start working with virtual machines and system containers. It is relevant when a homelab grows beyond a single virtualization host and you want the machines to operate as a coordinated environment.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Ubuntu)"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/canonical/microcloud/blob/main/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://canonical.com/microcloud"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/canonical/microcloud"
+    }
+  ],
+  "features": [
+    "Cluster initialization",
+    "Virtual machines",
+    "Distributed storage integration"
+  ],
+  "sources": [
+    "https://canonical.com/microcloud",
+    "https://github.com/canonical/microcloud#readme",
+    "https://github.com/canonical/microcloud/blob/main/COPYING"
+  ]
+}

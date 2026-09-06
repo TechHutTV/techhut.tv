@@ -1,0 +1,33 @@
+{
+  "summary": "Manage reverse proxies and HTTPS certificates through a web interface.",
+  "overview": "Nginx Proxy Manager maps incoming requests for your domain names to the services running behind it. Its interface brings host configuration, TLS certificates, and access lists together, which can simplify managing several web applications on a home server. It handles the reverse-proxy layer in front of those applications, while each application continues to run in its own environment.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/NginxProxyManager/nginx-proxy-manager/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://nginxproxymanager.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/NginxProxyManager/nginx-proxy-manager"
+    }
+  ],
+  "features": [
+    "Reverse proxy hosts",
+    "TLS certificates",
+    "Access lists"
+  ],
+  "sources": [
+    "https://nginxproxymanager.com",
+    "https://github.com/NginxProxyManager/nginx-proxy-manager#readme",
+    "https://github.com/NginxProxyManager/nginx-proxy-manager/blob/HEAD/LICENSE"
+  ]
+}

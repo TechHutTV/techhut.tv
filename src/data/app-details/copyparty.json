@@ -1,0 +1,46 @@
+{
+  "summary": "Turn a computer into a file server you can access from your browser. Copyparty combines resumable uploads, file sharing, media playback, and search in a portable Python application.",
+  "overview": "You can use Copyparty as a shared drop-off point for uploads, a browser-based way to navigate folders, or a place to play media stored on another machine. Resumable transfers help with interrupted uploads, and folder permissions let you control access to different parts of the server. Support for protocols such as WebDAV and FTP also gives compatible clients alternatives to the browser interface.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/9001/copyparty/blob/hovudstraum/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://copyparty.eu/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/9001/copyparty"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://github.com/9001/copyparty#readme"
+    },
+    {
+      "label": "Releases",
+      "url": "https://github.com/9001/copyparty/releases"
+    }
+  ],
+  "features": [
+    "Resumable uploads",
+    "Browser file manager",
+    "Media streaming",
+    "WebDAV & FTP",
+    "File search",
+    "Folder permissions"
+  ],
+  "sources": [
+    "https://github.com/9001/copyparty#readme",
+    "https://github.com/9001/copyparty/blob/HEAD/LICENSE"
+  ]
+}

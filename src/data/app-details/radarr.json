@@ -1,0 +1,36 @@
+{
+  "summary": "Organize and automate a movie library in a self-hosted media stack.",
+  "overview": "Radarr tracks movies in a library and works with configured indexers and download clients to manage incoming files. Quality profiles describe the versions you want it to look for, while library-management tools help keep the resulting collection organized. It coordinates the movie-specific workflow in a media stack, with separate services responsible for searching sources, transferring files, and playing the media.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Radarr/Radarr/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://radarr.video"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Radarr/Radarr"
+    }
+  ],
+  "features": [
+    "Movie library management",
+    "Quality profiles",
+    "Download client integration"
+  ],
+  "sources": [
+    "https://radarr.video",
+    "https://github.com/Radarr/Radarr#readme",
+    "https://github.com/Radarr/Radarr/blob/HEAD/LICENSE"
+  ]
+}

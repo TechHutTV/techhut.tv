@@ -1,0 +1,28 @@
+{
+  "summary": "Run DaVinci Resolve in a prepared Linux container with desktop integration. Fedora Atomic, Bluefin, and Bazzite are the primary supported systems; other distributions receive community support.",
+  "overview": "DavinciBox packages a prepared environment for Resolve so that its runtime dependencies can live inside a container while the application remains accessible from your desktop. This approach is particularly relevant to image-based Linux systems where changing the host's software environment is less convenient. It prepares the environment around Resolve; the Resolve application and its software license remain separate.",
+  "kind": "Container tool",
+  "platforms": [
+    "Linux (Fedora Atomic/Bluefin/Bazzite)"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/zelikos/davincibox/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/zelikos/davincibox"
+    }
+  ],
+  "features": [
+    "Containerized Resolve environment",
+    "Desktop launcher integration",
+    "GPU runtime dependencies"
+  ],
+  "sources": [
+    "https://github.com/zelikos/davincibox#readme",
+    "https://github.com/zelikos/davincibox/blob/HEAD/LICENSE"
+  ]
+}

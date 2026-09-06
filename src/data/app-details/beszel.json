@@ -1,0 +1,34 @@
+{
+  "summary": "Monitor server resources and Docker statistics with a lightweight dashboard.",
+  "overview": "Beszel collects resource measurements from servers and presents them as history you can inspect in a web interface. Container statistics help you connect resource use to individual Docker workloads, while alerts can flag conditions that need attention. It suits a homelab where you want to understand how machines are behaving over time without building an extensive monitoring stack from scratch.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker",
+    "Linux server"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/henrygd/beszel/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://beszel.dev"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/henrygd/beszel"
+    }
+  ],
+  "features": [
+    "Resource history",
+    "Container statistics",
+    "Alerts"
+  ],
+  "sources": [
+    "https://beszel.dev",
+    "https://github.com/henrygd/beszel#readme",
+    "https://github.com/henrygd/beszel/blob/HEAD/LICENSE"
+  ]
+}

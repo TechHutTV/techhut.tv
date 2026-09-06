@@ -1,0 +1,33 @@
+{
+  "summary": "Manage Debian and Ubuntu packages with a terminal frontend for APT.",
+  "overview": "Nala provides a different command-line interface for common APT package-management work on Debian-based systems. Parallel downloads help with retrieving packages, while transaction history gives you a way to inspect previous operations. It fits into the distribution's existing package ecosystem, so it is a tool for working with those packages rather than a separate source of applications.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux (Debian/Ubuntu)"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://gitlab.com/volian/nala/-/blob/main/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitLab",
+      "url": "https://gitlab.com/volian/nala"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/volitank/nala"
+    }
+  ],
+  "features": [
+    "APT package management",
+    "Parallel downloads",
+    "Transaction history"
+  ],
+  "sources": [
+    "https://gitlab.com/volian/nala",
+    "https://gitlab.com/volian/nala/-/blob/main/LICENSE",
+    "https://github.com/volitank/nala"
+  ]
+}

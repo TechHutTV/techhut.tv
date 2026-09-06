@@ -1,0 +1,28 @@
+{
+  "summary": "Route Docker container traffic through a VPN connection.",
+  "overview": "Gluetun supplies a VPN connection that other containers can use through a shared network setup. Its firewall is designed to prevent traffic from bypassing the VPN when that connection is unavailable. Keeping the VPN in its own container lets you manage it separately from the applications using it, with provider configuration handled in one place.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/qdm12/gluetun/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/qdm12/gluetun"
+    }
+  ],
+  "features": [
+    "VPN client container",
+    "Firewall kill switch",
+    "Multiple VPN providers"
+  ],
+  "sources": [
+    "https://github.com/qdm12/gluetun#readme",
+    "https://github.com/qdm12/gluetun/blob/HEAD/LICENSE"
+  ]
+}

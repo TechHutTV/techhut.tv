@@ -1,0 +1,35 @@
+{
+  "summary": "Read and organize RSS feeds in a desktop application.",
+  "overview": "Fluent Reader brings articles from RSS feeds into a desktop reading interface, giving you a place to follow multiple publications without visiting each website separately. OPML import and export help move your subscription list between readers. Support for feed-service synchronization also lets it fit into a reading setup where another service manages subscriptions and reading state.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "BSD-3-Clause",
+    "type": "Open source",
+    "url": "https://github.com/yang991178/fluent-reader/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://hyliu.me/fluent-reader/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/yang991178/fluent-reader"
+    }
+  ],
+  "features": [
+    "RSS feeds",
+    "OPML import/export",
+    "Feed service sync"
+  ],
+  "sources": [
+    "https://hyliu.me/fluent-reader/",
+    "https://github.com/yang991178/fluent-reader#readme",
+    "https://github.com/yang991178/fluent-reader/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "summary": "Browse and manage APT packages with a graphical package manager.",
+  "overview": "Synaptic presents APT packages in a graphical interface where you can search, inspect, install, and remove them. It also exposes dependency-repair tools for situations where package relationships need attention. Its focus is the distribution's package system, making it useful when you need to work with libraries and system packages as well as the desktop applications shown in a software store.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux (APT-based distributions)"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/mvo5/synaptic/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/mvo5/synaptic"
+    }
+  ],
+  "features": [
+    "Package search",
+    "Install and remove packages",
+    "Dependency repair"
+  ],
+  "sources": [
+    "https://github.com/mvo5/synaptic#readme",
+    "https://github.com/mvo5/synaptic/blob/master/COPYING"
+  ]
+}

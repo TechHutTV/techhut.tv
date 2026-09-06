@@ -1,0 +1,33 @@
+{
+  "summary": "Host, browse and share files through a web interface.",
+  "overview": "Cloudreve places a browser-based file manager in front of your storage, including support for multiple storage backends. Users can browse and share files through the web interface, while WebDAV provides another way to access the same storage from compatible software. It is suited to building a personal or shared file portal where the interface and storage location can be managed separately.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://github.com/cloudreve/Cloudreve/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://cloudreve.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/cloudreve/Cloudreve"
+    }
+  ],
+  "features": [
+    "Multiple storage backends",
+    "File sharing",
+    "WebDAV"
+  ],
+  "sources": [
+    "https://cloudreve.org",
+    "https://github.com/cloudreve/Cloudreve#readme",
+    "https://github.com/cloudreve/Cloudreve/blob/HEAD/LICENSE"
+  ]
+}
