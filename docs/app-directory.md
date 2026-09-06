@@ -1,5 +1,7 @@
 # App directory
 
+See [the gaps and opportunities roadmap](app-directory-roadmap.md) for prioritized discovery, content, maintenance, and validation improvements.
+
 `/apps` lists software with a full TechHut article, practical guide, or focused video. Video coverage starts January 1, 2021 and focuses on desktop, terminal and self-hosted software, including focused extensions. Hardware reviews, OS tours, roundup-only and sponsor-only mentions are excluded. A multi-tool setup guide can support separate entries for tools it actually walks through.
 
 Exclude archived or explicitly unmaintained projects after checking for a maintained successor or repository move. Do not remove software solely because its last release is old. See [the maintenance review](app-maintenance-review.md) for the latest findings.
