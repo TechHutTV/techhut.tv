@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { resolve, join } from 'node:path'
 import { getAppStars, formatStars } from '../src/lib/appStars.js'
+import { filterApps } from '../src/lib/appDirectory.js'
 
 const root = resolve(process.argv[2] || '.')
 const read = file => readFileSync(join(root, file), 'utf8')
@@ -16,11 +17,13 @@ const escape = text => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&
 assert.equal(manifest.dynamicRoutes['/apps/[id]'].fallback, false)
 assert.ok(!directory.includes('Covered <time'), 'Directory still shows coverage dates')
 const cards = directory.match(/<li\b[^>]*>[\s\S]*?<\/li>/g) || []
+const generatedApps = []
 for (const record of records) {
   const href = `/apps/${record.id}`
   const html = read(`.next/server/pages${href}.html`).replace(/<!--.*?-->/g, '')
   const { pageProps } = JSON.parse(read(`.next/server/pages${href}.json`))
   const { app } = pageProps
+  generatedApps.push(app)
   assert.ok(manifest.routes[href], href)
   assert.ok(directory.includes(`href="${href}"`), href)
   const card = cards.find(card => card.includes(`href="${href}"`))
@@ -73,4 +76,22 @@ for (const record of records) {
   assert.doesNotMatch(html, /src="(?:undefined|null)"/, href)
   for (const link of app.details.links) assert.ok(html.includes(`href="${escape(link.url)}"`), `${href}: ${link.url}`)
 }
+const homepage = read('.next/server/pages/index.html').replace(/<!--.*?-->/g, '')
+const recentSection = homepage.match(/<section id="recent-apps"[\s\S]*?<\/section>/)?.[0]
+assert.ok(recentSection, 'Homepage missing recently covered apps')
+assert.ok(homepage.indexOf('guides and tutorials</p>') < homepage.indexOf('id="recent-apps"'), 'Recent apps must follow the guide count')
+assert.ok(homepage.indexOf('id="recent-apps"') < homepage.indexOf('Browse by Topic'), 'Recent apps must precede topics')
+const recentCards = recentSection.match(/<li\b[^>]*>[\s\S]*?<\/li>/g) || []
+const expectedRecent = filterApps(generatedApps, { sort: 'recent' }).slice(0, 12)
+assert.equal(recentCards.length, expectedRecent.length, 'Homepage must include twelve recent apps')
+assert.ok(recentSection.includes('aria-label="Previous apps"') && recentSection.includes('aria-label="Next apps"'), 'Recent apps need labeled scroll controls')
+assert.ok(recentSection.includes('id="recent-apps-list" role="region" aria-labelledby="recent-apps-title" tabindex="0"'), 'Recent apps need a keyboard-focusable scroll region')
+assert.ok(recentSection.includes('overflow-x-auto') && recentSection.includes('snap-x'), 'Recent apps must scroll horizontally')
+for (const [index, app] of expectedRecent.entries()) {
+  const card = recentCards[index]
+  const directoryCard = cards.find(card => card.includes(`href="/apps/${app.id}"`))
+  assert.equal(card.replace(/<(\/?)h3\b/g, '<$1h2'), directoryCard, `${app.id}: homepage and directory cards differ`)
+}
+assert.ok(!recentSection.includes('href="/apps"'), 'Recent apps should use the directory link already provided by the hero')
 console.log(`Validated ${records.length} static app routes, single-link cards, cached stars and omissions, metadata, coverage order, deferred players, and sitemap dates; unknown IDs use fallback: false.`)
+console.log(`Validated homepage placement, scroll controls, and ${expectedRecent.length} recent shared app cards: ${expectedRecent.map(app => app.name).join(', ')}.`)

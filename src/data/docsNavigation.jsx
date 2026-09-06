@@ -7,8 +7,8 @@ export const docsNavigation = [
         defaultOpen: true,
         pages: [
             { title: 'Introduction', href: '/' },
-            { title: 'All Content', href: '/content' },
             { title: 'App Directory', href: '/apps' },
+            { title: 'All Content', href: '/content' },
             { title: 'Partners', href: '/partner' },
             { title: 'Team', href: '/team' },
         ],
