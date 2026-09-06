@@ -14,13 +14,6 @@
     "changes": "None"
   },
   {
-    "app": "cockpit",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cockpit.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
-    "changes": "None"
-  },
-  {
     "app": "copyparty",
     "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/copyparty.png",
     "repository": "https://github.com/selfhst/icons",
@@ -180,14 +173,6 @@
     "repository": "https://github.com/yorukot/superfile",
     "license": "MIT",
     "changes": "None"
-  },
-  {
-    "app": "cockpit",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cockpit-light.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
-    "changes": "None",
-    "variant": "Light logo for dark surfaces"
   },
   {
     "app": "influxdb",
@@ -651,20 +636,6 @@
     "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/podgrab.png",
     "repository": "https://github.com/homarr-labs/dashboard-icons",
     "license": "Apache-2.0",
-    "changes": "None"
-  },
-  {
-    "app": "portainer",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/portainer.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
-    "changes": "None"
-  },
-  {
-    "app": "portainer",
-    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/portainer-light.png",
-    "repository": "https://github.com/selfhst/icons",
-    "license": "CC-BY-4.0",
     "changes": "None"
   },
   {
@@ -1208,5 +1179,28 @@
     "license": "DaVinci Resolve branding belongs to Blackmagic Design; Tux depicts the Linux mascot. Unofficial directory artwork.",
     "changes": "Built-in image generation added a Tux badge at the bottom right; transparent PNG.",
     "sha256": "f316af99666dfb64c3c5687c9f19cbcdb0d96e6089f00e9161b68b77ca752cd6"
+  },
+  {
+    "app": "cockpit",
+    "source": "https://cockpit-project.org/images/favicon.png",
+    "sourcePage": "https://cockpit-project.org/",
+    "license": "Official project branding; rights retained by the owner.",
+    "changes": "None",
+    "sha256": "18480cc5bd1b0224226a63eed6166bf7fbca419fad2d191871352158feee10b4"
+  },
+  {
+    "app": "portainer",
+    "source": "https://cdn.prod.website-files.com/69bc83ff083bf63749b6bdd8/69bc83ff083bf63749b6c1a0_Portainer%20-%20P%20Icon%20SQUARE%20-%20Purple%20%26%20Graphite%20(256x256).png",
+    "sourcePage": "https://www.portainer.io/",
+    "license": "Official project branding; rights retained by the owner.",
+    "changes": "None",
+    "sha256": "237dea1a5e9411edb9bef2bf1247ec2cbf945d0893fbf0b6e6e08b6fc3020df0"
+  },
+  {
+    "app": "bubble-card",
+    "source": "Unofficial; cropped from an image on the main Bubble Card GitHub repository, supplied by the site owner.",
+    "repository": "https://github.com/Clooos/Bubble-Card",
+    "changes": "Cleaned and sharpened using the built-in image tool; removed background with transparent alpha, retaining dark purple disc and white ring.",
+    "sha256": "6f4ab0d3980f4ccb9c08b56167b660aec50cb3f817a3a87def108bdad53775be"
   }
 ]

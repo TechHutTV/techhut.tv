@@ -12,8 +12,7 @@
         "published": "2024-05-10"
       }
     ],
-    "icon": "/app-icons/adguard-home.png",
-    "iconDark": "/app-icons/adguard-home-light.png"
+    "icon": "/app-icons/adguard-home.png"
   },
   {
     "id": "amp",
@@ -116,8 +115,7 @@
         "published": "2025-09-04"
       }
     ],
-    "icon": "/app-icons/beszel.png",
-    "iconDark": "/app-icons/beszel-light.png"
+    "icon": "/app-icons/beszel.png"
   },
   {
     "id": "bottles",
@@ -161,7 +159,8 @@
         "title": "Pi-Hole in Home Assistant! + Bubble Card YAML",
         "published": "2024-12-06"
       }
-    ]
+    ],
+    "icon": "/app-icons/bubble-card.png"
   },
   {
     "id": "caprover",
@@ -176,8 +175,7 @@
         "published": "2023-03-01"
       }
     ],
-    "icon": "/app-icons/caprover.png",
-    "iconDark": "/app-icons/caprover-light.png"
+    "icon": "/app-icons/caprover.png"
   },
   {
     "id": "casaos",
@@ -192,8 +190,7 @@
         "published": "2022-05-27"
       }
     ],
-    "icon": "/app-icons/casaos.png",
-    "iconDark": "/app-icons/casaos-light.png"
+    "icon": "/app-icons/casaos.png"
   },
   {
     "id": "cloudreve",
@@ -208,8 +205,7 @@
         "published": "2026-02-28"
       }
     ],
-    "icon": "/app-icons/cloudreve.png",
-    "iconDark": "/app-icons/cloudreve-light.png"
+    "icon": "/app-icons/cloudreve.png"
   },
   {
     "id": "cockpit",
@@ -220,7 +216,6 @@
       "/fedora-server-guide-cockpit-zfs-podman"
     ],
     "icon": "/app-icons/cockpit.png",
-    "iconDark": "/app-icons/cockpit-light.png",
     "videos": [
       {
         "id": "kOEcTGZWiUQ",
@@ -338,8 +333,7 @@
         "published": "2024-07-17"
       }
     ],
-    "icon": "/app-icons/deluge.png",
-    "iconDark": "/app-icons/deluge-light.png"
+    "icon": "/app-icons/deluge.png"
   },
   {
     "id": "discourse",
@@ -354,8 +348,7 @@
         "published": "2021-11-14"
       }
     ],
-    "icon": "/app-icons/discourse.png",
-    "iconDark": "/app-icons/discourse-light.png"
+    "icon": "/app-icons/discourse.png"
   },
   {
     "id": "distrobox",
@@ -425,8 +418,7 @@
         "published": "2025-12-12"
       }
     ],
-    "icon": "/app-icons/duplicati.png",
-    "iconDark": "/app-icons/duplicati-light.png"
+    "icon": "/app-icons/duplicati.png"
   },
   {
     "id": "easyssh",
@@ -501,8 +493,7 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/filezilla.png",
-    "iconDark": "/app-icons/filezilla-light.png"
+    "icon": "/app-icons/filezilla.png"
   },
   {
     "id": "fluent-reader",
@@ -517,8 +508,7 @@
         "published": "2021-02-22"
       }
     ],
-    "icon": "/app-icons/fluent-reader.png",
-    "iconDark": "/app-icons/fluent-reader-light.png"
+    "icon": "/app-icons/fluent-reader.png"
   },
   {
     "id": "ghostty",
@@ -560,8 +550,7 @@
         "published": "2025-03-05"
       }
     ],
-    "icon": "/app-icons/glance.png",
-    "iconDark": "/app-icons/glance-light.png"
+    "icon": "/app-icons/glance.png"
   },
   {
     "id": "gluetun",
@@ -586,8 +575,7 @@
         "published": "2024-07-17"
       }
     ],
-    "icon": "/app-icons/gluetun.png",
-    "iconDark": "/app-icons/gluetun-light.png"
+    "icon": "/app-icons/gluetun.png"
   },
   {
     "id": "gnome-boxes",
@@ -664,8 +652,7 @@
         "published": "2023-11-14"
       }
     ],
-    "icon": "/app-icons/homarr.png",
-    "iconDark": "/app-icons/homarr-light.png"
+    "icon": "/app-icons/homarr.png"
   },
   {
     "id": "home-assistant",
@@ -685,8 +672,7 @@
         "published": "2024-01-21"
       }
     ],
-    "icon": "/app-icons/home-assistant.png",
-    "iconDark": "/app-icons/home-assistant-light.png"
+    "icon": "/app-icons/home-assistant.png"
   },
   {
     "id": "immich",
@@ -719,14 +705,14 @@
       "/monitor-home-server-grafana-prometheus-influxdb"
     ],
     "icon": "/app-icons/influxdb.png",
-    "iconDark": "/app-icons/influxdb-light.png",
     "videos": [
       {
         "id": "vffhtqK3ZUg",
         "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
         "published": "2024-07-06"
       }
-    ]
+    ],
+    "iconDark": "/app-icons/influxdb-light.png"
   },
   {
     "id": "jellyfin",
@@ -771,8 +757,7 @@
         "published": "2021-09-13"
       }
     ],
-    "icon": "/app-icons/jellyfin.png",
-    "iconDark": "/app-icons/jellyfin-light.png"
+    "icon": "/app-icons/jellyfin.png"
   },
   {
     "id": "jellystat",
@@ -1080,8 +1065,7 @@
         "published": "2022-09-09"
       }
     ],
-    "icon": "/app-icons/powertoys.png",
-    "iconDark": "/app-icons/powertoys-light.png"
+    "icon": "/app-icons/powertoys.png"
   },
   {
     "id": "moonlight",
@@ -1156,8 +1140,7 @@
         "published": "2022-08-26"
       }
     ],
-    "icon": "/app-icons/navidrome.png",
-    "iconDark": "/app-icons/navidrome-light.png"
+    "icon": "/app-icons/navidrome.png"
   },
   {
     "id": "netbird",
@@ -1239,8 +1222,7 @@
         "published": "2021-08-16"
       }
     ],
-    "icon": "/app-icons/nextcloud.png",
-    "iconDark": "/app-icons/nextcloud-light.png"
+    "icon": "/app-icons/nextcloud.png"
   },
   {
     "id": "nginx-proxy-manager",
@@ -1255,8 +1237,7 @@
         "published": "2025-05-30"
       }
     ],
-    "icon": "/app-icons/nginx-proxy-manager.png",
-    "iconDark": "/app-icons/nginx-proxy-manager-light.png"
+    "icon": "/app-icons/nginx-proxy-manager.png"
   },
   {
     "id": "octoprint",
@@ -1271,8 +1252,7 @@
         "published": "2025-04-29"
       }
     ],
-    "icon": "/app-icons/octoprint.png",
-    "iconDark": "/app-icons/octoprint-light.png"
+    "icon": "/app-icons/octoprint.png"
   },
   {
     "id": "ollama",
@@ -1310,8 +1290,7 @@
         "published": "2021-11-15"
       }
     ],
-    "icon": "/app-icons/onlyoffice-desktop.png",
-    "iconDark": "/app-icons/onlyoffice-desktop-light.png"
+    "icon": "/app-icons/onlyoffice-desktop.png"
   },
   {
     "id": "onlyoffice-workspace",
@@ -1326,8 +1305,7 @@
         "published": "2022-08-15"
       }
     ],
-    "icon": "/app-icons/onlyoffice-workspace.png",
-    "iconDark": "/app-icons/onlyoffice-workspace-light.png"
+    "icon": "/app-icons/onlyoffice-workspace.png"
   },
   {
     "id": "open-webui",
@@ -1368,8 +1346,7 @@
         "published": "2022-08-22"
       }
     ],
-    "icon": "/app-icons/pi-hole.png",
-    "iconDark": "/app-icons/pi-hole-light.png"
+    "icon": "/app-icons/pi-hole.png"
   },
   {
     "id": "plausible",
@@ -1384,8 +1361,7 @@
         "published": "2021-04-26"
       }
     ],
-    "icon": "/app-icons/plausible.png",
-    "iconDark": "/app-icons/plausible-light.png"
+    "icon": "/app-icons/plausible.png"
   },
   {
     "id": "plex",
@@ -1476,8 +1452,7 @@
         "published": "2023-05-31"
       }
     ],
-    "icon": "/app-icons/portainer.png",
-    "iconDark": "/app-icons/portainer-light.png"
+    "icon": "/app-icons/portainer.png"
   },
   {
     "id": "project-nomad",
@@ -1526,8 +1501,7 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/prowlarr.png",
-    "iconDark": "/app-icons/prowlarr-light.png"
+    "icon": "/app-icons/prowlarr.png"
   },
   {
     "id": "proxmox-backup-server",
@@ -1574,8 +1548,7 @@
         "published": "2021-12-01"
       }
     ],
-    "icon": "/app-icons/proxmox-ve.png",
-    "iconDark": "/app-icons/proxmox-ve-light.png"
+    "icon": "/app-icons/proxmox-ve.png"
   },
   {
     "id": "psensor",
@@ -1599,8 +1572,7 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/putty.png",
-    "iconDark": "/app-icons/putty-light.png"
+    "icon": "/app-icons/putty.png"
   },
   {
     "id": "qbittorrent",
@@ -1615,8 +1587,7 @@
         "published": "2025-05-17"
       }
     ],
-    "icon": "/app-icons/qbittorrent.png",
-    "iconDark": "/app-icons/qbittorrent-light.png"
+    "icon": "/app-icons/qbittorrent.png"
   },
   {
     "id": "radarr",
@@ -1636,8 +1607,7 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/radarr.png",
-    "iconDark": "/app-icons/radarr-light.png"
+    "icon": "/app-icons/radarr.png"
   },
   {
     "id": "retropie",
@@ -1683,8 +1653,7 @@
         "published": "2026-07-07"
       }
     ],
-    "icon": "/app-icons/rustdesk.png",
-    "iconDark": "/app-icons/rustdesk-light.png"
+    "icon": "/app-icons/rustdesk.png"
   },
   {
     "id": "samba",
@@ -1764,8 +1733,7 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/sonarr.png",
-    "iconDark": "/app-icons/sonarr-light.png"
+    "icon": "/app-icons/sonarr.png"
   },
   {
     "id": "startallback",
@@ -1794,8 +1762,7 @@
         "published": "2025-09-28"
       }
     ],
-    "icon": "/app-icons/sunshine.png",
-    "iconDark": "/app-icons/sunshine-light.png"
+    "icon": "/app-icons/sunshine.png"
   },
   {
     "id": "super-productivity",
@@ -1810,8 +1777,7 @@
         "published": "2024-09-07"
       }
     ],
-    "icon": "/app-icons/super-productivity.png",
-    "iconDark": "/app-icons/super-productivity-light.png"
+    "icon": "/app-icons/super-productivity.png"
   },
   {
     "id": "superfile",
@@ -2008,8 +1974,7 @@
         "published": "2022-08-22"
       }
     ],
-    "icon": "/app-icons/unbound.png",
-    "iconDark": "/app-icons/unbound-light.png"
+    "icon": "/app-icons/unbound.png"
   },
   {
     "id": "unifi-os-server",
@@ -2024,8 +1989,7 @@
         "published": "2025-11-29"
       }
     ],
-    "icon": "/app-icons/unifi-os-server.png",
-    "iconDark": "/app-icons/unifi-os-server-light.png"
+    "icon": "/app-icons/unifi-os-server.png"
   },
   {
     "id": "ventoy",
@@ -2081,8 +2045,8 @@
         "published": "2022-03-04"
       }
     ],
-    "iconDark": "/app-icons/wsl-light.png",
-    "icon": "/app-icons/wsl.png"
+    "icon": "/app-icons/wsl.png",
+    "iconDark": "/app-icons/wsl-light.png"
   },
   {
     "id": "yacht",
@@ -2097,8 +2061,7 @@
         "published": "2021-12-31"
       }
     ],
-    "icon": "/app-icons/yacht.png",
-    "iconDark": "/app-icons/yacht-light.png"
+    "icon": "/app-icons/yacht.png"
   },
   {
     "id": "zen-browser",
@@ -2130,7 +2093,6 @@
         "published": "2025-12-24"
       }
     ],
-    "icon": "/app-icons/zerobyte.png",
-    "iconDark": "/app-icons/zerobyte-light.png"
+    "icon": "/app-icons/zerobyte.png"
   }
 ]
