@@ -163,52 +163,17 @@ function CodeGroupHeader({ title, children, selectedIndex }) {
               )}
             >
               <span>{getPanelTitle(child.props)}</span>
-              <button
-                className="w-3.5 h-3.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition"
-                aria-label="Close tab"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </Tab>
           ))}
         </Tab.List>
       ) : (
         <div className="flex gap-0 text-xs font-medium">
           <div className="h-9 px-3 border-t border-l border-r border-r-zinc-200/50 dark:border-r-zinc-700/50 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-ink font-medium border-zinc-300 dark:border-zinc-700 flex items-center gap-2">
-            <span className="font-mono text-xs">code@techhut.tv:~</span>
-            <button
-              className="w-3.5 h-3.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 flex items-center justify-center transition"
-              aria-label="Close tab"
-            >
-              <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <span className="font-mono text-xs">code@techhut:~</span>
           </div>
         </div>
       )}
 
-      {/* GTK4 window controls */}
-      <div className="flex self-center items-center gap-2">
-        <button className="w-5 h-5 rounded-full hover:bg-zinc-300/50 dark:hover:bg-zinc-700/50 transition flex items-center justify-center" aria-label="Minimize">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-          </svg>
-        </button>
-        <button className="w-5 h-5 rounded-full hover:bg-zinc-300/50 dark:hover:bg-zinc-700/50 transition flex items-center justify-center" aria-label="Maximize">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m-4 12h2a2 2 0 002-2v-2" />
-          </svg>
-        </button>
-        <button className="w-5 h-5 rounded-full hover:bg-danger/20 transition flex items-center justify-center group" aria-label="Close">
-          <svg className="w-2.5 h-2.5 text-zinc-600 dark:text-zinc-300 group-hover:text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
     </div>
   )
 }
