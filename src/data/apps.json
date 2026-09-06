@@ -893,20 +893,6 @@
     "iconDark": "/app-icons/libation-light.png"
   },
   {
-    "id": "libregaming",
-    "name": "LibreGaming",
-    "category": "Gaming & Compatibility",
-    "description": "Install a collection of Linux gaming tools with a command-line utility.",
-    "coverage": [],
-    "videos": [
-      {
-        "id": "2f2zdViFDYg",
-        "title": "EASY Install Linux Gaming Tools with LibreGaming",
-        "published": "2021-09-05"
-      }
-    ]
-  },
-  {
     "id": "linked",
     "name": "Linked",
     "category": "Desktop",
@@ -1081,20 +1067,6 @@
       }
     ],
     "icon": "/app-icons/moonlight.png"
-  },
-  {
-    "id": "movavi-video-editor",
-    "name": "Movavi Video Editor",
-    "category": "Creative",
-    "description": "Edit video projects with titles, transitions and audio tools.",
-    "coverage": [],
-    "videos": [
-      {
-        "id": "geo4OMIcaBY",
-        "title": "Kdenlive User Tries Movavi Video Editor Plus 2021 (Proprietary vs Open Source)",
-        "published": "2021-07-20"
-      }
-    ]
   },
   {
     "id": "n8n",
@@ -1623,7 +1595,8 @@
         "title": "You NEED to have a RetroPie! (Setup Guide)",
         "published": "2022-10-19"
       }
-    ]
+    ],
+    "icon": "/app-icons/retropie.svg"
   },
   {
     "id": "return-youtube-dislike",
@@ -1667,7 +1640,8 @@
         "title": "the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.1 (Proxmox, ZFS, Samba)",
         "published": "2025-04-19"
       }
-    ]
+    ],
+    "icon": "/app-icons/samba.png"
   },
   {
     "id": "search-light",
@@ -1747,7 +1721,8 @@
         "title": "FIX Windows 11 Start Menu and Taskbar - Tweak Tool!",
         "published": "2021-11-01"
       }
-    ]
+    ],
+    "icon": "/app-icons/startallback.png"
   },
   {
     "id": "sunshine",
@@ -1808,7 +1783,8 @@
         "title": "BEST Package Manger for Ubuntu/Debian",
         "published": "2021-09-05"
       }
-    ]
+    ],
+    "icon": "/app-icons/synaptic.svg"
   },
   {
     "id": "synology-surveillance-station",

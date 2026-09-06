@@ -1202,5 +1202,37 @@
     "repository": "https://github.com/Clooos/Bubble-Card",
     "changes": "Cleaned and sharpened using the built-in image tool; removed background with transparent alpha, retaining dark purple disc and white ring.",
     "sha256": "6f4ab0d3980f4ccb9c08b56167b660aec50cb3f817a3a87def108bdad53775be"
+  },
+  {
+    "app": "retropie",
+    "source": "https://raw.githubusercontent.com/RetroPie/RetroPie-Setup/master/scriptmodules/supplementary/emulationstation/retropie.svg",
+    "provenance": "Official RetroPie setup repository",
+    "license": "Upstream project artwork; branding rights retained by the respective owner.",
+    "changes": "None",
+    "sha256": "2fe839b8dff29096baa5c22bfae6b37aee3a8025254ba05a5373e8706f2081e9"
+  },
+  {
+    "app": "synaptic",
+    "source": "https://raw.githubusercontent.com/mvo5/synaptic/master/pixmaps/hicolor/scalable/apps/synaptic.svg",
+    "provenance": "Official Synaptic source repository",
+    "license": "Upstream project artwork; branding rights retained by the respective owner.",
+    "changes": "None",
+    "sha256": "42bd00ba57bd334c8de33bc40027ddf11ec0031f2c18239a374549cb1af95f5b"
+  },
+  {
+    "app": "startallback",
+    "source": "https://www.startallback.com/favicon.ico",
+    "provenance": "Official StartAllBack website",
+    "license": "Upstream project artwork; branding rights retained by the respective owner.",
+    "changes": "ICO converted to PNG",
+    "sha256": "cf4f51163641eeffc36657f3a913bd3d61e22472489bd4509f6407e889362ee6"
+  },
+  {
+    "app": "samba",
+    "source": "https://www.samba.org/samba/style/2010/grey/favicon.ico",
+    "provenance": "Official Samba website",
+    "license": "Upstream project artwork; branding rights retained by the respective owner.",
+    "changes": "ICO converted to PNG",
+    "sha256": "5b5a8a8d9df36b683da1d4fbf0c89dc0f12ad61c5592581f37f2aad37cd28c9a"
   }
 ]
