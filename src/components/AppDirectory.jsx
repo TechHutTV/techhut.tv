@@ -76,6 +76,7 @@ export function AppDirectory() {
                 </div>
                 <p className="text-sm leading-6 text-zinc-600 dark:text-ink-dim">{app.description}</p>
                 <div className="mt-auto pt-6">
+                  {app.details ? <Link href={app.details.href} className="group flex items-center justify-between gap-3 border-t border-zinc-200 py-3 text-sm font-medium text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-line dark:text-primary-500"><span className="group-hover:underline group-hover:underline-offset-4">Explore {app.name}</span><ArrowUpRight aria-hidden="true" className="h-4 w-4 flex-none" /></Link> : <>
                   {app.coverage.map(article => (
                     <Link key={article.href} href={article.href} className="group flex items-center justify-between gap-3 border-t border-zinc-200 py-3 text-sm font-medium text-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:border-line dark:text-primary-500">
                       <span className="group-hover:underline group-hover:underline-offset-4">{app.coverage.length > 1 ? article.title : 'Read article'}</span>
@@ -88,6 +89,7 @@ export function AppDirectory() {
                       <ArrowUpRight aria-hidden="true" className="h-4 w-4 flex-none" />
                     </a>
                   )}
+                  </>}
                   <p className="mt-1 font-mono text-2xs text-zinc-500 dark:text-ink-faint">Covered <time dateTime={app.latestDate}>{new Date(`${app.latestDate}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })}</time></p>
                 </div>
               </div>

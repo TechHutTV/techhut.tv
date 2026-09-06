@@ -68,7 +68,7 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage, tags, wide = false }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage, tags, wide = false, hideTitle = false }) {
   let router = useRouter()
   const relatedArticles = isContentPage ? getRelatedArticles(tags, router.asPath, 4) : []
 
@@ -187,7 +187,7 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
             : "lg:ml-0 lg:pl-32 lg:px-5"
         )}>
           <main className="py-16">
-            {title && (
+            {title && !hideTitle && (
               <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900 dark:text-ink mb-3">{title}</h1>
             )}
             {date && (

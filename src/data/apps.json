@@ -254,7 +254,10 @@
         "title": "i run this on EVERY Machine I Own (You Should Too)",
         "published": "2026-07-12"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/copyparty"
+    }
   },
   {
     "id": "dash-to-panel",

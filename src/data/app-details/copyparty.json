@@ -1,0 +1,39 @@
+{
+  "summary": "Turn a computer into a file server you can access from your browser. Copyparty combines resumable uploads, file sharing, media playback, and search in a portable Python application.",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "url": "https://github.com/9001/copyparty/blob/hovudstraum/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://copyparty.eu/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/9001/copyparty"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://github.com/9001/copyparty#readme"
+    },
+    {
+      "label": "Releases",
+      "url": "https://github.com/9001/copyparty/releases"
+    }
+  ],
+  "features": [
+    "Resumable uploads",
+    "Browser file manager",
+    "Media streaming",
+    "WebDAV & FTP",
+    "File search",
+    "Folder permissions"
+  ]
+}
