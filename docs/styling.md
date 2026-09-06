@@ -30,7 +30,7 @@ Prefer the `primary-*` scale below; the `techhut*` tokens exist for backwards co
 
 Full mint ramp for UI elements. `500` is the dark-mode brand, `800` is the light-mode brand, `400`/`600` are hover steps:
 
-```
+```text
 primary-50:  #E3FBF0  (lightest tint)
 primary-100: #E3FBF0
 primary-200: #B6F5DA
@@ -47,7 +47,7 @@ primary-900: #0A6B4C  (darkest)
 
 Secondary accent for informational UI (info states, metadata accents). Same logic: `500` on dark, `800` on light:
 
-```
+```text
 ice-50:  #E4F9FF  (lightest tint)
 ice-100: #E4F9FF
 ice-200: #BFF0FF
@@ -64,7 +64,7 @@ ice-900: #0A6E86  (darkest)
 
 `zinc`, `slate`, `gray`, and `neutral` are all remapped to a single neutral gray ramp, so existing gray classes stay consistent without a green tint:
 
-```
+```text
 50:  #FAFAFA  (off-white — light surface)
 100: #F0F0F0  (paper raised)
 200: #E5E5E5
