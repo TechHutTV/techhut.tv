@@ -77,6 +77,11 @@ const nextConfig = {
     redirects: async () => {
         return [
             {
+                source: '/decks/index.html',
+                destination: '/decks',
+                permanent: true,
+            },
+            {
                 source: '/rss.xml',
                 destination: '/rss',
                 permanent: true,
@@ -106,10 +111,6 @@ const nextConfig = {
             {
                 source: '/api/:path*',
                 destination: '/ipa/:path*',
-            },
-            {
-                source: '/decks',
-                destination: '/decks/index.html',
             },
             {
                 source: '/decks/lfnw26',

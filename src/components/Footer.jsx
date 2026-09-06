@@ -142,14 +142,7 @@ function FooterContent() {
             <FooterLink href="/team">Team</FooterLink>
             <FooterLink href="/jobs">Jobs</FooterLink>
             <FooterLink href="/partner">Partners</FooterLink>
-            <li>
-              <a
-                href="/decks"
-                className="text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-ink"
-              >
-                Decks
-              </a>
-            </li>
+            <FooterLink href="/decks">Decks</FooterLink>
             <FooterLink href="https://techhut.tv/rss">RSS Feed</FooterLink>
           </ul>
         </div>

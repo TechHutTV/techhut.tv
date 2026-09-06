@@ -9,6 +9,7 @@ function generateSitemap() {
   const staticPages = [
     { path: '', priority: '1.0' },
     { path: 'content', priority: '0.9' },
+    { path: 'decks', priority: '0.8' },
     { path: 'team', priority: '0.8' },
     { path: 'jobs', priority: '0.8' },
     { path: 'jobs/technical-content-producer', priority: '0.8' },
