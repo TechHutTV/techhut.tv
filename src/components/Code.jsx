@@ -62,7 +62,7 @@ function CopyButton({ code }) {
     <button
       type="button"
       className={clsx(
-        'group/button absolute right-3 top-1/2 -translate-y-1/2 overflow-hidden rounded-md px-2 py-1 text-[10px] font-medium opacity-0 transition focus:opacity-100 group-hover:opacity-100 flex items-center justify-center min-w-[55px]',
+        'group/button absolute right-3 top-1/2 -translate-y-1/2 overflow-hidden rounded-sm px-2 py-1 text-[10px] font-medium opacity-0 transition focus:opacity-100 group-hover:opacity-100 flex items-center justify-center min-w-[55px]',
         copied
           ? 'bg-primary-500/20 text-primary-800 dark:text-primary-400'
           : 'bg-zinc-700/20 dark:bg-zinc-100/20 hover:bg-zinc-700/30 dark:hover:bg-zinc-100/30 text-zinc-700 dark:text-zinc-300'

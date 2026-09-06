@@ -52,7 +52,7 @@ export const Header = forwardRef(function Header({ className }, ref) {
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <button
           onClick={toggleSidebar}
-          className="hidden lg:flex items-center justify-center h-6 w-6 rounded-md transition hover:bg-zinc-900/5 dark:hover:bg-white/5 flex-shrink-0"
+          className="hidden lg:flex items-center justify-center h-6 w-6 rounded-sm transition hover:bg-zinc-900/5 dark:hover:bg-white/5 flex-shrink-0"
           aria-label={sidebarIsOpen ? 'Hide sidebar' : 'Show sidebar'}
         >
           <svg

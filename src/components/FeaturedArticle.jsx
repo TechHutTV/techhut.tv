@@ -24,13 +24,12 @@ export function FeaturedArticle({ article: articleProp, slug }) {
         className={clsx(
           'group relative cursor-pointer rounded-md overflow-hidden',
           'bg-zinc-50 dark:bg-dark-lighter',
-          'ring-1 ring-inset ring-zinc-900/7.5 dark:ring-line',
           'transition-shadow hover:shadow-lg hover:shadow-zinc-900/10 dark:hover:shadow-none',
         )}
         onClick={() => router.push(article.href)}
       >
         {/* Accessible overlay link */}
-        <Link href={article.href} className="absolute inset-0 z-10">
+        <Link href={article.href} className="absolute inset-0 z-10 rounded-md border border-zinc-300 group-hover:border-zinc-400 dark:border-line-strong dark:group-hover:border-zinc-600">
           <span className="sr-only">Read {article.title}</span>
         </Link>
 

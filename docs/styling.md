@@ -187,13 +187,13 @@ Article content uses the `prose` class for typography:
 
 ## Corner Radii
 
-Radii are locked to three sizes:
+Surfaces and navigation use square corners. Small controls retain a subtle radius:
 
 | Class | Radius | Usage |
 |-------|--------|-------|
-| `rounded-sm` / `rounded` / `rounded-md` | 6px | Badges, inputs, pills |
-| `rounded-lg` | 10px | Cards |
-| `rounded-xl` / `rounded-2xl` / `rounded-3xl` | 16px | Panels |
+| `rounded-sm` / `rounded` | 2px | Buttons, inputs, badges, chips |
+| `rounded-md` / `rounded-lg` | 0px | Cards, navigation links, sidebars |
+| `rounded-xl` / `rounded-2xl` / `rounded-3xl` | 0px | Panels, menus, code blocks |
 | `rounded-full` | 9999px | Avatars and true circles only |
 
 Pill-shaped `rounded-full` is reserved for circular elements (avatars); rectangular chips and tags use `rounded-sm`.
@@ -282,7 +282,7 @@ Custom subtle elevation shadow:
 Bright mint fill always pairs with dark text:
 
 ```jsx
-<button className="bg-primary-500 hover:bg-primary-400 text-dark px-4 py-2 rounded-lg">
+<button className="bg-primary-500 hover:bg-primary-400 text-dark px-4 py-2 rounded-sm">
   Primary Button
 </button>
 ```
@@ -349,7 +349,7 @@ Add global CSS in `src/styles/tailwind.css`:
 
 @layer components {
   .custom-class {
-    @apply bg-primary-500 text-dark rounded-lg;
+    @apply bg-primary-500 text-dark rounded-sm;
   }
 }
 ```

@@ -114,21 +114,21 @@
 
 .imagewrapper {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 4px;
+  border-radius: 0;
   overflow:hidden;
   width: 70%;
 }
 
 .imagewrapper-medium {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 4px;
+  border-radius: 0;
   overflow: hidden;
   width: 40%;
 }
 
 .imagewrapper-big {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  border-radius: 4px;
+  border-radius: 0;
   overflow:hidden;
   max-width: 100%;
   width: 100%;
@@ -170,7 +170,7 @@
   max-width: 80vw;
   max-height: 80vh;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: 0;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   animation: zoomIn 0.2s ease-out;
   cursor: zoom-out;

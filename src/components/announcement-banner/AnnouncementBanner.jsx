@@ -78,7 +78,7 @@ export function AnnouncementBanner() {
     >
       <div className="flex flex-col items-start gap-1 pr-8 leading-snug md:flex-row md:items-center">
         {announcement.tag ? (
-          <div className="mr-2 inline rounded-md bg-ice-500/10 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ice-800 ring-1 ring-inset ring-ice-500/30 dark:text-ice-500">
+          <div className="mr-2 inline rounded-sm bg-ice-500/10 px-2 py-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-ice-800 ring-1 ring-inset ring-ice-500/30 dark:text-ice-500">
             {announcement.tag}
           </div>
         ) : null}
@@ -101,7 +101,7 @@ export function AnnouncementBanner() {
         <button
           type="button"
           onClick={close}
-          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-zinc-500 transition hover:bg-zinc-900/5 hover:text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:text-ink-faint dark:hover:bg-white/10 dark:hover:text-ink"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 transition hover:bg-zinc-900/5 hover:text-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-500 dark:text-ink-faint dark:hover:bg-white/10 dark:hover:text-ink"
           aria-label="Dismiss announcement"
         >
           <CloseIcon className="h-3.5 w-3.5" />

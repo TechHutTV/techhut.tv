@@ -181,7 +181,7 @@ function SuccessIcon(props) {
 
 export function Note({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-ice-500/20 bg-ice-50/50 p-4 leading-6 text-ice-900 dark:border-ice-500/30 dark:bg-ice-500/5 dark:text-ice-200 dark:[--tw-prose-links-hover:theme(colors.ice.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+    <div className="my-6 flex gap-2.5 rounded-none border border-ice-500/20 bg-ice-50/50 p-4 leading-6 text-ice-900 dark:border-ice-500/30 dark:bg-ice-500/5 dark:text-ice-200 dark:[--tw-prose-links-hover:theme(colors.ice.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
       <InfoIcon className="mt-1 h-4 w-4 flex-none fill-ice-800 stroke-white dark:fill-ice-200/20 dark:stroke-ice-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
@@ -192,7 +192,7 @@ export function Note({ children }) {
 
 export function Warning({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-warning/20 bg-warning/10 p-4 leading-6 text-zinc-900 dark:border-warning/30 dark:bg-warning/5 dark:text-warning dark:[--tw-prose-links-hover:theme(colors.warning)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+    <div className="my-6 flex gap-2.5 rounded-none border border-warning/20 bg-warning/10 p-4 leading-6 text-zinc-900 dark:border-warning/30 dark:bg-warning/5 dark:text-warning dark:[--tw-prose-links-hover:theme(colors.warning)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
       <WarningIcon className="mt-1 h-4 w-4 flex-none stroke-zinc-900 dark:stroke-warning" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}
@@ -203,7 +203,7 @@ export function Warning({ children }) {
 
 export function Success({ children }) {
   return (
-    <div className="my-6 flex gap-2.5 rounded-l border border-primary-500/20 bg-primary-50/50 p-4 leading-6 text-primary-900 dark:border-primary-500/30 dark:bg-primary-500/5 dark:text-primary-200 dark:[--tw-prose-links-hover:theme(colors.primary.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
+    <div className="my-6 flex gap-2.5 rounded-none border border-primary-500/20 bg-primary-50/50 p-4 leading-6 text-primary-900 dark:border-primary-500/30 dark:bg-primary-500/5 dark:text-primary-200 dark:[--tw-prose-links-hover:theme(colors.primary.300)] dark:[--tw-prose-links:theme(colors.ink.DEFAULT)]">
       <SuccessIcon className="mt-1 h-4 w-4 flex-none fill-primary-800 stroke-white dark:fill-primary-200/20 dark:stroke-primary-200" />
       <div className="[&>:first-child]:mt-0 [&>:last-child]:mb-0">
         {children}

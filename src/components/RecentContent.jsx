@@ -69,7 +69,7 @@ export function RecentContent({ title = "Recent Articles", id, description, limi
               onClick={handleClick}
             >
               <TileHighlight />
-              <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-line dark:group-hover:ring-line-strong" />
+              <div className="absolute inset-0 rounded-2xl pointer-events-none z-10 border border-zinc-300 group-hover:border-zinc-400 dark:border-line-strong dark:group-hover:border-zinc-600" />
 
               {/* Cover Image */}
               {article.cover && (
