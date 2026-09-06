@@ -68,7 +68,7 @@ function useTableOfContents(tableOfContents) {
   return { currentSection, showJumpToTop }
 }
 
-export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage, tags }) {
+export function Layout({ children, title, date, dateModified, tableOfContents, authors: authorNames, coverImage, imagePosition, editUrl, isContentPage, tags, wide = false }) {
   let router = useRouter()
   const relatedArticles = isContentPage ? getRelatedArticles(tags, router.asPath, 4) : []
 
@@ -202,11 +202,11 @@ export function Layout({ children, title, date, dateModified, tableOfContents, a
               <Authors authors={getAuthors(authorNames)} />
             )}
             {isContentPage && <TopContentBanner />}
-            <Prose as="article" className={router.pathname === '/' ? '!max-w-5xl' : undefined}>{children}</Prose>
+            <Prose as="article" className={wide ? '!max-w-none' : router.pathname === '/' ? '!max-w-5xl' : undefined}>{children}</Prose>
           </main>
           <Footer />
         </div>
-        {router.pathname !== '/' && <div
+        {router.pathname !== '/' && !wide && <div
             className="hidden xl:sticky xl:top-[4.5rem] xl:-mr-6 xl:block xl:h-[calc(100vh-4.5rem)] xl:flex-none xl:overflow-y-auto xl:py-16 xl:pr-6 pl-12"
             style={{ top: `calc(${bannerHeight}px + 4.5rem)` }}
         >

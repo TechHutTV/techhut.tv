@@ -1,0 +1,2158 @@
+[
+  {
+    "id": "adguard-home",
+    "name": "AdGuard Home",
+    "category": "Networking",
+    "description": "Filter ads and trackers across your network with a self-hosted DNS server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "YqaDnnREqI8",
+        "title": "DITCHED Pi-Hole for AdGuard - Block ALL the Ads! (Proxmox Setup Guide)",
+        "published": "2024-05-10"
+      }
+    ],
+    "icon": "/app-icons/adguard-home.png",
+    "iconDark": "/app-icons/adguard-home-light.png"
+  },
+  {
+    "id": "amp",
+    "name": "AMP",
+    "category": "Gaming & Compatibility",
+    "description": "Deploy and manage game server instances through a web control panel.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "hAqGEUt9V_M",
+        "title": "Proxmox Gaming Guide - SELF-HOST Game Streaming and Servers!",
+        "published": "2025-09-28"
+      }
+    ],
+    "icon": "/app-icons/amp.png"
+  },
+  {
+    "id": "ansible",
+    "name": "Ansible",
+    "category": "Automation",
+    "description": "Automate recurring maintenance and configuration across homelab hosts.",
+    "coverage": [
+      "/automate-homelab-chores-ansible"
+    ],
+    "icon": "/app-icons/ansible.png"
+  },
+  {
+    "id": "apache-http-server",
+    "name": "Apache HTTP Server",
+    "category": "Networking",
+    "description": "Host a website and configure SSL on a Linux web server.",
+    "coverage": [
+      "/how-to-apache-webserver-ssl"
+    ],
+    "icon": "/app-icons/apache-http-server.png",
+    "videos": [
+      {
+        "id": "VXSgEvZKp-8",
+        "title": "Apache Web Server Setup on Ubuntu 22.04 (with SSL)",
+        "published": "2022-12-06"
+      }
+    ]
+  },
+  {
+    "id": "appimage-pool",
+    "name": "AppImage Pool",
+    "category": "Desktop",
+    "description": "Browse and download AppImage applications through a desktop interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "l_OCZrEPQgs",
+        "title": "Linux App Store for AppImages!",
+        "published": "2021-12-27"
+      }
+    ]
+  },
+  {
+    "id": "archfi",
+    "name": "archfi",
+    "category": "Server Management",
+    "description": "Install Arch Linux with a guided installer script.",
+    "coverage": [
+      "/installing-arch-linux-the-easy-way-archfi-guide"
+    ],
+    "videos": [
+      {
+        "id": "u2l54FMgWq4",
+        "title": "Install Arch Linux the EASY WAY - Archfi Guide (2021)",
+        "published": "2021-04-13"
+      }
+    ]
+  },
+  {
+    "id": "audiobookshelf",
+    "name": "Audiobookshelf",
+    "category": "Media",
+    "description": "Host and organize your audiobook and podcast libraries.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "V1-TbY5k0PQ",
+        "title": "DITCH Audible and Self-Host with Audiobookself!",
+        "published": "2023-01-25"
+      }
+    ],
+    "icon": "/app-icons/audiobookshelf.png",
+    "iconDark": "/app-icons/audiobookshelf-light.png"
+  },
+  {
+    "id": "beaver-habit-tracker",
+    "name": "Beaver Habit Tracker",
+    "category": "Desktop",
+    "description": "Track daily habits with a self-hosted list and calendar.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "BP0j01q2c7M",
+        "title": "simple OPEN SOURCE Habit Tracking App",
+        "published": "2025-01-03"
+      }
+    ],
+    "icon": "/app-icons/beaver-habit-tracker.png",
+    "iconDark": "/app-icons/beaver-habit-tracker-light.png"
+  },
+  {
+    "id": "beszel",
+    "name": "Beszel",
+    "category": "Monitoring",
+    "description": "Monitor server resources and Docker statistics with a lightweight dashboard.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "RHPjdB7gyQM",
+        "title": "use THIS to monitor your Home Servers!",
+        "published": "2025-09-04"
+      }
+    ],
+    "icon": "/app-icons/beszel.png",
+    "iconDark": "/app-icons/beszel-light.png"
+  },
+  {
+    "id": "bismuth",
+    "name": "Bismuth",
+    "category": "Desktop",
+    "description": "Arrange KDE Plasma windows with automatic tiling layouts.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "-PO5gqexi8c",
+        "title": "EASY Window Tiling in KDE Plasma with Bismuth",
+        "published": "2022-01-02"
+      }
+    ]
+  },
+  {
+    "id": "boost-note",
+    "name": "Boost Note",
+    "category": "Desktop",
+    "description": "Write and organize Markdown notes in a desktop editor.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "M_Ea7zCCih4",
+        "title": "Boost Note is AWESOME Markdown Writing Application",
+        "published": "2021-01-30"
+      }
+    ]
+  },
+  {
+    "id": "bottles",
+    "name": "Bottles",
+    "category": "Gaming & Compatibility",
+    "description": "Configure separate environments for Windows applications on Linux.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "gpsmHI7oPas",
+        "title": "Windows Apps and GAMES in Linux",
+        "published": "2022-07-24"
+      }
+    ]
+  },
+  {
+    "id": "btop",
+    "name": "btop",
+    "category": "Monitoring",
+    "description": "View processor, memory, disk and network usage in the terminal.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "YmzBJmpFMpw",
+        "title": "STUNNING Linux System Monitor - btop++",
+        "published": "2021-09-19"
+      }
+    ]
+  },
+  {
+    "id": "bubble-card",
+    "name": "Bubble Card",
+    "category": "Automation",
+    "description": "Customize Home Assistant dashboards with cards and controls.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "0gNn5oJWsrw",
+        "title": "Pi-Hole in Home Assistant! + Bubble Card YAML",
+        "published": "2024-12-06"
+      }
+    ]
+  },
+  {
+    "id": "caprover",
+    "name": "CapRover",
+    "category": "Server Management",
+    "description": "Deploy web applications and databases through a self-hosted management interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "E16KymP6284",
+        "title": "Deploy Web Apps EASY with CapRover",
+        "published": "2023-03-01"
+      }
+    ],
+    "icon": "/app-icons/caprover.png",
+    "iconDark": "/app-icons/caprover-light.png"
+  },
+  {
+    "id": "casaos",
+    "name": "CasaOS",
+    "category": "Server Management",
+    "description": "Manage home server applications and Docker containers through a web dashboard.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "lyNVPxHiVyE",
+        "title": "What is CasaOS??",
+        "published": "2022-05-27"
+      }
+    ],
+    "icon": "/app-icons/casaos.png",
+    "iconDark": "/app-icons/casaos-light.png"
+  },
+  {
+    "id": "cloudreve",
+    "name": "Cloudreve",
+    "category": "Files & Photos",
+    "description": "Host, browse and share files through a web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "944IfBbSYtE",
+        "title": "This Nextcloud Alternative Caught Me Off Guard",
+        "published": "2026-02-28"
+      }
+    ],
+    "icon": "/app-icons/cloudreve.png",
+    "iconDark": "/app-icons/cloudreve-light.png"
+  },
+  {
+    "id": "cockpit",
+    "name": "Cockpit",
+    "category": "Server Management",
+    "description": "Manage a Linux server from a web interface.",
+    "coverage": [
+      "/fedora-server-guide-cockpit-zfs-podman"
+    ],
+    "icon": "/app-icons/cockpit.png",
+    "iconDark": "/app-icons/cockpit-light.png",
+    "videos": [
+      {
+        "id": "kOEcTGZWiUQ",
+        "title": "the ULTIMATE Fedora Server Guide - Full Walkthrough (Podman, Cockpit, ZFS)",
+        "published": "2025-12-22"
+      }
+    ]
+  },
+  {
+    "id": "cool-retro-term",
+    "name": "cool-retro-term",
+    "category": "Terminal",
+    "description": "Use a terminal emulator with customizable retro display effects.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "oRU-hH17NnE",
+        "title": "AWESOME Retro Linux Terminal Emulator - cool-retro-term",
+        "published": "2021-06-03"
+      }
+    ]
+  },
+  {
+    "id": "copyparty",
+    "name": "Copyparty",
+    "category": "Files & Photos",
+    "description": "Share, upload, and browse files through a Python-based file server.",
+    "coverage": [
+      "/copyparty-file-server-linux"
+    ],
+    "icon": "/app-icons/copyparty.png",
+    "videos": [
+      {
+        "id": "AlwcuEQNU18",
+        "title": "i run this on EVERY Machine I Own (You Should Too)",
+        "published": "2026-07-12"
+      }
+    ]
+  },
+  {
+    "id": "dash-to-panel",
+    "name": "Dash to Panel",
+    "category": "Desktop",
+    "description": "Combine GNOME’s application launcher and taskbar into one panel.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "_KrF2vaLUBU",
+        "title": "the best GNOME Extension just got BETTER!",
+        "published": "2025-03-29"
+      }
+    ]
+  },
+  {
+    "id": "davinci-resolve",
+    "name": "DaVinci Resolve",
+    "category": "Creative",
+    "description": "Edit video on Linux using TechHut’s installation guides.",
+    "coverage": [
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+    ],
+    "videos": [
+      {
+        "id": "VV-1U7Y7BTE",
+        "title": "How to Install DaVinci Resolve in Linux (AMD/NVIDIA)",
+        "published": "2021-10-27"
+      },
+      {
+        "id": "O1ly_hp3Y-M",
+        "title": "Why I Switched To Resolve from Kdenlive - Best Video Editor on Linux?",
+        "published": "2021-08-20"
+      }
+    ]
+  },
+  {
+    "id": "davincibox",
+    "name": "DavinciBox",
+    "category": "Creative",
+    "description": "Run DaVinci Resolve in a containerized Linux environment.",
+    "coverage": [
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+    ]
+  },
+  {
+    "id": "ddterm",
+    "name": "ddterm",
+    "category": "Terminal",
+    "description": "Open a configurable drop-down terminal from the GNOME desktop.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "tF6_FJYca64",
+        "title": "my favorite GNOME extension",
+        "published": "2021-12-30"
+      }
+    ]
+  },
+  {
+    "id": "deluge",
+    "name": "Deluge",
+    "category": "Media",
+    "description": "Manage torrent transfers with a client that can run behind a VPN container.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "_tz2wUFT8VQ",
+        "title": "You NEED to setup Gluetun! (Route Your Docker Containers Through a VPN)",
+        "published": "2024-07-17"
+      }
+    ],
+    "icon": "/app-icons/deluge.png",
+    "iconDark": "/app-icons/deluge-light.png"
+  },
+  {
+    "id": "discourse",
+    "name": "Discourse",
+    "category": "Desktop",
+    "description": "Host a discussion forum with categories, moderation and community tools.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "Kd7mG9eEAig",
+        "title": "Discourse is AWESOME! - Linux Community",
+        "published": "2021-11-14"
+      }
+    ],
+    "icon": "/app-icons/discourse.png",
+    "iconDark": "/app-icons/discourse-light.png"
+  },
+  {
+    "id": "distrobox",
+    "name": "Distrobox",
+    "category": "Gaming & Compatibility",
+    "description": "Run applications from other Linux distributions inside integrated containers.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "Sj064D9ZUl8",
+        "title": "Stop Distro Hopping! Use this AWESOME tool on Linux",
+        "published": "2023-07-15"
+      }
+    ]
+  },
+  {
+    "id": "docker",
+    "name": "Docker",
+    "category": "Server Management",
+    "description": "Run applications in containers and learn the core Docker workflow.",
+    "coverage": [
+      "/7-docker-basics-for-beginners"
+    ],
+    "icon": "/app-icons/docker.png",
+    "videos": [
+      {
+        "id": "NEnifr8QIas",
+        "title": "Docker is for EVERYONE (learn it RIGHT NOW)",
+        "published": "2024-06-11"
+      },
+      {
+        "id": "q8MRqdqeh8U",
+        "title": "WATCH THIS to get started with Docker (easy mode)",
+        "published": "2024-02-06"
+      }
+    ]
+  },
+  {
+    "id": "dockhand",
+    "name": "Dockhand",
+    "category": "Server Management",
+    "description": "Manage Docker environments, containers, and Compose stacks.",
+    "coverage": [
+      "/dockhand-docker-manager"
+    ],
+    "icon": "/app-icons/dockhand.png",
+    "videos": [
+      {
+        "id": "dwFktbtuTFQ",
+        "title": "if you're running Docker you NEED to checkout Dockhand!",
+        "published": "2026-02-04"
+      }
+    ]
+  },
+  {
+    "id": "duplicati",
+    "name": "Duplicati",
+    "category": "Backup & Virtualization",
+    "description": "Schedule encrypted backups and restore files through a graphical interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "eD7ULX7AK6M",
+        "title": "EASY Open Source Backups - Fully Encrypted with Duplicati",
+        "published": "2025-12-12"
+      }
+    ],
+    "icon": "/app-icons/duplicati.png",
+    "iconDark": "/app-icons/duplicati-light.png"
+  },
+  {
+    "id": "easyssh",
+    "name": "EasySSH",
+    "category": "Terminal",
+    "description": "Save and manage SSH connections in a tabbed terminal client.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "l4yeJ2zo92M",
+        "title": "You NEED to try this SSH Client",
+        "published": "2022-01-09"
+      }
+    ]
+  },
+  {
+    "id": "edrawmax",
+    "name": "EdrawMax",
+    "category": "Creative",
+    "description": "Create diagrams, flowcharts and other visual documents on the desktop.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "gTv-X-fv-7s",
+        "title": "AWESOME Diagramming Tool for Linux, macOS, and Windows! -  EdrawMax",
+        "published": "2021-09-17"
+      }
+    ]
+  },
+  {
+    "id": "errands",
+    "name": "Errands",
+    "category": "Desktop",
+    "description": "Manage tasks and to-do lists with a GNOME desktop app.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "dwohw8WSKoQ",
+        "title": "GNOME Circle is SOOOO good - Errands To-Do App Overview",
+        "published": "2024-01-04"
+      }
+    ]
+  },
+  {
+    "id": "files",
+    "name": "Files",
+    "category": "Files & Photos",
+    "description": "Browse Windows files with tabs, multiple panels and customizable views.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "qIfdcqe2oqo",
+        "title": "DITCH Windows Explorer for Files!",
+        "published": "2022-01-13"
+      }
+    ],
+    "icon": "/app-icons/files.png"
+  },
+  {
+    "id": "filezilla",
+    "name": "FileZilla",
+    "category": "Files & Photos",
+    "description": "Transfer files between a desktop and remote servers using SFTP.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "SNYnOYWoeAw",
+        "title": "SSH from Windows to Linux (+ Transfer Files via SFTP)",
+        "published": "2021-03-01"
+      }
+    ],
+    "icon": "/app-icons/filezilla.png",
+    "iconDark": "/app-icons/filezilla-light.png"
+  },
+  {
+    "id": "fluent-reader",
+    "name": "Fluent Reader",
+    "category": "Desktop",
+    "description": "Read and organize RSS feeds in a desktop application.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "T1ekRJTkzJw",
+        "title": "Fluent Reader is the BEST Linux RSS Feed Reader",
+        "published": "2021-02-22"
+      }
+    ],
+    "icon": "/app-icons/fluent-reader.png",
+    "iconDark": "/app-icons/fluent-reader-light.png"
+  },
+  {
+    "id": "focalboard",
+    "name": "Focalboard",
+    "category": "Desktop",
+    "description": "Organize projects and tasks with boards, calendars and gallery views.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "eoQpEGUNYp0",
+        "title": "AWESOME project management app for Linux, Windows and Mac",
+        "published": "2022-01-22"
+      }
+    ],
+    "icon": "/app-icons/focalboard.png",
+    "iconDark": "/app-icons/focalboard-light.png"
+  },
+  {
+    "id": "ghostty",
+    "name": "Ghostty",
+    "category": "Terminal",
+    "description": "A terminal emulator for a keyboard-driven desktop workflow.",
+    "coverage": [
+      "/ghostty-best-terminal-emulator-linux-mac"
+    ],
+    "icon": "/app-icons/ghostty.png",
+    "videos": [
+      {
+        "id": "hMSVgmPTQ3k",
+        "title": "Stop Using Your Default Terminal",
+        "published": "2026-07-31"
+      }
+    ]
+  },
+  {
+    "id": "git",
+    "name": "Git",
+    "category": "Development",
+    "description": "Track file changes and collaborate using version control.",
+    "coverage": [
+      "/git-for-everyone-guide"
+    ],
+    "icon": "/app-icons/git.png"
+  },
+  {
+    "id": "glance",
+    "name": "Glance",
+    "category": "Server Management",
+    "description": "Build a self-hosted dashboard for feeds and services.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "QGONe-NTWuI",
+        "title": "my new FAVORITE Home Server Dashboard - Glance",
+        "published": "2025-03-05"
+      }
+    ],
+    "icon": "/app-icons/glance.png",
+    "iconDark": "/app-icons/glance-light.png"
+  },
+  {
+    "id": "gluetun",
+    "name": "Gluetun",
+    "category": "Networking",
+    "description": "Route Docker container traffic through a VPN connection.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      },
+      {
+        "id": "Uzqf0qlcQlo",
+        "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
+        "published": "2024-10-01"
+      },
+      {
+        "id": "_tz2wUFT8VQ",
+        "title": "You NEED to setup Gluetun! (Route Your Docker Containers Through a VPN)",
+        "published": "2024-07-17"
+      }
+    ],
+    "icon": "/app-icons/gluetun.png",
+    "iconDark": "/app-icons/gluetun-light.png"
+  },
+  {
+    "id": "gnome-boxes",
+    "name": "GNOME Boxes",
+    "category": "Backup & Virtualization",
+    "description": "Create and run virtual machines from a desktop interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "ZU-W3XCRuPI",
+        "title": "GNOME 41 - Boxes and Connections are AWESOME",
+        "published": "2021-09-28"
+      }
+    ]
+  },
+  {
+    "id": "gnome-connections",
+    "name": "GNOME Connections",
+    "category": "Desktop",
+    "description": "Connect to remote desktops using VNC or RDP.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "ZU-W3XCRuPI",
+        "title": "GNOME 41 - Boxes and Connections are AWESOME",
+        "published": "2021-09-28"
+      }
+    ]
+  },
+  {
+    "id": "gnome-web",
+    "name": "GNOME Web",
+    "category": "Desktop",
+    "description": "Browse the web with GNOME’s WebKit-based browser.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "pZQmPmg6QUQ",
+        "title": "GNOME Web actually GOOD now??",
+        "published": "2023-05-21"
+      }
+    ]
+  },
+  {
+    "id": "grafana",
+    "name": "Grafana",
+    "category": "Monitoring",
+    "description": "Build dashboards for your home server metrics.",
+    "coverage": [
+      "/monitor-home-server-grafana-prometheus-influxdb"
+    ],
+    "icon": "/app-icons/grafana.png",
+    "videos": [
+      {
+        "id": "vffhtqK3ZUg",
+        "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
+        "published": "2024-07-06"
+      }
+    ]
+  },
+  {
+    "id": "homarr",
+    "name": "Homarr",
+    "category": "Server Management",
+    "description": "Organize home server applications and integrations on a dashboard.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "A6vcTIzp_Ww",
+        "title": "my FAVORITE Home Server Dashboard - Homarr Setup in Docker",
+        "published": "2023-11-14"
+      }
+    ],
+    "icon": "/app-icons/homarr.png",
+    "iconDark": "/app-icons/homarr-light.png"
+  },
+  {
+    "id": "home-assistant",
+    "name": "Home Assistant",
+    "category": "Automation",
+    "description": "Connect devices and build automations on your own home server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "0gNn5oJWsrw",
+        "title": "Pi-Hole in Home Assistant! + Bubble Card YAML",
+        "published": "2024-12-06"
+      },
+      {
+        "id": "wfY_vwv3UQU",
+        "title": "my new FAVORITE home lab software",
+        "published": "2024-01-21"
+      }
+    ],
+    "icon": "/app-icons/home-assistant.png",
+    "iconDark": "/app-icons/home-assistant-light.png"
+  },
+  {
+    "id": "immich",
+    "name": "Immich",
+    "category": "Files & Photos",
+    "description": "Self-host photo and video backups.",
+    "coverage": [
+      "/self-host-immich-photo-backup"
+    ],
+    "icon": "/app-icons/immich.png",
+    "videos": [
+      {
+        "id": "lJAGKnudZ8A",
+        "title": "ULTIMATE Immich Guide - DITCH Google/Amazon Photos",
+        "published": "2025-11-05"
+      },
+      {
+        "id": "s1ufPvO0BVE",
+        "title": "my FINAL pick for a self-hosted photo server - immich",
+        "published": "2024-11-06"
+      }
+    ]
+  },
+  {
+    "id": "influxdb",
+    "name": "InfluxDB",
+    "category": "Monitoring",
+    "description": "Store time-series metrics for homelab dashboards.",
+    "coverage": [
+      "/monitor-home-server-grafana-prometheus-influxdb"
+    ],
+    "icon": "/app-icons/influxdb.png",
+    "iconDark": "/app-icons/influxdb-light.png",
+    "videos": [
+      {
+        "id": "vffhtqK3ZUg",
+        "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
+        "published": "2024-07-06"
+      }
+    ]
+  },
+  {
+    "id": "jellyfin",
+    "name": "Jellyfin",
+    "category": "Media",
+    "description": "Organize and stream your own movies, shows and music.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "Vwtx_dfYrtA",
+        "title": "DITCH Netflix and Disney - the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.2",
+        "published": "2025-05-12"
+      },
+      {
+        "id": "Uzqf0qlcQlo",
+        "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
+        "published": "2024-10-01"
+      },
+      {
+        "id": "MUhpu42sWWM",
+        "title": "PLEX or Jellyfin? MY PICK using both for Years!",
+        "published": "2023-07-24"
+      },
+      {
+        "id": "sZfdBI0pBEU",
+        "title": "I was wrong... this is the BEST way to stream your music!",
+        "published": "2022-09-05"
+      },
+      {
+        "id": "DivZcyoY6bs",
+        "title": "ULTIMATE Jellyfin Media Server Guide - Plugins and Themes! (PART 3)",
+        "published": "2022-07-09"
+      },
+      {
+        "id": "aY732cSkopU",
+        "title": "ULTIMATE Jellyfin Guide - Hardware Acceleration, Codecs (PART 2)",
+        "published": "2021-10-21"
+      },
+      {
+        "id": "eJvQKLVrmU8",
+        "title": "ULTIMATE Jellyfin Media Server Guide - Install, Setup, Libraries (PART 1)",
+        "published": "2021-09-13"
+      }
+    ],
+    "icon": "/app-icons/jellyfin.png",
+    "iconDark": "/app-icons/jellyfin-light.png"
+  },
+  {
+    "id": "jellystat",
+    "name": "Jellystat",
+    "category": "Monitoring",
+    "description": "Track playback activity and library statistics for a Jellyfin server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "mWV2bHVVENc",
+        "title": "I'm Done With Plex - Setting Up JellyStat for Jellyfin",
+        "published": "2026-05-31"
+      }
+    ],
+    "icon": "/app-icons/jellystat.png"
+  },
+  {
+    "id": "jp2a",
+    "name": "jp2a",
+    "category": "Terminal",
+    "description": "Convert images into ASCII art from the command line.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "O0xpTtdPD4w",
+        "title": "Convert Images to ASCII Art in Linux Terminal - jp2a",
+        "published": "2021-06-14"
+      }
+    ]
+  },
+  {
+    "id": "k3s",
+    "name": "k3s",
+    "category": "Server Management",
+    "description": "Run a lightweight Kubernetes cluster on homelab hardware.",
+    "coverage": [
+      "/kubernetes-homelab-k3s-cluster"
+    ],
+    "icon": "/app-icons/k3s.png",
+    "videos": [
+      {
+        "id": "tzj59F02TFU",
+        "title": "Stop Avoiding Kubernetes - Set Up a K3S Cluster at Home",
+        "published": "2026-03-30"
+      }
+    ]
+  },
+  {
+    "id": "kde-connect",
+    "name": "KDE Connect",
+    "category": "Desktop",
+    "description": "Connect a phone and Linux desktop for file sharing and remote controls.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "d4ghirmM1Ys",
+        "title": "EASY Connect iPhone to Linux!",
+        "published": "2021-11-04"
+      }
+    ]
+  },
+  {
+    "id": "kde-discover",
+    "name": "KDE Discover",
+    "category": "Desktop",
+    "description": "Find, install and update applications through KDE’s software center.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "0ycb4dmMXPY",
+        "title": "KDE Discover is actually REALLY good now",
+        "published": "2023-02-16"
+      }
+    ]
+  },
+  {
+    "id": "kdenlive",
+    "name": "Kdenlive",
+    "category": "Creative",
+    "description": "Edit videos with a timeline, effects and customizable export settings.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "vPySszLuJC8",
+        "title": "Kdenlive, I'm sorry...",
+        "published": "2022-07-26"
+      },
+      {
+        "id": "O1ly_hp3Y-M",
+        "title": "Why I Switched To Resolve from Kdenlive - Best Video Editor on Linux?",
+        "published": "2021-08-20"
+      },
+      {
+        "id": "W5BP8SZvhZM",
+        "title": "Circular Video Crop in Kdenlive - Alpha Shapes",
+        "published": "2021-06-02"
+      }
+    ]
+  },
+  {
+    "id": "kiwix",
+    "name": "Kiwix",
+    "category": "Desktop",
+    "description": "Serve downloaded knowledge archives for offline reading.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "OC67FoXVRPE",
+        "title": "self-host the INTERNET! (before it's too late)",
+        "published": "2024-03-25"
+      }
+    ],
+    "icon": "/app-icons/kiwix.png",
+    "iconDark": "/app-icons/kiwix-light.png"
+  },
+  {
+    "id": "libation",
+    "name": "Libation",
+    "category": "Media",
+    "description": "Back up an Audible library for use with a personal audiobook server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "V1-TbY5k0PQ",
+        "title": "DITCH Audible and Self-Host with Audiobookself!",
+        "published": "2023-01-25"
+      }
+    ],
+    "icon": "/app-icons/libation.png",
+    "iconDark": "/app-icons/libation-light.png"
+  },
+  {
+    "id": "libregaming",
+    "name": "LibreGaming",
+    "category": "Gaming & Compatibility",
+    "description": "Install a collection of Linux gaming tools with a command-line utility.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "2f2zdViFDYg",
+        "title": "EASY Install Linux Gaming Tools with LibreGaming",
+        "published": "2021-09-05"
+      }
+    ]
+  },
+  {
+    "id": "linked",
+    "name": "Linked",
+    "category": "Desktop",
+    "description": "Keep journal entries and notes organized by date.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "xrBvle3dE4U",
+        "title": "Journal with Linked! (Linux, Windows, macOS)",
+        "published": "2022-03-01"
+      }
+    ]
+  },
+  {
+    "id": "lm-sensors",
+    "name": "lm_sensors",
+    "category": "Monitoring",
+    "description": "Read CPU temperature sensors from the Linux command line.",
+    "coverage": [
+      "/monitor-amd-ryzen-temps-in-linux"
+    ]
+  },
+  {
+    "id": "localtuya",
+    "name": "LocalTuya",
+    "category": "Automation",
+    "description": "Control compatible Tuya devices locally through Home Assistant.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "M-sQcS3KEm8",
+        "title": "ULTIMATE Local Tuya Guide! - Holiday Lights in Home Assistant",
+        "published": "2024-12-12"
+      }
+    ]
+  },
+  {
+    "id": "lsd",
+    "name": "LSD",
+    "category": "Terminal",
+    "description": "List files with icons, colors and configurable command-line output.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "6MlOaZ_KgxA",
+        "title": "LSD (LSDeluxe) - Make your Linux \"ls\" command AWESOME!",
+        "published": "2021-02-20"
+      }
+    ]
+  },
+  {
+    "id": "mailspring",
+    "name": "Mailspring",
+    "category": "Desktop",
+    "description": "Read and manage email accounts in a desktop client.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "Oij2U1d3yL4",
+        "title": "FINALLY! A Good Email Client in Linux - Mailspring",
+        "published": "2021-03-01"
+      }
+    ]
+  },
+  {
+    "id": "marktext",
+    "name": "MarkText",
+    "category": "Desktop",
+    "description": "Write Markdown with editing modes, themes and a command palette.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "GJGpBw4bWFk",
+        "title": "BEST markdown editor for Linux, Windows, and Mac?",
+        "published": "2022-01-16"
+      }
+    ]
+  },
+  {
+    "id": "material-shell",
+    "name": "Material Shell",
+    "category": "Desktop",
+    "description": "Organize GNOME applications with a tiling workspace interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "E2BZJYNfmiI",
+        "title": "Tiling Window Manager for Everyone - Material Shell GNOME Extension",
+        "published": "2021-03-23"
+      }
+    ]
+  },
+  {
+    "id": "memos",
+    "name": "Memos",
+    "category": "Desktop",
+    "description": "Keep notes in a self-hosted timeline with formatting and search.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "w7aH23Jyg58",
+        "title": "Memos is a BEAUTIFUL Free and Open Source note-taking app",
+        "published": "2023-09-24"
+      }
+    ],
+    "icon": "/app-icons/memos.png"
+  },
+  {
+    "id": "microcloud",
+    "name": "MicroCloud",
+    "category": "Backup & Virtualization",
+    "description": "Manage containers and virtual machines across a server cluster.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "tSJqjZjLrig",
+        "title": "I might switch from Proxmox to MicroCloud...",
+        "published": "2026-01-12"
+      }
+    ]
+  },
+  {
+    "id": "microsoft-edge",
+    "name": "Microsoft Edge",
+    "category": "Desktop",
+    "description": "Explore Microsoft’s browser on Linux in TechHut’s dedicated coverage.",
+    "coverage": [
+      "/microsoft-edge-might-win-on-linux"
+    ],
+    "icon": "/app-icons/microsoft-edge.png",
+    "videos": [
+      {
+        "id": "LlhICvSrgIk",
+        "title": "Microsoft Edge has the EDGE in Linux - Benchmarking",
+        "published": "2021-10-30"
+      }
+    ]
+  },
+  {
+    "id": "powertoys",
+    "name": "Microsoft PowerToys",
+    "category": "Desktop",
+    "description": "Add window layouts, a launcher and other productivity tools to Windows.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "n8W7AN5Rsqc",
+        "title": "you NEED this tool in Windows 11 (RIGHT NOW)",
+        "published": "2022-09-09"
+      }
+    ],
+    "icon": "/app-icons/powertoys.png",
+    "iconDark": "/app-icons/powertoys-light.png"
+  },
+  {
+    "id": "moonlight",
+    "name": "Moonlight",
+    "category": "Gaming & Compatibility",
+    "description": "Stream games from a Sunshine host to another device.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "hAqGEUt9V_M",
+        "title": "Proxmox Gaming Guide - SELF-HOST Game Streaming and Servers!",
+        "published": "2025-09-28"
+      }
+    ]
+  },
+  {
+    "id": "movavi-video-editor",
+    "name": "Movavi Video Editor",
+    "category": "Creative",
+    "description": "Edit video projects with titles, transitions and audio tools.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "geo4OMIcaBY",
+        "title": "Kdenlive User Tries Movavi Video Editor Plus 2021 (Proprietary vs Open Source)",
+        "published": "2021-07-20"
+      }
+    ]
+  },
+  {
+    "id": "n8n",
+    "name": "n8n",
+    "category": "Automation",
+    "description": "Build workflows that connect services and automate repetitive tasks.",
+    "coverage": [
+      "/local-ai-automation-n8n-ollama-whisper"
+    ],
+    "icon": "/app-icons/n8n.png",
+    "videos": [
+      {
+        "id": "LMoRt-etQio",
+        "title": "n8n is a MUST HAVE for my Home Server - Secure Setup and MORE!",
+        "published": "2025-11-18"
+      }
+    ]
+  },
+  {
+    "id": "nala",
+    "name": "Nala",
+    "category": "Terminal",
+    "description": "Manage Debian and Ubuntu packages with a terminal frontend for APT.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "skbE6U5uE3A",
+        "title": "APT sucks, use Nala instead!",
+        "published": "2022-03-20"
+      }
+    ]
+  },
+  {
+    "id": "navidrome",
+    "name": "Navidrome",
+    "category": "Media",
+    "description": "Stream a personal music library from a self-hosted server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "RSIvuyLDuvk",
+        "title": "DITCH Spotify and Self-Host your Streaming!",
+        "published": "2022-08-26"
+      }
+    ],
+    "icon": "/app-icons/navidrome.png",
+    "iconDark": "/app-icons/navidrome-light.png"
+  },
+  {
+    "id": "netbird",
+    "name": "NetBird",
+    "category": "Networking",
+    "description": "Connect devices through a self-hosted private network.",
+    "coverage": [
+      "/self-host-netbird-pocketid"
+    ],
+    "icon": "/app-icons/netbird.png",
+    "videos": [
+      {
+        "id": "z0HPuNFkmt4",
+        "title": "REAL Self-Hosted Remote Access for YOUR Home Server",
+        "published": "2026-03-19"
+      },
+      {
+        "id": "Z5Y3a7pvpn8",
+        "title": "DITCH your VPN - Connect to your Home Server from ANYWHERE",
+        "published": "2025-06-11"
+      }
+    ]
+  },
+  {
+    "id": "nut",
+    "name": "Network UPS Tools",
+    "category": "Monitoring",
+    "description": "Share UPS status with servers so they can respond to power outages.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "tYi7RFDGtc8",
+        "title": "You NEED a UPS! Connecting Synology and UNRAID to NUT Server",
+        "published": "2023-06-29"
+      }
+    ],
+    "icon": "/app-icons/nut.png"
+  },
+  {
+    "id": "nextcloud",
+    "name": "Nextcloud",
+    "category": "Files & Photos",
+    "description": "Host file storage, sharing and collaboration tools on your own server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "6wMeL9xlzag",
+        "title": "Google Drive KILLER Just Got Even Better - Nextcloud Hub 26 + Upgrade Guide",
+        "published": "2026-03-22"
+      },
+      {
+        "id": "tqM_wyE54Nc",
+        "title": "Nextcloud Hub 25: FINALLY Better Than Google & Microsoft? (7 HUGE Upgrades!)",
+        "published": "2025-10-09"
+      },
+      {
+        "id": "DFUmfHqQWyg",
+        "title": "DITCH Microsoft and Google with Nextcloud AIO - FULL GUIDE with Domain Setup",
+        "published": "2025-05-30"
+      },
+      {
+        "id": "ise0f4Crj5I",
+        "title": "MAJOR RELEASE! Nextcloud Hub 9 can COMPETE with Microsoft and Google",
+        "published": "2024-09-27"
+      },
+      {
+        "id": "CeKNPSsK-kI",
+        "title": "Nextcloud Hub 4 is HERE! ChatGPT Integration, New Apps, and more!",
+        "published": "2023-03-22"
+      },
+      {
+        "id": "HQOQ2NCUuVQ",
+        "title": "SYNC Google to Nextcloud - Data Migration Tool and Backup/Restore Guide",
+        "published": "2021-09-03"
+      },
+      {
+        "id": "rUQAWvXrtPY",
+        "title": "Ditch GOOGLE and Set-up Nextcloud! - Custom Domain, Secure HTTPS",
+        "published": "2021-08-16"
+      }
+    ],
+    "icon": "/app-icons/nextcloud.png",
+    "iconDark": "/app-icons/nextcloud-light.png"
+  },
+  {
+    "id": "nginx-proxy-manager",
+    "name": "Nginx Proxy Manager",
+    "category": "Networking",
+    "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "DFUmfHqQWyg",
+        "title": "DITCH Microsoft and Google with Nextcloud AIO - FULL GUIDE with Domain Setup",
+        "published": "2025-05-30"
+      }
+    ],
+    "icon": "/app-icons/nginx-proxy-manager.png",
+    "iconDark": "/app-icons/nginx-proxy-manager-light.png"
+  },
+  {
+    "id": "octoprint",
+    "name": "OctoPrint",
+    "category": "Automation",
+    "description": "Monitor and control a 3D printer through a self-hosted web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "4PpKiZGYswE",
+        "title": "make your DUMB 3D printer smart with Octoprint!",
+        "published": "2025-04-29"
+      }
+    ],
+    "icon": "/app-icons/octoprint.png",
+    "iconDark": "/app-icons/octoprint-light.png"
+  },
+  {
+    "id": "ollama",
+    "name": "Ollama",
+    "category": "AI",
+    "description": "Run local language models for private AI workflows.",
+    "coverage": [
+      "/local-ai-automation-n8n-ollama-whisper"
+    ],
+    "icon": "/app-icons/ollama.png",
+    "iconDark": "/app-icons/ollama-light.png",
+    "videos": [
+      {
+        "id": "ptRkk_jzvZw",
+        "title": "you NEED to run DeepSeek locally - Linux Guide",
+        "published": "2025-01-31"
+      }
+    ]
+  },
+  {
+    "id": "onlyoffice-desktop",
+    "name": "ONLYOFFICE Desktop Editors",
+    "category": "Desktop",
+    "description": "Work with documents, spreadsheets and presentations on the desktop.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "42xbfk37HzM",
+        "title": "The BEST Linux Office Suite just got better",
+        "published": "2022-05-18"
+      },
+      {
+        "id": "ZRyrZQZggF4",
+        "title": "BEST Microsoft Office Replacement? - OnlyOffice in Linux",
+        "published": "2021-11-15"
+      }
+    ],
+    "icon": "/app-icons/onlyoffice-desktop.png",
+    "iconDark": "/app-icons/onlyoffice-desktop-light.png"
+  },
+  {
+    "id": "onlyoffice-workspace",
+    "name": "ONLYOFFICE Workspace",
+    "category": "Desktop",
+    "description": "Host collaboration tools for documents, projects and mail.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "c0ArprJZ-0E",
+        "title": "DITCH Google and Microsoft for OnlyOffice Workspace!",
+        "published": "2022-08-15"
+      }
+    ],
+    "icon": "/app-icons/onlyoffice-workspace.png",
+    "iconDark": "/app-icons/onlyoffice-workspace-light.png"
+  },
+  {
+    "id": "open-webui",
+    "name": "Open WebUI",
+    "category": "AI",
+    "description": "Chat with locally hosted language models through a web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "kOEcTGZWiUQ",
+        "title": "the ULTIMATE Fedora Server Guide - Full Walkthrough (Podman, Cockpit, ZFS)",
+        "published": "2025-12-22"
+      },
+      {
+        "id": "ptRkk_jzvZw",
+        "title": "you NEED to run DeepSeek locally - Linux Guide",
+        "published": "2025-01-31"
+      }
+    ],
+    "icon": "/app-icons/open-webui.png",
+    "iconDark": "/app-icons/open-webui-light.png"
+  },
+  {
+    "id": "pi-hole",
+    "name": "Pi-hole",
+    "category": "Networking",
+    "description": "Run a network-wide DNS filter with a web administration interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "0gNn5oJWsrw",
+        "title": "Pi-Hole in Home Assistant! + Bubble Card YAML",
+        "published": "2024-12-06"
+      },
+      {
+        "id": "xtMFcVx3cHU",
+        "title": "The Pi-Hole install EVERYONE needs!",
+        "published": "2022-08-22"
+      }
+    ],
+    "icon": "/app-icons/pi-hole.png",
+    "iconDark": "/app-icons/pi-hole-light.png"
+  },
+  {
+    "id": "plausible",
+    "name": "Plausible",
+    "category": "Monitoring",
+    "description": "View website traffic and referral analytics through a web dashboard.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "P0T6VjTS7_Y",
+        "title": "DITCH Google Analytics. Use Plausible on your website!",
+        "published": "2021-04-26"
+      }
+    ],
+    "icon": "/app-icons/plausible.png",
+    "iconDark": "/app-icons/plausible-light.png"
+  },
+  {
+    "id": "plex",
+    "name": "Plex",
+    "category": "Media",
+    "description": "Turn an older computer into a media server.",
+    "coverage": [
+      "/old-pc-laptop-media-server"
+    ],
+    "icon": "/app-icons/plex.png",
+    "videos": [
+      {
+        "id": "96kq5N-vRo4",
+        "title": "FIXING my Proxmox Server - Plex and Docker (Servarr) Migration",
+        "published": "2025-04-04"
+      },
+      {
+        "id": "MUhpu42sWWM",
+        "title": "PLEX or Jellyfin? MY PICK using both for Years!",
+        "published": "2023-07-24"
+      },
+      {
+        "id": "lXcfKTNObOo",
+        "title": "Turning an OLD PC/Laptop into a Media Server! (Ubuntu/PLEX Guide)",
+        "published": "2021-01-21"
+      }
+    ]
+  },
+  {
+    "id": "pocket-id",
+    "name": "Pocket ID",
+    "category": "Networking",
+    "description": "Add passkey-based authentication to a self-hosted NetBird setup.",
+    "coverage": [
+      "/self-host-netbird-pocketid"
+    ],
+    "icon": "/app-icons/pocket-id.png",
+    "videos": [
+      {
+        "id": "z0HPuNFkmt4",
+        "title": "REAL Self-Hosted Remote Access for YOUR Home Server",
+        "published": "2026-03-19"
+      }
+    ]
+  },
+  {
+    "id": "podgrab",
+    "name": "Podgrab",
+    "category": "Media",
+    "description": "Download and manage podcast episodes on your own server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "tQgGTI8wfqw",
+        "title": "SELF-HOSTED Podcast Grabber in Docker! - Podgrab",
+        "published": "2023-12-06"
+      }
+    ],
+    "icon": "/app-icons/podgrab.png"
+  },
+  {
+    "id": "podman",
+    "name": "Podman",
+    "category": "Server Management",
+    "description": "Run containers as part of a Fedora Server homelab.",
+    "coverage": [
+      "/fedora-server-guide-cockpit-zfs-podman"
+    ],
+    "icon": "/app-icons/podman.png",
+    "videos": [
+      {
+        "id": "kOEcTGZWiUQ",
+        "title": "the ULTIMATE Fedora Server Guide - Full Walkthrough (Podman, Cockpit, ZFS)",
+        "published": "2025-12-22"
+      }
+    ]
+  },
+  {
+    "id": "portainer",
+    "name": "Portainer",
+    "category": "Server Management",
+    "description": "Deploy and manage Docker containers through a web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "olUD_F37n0E",
+        "title": "Portainer Setup is EASY - Installing on a Mini PC",
+        "published": "2023-05-31"
+      }
+    ],
+    "icon": "/app-icons/portainer.png",
+    "iconDark": "/app-icons/portainer-light.png"
+  },
+  {
+    "id": "project-nomad",
+    "name": "Project Nomad",
+    "category": "AI",
+    "description": "Keep reference material, maps, and AI tools available offline.",
+    "coverage": [
+      "/project-nomad-offline-knowledge-server"
+    ],
+    "icon": "/app-icons/project-nomad.png",
+    "videos": [
+      {
+        "id": "-YCNzxZX2_0",
+        "title": "The Doomsday App Every Home Lab Needs",
+        "published": "2026-05-05"
+      }
+    ]
+  },
+  {
+    "id": "prometheus",
+    "name": "Prometheus",
+    "category": "Monitoring",
+    "description": "Collect and query metrics from your home server.",
+    "coverage": [
+      "/monitor-home-server-grafana-prometheus-influxdb"
+    ],
+    "icon": "/app-icons/prometheus.png",
+    "videos": [
+      {
+        "id": "vffhtqK3ZUg",
+        "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
+        "published": "2024-07-06"
+      }
+    ]
+  },
+  {
+    "id": "prowlarr",
+    "name": "Prowlarr",
+    "category": "Media",
+    "description": "Manage indexers for a self-hosted media automation stack.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "Uzqf0qlcQlo",
+        "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
+        "published": "2024-10-01"
+      }
+    ],
+    "icon": "/app-icons/prowlarr.png",
+    "iconDark": "/app-icons/prowlarr-light.png"
+  },
+  {
+    "id": "proxmox-backup-server",
+    "name": "Proxmox Backup Server",
+    "category": "Backup & Virtualization",
+    "description": "Back up your homelab with deduplication, retention, and offsite storage.",
+    "coverage": [
+      "/proxmox-backup-server-complete-guide"
+    ],
+    "icon": "/app-icons/proxmox-backup-server.png",
+    "videos": [
+      {
+        "id": "a8FlWQ2YW5Q",
+        "title": "The Backup Setup I Should Have Built Years Ago",
+        "published": "2026-06-17"
+      },
+      {
+        "id": "gbVFTl8bnt8",
+        "title": "my Proxmox Backup Server Guide -  Full Walkthrough Series Pt.4",
+        "published": "2024-12-30"
+      }
+    ]
+  },
+  {
+    "id": "proxmox-ve",
+    "name": "Proxmox VE",
+    "category": "Backup & Virtualization",
+    "description": "Host and manage virtual machines, containers and server storage.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "qmSizZUbCOA",
+        "title": "the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.1 (Proxmox, ZFS, Samba)",
+        "published": "2025-04-19"
+      },
+      {
+        "id": "S6jQx4AJlFw",
+        "title": "AMD/NVIDIA GPU Passthrough in Window 11 - Proxmox Guide",
+        "published": "2022-07-22"
+      },
+      {
+        "id": "LuCXHHc2u18",
+        "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
+        "published": "2021-12-01"
+      }
+    ],
+    "icon": "/app-icons/proxmox-ve.png",
+    "iconDark": "/app-icons/proxmox-ve-light.png"
+  },
+  {
+    "id": "psensor",
+    "name": "Psensor",
+    "category": "Monitoring",
+    "description": "Monitor temperatures with a graphical sensor interface on Linux.",
+    "coverage": [
+      "/monitor-amd-ryzen-temps-in-linux"
+    ]
+  },
+  {
+    "id": "putty",
+    "name": "PuTTY",
+    "category": "Terminal",
+    "description": "Connect to remote Linux systems with an SSH client on Windows.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "SNYnOYWoeAw",
+        "title": "SSH from Windows to Linux (+ Transfer Files via SFTP)",
+        "published": "2021-03-01"
+      }
+    ],
+    "icon": "/app-icons/putty.png",
+    "iconDark": "/app-icons/putty-light.png"
+  },
+  {
+    "id": "qbittorrent",
+    "name": "qBittorrent",
+    "category": "Media",
+    "description": "Manage torrent downloads from a desktop or self-hosted web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      }
+    ],
+    "icon": "/app-icons/qbittorrent.png",
+    "iconDark": "/app-icons/qbittorrent-light.png"
+  },
+  {
+    "id": "radarr",
+    "name": "Radarr",
+    "category": "Media",
+    "description": "Organize and automate a movie library in a self-hosted media stack.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      },
+      {
+        "id": "Uzqf0qlcQlo",
+        "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
+        "published": "2024-10-01"
+      }
+    ],
+    "icon": "/app-icons/radarr.png",
+    "iconDark": "/app-icons/radarr-light.png"
+  },
+  {
+    "id": "retropie",
+    "name": "RetroPie",
+    "category": "Gaming & Compatibility",
+    "description": "Build a retro gaming system with emulators and a controller-friendly interface.",
+    "coverage": [
+      "/ultimate-retropie-setup-guide"
+    ],
+    "videos": [
+      {
+        "id": "N3A77Oxbm3g",
+        "title": "You NEED to have a RetroPie! (Setup Guide)",
+        "published": "2022-10-19"
+      }
+    ]
+  },
+  {
+    "id": "return-youtube-dislike",
+    "name": "Return YouTube Dislike",
+    "category": "Desktop",
+    "description": "Display dislike estimates on YouTube through a browser extension.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "f0goqfG_LIQ",
+        "title": "Re-Enable YouTube Dislikes",
+        "published": "2021-11-23"
+      }
+    ]
+  },
+  {
+    "id": "rustdesk",
+    "name": "RustDesk",
+    "category": "Desktop",
+    "description": "Connect to remote desktops using a client and self-hosted relay server.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "utSOC6BFd3A",
+        "title": "This Free Tool Replaces TeamViewer AND AnyDesk",
+        "published": "2026-07-07"
+      }
+    ],
+    "icon": "/app-icons/rustdesk.png",
+    "iconDark": "/app-icons/rustdesk-light.png"
+  },
+  {
+    "id": "samba",
+    "name": "Samba",
+    "category": "Files & Photos",
+    "description": "Share Linux server folders with other computers using SMB.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "qmSizZUbCOA",
+        "title": "the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.1 (Proxmox, ZFS, Samba)",
+        "published": "2025-04-19"
+      }
+    ]
+  },
+  {
+    "id": "search-light",
+    "name": "Search Light",
+    "category": "Desktop",
+    "description": "Open a Spotlight-style search interface on GNOME.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "6mBziA1SxXk",
+        "title": "macOS Spotlight for GNOME Shell",
+        "published": "2022-11-09"
+      }
+    ]
+  },
+  {
+    "id": "seerr",
+    "name": "Seerr",
+    "category": "Media",
+    "description": "Manage media requests and migrate an existing Overseerr installation.",
+    "coverage": [
+      "/seerr-overseerr-migration"
+    ],
+    "icon": "/app-icons/seerr.png",
+    "videos": [
+      {
+        "id": "Kdq4HN3cFmw",
+        "title": "You need to DITCH Overseerr and Migrate to Seerr",
+        "published": "2026-03-06"
+      }
+    ]
+  },
+  {
+    "id": "sleek",
+    "name": "sleek",
+    "category": "Desktop",
+    "description": "Manage to-do lists using projects, tags and the todo.txt format.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "KXxIUvsE_QE",
+        "title": "Sleek - An Elegant Todo App for Linux, Windows, and MacOS",
+        "published": "2021-03-30"
+      }
+    ]
+  },
+  {
+    "id": "sonarr",
+    "name": "Sonarr",
+    "category": "Media",
+    "description": "Organize and automate a TV library in a self-hosted media stack.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      },
+      {
+        "id": "Uzqf0qlcQlo",
+        "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
+        "published": "2024-10-01"
+      }
+    ],
+    "icon": "/app-icons/sonarr.png",
+    "iconDark": "/app-icons/sonarr-light.png"
+  },
+  {
+    "id": "startallback",
+    "name": "StartAllBack",
+    "category": "Desktop",
+    "description": "Customize the Windows Start menu, taskbar and Explorer interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "hh5CP9sDMw4",
+        "title": "FIX Windows 11 Start Menu and Taskbar - Tweak Tool!",
+        "published": "2021-11-01"
+      }
+    ]
+  },
+  {
+    "id": "sunshine",
+    "name": "Sunshine",
+    "category": "Gaming & Compatibility",
+    "description": "Host a game streaming session for Moonlight clients.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "hAqGEUt9V_M",
+        "title": "Proxmox Gaming Guide - SELF-HOST Game Streaming and Servers!",
+        "published": "2025-09-28"
+      }
+    ],
+    "icon": "/app-icons/sunshine.png",
+    "iconDark": "/app-icons/sunshine-light.png"
+  },
+  {
+    "id": "super-productivity",
+    "name": "Super Productivity",
+    "category": "Desktop",
+    "description": "Plan tasks, track time and organize projects in one application.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "KUqRFSMIXck",
+        "title": "my FAVORITE Open Source App - Super Productivity",
+        "published": "2024-09-07"
+      }
+    ],
+    "icon": "/app-icons/super-productivity.png",
+    "iconDark": "/app-icons/super-productivity-light.png"
+  },
+  {
+    "id": "superfile",
+    "name": "superfile",
+    "category": "Terminal",
+    "description": "Manage files and folders in a keyboard-driven terminal interface.",
+    "coverage": [
+      "/superfile-terminal-file-manager"
+    ],
+    "icon": "/app-icons/superfile.svg",
+    "videos": [
+      {
+        "id": "pDIMXiKyvA4",
+        "title": "Superfile is AWESOME",
+        "published": "2026-07-22"
+      }
+    ]
+  },
+  {
+    "id": "synaptic",
+    "name": "Synaptic",
+    "category": "Desktop",
+    "description": "Browse and manage APT packages with a graphical package manager.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "NnCaw57FVMU",
+        "title": "BEST Package Manger for Ubuntu/Debian",
+        "published": "2021-09-05"
+      }
+    ]
+  },
+  {
+    "id": "synology-surveillance-station",
+    "name": "Synology Surveillance Station",
+    "category": "Automation",
+    "description": "Manage IP cameras, recordings and surveillance events on a Synology NAS.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "cw1TQpeHBIc",
+        "title": "Synology Surveillance Station is AWESOME",
+        "published": "2023-02-21"
+      }
+    ],
+    "icon": "/app-icons/synology-surveillance-station.png"
+  },
+  {
+    "id": "synth-shell",
+    "name": "synth-shell",
+    "category": "Terminal",
+    "description": "Customize a Bash prompt with colors and status information.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "jS-QZKjAd-U",
+        "title": "Fancy Bash Prompt! Customize Linux Terminal with SYNTH-SHELL",
+        "published": "2021-06-02"
+      }
+    ]
+  },
+  {
+    "id": "sysmontask",
+    "name": "SysMonTask",
+    "category": "Monitoring",
+    "description": "Inspect Linux processes and resource use in a graphical system monitor.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "xbF_JUNj76s",
+        "title": "Windows Task Manager CLONE for Linux?",
+        "published": "2021-03-01"
+      }
+    ]
+  },
+  {
+    "id": "tabby",
+    "name": "Tabby",
+    "category": "Terminal",
+    "description": "Manage local shells and remote connections in a configurable terminal.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "w-f074YweOY",
+        "title": "NEW kind of Terminal Emulator on Linux, MacOS, and Windows",
+        "published": "2021-12-10"
+      }
+    ]
+  },
+  {
+    "id": "tangram",
+    "name": "Tangram",
+    "category": "Desktop",
+    "description": "Keep web applications in separate persistent browser tabs.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "KmQRh-ekaYw",
+        "title": "NEW Kind of Web Browser on Linux",
+        "published": "2021-10-09"
+      }
+    ]
+  },
+  {
+    "id": "tgpt",
+    "name": "tgpt",
+    "category": "AI",
+    "description": "Use an AI assistant from the terminal, as demonstrated in TechHut’s CLI guide.",
+    "coverage": [
+      "/chatgpt-in-your-terminal"
+    ],
+    "videos": [
+      {
+        "id": "Xg63xdqbA9E",
+        "title": "ChatGPT in YOUR Linux Terminal",
+        "published": "2023-04-22"
+      }
+    ]
+  },
+  {
+    "id": "twingate",
+    "name": "Twingate",
+    "category": "Networking",
+    "description": "Access private network resources using connectors and desktop clients.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "yaw2A3DG664",
+        "title": "DITCH your VPN! - How I Access my Home Server from ANYWHERE",
+        "published": "2024-01-08"
+      }
+    ],
+    "icon": "/app-icons/twingate.png",
+    "iconDark": "/app-icons/twingate-light.png"
+  },
+  {
+    "id": "ulaa",
+    "name": "Ulaa",
+    "category": "Desktop",
+    "description": "Browse the web with profiles, modes and privacy controls.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "SLBchTeJu1U",
+        "title": "The BEST Web Browser You've NEVER Heard of",
+        "published": "2023-06-05"
+      }
+    ]
+  },
+  {
+    "id": "ulauncher",
+    "name": "Ulauncher",
+    "category": "Desktop",
+    "description": "Launch applications and extensions with a configurable desktop search tool.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "oO9ytyS5laQ",
+        "title": "RICE Linux with Ulauncher - Extensions and Custom Theming",
+        "published": "2021-03-13"
+      }
+    ]
+  },
+  {
+    "id": "umbrel",
+    "name": "Umbrel",
+    "category": "Server Management",
+    "description": "Install and manage self-hosted services through a home server dashboard.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "ZUZ_z71u9Ls",
+        "title": "this Homelab GUI has great potential!",
+        "published": "2022-08-04"
+      }
+    ],
+    "icon": "/app-icons/umbrel.png"
+  },
+  {
+    "id": "unbound",
+    "name": "Unbound",
+    "category": "Networking",
+    "description": "Run a recursive DNS resolver alongside a local DNS filter.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "xtMFcVx3cHU",
+        "title": "The Pi-Hole install EVERYONE needs!",
+        "published": "2022-08-22"
+      }
+    ],
+    "icon": "/app-icons/unbound.png",
+    "iconDark": "/app-icons/unbound-light.png"
+  },
+  {
+    "id": "unifi-os-server",
+    "name": "UniFi OS Server",
+    "category": "Networking",
+    "description": "Self-host the management interface for UniFi network devices.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "SE1lDFVCrr0",
+        "title": "You can NOW Self-Host UniFi",
+        "published": "2025-11-29"
+      }
+    ],
+    "icon": "/app-icons/unifi-os-server.png",
+    "iconDark": "/app-icons/unifi-os-server-light.png"
+  },
+  {
+    "id": "ventoy",
+    "name": "Ventoy",
+    "category": "Desktop",
+    "description": "Create a multiboot USB drive by copying disk images onto it.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "6Mev24M-Bs8",
+        "title": "Make a MultiBoot USB for Linux, Windows, and more!",
+        "published": "2021-08-15"
+      }
+    ]
+  },
+  {
+    "id": "vmware",
+    "name": "VMware",
+    "category": "Backup & Virtualization",
+    "description": "Run a Windows 11 virtual machine on Linux.",
+    "coverage": [
+      "/windows-11-vmware-guide-linux"
+    ],
+    "icon": "/app-icons/vmware.png",
+    "videos": [
+      {
+        "id": "SDrbNgM6gXk",
+        "title": "Run ANY Windows App on Linux - VMware with 3D Acceleration",
+        "published": "2022-03-11"
+      }
+    ]
+  },
+  {
+    "id": "whisper",
+    "name": "Whisper",
+    "category": "AI",
+    "description": "Transcribe audio as part of a local automation stack.",
+    "coverage": [
+      "/local-ai-automation-n8n-ollama-whisper"
+    ]
+  },
+  {
+    "id": "wsl",
+    "name": "Windows Subsystem for Linux",
+    "category": "Gaming & Compatibility",
+    "description": "Run a Linux environment and applications inside Windows.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "loDOloG8doY",
+        "title": "Linux Apps in Windows! - WSL Setup Guide",
+        "published": "2022-03-04"
+      }
+    ]
+  },
+  {
+    "id": "yacht",
+    "name": "Yacht",
+    "category": "Server Management",
+    "description": "Deploy Docker applications using templates and a web interface.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "__38-ehaYYs",
+        "title": "Docker made EASY with Yacht",
+        "published": "2021-12-31"
+      }
+    ],
+    "icon": "/app-icons/yacht.png",
+    "iconDark": "/app-icons/yacht-light.png"
+  },
+  {
+    "id": "zen-browser",
+    "name": "Zen Browser",
+    "category": "Desktop",
+    "description": "A Firefox-based browser with a customizable workspace.",
+    "coverage": [
+      "/zen-browser-better-firefox"
+    ],
+    "icon": "/app-icons/zen-browser.png",
+    "videos": [
+      {
+        "id": "ppdzVvzOMrc",
+        "title": "FINALLY Ditching Microsoft Edge... for Zen Browser",
+        "published": "2024-08-29"
+      }
+    ]
+  },
+  {
+    "id": "zerobyte",
+    "name": "Zerobyte",
+    "category": "Backup & Virtualization",
+    "description": "Schedule and manage encrypted backups across storage destinations.",
+    "coverage": [],
+    "videos": [
+      {
+        "id": "vAQdYEhI04A",
+        "title": "the BEST Home Server Backup App I've Used - ZeroByte",
+        "published": "2025-12-24"
+      }
+    ],
+    "icon": "/app-icons/zerobyte.png",
+    "iconDark": "/app-icons/zerobyte-light.png"
+  }
+]

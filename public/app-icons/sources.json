@@ -1,0 +1,894 @@
+[
+  {
+    "app": "ansible",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ansible.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "apache-http-server",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/apache.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "cockpit",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cockpit.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "copyparty",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/copyparty.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "docker",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/docker.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "dockhand",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/dockhand.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "ghostty",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ghostty.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "git",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/git.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "grafana",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/grafana.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "immich",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/immich.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "influxdb",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/influxdb.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "k3s",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/rancher-k3s.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "microsoft-edge",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/microsoft-edge.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "n8n",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/n8n.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "netbird",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/netbird.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "ollama",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ollama.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "plex",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/plex.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "pocket-id",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/pocket-id.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "podman",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/podman.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "project-nomad",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/project-nomad.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "prometheus",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/prometheus.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "proxmox-backup-server",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/proxmox.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "seerr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/seerr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "vmware",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/vmware-workstation-pro.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "zen-browser",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/zen-browser.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "superfile",
+    "source": "https://superfile.dev/logo.svg",
+    "repository": "https://github.com/yorukot/superfile",
+    "license": "MIT",
+    "changes": "None"
+  },
+  {
+    "app": "cockpit",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cockpit-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "variant": "Light logo for dark surfaces"
+  },
+  {
+    "app": "influxdb",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/influxdb-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "variant": "Light logo for dark surfaces"
+  },
+  {
+    "app": "ollama",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ollama-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "variant": "Light logo for dark surfaces"
+  },
+  {
+    "app": "adguard-home",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/adguard-home.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "adguard-home",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/adguard-home-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "amp",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/amp.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "audiobookshelf",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/audiobookshelf.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "audiobookshelf",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/audiobookshelf-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "beaver-habit-tracker",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/beaver-habit-tracker.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "beaver-habit-tracker",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/beaver-habit-tracker-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "beszel",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/beszel.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "beszel",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/beszel-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "caprover",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/caprover.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "caprover",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/caprover-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "casaos",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/casaos.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "casaos",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/casaos-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "cloudreve",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cloudreve.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "cloudreve",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/cloudreve-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "deluge",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/deluge.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "deluge",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/deluge-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "discourse",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/discourse.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "discourse",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/discourse-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "duplicati",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/duplicati.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "duplicati",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/duplicati-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "files",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/files.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "filezilla",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/filezilla.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "filezilla",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/filezilla-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "fluent-reader",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/fluent-reader.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "fluent-reader",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/fluent-reader-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "focalboard",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/focalboard.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "focalboard",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/focalboard-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "glance",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/glance.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "glance",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/glance-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "gluetun",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/gluetun.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "gluetun",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/gluetun-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "homarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/homarr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "homarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/homarr-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "home-assistant",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/home-assistant.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "home-assistant",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/home-assistant-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "jellyfin",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/jellyfin.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "jellyfin",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/jellyfin-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "jellystat",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/jellystat.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "kiwix",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/kiwix.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "kiwix",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/kiwix-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "libation",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/libation.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "libation",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/libation-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "memos",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/memos.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "powertoys",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/microsoft-powertoys.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "powertoys",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/microsoft-powertoys-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "navidrome",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/navidrome.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "navidrome",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/navidrome-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "nut",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/nut.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "nextcloud",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nextcloud.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "nextcloud",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nextcloud-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "nginx-proxy-manager",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nginx-proxy-manager.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "nginx-proxy-manager",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nginx-proxy-manager-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "octoprint",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/octoprint.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "octoprint",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/octoprint-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "onlyoffice-desktop",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/onlyoffice.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "onlyoffice-desktop",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/onlyoffice-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "onlyoffice-workspace",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/onlyoffice.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "onlyoffice-workspace",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/onlyoffice-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "open-webui",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/open-webui.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "open-webui",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/open-webui-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "pi-hole",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/pi-hole.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "pi-hole",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/pi-hole-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "plausible",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/plausible.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "plausible",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/plausible-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "podgrab",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/podgrab.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "portainer",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/portainer.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "portainer",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/portainer-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "prowlarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/prowlarr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "prowlarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/prowlarr-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "proxmox-ve",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/proxmox.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "proxmox-ve",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/proxmox-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "putty",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/putty.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "putty",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/putty-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "qbittorrent",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/qbittorrent.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "qbittorrent",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/qbittorrent-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "radarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/radarr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "radarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/radarr-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "rustdesk",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/rustdesk.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "rustdesk",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/rustdesk-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "sonarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/sonarr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "sonarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/sonarr-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "sunshine",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/sunshine.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "sunshine",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/sunshine-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "super-productivity",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/super-productivity.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "super-productivity",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/super-productivity-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "synology-surveillance-station",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/synology-surveillance-station.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "twingate",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/twingate.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "twingate",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/twingate-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "umbrel",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/d84d00eef4b14084963d5996397b76f9fe22f0c7/png/umbrel.png",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "license": "Apache-2.0",
+    "changes": "None"
+  },
+  {
+    "app": "unbound",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/unbound.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "unbound",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/unbound-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "unifi-os-server",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ubiquiti-unifi.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "unifi-os-server",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/ubiquiti-unifi-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "yacht",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/yacht.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "yacht",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/yacht-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "zerobyte",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/zerobyte.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  },
+  {
+    "app": "zerobyte",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/zerobyte-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None"
+  }
+]
