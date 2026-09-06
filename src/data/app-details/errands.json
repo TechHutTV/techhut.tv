@@ -1,0 +1,28 @@
+{
+  "summary": "Manage tasks and to-do lists with a GNOME desktop app.",
+  "overview": "Errands organizes work into separate task lists, with subtasks for breaking a larger item into smaller steps. Its GNOME interface keeps the focus on adding, arranging, and completing tasks. Nextcloud synchronization offers a way to connect those lists to your own service, which is useful if you want desktop task management that can participate in a self-hosted setup.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux (Flatpak)"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/mrvladus/Errands/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/mrvladus/Errands"
+    }
+  ],
+  "features": [
+    "Tasks and subtasks",
+    "Multiple lists",
+    "Nextcloud sync"
+  ],
+  "sources": [
+    "https://github.com/mrvladus/Errands#readme",
+    "https://github.com/mrvladus/Errands/blob/HEAD/LICENSE"
+  ]
+}

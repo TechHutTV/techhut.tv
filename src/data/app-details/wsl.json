@@ -1,0 +1,33 @@
+{
+  "summary": "Run a Linux environment and applications inside Windows.",
+  "overview": "WSL provides a Linux environment alongside the Windows applications you already use. You can run command-line tools, work with Linux files and packages, and use supported graphical applications without switching to a separate desktop installation. The integration is useful for development and administration workflows that need Linux tools while Windows remains the main operating system.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/microsoft/WSL/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://wsl.dev/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/microsoft/WSL"
+    }
+  ],
+  "features": [
+    "Linux command-line tools",
+    "Linux GUI apps",
+    "Windows file integration"
+  ],
+  "sources": [
+    "https://wsl.dev/",
+    "https://github.com/microsoft/WSL#readme",
+    "https://github.com/microsoft/WSL/blob/HEAD/LICENSE"
+  ]
+}

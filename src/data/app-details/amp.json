@@ -1,0 +1,29 @@
+{
+  "summary": "Deploy and manage game server instances through a web control panel.",
+  "overview": "AMP puts the routine work of running game servers into a browser interface, including managing separate instances, accessing their consoles, and scheduling tasks. You can use it to organize several servers on your own hardware without keeping a terminal open for each one. It is a commercial control panel, with licensing separate from the games and servers it manages.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Windows"
+  ],
+  "license": {
+    "name": "Proprietary commercial license",
+    "type": "Proprietary",
+    "url": "https://cubecoders.com/TermsOfSale"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://cubecoders.com/AMP"
+    }
+  ],
+  "features": [
+    "Game server instances",
+    "Web console",
+    "Scheduled tasks"
+  ],
+  "sources": [
+    "https://cubecoders.com/AMP",
+    "https://cubecoders.com/TermsOfSale"
+  ]
+}

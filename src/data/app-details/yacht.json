@@ -1,0 +1,28 @@
+{
+  "summary": "Deploy Docker applications using templates and a web interface. The upstream project describes this as alpha software; the coverage shows a historical version.",
+  "overview": "Yacht focuses on making container deployment approachable through reusable templates and a web interface. Templates provide a starting configuration for an application, while the management interface gives you controls for the resulting containers. It is useful for understanding a template-based approach to Docker administration, with the historical coverage and upstream alpha status important context when evaluating it for an installation.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/SelfhostedPro/Yacht/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/SelfhostedPro/Yacht"
+    }
+  ],
+  "features": [
+    "Container templates",
+    "Web management",
+    "One-click deployment"
+  ],
+  "sources": [
+    "https://github.com/SelfhostedPro/Yacht#readme",
+    "https://github.com/SelfhostedPro/Yacht/blob/master/LICENSE.md"
+  ]
+}

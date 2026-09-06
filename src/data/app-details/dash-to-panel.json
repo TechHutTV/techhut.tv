@@ -1,0 +1,28 @@
+{
+  "summary": "Combine GNOME’s application launcher and taskbar into one panel.",
+  "overview": "Dash to Panel moves application launchers and running windows into GNOME's main panel, bringing navigation closer to a conventional desktop taskbar. Window previews and configurable panel behavior help you move between applications, while multi-monitor settings let you adapt the layout to your displays. It changes how you interact with the GNOME desktop without requiring a different desktop environment.",
+  "kind": "Extension",
+  "platforms": [
+    "Linux (GNOME Shell)"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/home-sweet-gnome/dash-to-panel/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/home-sweet-gnome/dash-to-panel"
+    }
+  ],
+  "features": [
+    "Integrated taskbar",
+    "Window previews",
+    "Multi-monitor settings"
+  ],
+  "sources": [
+    "https://github.com/home-sweet-gnome/dash-to-panel#readme",
+    "https://github.com/home-sweet-gnome/dash-to-panel/blob/master/COPYING"
+  ]
+}

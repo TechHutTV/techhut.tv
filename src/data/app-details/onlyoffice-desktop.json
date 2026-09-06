@@ -1,0 +1,35 @@
+{
+  "summary": "Work with documents, spreadsheets and presentations on the desktop.",
+  "overview": "ONLYOFFICE Desktop Editors brings word processing, spreadsheets, and presentations into a desktop office suite. You can use it for locally stored work documents without needing to start with a browser-based workspace. The familiar document categories make it relevant for everyday office tasks, especially when you want one application suite available across Linux, Windows, and macOS.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/ONLYOFFICE/DesktopEditors/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.onlyoffice.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ONLYOFFICE/DesktopEditors"
+    }
+  ],
+  "features": [
+    "Document editing",
+    "Spreadsheets",
+    "Presentations"
+  ],
+  "sources": [
+    "https://www.onlyoffice.com",
+    "https://github.com/ONLYOFFICE/DesktopEditors#readme",
+    "https://github.com/ONLYOFFICE/DesktopEditors/blob/HEAD/LICENSE"
+  ]
+}

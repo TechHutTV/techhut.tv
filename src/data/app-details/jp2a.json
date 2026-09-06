@@ -1,0 +1,29 @@
+{
+  "summary": "Convert images into ASCII art from the command line.",
+  "overview": "jp2a turns a raster image into a pattern of text characters that approximates its light and dark areas. You can choose the output width and use color output when the destination supports it. This makes it useful for creating terminal-friendly artwork or experimenting with how an image looks when represented as text rather than pixels.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "Unix"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/Talinx/jp2a/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Talinx/jp2a"
+    }
+  ],
+  "features": [
+    "JPEG, PNG and WebP to ASCII",
+    "Color output",
+    "Configurable width"
+  ],
+  "sources": [
+    "https://github.com/Talinx/jp2a#readme",
+    "https://github.com/Talinx/jp2a/blob/master/COPYING"
+  ]
+}

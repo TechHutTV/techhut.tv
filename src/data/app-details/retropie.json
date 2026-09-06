@@ -1,0 +1,29 @@
+{
+  "summary": "Build a retro gaming system with emulators and a controller-friendly interface.",
+  "overview": "RetroPie brings emulator setup together with a controller-friendly interface for launching games. It helps organize the software and configuration needed to turn supported hardware into a retro gaming system. The available emulators have their own requirements and licenses, and you supply the game content, while RetroPie provides the surrounding setup and navigation experience.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Raspberry Pi OS",
+    "Linux (supported Debian/Ubuntu systems)"
+  ],
+  "license": {
+    "name": "GPL-3.0 (Setup); emulator licenses vary",
+    "type": "Mixed component licenses",
+    "url": "https://github.com/RetroPie/RetroPie-Setup/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/RetroPie/RetroPie-Setup"
+    }
+  ],
+  "features": [
+    "Emulator setup",
+    "Controller configuration",
+    "EmulationStation interface"
+  ],
+  "sources": [
+    "https://github.com/RetroPie/RetroPie-Setup#readme",
+    "https://github.com/RetroPie/RetroPie-Setup/blob/master/LICENSE.md"
+  ]
+}

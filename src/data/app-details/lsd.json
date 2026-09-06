@@ -1,0 +1,31 @@
+{
+  "summary": "List files with icons, colors and configurable command-line output.",
+  "overview": "LSD presents directory listings with visual cues such as colors and file icons, helping distinguish different kinds of entries in the terminal. A tree view can show how folders are nested when a flat listing is not enough. It fits into the familiar command-line file-browsing workflow, with configurable output so you can choose which details and visual elements are helpful.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "FreeBSD"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/lsd-rs/lsd/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/lsd-rs/lsd"
+    }
+  ],
+  "features": [
+    "Colorized file listings",
+    "File icons",
+    "Tree view"
+  ],
+  "sources": [
+    "https://github.com/lsd-rs/lsd#readme",
+    "https://github.com/lsd-rs/lsd/blob/HEAD/LICENSE"
+  ]
+}

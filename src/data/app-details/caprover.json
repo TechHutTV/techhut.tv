@@ -1,0 +1,34 @@
+{
+  "summary": "Deploy web applications and databases through a self-hosted management interface.",
+  "overview": "CapRover brings application deployment and web hosting administration into a shared control panel. You can deploy your own applications or start from templates, then manage their web access and HTTPS certificates from the same environment. It runs on Docker and handles much of the surrounding hosting configuration, making it a practical option for keeping several small applications on a server.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/caprover/caprover/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://CapRover.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/caprover/caprover"
+    }
+  ],
+  "features": [
+    "App deployment",
+    "HTTPS certificates",
+    "One-click templates"
+  ],
+  "sources": [
+    "https://CapRover.com",
+    "https://github.com/caprover/caprover#readme",
+    "https://github.com/caprover/caprover/blob/HEAD/LICENSE"
+  ]
+}

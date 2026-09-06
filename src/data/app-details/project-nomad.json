@@ -1,0 +1,33 @@
+{
+  "summary": "Keep reference material, maps, and AI tools available offline.",
+  "overview": "Project Nomad brings several offline resources together behind a management interface, including reference libraries, maps, and local AI tools. You choose and download the material you want available before relying on it without an internet connection. It is suited to building a shared knowledge server for a home or travel setup where access to online services may be limited.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/Crosstalk-Solutions/project-nomad/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.projectnomad.us"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Crosstalk-Solutions/project-nomad"
+    }
+  ],
+  "features": [
+    "Offline reference library",
+    "Offline maps",
+    "Local AI integration"
+  ],
+  "sources": [
+    "https://www.projectnomad.us",
+    "https://github.com/Crosstalk-Solutions/project-nomad#readme",
+    "https://github.com/Crosstalk-Solutions/project-nomad/blob/HEAD/LICENSE"
+  ]
+}

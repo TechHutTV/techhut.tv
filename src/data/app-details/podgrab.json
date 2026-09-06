@@ -1,0 +1,28 @@
+{
+  "summary": "Download and manage podcast episodes on your own server.",
+  "overview": "Podgrab follows podcast subscriptions and downloads episodes into storage on your server. Its web player lets you listen to the material it has collected, combining acquisition and playback in one interface. This makes it useful for building a locally stored podcast collection that is managed independently of the podcast application on any particular phone or desktop.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/akhilrex/podgrab/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/akhilrex/podgrab"
+    }
+  ],
+  "features": [
+    "Podcast subscriptions",
+    "Episode downloads",
+    "Web player"
+  ],
+  "sources": [
+    "https://github.com/akhilrex/podgrab#readme",
+    "https://github.com/akhilrex/podgrab/blob/HEAD/LICENSE"
+  ]
+}

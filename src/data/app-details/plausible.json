@@ -1,0 +1,34 @@
+{
+  "summary": "View website traffic and referral analytics through a web dashboard.",
+  "overview": "Plausible turns website visits, referral information, and configured events into reports you can review from a dashboard. Goals and custom events let you measure specific actions as well as overall traffic. It is useful for understanding how people arrive at a site and which pages or actions matter, with options for managed hosting or running the analytics service yourself.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)",
+    "Hosted service"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/plausible/analytics/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://plausible.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/plausible/analytics"
+    }
+  ],
+  "features": [
+    "Traffic analytics",
+    "Goal tracking",
+    "Custom events"
+  ],
+  "sources": [
+    "https://plausible.io",
+    "https://github.com/plausible/analytics#readme",
+    "https://github.com/plausible/analytics/blob/master/LICENSE.md"
+  ]
+}

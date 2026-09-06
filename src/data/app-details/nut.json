@@ -1,0 +1,35 @@
+{
+  "summary": "Share UPS status with servers so they can respond to power outages.",
+  "overview": "Network UPS Tools collects information from supported uninterruptible power supplies and makes that status available to other systems. Machines can use the reported power state to coordinate shutdown behavior during an outage. This is especially useful when several servers depend on the same UPS and need a common way to learn that battery power is running low.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "Unix",
+    "Windows (port)"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later and component licenses",
+    "type": "Open source",
+    "url": "https://github.com/networkupstools/nut/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://networkupstools.org/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/networkupstools/nut"
+    }
+  ],
+  "features": [
+    "UPS monitoring",
+    "Shutdown coordination",
+    "Network status server"
+  ],
+  "sources": [
+    "https://networkupstools.org/",
+    "https://github.com/networkupstools/nut#readme",
+    "https://github.com/networkupstools/nut/blob/master/COPYING"
+  ]
+}

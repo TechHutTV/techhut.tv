@@ -17,11 +17,15 @@ export function AppDetail({ app }) {
 
       <header className="border border-zinc-300 bg-zinc-50 p-6 dark:border-line-strong dark:bg-dark-lighter sm:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-          <Image src={app.icon} alt="" width={112} height={112} priority className="h-24 w-24 flex-none object-contain sm:h-28 sm:w-28" />
+          <div className="flex h-24 w-24 flex-none items-center justify-center sm:h-28 sm:w-28">
+            {app.icon ? <Image src={app.icon} alt="" width={112} height={112} priority className={`h-full w-full object-contain ${app.iconDark ? 'dark:hidden' : ''} ${app.iconInvertDark ? 'dark:invert' : ''} ${app.iconInvertLight ? 'invert dark:invert-0' : ''}`} /> : <span aria-hidden="true" className="font-mono text-4xl font-semibold text-zinc-700 dark:text-ink-dim">{app.name.slice(0, 2).toUpperCase()}</span>}
+            {app.iconDark && <Image src={app.iconDark} alt="" width={112} height={112} priority className="hidden h-full w-full object-contain dark:block" />}
+          </div>
           <div className="min-w-0">
-            <p className="mb-3 font-mono text-2xs uppercase tracking-wider text-primary-800 dark:text-primary-500">{app.category} · Self-hosted</p>
+            <p className="mb-3 font-mono text-2xs uppercase tracking-wider text-primary-800 dark:text-primary-500">{app.category} · {details.kind}</p>
             <h1 className="font-display text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-ink sm:text-5xl">{app.name}</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-600 dark:text-ink-dim">{details.summary}</p>
+            <p className="mt-4 text-base leading-7 text-zinc-600 dark:text-ink-dim">{details.summary}</p>
+            {details.overview && <p className="mt-4 text-base leading-7 text-zinc-600 dark:text-ink-dim">{details.overview}</p>}
           </div>
         </div>
 
@@ -30,7 +34,7 @@ export function AppDetail({ app }) {
         </div>
 
         <dl className="mt-8 grid gap-6 border-t border-zinc-200 pt-6 text-sm dark:border-line sm:grid-cols-3">
-          <div><dt className="mb-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint">License</dt><dd><a href={details.license.url} className="text-primary-800 underline underline-offset-4 dark:text-primary-500">{details.license.name} · Open source</a></dd></div>
+          <div><dt className="mb-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint">License</dt><dd><a href={details.license.url} className="text-primary-800 underline underline-offset-4 dark:text-primary-500">{details.license.name}</a><span className="mt-1 block text-zinc-600 dark:text-ink-dim">{details.license.type}</span></dd></div>
           <div><dt className="mb-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint">Runs on</dt><dd className="text-zinc-700 dark:text-ink-dim">{details.platforms.join(' · ')}</dd></div>
           <div><dt className="mb-2 font-mono text-2xs uppercase tracking-wider text-zinc-500 dark:text-ink-faint">Last updated</dt><dd className="text-zinc-700 dark:text-ink-dim"><time dateTime={details.updatedAt}>{formatDate(details.updatedAt)}</time></dd></div>
         </dl>
@@ -41,8 +45,11 @@ export function AppDetail({ app }) {
       </ul>
 
       {app.coverage.length > 0 && <section aria-labelledby="app-articles" className="mt-12">
-        <h2 id="app-articles" className="font-display text-2xl font-bold text-zinc-900 dark:text-ink">Read the guide</h2>
-        {app.coverage.map(article => <FeaturedArticle key={article.href} article={article} />)}
+        <h2 id="app-articles" className="font-display text-2xl font-bold text-zinc-900 dark:text-ink">{app.coverage.length === 1 ? 'Read the guide' : 'Read the guides'}</h2>
+        {app.coverage.map(article => <div key={article.href}>
+          {details.coverageNotes?.[article.href] && <p className="mt-8 border-l-2 border-primary-500 pl-4 text-sm text-zinc-600 dark:text-ink-dim">{details.coverageNotes[article.href]}</p>}
+          <FeaturedArticle article={article} />
+        </div>)}
       </section>}
 
       {app.videos.length > 0 && <section aria-labelledby="app-videos" className="mt-12">

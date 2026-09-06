@@ -1,0 +1,32 @@
+{
+  "summary": "Find, install and update applications through KDE’s software center.",
+  "overview": "Discover provides a graphical way to browse software, inspect applications, and manage updates on a KDE Plasma desktop. Its backends connect it to supported software sources, including Flatpak, so the interface can bring more than one installation method together. The exact sources available depend on your distribution and configuration, but everyday installation and update tasks stay in a familiar desktop application.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux (KDE Plasma)"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later",
+    "type": "Open source",
+    "url": "https://invent.kde.org/plasma/discover/-/blob/master/LICENSES/GPL-2.0-or-later.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://apps.kde.org/discover/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://invent.kde.org/plasma/discover"
+    }
+  ],
+  "features": [
+    "Application discovery",
+    "Software updates",
+    "Flatpak backend"
+  ],
+  "sources": [
+    "https://apps.kde.org/discover/",
+    "https://invent.kde.org/plasma/discover/-/blob/master/LICENSES/GPL-2.0-or-later.txt"
+  ]
+}

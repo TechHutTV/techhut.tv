@@ -1,0 +1,33 @@
+{
+  "summary": "Manage media requests and migrate an existing Overseerr installation.",
+  "overview": "Seerr gives people a shared place to discover media and submit requests, with permissions that control how those requests are handled. Its connections to Sonarr and Radarr pass approved requests into the existing media-management workflow. This makes it useful for a shared server where users need a way to ask for content without administering the library tools themselves.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/seerr-team/seerr/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://docs.seerr.dev"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/seerr-team/seerr"
+    }
+  ],
+  "features": [
+    "Media requests",
+    "Sonarr and Radarr integration",
+    "User permissions"
+  ],
+  "sources": [
+    "https://docs.seerr.dev",
+    "https://github.com/seerr-team/seerr#readme",
+    "https://github.com/seerr-team/seerr/blob/HEAD/LICENSE"
+  ]
+}

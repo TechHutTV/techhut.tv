@@ -1,0 +1,34 @@
+{
+  "summary": "Run a network-wide DNS filter with a web administration interface.",
+  "overview": "Pi-hole answers DNS requests for devices on your network and filters domains according to its configuration. Its dashboard helps you review queries and see what is being blocked, while local DNS records can give familiar names to services on your network. Setting devices to use it as their resolver brings those controls into a central place you administer.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker"
+  ],
+  "license": {
+    "name": "EUPL-1.2 and component licenses",
+    "type": "Open source",
+    "url": "https://github.com/pi-hole/pi-hole/blob/master/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://pi-hole.net"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/pi-hole/pi-hole"
+    }
+  ],
+  "features": [
+    "DNS filtering",
+    "Query dashboard",
+    "Local DNS records"
+  ],
+  "sources": [
+    "https://pi-hole.net",
+    "https://github.com/pi-hole/pi-hole#readme",
+    "https://github.com/pi-hole/pi-hole/blob/master/LICENSE"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "summary": "Open a configurable drop-down terminal from the GNOME desktop.",
+  "overview": "ddterm keeps a terminal available through a drop-down interface integrated with GNOME Shell. You can bring a shell into view for a quick command and return to the application you were using, with tabs available for separate sessions. Native Wayland support and restored tabs make it useful for a desktop workflow where the terminal is something you reach for frequently.",
+  "kind": "Extension",
+  "platforms": [
+    "Linux (GNOME Shell)"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/ddterm/gnome-shell-extension-ddterm/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://extensions.gnome.org/extension/3780/ddterm/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/ddterm/gnome-shell-extension-ddterm"
+    }
+  ],
+  "features": [
+    "Drop-down terminal",
+    "Native Wayland support",
+    "Restored tabs"
+  ],
+  "sources": [
+    "https://extensions.gnome.org/extension/3780/ddterm/",
+    "https://github.com/ddterm/gnome-shell-extension-ddterm#readme",
+    "https://github.com/ddterm/gnome-shell-extension-ddterm/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "summary": "Run desktop virtual machines with VMware Workstation on Linux or Windows, or Fusion on macOS. Guest operating systems run in configurable virtual hardware.",
+  "overview": "Workstation and Fusion provide configurable virtual hardware for guest operating systems, allowing you to run a separate environment inside your existing desktop. Snapshots help preserve a point in a virtual machine's state, while virtual networking connects guests to the networks they need. This is useful for testing software or maintaining access to another operating system without using a separate computer.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux/Windows (Workstation)",
+    "macOS (Fusion)"
+  ],
+  "license": {
+    "name": "Proprietary Broadcom license",
+    "type": "Proprietary",
+    "url": "https://www.broadcom.com/company/legal/licensing"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion"
+    }
+  ],
+  "features": [
+    "Desktop virtual machines",
+    "Snapshots",
+    "Virtual networking"
+  ],
+  "sources": [
+    "https://www.vmware.com/products/desktop-hypervisor/workstation-and-fusion",
+    "https://www.broadcom.com/company/legal/licensing"
+  ]
+}

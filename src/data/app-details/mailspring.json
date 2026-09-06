@@ -1,0 +1,35 @@
+{
+  "summary": "Read and manage email accounts in a desktop client.",
+  "overview": "Mailspring brings multiple email accounts into a desktop interface, including a unified inbox for reviewing messages together. Search helps you find older conversations without moving between separate webmail sessions. It works as a client for your existing mail accounts, making it useful when you want a consistent place to read and manage email across the services you already use.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://github.com/Foundry376/Mailspring/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://getmailspring.com/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Foundry376/Mailspring"
+    }
+  ],
+  "features": [
+    "Unified inbox",
+    "Mail search",
+    "Multiple accounts"
+  ],
+  "sources": [
+    "https://getmailspring.com/",
+    "https://github.com/Foundry376/Mailspring#readme",
+    "https://github.com/Foundry376/Mailspring/blob/master/LICENSE.md"
+  ]
+}

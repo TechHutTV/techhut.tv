@@ -1,0 +1,29 @@
+{
+  "summary": "Access private network resources using connectors and desktop clients.",
+  "overview": "Twingate uses connectors on a private network and clients on user devices to provide access to configured resources. Identity-based policies determine who can reach those resources, which makes access more specific than simply placing every device on the same network. For a homelab, it provides a way to reach private services while the connectors and managed service handle the access path.",
+  "kind": "Private networking",
+  "platforms": [
+    "Linux/macOS/Windows clients",
+    "Linux/Docker connectors"
+  ],
+  "license": {
+    "name": "Proprietary Twingate license",
+    "type": "Proprietary · Freemium",
+    "url": "https://www.twingate.com/terms"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.twingate.com/"
+    }
+  ],
+  "features": [
+    "Private resource access",
+    "Identity-based policies",
+    "Remote network connectors"
+  ],
+  "sources": [
+    "https://www.twingate.com/",
+    "https://www.twingate.com/terms"
+  ]
+}

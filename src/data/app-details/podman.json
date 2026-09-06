@@ -1,0 +1,34 @@
+{
+  "summary": "Build and run OCI containers, including rootless workloads and groups of containers called pods. macOS and Windows use a Linux virtual machine.",
+  "overview": "Podman works with container images and workloads while offering rootless operation, so containers can run under an ordinary user's account. Pods group related containers when they need to work together. On Linux it fits naturally into server administration, while the virtual-machine layer on macOS and Windows provides the Linux environment needed to run those containers.",
+  "kind": "Container tool",
+  "platforms": [
+    "Linux",
+    "Linux VM on macOS/Windows"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/containers/podman/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://podman.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/containers/podman"
+    }
+  ],
+  "features": [
+    "Rootless containers",
+    "Pods",
+    "OCI images"
+  ],
+  "sources": [
+    "https://podman.io",
+    "https://github.com/containers/podman#readme",
+    "https://github.com/containers/podman/blob/HEAD/LICENSE"
+  ]
+}

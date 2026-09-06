@@ -1,0 +1,33 @@
+{
+  "summary": "Configure separate environments for Windows applications on Linux.",
+  "overview": "Bottles organizes Wine applications into separate environments, each with its own settings and dependencies. This lets you adjust the environment for one Windows program without applying the same changes to every other program you run through Wine. Its graphical tools cover dependency management and environment backups, giving Linux users a more organized way to experiment with application compatibility.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux (Flatpak)"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/bottlesdevs/Bottles/blob/main/COPYING.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://usebottles.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/bottlesdevs/Bottles"
+    }
+  ],
+  "features": [
+    "Isolated Wine environments",
+    "Dependency management",
+    "Bottle backups"
+  ],
+  "sources": [
+    "https://usebottles.com",
+    "https://github.com/bottlesdevs/Bottles#readme",
+    "https://github.com/bottlesdevs/Bottles/blob/main/COPYING.md"
+  ]
+}

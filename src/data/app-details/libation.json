@@ -1,0 +1,35 @@
+{
+  "summary": "Back up an Audible library for use with a personal audiobook server.",
+  "overview": "Libation imports information about your Audible collection and helps you turn that collection into locally stored audiobook backups. Library search makes it easier to find titles as the collection grows. Those files can then become part of a personal listening setup, with Libation handling the library import and backup side of the workflow rather than acting as a streaming server.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/rmcrackan/Libation/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://getlibation.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/rmcrackan/Libation"
+    }
+  ],
+  "features": [
+    "Audible library import",
+    "Audiobook backups",
+    "Library search"
+  ],
+  "sources": [
+    "https://getlibation.com",
+    "https://github.com/rmcrackan/Libation#readme",
+    "https://github.com/rmcrackan/Libation/blob/HEAD/LICENSE"
+  ]
+}

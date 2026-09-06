@@ -1,0 +1,30 @@
+{
+  "summary": "Transcribe audio, identify spoken languages, and translate speech into English with a local speech-recognition model and Python tools.",
+  "overview": "Whisper turns spoken audio into text that you can use in notes, captions, or later processing steps. Running it locally lets it become part of a workflow that processes audio on your own hardware, including an automation stack that passes the transcript to other tools. The processing speed and transcription results depend on the model, hardware, language, and recording quality.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows (Python)"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/openai/whisper/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/openai/whisper"
+    }
+  ],
+  "features": [
+    "Audio transcription",
+    "Speech translation",
+    "Language identification"
+  ],
+  "sources": [
+    "https://github.com/openai/whisper#readme",
+    "https://github.com/openai/whisper/blob/HEAD/LICENSE"
+  ]
+}

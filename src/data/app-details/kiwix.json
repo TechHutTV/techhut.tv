@@ -1,0 +1,37 @@
+{
+  "summary": "Read downloaded ZIM knowledge archives without an internet connection, or serve them to nearby devices with Kiwix Server.",
+  "overview": "Kiwix works with downloadable ZIM archives that package content for offline use. Once an archive is on your device, you can browse and search it without relying on the original website being reachable. Kiwix Server can make those archives available over a local network, allowing several devices to use a shared offline library from their browsers.",
+  "kind": "Offline reader and server",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/kiwix/kiwix-tools/blob/main/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://kiwix.org/en/applications/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/kiwix/kiwix-tools"
+    }
+  ],
+  "features": [
+    "Offline ZIM libraries",
+    "Full-text search",
+    "Local content server"
+  ],
+  "sources": [
+    "https://github.com/kiwix/kiwix-tools#readme",
+    "https://github.com/kiwix/kiwix-tools/blob/main/COPYING",
+    "https://kiwix.org/en/applications/"
+  ]
+}

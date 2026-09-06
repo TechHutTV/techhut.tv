@@ -1,0 +1,34 @@
+{
+  "summary": "Host a discussion forum with categories, moderation and community tools.",
+  "overview": "Discourse organizes community conversations into topics and categories, with moderation tools to help manage participation as a community grows. Built-in chat provides a place for more immediate exchanges alongside longer discussions. You can host it yourself or use managed hosting, depending on how much of the server administration you want to handle and where you want the community's data to live.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)",
+    "Hosted service"
+  ],
+  "license": {
+    "name": "GPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/discourse/discourse/blob/main/LICENSE.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.discourse.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/discourse/discourse"
+    }
+  ],
+  "features": [
+    "Discussion topics",
+    "Moderation tools",
+    "Community chat"
+  ],
+  "sources": [
+    "https://www.discourse.org",
+    "https://github.com/discourse/discourse#readme",
+    "https://github.com/discourse/discourse/blob/main/LICENSE.txt"
+  ]
+}

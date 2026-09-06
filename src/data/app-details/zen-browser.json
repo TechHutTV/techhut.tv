@@ -1,0 +1,35 @@
+{
+  "summary": "A Firefox-based browser with a customizable workspace.",
+  "overview": "Zen Browser builds on Firefox with interface choices that emphasize organizing open pages. Vertical tabs and workspaces help separate groups of browsing activity, while split view lets you keep pages visible together. It is aimed at people who treat the browser as a workspace and want more control over how several sites fit into the same session.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "MPL-2.0",
+    "type": "Open source",
+    "url": "https://github.com/zen-browser/desktop/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://zen-browser.app"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/zen-browser/desktop"
+    }
+  ],
+  "features": [
+    "Vertical tabs",
+    "Workspaces",
+    "Split view"
+  ],
+  "sources": [
+    "https://zen-browser.app",
+    "https://github.com/zen-browser/desktop#readme",
+    "https://github.com/zen-browser/desktop/blob/HEAD/LICENSE"
+  ]
+}

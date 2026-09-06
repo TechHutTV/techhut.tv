@@ -1,0 +1,34 @@
+{
+  "summary": "Chat with locally hosted language models through a web interface.",
+  "overview": "Open WebUI provides the conversational interface around a model service, including connections to supported backends and tools for working with documents. It can sit in front of a local Ollama installation so people interact with the models through a browser. Running the interface and model backend as separate pieces lets you manage their roles independently within a self-hosted AI setup.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker",
+    "Python"
+  ],
+  "license": {
+    "name": "Open WebUI License (branding restriction)",
+    "type": "Source available",
+    "url": "https://github.com/open-webui/open-webui/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://openwebui.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/open-webui/open-webui"
+    }
+  ],
+  "features": [
+    "AI chat interface",
+    "Model connections",
+    "Document retrieval"
+  ],
+  "sources": [
+    "https://openwebui.com",
+    "https://github.com/open-webui/open-webui#readme",
+    "https://github.com/open-webui/open-webui/blob/HEAD/LICENSE"
+  ]
+}

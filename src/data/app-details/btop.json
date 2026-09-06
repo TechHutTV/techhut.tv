@@ -1,0 +1,32 @@
+{
+  "summary": "View processor, memory, disk and network usage in the terminal.",
+  "overview": "btop presents live resource graphs and a process list inside a terminal, so you can investigate a busy machine without opening a graphical system monitor. Mouse and keyboard controls let you move through the interface and manage processes. Seeing CPU, memory, disk, and network activity together helps you narrow down which workload may be responsible for a slowdown.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "FreeBSD",
+    "OpenBSD",
+    "NetBSD"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/aristocratos/btop/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/aristocratos/btop"
+    }
+  ],
+  "features": [
+    "Resource graphs",
+    "Process management",
+    "Mouse and keyboard controls"
+  ],
+  "sources": [
+    "https://github.com/aristocratos/btop#readme",
+    "https://github.com/aristocratos/btop/blob/HEAD/LICENSE"
+  ]
+}

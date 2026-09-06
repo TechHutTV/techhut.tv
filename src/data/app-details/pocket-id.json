@@ -1,0 +1,33 @@
+{
+  "summary": "Provide OpenID Connect sign-in for self-hosted applications using passkeys, with users and access managed from a web interface.",
+  "overview": "Pocket ID gives compatible applications a shared identity provider, so each service can delegate sign-in through OpenID Connect. Passkeys handle authentication, while its administration interface manages the users. It is useful when several self-hosted services support OIDC and you want their sign-in flow to draw on the same user directory rather than configuring accounts independently everywhere.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "BSD-2-Clause",
+    "type": "Open source",
+    "url": "https://github.com/pocket-id/pocket-id/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://pocket-id.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/pocket-id/pocket-id"
+    }
+  ],
+  "features": [
+    "Passkey sign-in",
+    "OIDC provider",
+    "User management"
+  ],
+  "sources": [
+    "https://pocket-id.org",
+    "https://github.com/pocket-id/pocket-id#readme",
+    "https://github.com/pocket-id/pocket-id/blob/HEAD/LICENSE"
+  ]
+}

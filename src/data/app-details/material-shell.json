@@ -1,0 +1,33 @@
+{
+  "summary": "Organize GNOME applications with a tiling workspace interface.",
+  "overview": "Material Shell reorganizes GNOME around tiled windows and workspaces, with keyboard navigation for moving through the arrangement. Persistent layouts help maintain a recognizable structure for the applications you use together. It changes the desktop's window-management workflow substantially, making it relevant if you want more of your screen organization to come from a consistent layout rather than manually positioning each window.",
+  "kind": "Extension",
+  "platforms": [
+    "Linux (GNOME Shell)"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/material-shell/material-shell/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://material-shell.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/material-shell/material-shell"
+    }
+  ],
+  "features": [
+    "Tiled workspaces",
+    "Keyboard navigation",
+    "Persistent layout"
+  ],
+  "sources": [
+    "https://material-shell.com",
+    "https://github.com/material-shell/material-shell#readme",
+    "https://github.com/material-shell/material-shell/blob/HEAD/LICENSE"
+  ]
+}

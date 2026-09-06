@@ -1,0 +1,32 @@
+{
+  "summary": "Browse the web with profiles, modes and privacy controls.",
+  "overview": "Ulaa organizes browsing around profiles and modes that can separate different activities, such as personal browsing and work. Tracking-protection controls provide additional choices about how websites interact with the browser. It is relevant if you want several browsing contexts kept distinct within one application, with the available behavior and controls depending on the version and platform you use.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "Proprietary Zoho license",
+    "type": "Proprietary",
+    "url": "https://ulaa.com/eula.html"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://ulaa.com/"
+    }
+  ],
+  "features": [
+    "Browser modes",
+    "Tracking protection",
+    "Profile separation"
+  ],
+  "sources": [
+    "https://ulaa.com/",
+    "https://ulaa.com/eula.html"
+  ]
+}

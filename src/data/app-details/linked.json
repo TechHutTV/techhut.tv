@@ -1,0 +1,35 @@
+{
+  "summary": "Keep journal entries and notes organized by date.",
+  "overview": "Linked organizes writing around individual days, giving journal entries and notes a natural place in a timeline. Its editing tools let you add structure to what you write while keeping the files local. The date-based approach suits capturing thoughts, observations, and everyday records when you want to start writing without first deciding which notebook or project an entry belongs in.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/lostdesign/linked/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://uselinked.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/lostdesign/linked"
+    }
+  ],
+  "features": [
+    "Daily notes",
+    "Markdown editing",
+    "Local storage"
+  ],
+  "sources": [
+    "https://uselinked.com",
+    "https://github.com/lostdesign/linked#readme",
+    "https://github.com/lostdesign/linked/blob/HEAD/LICENSE"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "summary": "Browse the web with GNOME’s WebKit-based browser.",
+  "overview": "GNOME Web, also known as Epiphany, offers a browser interface designed to fit into the GNOME desktop. Alongside ordinary browsing, it can present websites as web applications, giving regularly used services their own place in your desktop workflow. Its WebKit engine and tracking-protection features make it a distinct option among the browsers available on Linux.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://apps.gnome.org/Epiphany/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://gitlab.gnome.org/GNOME/epiphany"
+    }
+  ],
+  "features": [
+    "WebKit browsing",
+    "Web apps",
+    "Tracking protection"
+  ],
+  "sources": [
+    "https://apps.gnome.org/Epiphany/",
+    "https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/COPYING"
+  ]
+}

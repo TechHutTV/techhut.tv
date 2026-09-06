@@ -1,0 +1,28 @@
+{
+  "summary": "Host and manage virtual machines, containers and server storage.",
+  "overview": "Proxmox VE combines KVM virtual machines and LXC system containers in a server-management environment. You can use it to divide physical hardware into separate workloads and manage the storage and networking around them. Cluster features extend that approach across multiple hosts, making it a common foundation for a homelab that needs to run several independent operating systems or services.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Debian-based server)"
+  ],
+  "license": {
+    "name": "AGPL-3.0-or-later",
+    "type": "Open source",
+    "url": "https://git.proxmox.com/?p=pve-manager.git;a=blob;f=debian/copyright;hb=HEAD"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.proxmox.com/en/products/proxmox-virtual-environment/overview"
+    }
+  ],
+  "features": [
+    "KVM virtual machines",
+    "LXC containers",
+    "Cluster management"
+  ],
+  "sources": [
+    "https://www.proxmox.com/en/products/proxmox-virtual-environment/overview",
+    "https://git.proxmox.com/?p=pve-manager.git;a=blob;f=debian/copyright;hb=HEAD"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "summary": "Organize and automate a TV library in a self-hosted media stack.",
+  "overview": "Sonarr tracks television series and episodes, working with configured indexers and download clients to manage the library. Quality profiles let you describe the versions you want, and episode monitoring helps identify what is missing from a series. It handles the television-specific coordination in a media stack, alongside the separate applications used to acquire files and play them.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Sonarr/Sonarr/blob/v5-develop/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://sonarr.tv"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Sonarr/Sonarr"
+    }
+  ],
+  "features": [
+    "Episode monitoring",
+    "Quality profiles",
+    "Download client integration"
+  ],
+  "sources": [
+    "https://sonarr.tv",
+    "https://github.com/Sonarr/Sonarr#readme",
+    "https://github.com/Sonarr/Sonarr/blob/v5-develop/LICENSE.md"
+  ]
+}

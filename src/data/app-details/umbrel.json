@@ -1,0 +1,35 @@
+{
+  "summary": "Run a personal home server with a web dashboard and an app store for self-hosted services. Current umbrelOS installs as its own operating system.",
+  "overview": "Umbrel presents self-hosted services through an app store and a browser-based dashboard. You can use that interface to find applications and manage their updates, making it easier to assemble a home server around the services you want. Because current umbrelOS is a dedicated operating system, choosing it also means choosing the environment that manages those applications and the underlying machine.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Intel/AMD hardware",
+    "Raspberry Pi",
+    "Virtual machine"
+  ],
+  "license": {
+    "name": "PolyForm Noncommercial 1.0.0",
+    "type": "Source available",
+    "url": "https://github.com/getumbrel/umbrel/blob/master/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://umbrel.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/getumbrel/umbrel"
+    }
+  ],
+  "features": [
+    "Self-hosted app store",
+    "Web dashboard",
+    "App updates"
+  ],
+  "sources": [
+    "https://umbrel.com",
+    "https://github.com/getumbrel/umbrel#readme",
+    "https://github.com/getumbrel/umbrel/blob/master/LICENSE.md"
+  ]
+}

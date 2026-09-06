@@ -1,0 +1,34 @@
+{
+  "summary": "Back up photos and videos to your own server, browse them by album or timeline, and sync uploads from the mobile app.",
+  "overview": "Immich combines a personal photo library with tools for finding, organizing, and sharing what you have uploaded. Mobile backups bring photos from your phone onto your server, while albums and search help you work with the collection afterward. It is a fit for people who want a photo-library experience around storage they manage themselves, including responsibility for protecting that server's data.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux (Docker)",
+    "Android/iOS clients"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/immich-app/immich/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://immich.app"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/immich-app/immich"
+    }
+  ],
+  "features": [
+    "Photo backups",
+    "Albums and sharing",
+    "Photo search"
+  ],
+  "sources": [
+    "https://immich.app",
+    "https://github.com/immich-app/immich#readme",
+    "https://github.com/immich-app/immich/blob/HEAD/LICENSE"
+  ]
+}

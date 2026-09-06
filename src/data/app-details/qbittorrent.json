@@ -1,0 +1,36 @@
+{
+  "summary": "Manage torrent downloads from a desktop or self-hosted web interface.",
+  "overview": "qBittorrent combines torrent transfer controls with features such as scheduling and a web interface for remote administration. Search plugins can add ways to find torrents from within the client. You can use it directly on a desktop or manage a separate installation through the browser, depending on where you want transfers to run and downloaded files to be stored.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "FreeBSD"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later (source); GPL-3.0-or-later (binaries)",
+    "type": "Open source",
+    "url": "https://github.com/qbittorrent/qBittorrent/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.qbittorrent.org"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/qbittorrent/qBittorrent"
+    }
+  ],
+  "features": [
+    "Torrent search plugins",
+    "Web interface",
+    "Download scheduling"
+  ],
+  "sources": [
+    "https://www.qbittorrent.org",
+    "https://github.com/qbittorrent/qBittorrent#readme",
+    "https://github.com/qbittorrent/qBittorrent/blob/master/COPYING"
+  ]
+}

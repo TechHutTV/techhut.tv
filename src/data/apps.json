@@ -12,7 +12,10 @@
         "published": "2024-05-10"
       }
     ],
-    "icon": "/app-icons/adguard-home.png"
+    "icon": "/app-icons/adguard-home.png",
+    "details": {
+      "href": "/apps/adguard-home"
+    }
   },
   {
     "id": "amp",
@@ -27,7 +30,10 @@
         "published": "2025-09-28"
       }
     ],
-    "icon": "/app-icons/amp.png"
+    "icon": "/app-icons/amp.png",
+    "details": {
+      "href": "/apps/amp"
+    }
   },
   {
     "id": "ansible",
@@ -37,7 +43,10 @@
     "coverage": [
       "/automate-homelab-chores-ansible"
     ],
-    "icon": "/app-icons/ansible.png"
+    "icon": "/app-icons/ansible.png",
+    "details": {
+      "href": "/apps/ansible"
+    }
   },
   {
     "id": "apache-http-server",
@@ -54,7 +63,10 @@
         "title": "Apache Web Server Setup on Ubuntu 22.04 (with SSL)",
         "published": "2022-12-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/apache-http-server"
+    }
   },
   {
     "id": "appimage-pool",
@@ -69,7 +81,10 @@
         "published": "2021-12-27"
       }
     ],
-    "icon": "/app-icons/appimage-pool.png"
+    "icon": "/app-icons/appimage-pool.png",
+    "details": {
+      "href": "/apps/appimage-pool"
+    }
   },
   {
     "id": "audiobookshelf",
@@ -84,7 +99,10 @@
         "published": "2023-01-25"
       }
     ],
-    "icon": "/app-icons/audiobookshelf.png"
+    "icon": "/app-icons/audiobookshelf.png",
+    "details": {
+      "href": "/apps/audiobookshelf"
+    }
   },
   {
     "id": "beaver-habit-tracker",
@@ -100,7 +118,10 @@
       }
     ],
     "icon": "/app-icons/beaver-habit-tracker.png",
-    "iconDark": "/app-icons/beaver-habit-tracker-light.png"
+    "iconDark": "/app-icons/beaver-habit-tracker-light.png",
+    "details": {
+      "href": "/apps/beaver-habit-tracker"
+    }
   },
   {
     "id": "beszel",
@@ -115,14 +136,19 @@
         "published": "2025-09-04"
       }
     ],
-    "icon": "/app-icons/beszel.png"
+    "icon": "/app-icons/beszel.png",
+    "details": {
+      "href": "/apps/beszel"
+    }
   },
   {
     "id": "bottles",
     "name": "Bottles",
     "category": "Gaming & Compatibility",
     "description": "Configure separate environments for Windows applications on Linux.",
-    "coverage": [],
+    "coverage": [
+      "/the-best-solutions-for-running-windows-apps-in-linux"
+    ],
     "videos": [
       {
         "id": "gpsmHI7oPas",
@@ -130,7 +156,10 @@
         "published": "2022-07-24"
       }
     ],
-    "icon": "/app-icons/bottles.png"
+    "icon": "/app-icons/bottles.png",
+    "details": {
+      "href": "/apps/bottles"
+    }
   },
   {
     "id": "btop",
@@ -145,7 +174,10 @@
         "published": "2021-09-19"
       }
     ],
-    "icon": "/app-icons/btop.svg"
+    "icon": "/app-icons/btop.svg",
+    "details": {
+      "href": "/apps/btop"
+    }
   },
   {
     "id": "bubble-card",
@@ -160,7 +192,10 @@
         "published": "2024-12-06"
       }
     ],
-    "icon": "/app-icons/bubble-card.png"
+    "icon": "/app-icons/bubble-card.png",
+    "details": {
+      "href": "/apps/bubble-card"
+    }
   },
   {
     "id": "caprover",
@@ -175,7 +210,10 @@
         "published": "2023-03-01"
       }
     ],
-    "icon": "/app-icons/caprover.png"
+    "icon": "/app-icons/caprover.png",
+    "details": {
+      "href": "/apps/caprover"
+    }
   },
   {
     "id": "casaos",
@@ -190,7 +228,10 @@
         "published": "2022-05-27"
       }
     ],
-    "icon": "/app-icons/casaos.png"
+    "icon": "/app-icons/casaos.png",
+    "details": {
+      "href": "/apps/casaos"
+    }
   },
   {
     "id": "cloudreve",
@@ -205,7 +246,10 @@
         "published": "2026-02-28"
       }
     ],
-    "icon": "/app-icons/cloudreve.png"
+    "icon": "/app-icons/cloudreve.png",
+    "details": {
+      "href": "/apps/cloudreve"
+    }
   },
   {
     "id": "cockpit",
@@ -222,7 +266,10 @@
         "title": "the ULTIMATE Fedora Server Guide - Full Walkthrough (Podman, Cockpit, ZFS)",
         "published": "2025-12-22"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/cockpit"
+    }
   },
   {
     "id": "cool-retro-term",
@@ -237,7 +284,10 @@
         "published": "2021-06-03"
       }
     ],
-    "icon": "/app-icons/cool-retro-term.png"
+    "icon": "/app-icons/cool-retro-term.png",
+    "details": {
+      "href": "/apps/cool-retro-term"
+    }
   },
   {
     "id": "copyparty",
@@ -273,7 +323,10 @@
       }
     ],
     "icon": "/app-icons/dash-to-panel.svg",
-    "iconDark": "/app-icons/dash-to-panel-light.svg"
+    "iconDark": "/app-icons/dash-to-panel-light.svg",
+    "details": {
+      "href": "/apps/dash-to-panel"
+    }
   },
   {
     "id": "davinci-resolve",
@@ -281,7 +334,8 @@
     "category": "Creative",
     "description": "Edit video on Linux using TechHut’s installation guides.",
     "coverage": [
-      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox",
+      "/how-to-install-davinci-resolve-in-linux-ubuntu-arch-and-fedora"
     ],
     "videos": [
       {
@@ -295,7 +349,10 @@
         "published": "2021-08-20"
       }
     ],
-    "icon": "/app-icons/davinci-resolve.png"
+    "icon": "/app-icons/davinci-resolve.png",
+    "details": {
+      "href": "/apps/davinci-resolve"
+    }
   },
   {
     "id": "davincibox",
@@ -305,7 +362,10 @@
     "coverage": [
       "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
     ],
-    "icon": "/app-icons/davincibox.png"
+    "icon": "/app-icons/davincibox.png",
+    "details": {
+      "href": "/apps/davincibox"
+    }
   },
   {
     "id": "ddterm",
@@ -321,7 +381,10 @@
       }
     ],
     "icon": "/app-icons/ddterm.svg",
-    "iconInvertDark": true
+    "iconInvertDark": true,
+    "details": {
+      "href": "/apps/ddterm"
+    }
   },
   {
     "id": "deluge",
@@ -336,7 +399,10 @@
         "published": "2024-07-17"
       }
     ],
-    "icon": "/app-icons/deluge.png"
+    "icon": "/app-icons/deluge.png",
+    "details": {
+      "href": "/apps/deluge"
+    }
   },
   {
     "id": "discourse",
@@ -351,14 +417,19 @@
         "published": "2021-11-14"
       }
     ],
-    "icon": "/app-icons/discourse.png"
+    "icon": "/app-icons/discourse.png",
+    "details": {
+      "href": "/apps/discourse"
+    }
   },
   {
     "id": "distrobox",
     "name": "Distrobox",
     "category": "Gaming & Compatibility",
     "description": "Run applications from other Linux distributions inside integrated containers.",
-    "coverage": [],
+    "coverage": [
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+    ],
     "videos": [
       {
         "id": "Sj064D9ZUl8",
@@ -367,7 +438,10 @@
       }
     ],
     "icon": "/app-icons/distrobox.svg",
-    "iconDark": "/app-icons/distrobox-light.svg"
+    "iconDark": "/app-icons/distrobox-light.svg",
+    "details": {
+      "href": "/apps/distrobox"
+    }
   },
   {
     "id": "docker",
@@ -375,7 +449,19 @@
     "category": "Server Management",
     "description": "Run applications in containers and learn the core Docker workflow.",
     "coverage": [
-      "/7-docker-basics-for-beginners"
+      "/7-docker-basics-for-beginners",
+      "/run-windows-nas-home-server",
+      "/nixos-best-server-os-setup",
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/self-host-immich-photo-backup",
+      "/automate-homelab-chores-ansible",
+      "/fedora-44-post-install-guide",
+      "/local-ai-automation-n8n-ollama-whisper",
+      "/self-host-netbird-pocketid",
+      "/seerr-overseerr-migration",
+      "/copyparty-file-server-linux",
+      "/dockhand-docker-manager",
+      "/proxmox-backup-server-complete-guide"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
@@ -389,7 +475,10 @@
         "title": "WATCH THIS to get started with Docker (easy mode)",
         "published": "2024-02-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/docker"
+    }
   },
   {
     "id": "dockhand",
@@ -406,7 +495,10 @@
         "title": "if you're running Docker you NEED to checkout Dockhand!",
         "published": "2026-02-04"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/dockhand"
+    }
   },
   {
     "id": "duplicati",
@@ -421,7 +513,10 @@
         "published": "2025-12-12"
       }
     ],
-    "icon": "/app-icons/duplicati.png"
+    "icon": "/app-icons/duplicati.png",
+    "details": {
+      "href": "/apps/duplicati"
+    }
   },
   {
     "id": "easyssh",
@@ -436,7 +531,10 @@
         "published": "2022-01-09"
       }
     ],
-    "icon": "/app-icons/easyssh.png"
+    "icon": "/app-icons/easyssh.png",
+    "details": {
+      "href": "/apps/easyssh"
+    }
   },
   {
     "id": "edrawmax",
@@ -451,7 +549,10 @@
         "published": "2021-09-17"
       }
     ],
-    "icon": "/app-icons/edrawmax.svg"
+    "icon": "/app-icons/edrawmax.svg",
+    "details": {
+      "href": "/apps/edrawmax"
+    }
   },
   {
     "id": "errands",
@@ -466,7 +567,10 @@
         "published": "2024-01-04"
       }
     ],
-    "icon": "/app-icons/errands.png"
+    "icon": "/app-icons/errands.png",
+    "details": {
+      "href": "/apps/errands"
+    }
   },
   {
     "id": "files",
@@ -481,14 +585,19 @@
         "published": "2022-01-13"
       }
     ],
-    "icon": "/app-icons/files.png"
+    "icon": "/app-icons/files.png",
+    "details": {
+      "href": "/apps/files"
+    }
   },
   {
     "id": "filezilla",
     "name": "FileZilla",
     "category": "Files & Photos",
     "description": "Transfer files between a desktop and remote servers using SFTP.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-retropie-setup-guide"
+    ],
     "videos": [
       {
         "id": "SNYnOYWoeAw",
@@ -496,7 +605,10 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/filezilla.png"
+    "icon": "/app-icons/filezilla.png",
+    "details": {
+      "href": "/apps/filezilla"
+    }
   },
   {
     "id": "fluent-reader",
@@ -511,7 +623,10 @@
         "published": "2021-02-22"
       }
     ],
-    "icon": "/app-icons/fluent-reader.png"
+    "icon": "/app-icons/fluent-reader.png",
+    "details": {
+      "href": "/apps/fluent-reader"
+    }
   },
   {
     "id": "ghostty",
@@ -528,7 +643,10 @@
         "title": "Stop Using Your Default Terminal",
         "published": "2026-07-31"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/ghostty"
+    }
   },
   {
     "id": "git",
@@ -538,7 +656,10 @@
     "coverage": [
       "/git-for-everyone-guide"
     ],
-    "icon": "/app-icons/git.png"
+    "icon": "/app-icons/git.png",
+    "details": {
+      "href": "/apps/git"
+    }
   },
   {
     "id": "glance",
@@ -553,7 +674,10 @@
         "published": "2025-03-05"
       }
     ],
-    "icon": "/app-icons/glance.png"
+    "icon": "/app-icons/glance.png",
+    "details": {
+      "href": "/apps/glance"
+    }
   },
   {
     "id": "gluetun",
@@ -578,7 +702,10 @@
         "published": "2024-07-17"
       }
     ],
-    "icon": "/app-icons/gluetun.png"
+    "icon": "/app-icons/gluetun.png",
+    "details": {
+      "href": "/apps/gluetun"
+    }
   },
   {
     "id": "gnome-boxes",
@@ -593,7 +720,10 @@
         "published": "2021-09-28"
       }
     ],
-    "icon": "/app-icons/gnome-boxes.png"
+    "icon": "/app-icons/gnome-boxes.png",
+    "details": {
+      "href": "/apps/gnome-boxes"
+    }
   },
   {
     "id": "gnome-connections",
@@ -608,7 +738,10 @@
         "published": "2021-09-28"
       }
     ],
-    "icon": "/app-icons/gnome-connections.png"
+    "icon": "/app-icons/gnome-connections.png",
+    "details": {
+      "href": "/apps/gnome-connections"
+    }
   },
   {
     "id": "gnome-web",
@@ -623,7 +756,10 @@
         "published": "2023-05-21"
       }
     ],
-    "icon": "/app-icons/gnome-web.png"
+    "icon": "/app-icons/gnome-web.png",
+    "details": {
+      "href": "/apps/gnome-web"
+    }
   },
   {
     "id": "grafana",
@@ -640,7 +776,10 @@
         "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
         "published": "2024-07-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/grafana"
+    }
   },
   {
     "id": "homarr",
@@ -655,7 +794,10 @@
         "published": "2023-11-14"
       }
     ],
-    "icon": "/app-icons/homarr.png"
+    "icon": "/app-icons/homarr.png",
+    "details": {
+      "href": "/apps/homarr"
+    }
   },
   {
     "id": "home-assistant",
@@ -675,7 +817,10 @@
         "published": "2024-01-21"
       }
     ],
-    "icon": "/app-icons/home-assistant.png"
+    "icon": "/app-icons/home-assistant.png",
+    "details": {
+      "href": "/apps/home-assistant"
+    }
   },
   {
     "id": "immich",
@@ -697,7 +842,10 @@
         "title": "my FINAL pick for a self-hosted photo server - immich",
         "published": "2024-11-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/immich"
+    }
   },
   {
     "id": "influxdb",
@@ -715,7 +863,10 @@
         "published": "2024-07-06"
       }
     ],
-    "iconDark": "/app-icons/influxdb-light.png"
+    "iconDark": "/app-icons/influxdb-light.png",
+    "details": {
+      "href": "/apps/influxdb"
+    }
   },
   {
     "id": "jellyfin",
@@ -760,7 +911,10 @@
         "published": "2021-09-13"
       }
     ],
-    "icon": "/app-icons/jellyfin.png"
+    "icon": "/app-icons/jellyfin.png",
+    "details": {
+      "href": "/apps/jellyfin"
+    }
   },
   {
     "id": "jellystat",
@@ -775,7 +929,10 @@
         "published": "2026-05-31"
       }
     ],
-    "icon": "/app-icons/jellystat.png"
+    "icon": "/app-icons/jellystat.png",
+    "details": {
+      "href": "/apps/jellystat"
+    }
   },
   {
     "id": "jp2a",
@@ -789,7 +946,10 @@
         "title": "Convert Images to ASCII Art in Linux Terminal - jp2a",
         "published": "2021-06-14"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/jp2a"
+    }
   },
   {
     "id": "k3s",
@@ -806,7 +966,10 @@
         "title": "Stop Avoiding Kubernetes - Set Up a K3S Cluster at Home",
         "published": "2026-03-30"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/k3s"
+    }
   },
   {
     "id": "kde-connect",
@@ -821,7 +984,10 @@
         "published": "2021-11-04"
       }
     ],
-    "icon": "/app-icons/kde-connect.svg"
+    "icon": "/app-icons/kde-connect.svg",
+    "details": {
+      "href": "/apps/kde-connect"
+    }
   },
   {
     "id": "kde-discover",
@@ -836,7 +1002,10 @@
         "published": "2023-02-16"
       }
     ],
-    "icon": "/app-icons/kde-discover.svg"
+    "icon": "/app-icons/kde-discover.svg",
+    "details": {
+      "href": "/apps/kde-discover"
+    }
   },
   {
     "id": "kdenlive",
@@ -861,14 +1030,19 @@
         "published": "2021-06-02"
       }
     ],
-    "icon": "/app-icons/kdenlive.png"
+    "icon": "/app-icons/kdenlive.png",
+    "details": {
+      "href": "/apps/kdenlive"
+    }
   },
   {
     "id": "kiwix",
     "name": "Kiwix",
     "category": "Desktop",
     "description": "Serve downloaded knowledge archives for offline reading.",
-    "coverage": [],
+    "coverage": [
+      "/project-nomad-offline-knowledge-server"
+    ],
     "videos": [
       {
         "id": "OC67FoXVRPE",
@@ -877,7 +1051,10 @@
       }
     ],
     "icon": "/app-icons/kiwix.png",
-    "iconDark": "/app-icons/kiwix-light.png"
+    "iconDark": "/app-icons/kiwix-light.png",
+    "details": {
+      "href": "/apps/kiwix"
+    }
   },
   {
     "id": "libation",
@@ -893,7 +1070,10 @@
       }
     ],
     "icon": "/app-icons/libation.png",
-    "iconDark": "/app-icons/libation-light.png"
+    "iconDark": "/app-icons/libation-light.png",
+    "details": {
+      "href": "/apps/libation"
+    }
   },
   {
     "id": "linked",
@@ -908,7 +1088,10 @@
         "published": "2022-03-01"
       }
     ],
-    "icon": "/app-icons/linked.png"
+    "icon": "/app-icons/linked.png",
+    "details": {
+      "href": "/apps/linked"
+    }
   },
   {
     "id": "lm-sensors",
@@ -917,7 +1100,10 @@
     "description": "Read CPU temperature sensors from the Linux command line.",
     "coverage": [
       "/monitor-amd-ryzen-temps-in-linux"
-    ]
+    ],
+    "details": {
+      "href": "/apps/lm-sensors"
+    }
   },
   {
     "id": "localtuya",
@@ -932,7 +1118,10 @@
         "published": "2024-12-12"
       }
     ],
-    "icon": "/app-icons/localtuya.png"
+    "icon": "/app-icons/localtuya.png",
+    "details": {
+      "href": "/apps/localtuya"
+    }
   },
   {
     "id": "lsd",
@@ -946,7 +1135,10 @@
         "title": "LSD (LSDeluxe) - Make your Linux \"ls\" command AWESOME!",
         "published": "2021-02-20"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/lsd"
+    }
   },
   {
     "id": "mailspring",
@@ -961,7 +1153,10 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/mailspring.png"
+    "icon": "/app-icons/mailspring.png",
+    "details": {
+      "href": "/apps/mailspring"
+    }
   },
   {
     "id": "marktext",
@@ -976,7 +1171,10 @@
         "published": "2022-01-16"
       }
     ],
-    "icon": "/app-icons/marktext.png"
+    "icon": "/app-icons/marktext.png",
+    "details": {
+      "href": "/apps/marktext"
+    }
   },
   {
     "id": "material-shell",
@@ -992,7 +1190,10 @@
       }
     ],
     "icon": "/app-icons/material-shell.svg",
-    "iconInvertLight": true
+    "iconInvertLight": true,
+    "details": {
+      "href": "/apps/material-shell"
+    }
   },
   {
     "id": "memos",
@@ -1007,7 +1208,10 @@
         "published": "2023-09-24"
       }
     ],
-    "icon": "/app-icons/memos.png"
+    "icon": "/app-icons/memos.png",
+    "details": {
+      "href": "/apps/memos"
+    }
   },
   {
     "id": "microcloud",
@@ -1022,7 +1226,10 @@
         "published": "2026-01-12"
       }
     ],
-    "icon": "/app-icons/microcloud.svg"
+    "icon": "/app-icons/microcloud.svg",
+    "details": {
+      "href": "/apps/microcloud"
+    }
   },
   {
     "id": "microsoft-edge",
@@ -1039,7 +1246,10 @@
         "title": "Microsoft Edge has the EDGE in Linux - Benchmarking",
         "published": "2021-10-30"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/microsoft-edge"
+    }
   },
   {
     "id": "powertoys",
@@ -1054,7 +1264,10 @@
         "published": "2022-09-09"
       }
     ],
-    "icon": "/app-icons/powertoys.png"
+    "icon": "/app-icons/powertoys.png",
+    "details": {
+      "href": "/apps/powertoys"
+    }
   },
   {
     "id": "moonlight",
@@ -1069,7 +1282,10 @@
         "published": "2025-09-28"
       }
     ],
-    "icon": "/app-icons/moonlight.png"
+    "icon": "/app-icons/moonlight.png",
+    "details": {
+      "href": "/apps/moonlight"
+    }
   },
   {
     "id": "n8n",
@@ -1086,7 +1302,10 @@
         "title": "n8n is a MUST HAVE for my Home Server - Secure Setup and MORE!",
         "published": "2025-11-18"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/n8n"
+    }
   },
   {
     "id": "nala",
@@ -1100,7 +1319,10 @@
         "title": "APT sucks, use Nala instead!",
         "published": "2022-03-20"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/nala"
+    }
   },
   {
     "id": "navidrome",
@@ -1115,7 +1337,10 @@
         "published": "2022-08-26"
       }
     ],
-    "icon": "/app-icons/navidrome.png"
+    "icon": "/app-icons/navidrome.png",
+    "details": {
+      "href": "/apps/navidrome"
+    }
   },
   {
     "id": "netbird",
@@ -1123,7 +1348,9 @@
     "category": "Networking",
     "description": "Connect devices through a self-hosted private network.",
     "coverage": [
-      "/self-host-netbird-pocketid"
+      "/self-host-netbird-pocketid",
+      "/fedora-44-post-install-guide",
+      "/fedora-server-guide-cockpit-zfs-podman"
     ],
     "icon": "/app-icons/netbird.png",
     "videos": [
@@ -1137,7 +1364,10 @@
         "title": "DITCH your VPN - Connect to your Home Server from ANYWHERE",
         "published": "2025-06-11"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/netbird"
+    }
   },
   {
     "id": "nut",
@@ -1152,7 +1382,10 @@
         "published": "2023-06-29"
       }
     ],
-    "icon": "/app-icons/nut.png"
+    "icon": "/app-icons/nut.png",
+    "details": {
+      "href": "/apps/nut"
+    }
   },
   {
     "id": "nextcloud",
@@ -1197,7 +1430,10 @@
         "published": "2021-08-16"
       }
     ],
-    "icon": "/app-icons/nextcloud.png"
+    "icon": "/app-icons/nextcloud.png",
+    "details": {
+      "href": "/apps/nextcloud"
+    }
   },
   {
     "id": "nginx-proxy-manager",
@@ -1212,7 +1448,10 @@
         "published": "2025-05-30"
       }
     ],
-    "icon": "/app-icons/nginx-proxy-manager.png"
+    "icon": "/app-icons/nginx-proxy-manager.png",
+    "details": {
+      "href": "/apps/nginx-proxy-manager"
+    }
   },
   {
     "id": "octoprint",
@@ -1227,7 +1466,10 @@
         "published": "2025-04-29"
       }
     ],
-    "icon": "/app-icons/octoprint.png"
+    "icon": "/app-icons/octoprint.png",
+    "details": {
+      "href": "/apps/octoprint"
+    }
   },
   {
     "id": "ollama",
@@ -1235,7 +1477,8 @@
     "category": "AI",
     "description": "Run local language models for private AI workflows.",
     "coverage": [
-      "/local-ai-automation-n8n-ollama-whisper"
+      "/local-ai-automation-n8n-ollama-whisper",
+      "/fedora-server-guide-cockpit-zfs-podman"
     ],
     "icon": "/app-icons/ollama.png",
     "iconDark": "/app-icons/ollama-light.png",
@@ -1245,7 +1488,10 @@
         "title": "you NEED to run DeepSeek locally - Linux Guide",
         "published": "2025-01-31"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/ollama"
+    }
   },
   {
     "id": "onlyoffice-desktop",
@@ -1265,7 +1511,10 @@
         "published": "2021-11-15"
       }
     ],
-    "icon": "/app-icons/onlyoffice-desktop.png"
+    "icon": "/app-icons/onlyoffice-desktop.png",
+    "details": {
+      "href": "/apps/onlyoffice-desktop"
+    }
   },
   {
     "id": "onlyoffice-workspace",
@@ -1280,14 +1529,19 @@
         "published": "2022-08-15"
       }
     ],
-    "icon": "/app-icons/onlyoffice-workspace.png"
+    "icon": "/app-icons/onlyoffice-workspace.png",
+    "details": {
+      "href": "/apps/onlyoffice-workspace"
+    }
   },
   {
     "id": "open-webui",
     "name": "Open WebUI",
     "category": "AI",
     "description": "Chat with locally hosted language models through a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/fedora-server-guide-cockpit-zfs-podman"
+    ],
     "videos": [
       {
         "id": "kOEcTGZWiUQ",
@@ -1301,7 +1555,10 @@
       }
     ],
     "icon": "/app-icons/open-webui.png",
-    "iconDark": "/app-icons/open-webui-light.png"
+    "iconDark": "/app-icons/open-webui-light.png",
+    "details": {
+      "href": "/apps/open-webui"
+    }
   },
   {
     "id": "pi-hole",
@@ -1321,7 +1578,10 @@
         "published": "2022-08-22"
       }
     ],
-    "icon": "/app-icons/pi-hole.png"
+    "icon": "/app-icons/pi-hole.png",
+    "details": {
+      "href": "/apps/pi-hole"
+    }
   },
   {
     "id": "plausible",
@@ -1336,7 +1596,10 @@
         "published": "2021-04-26"
       }
     ],
-    "icon": "/app-icons/plausible.png"
+    "icon": "/app-icons/plausible.png",
+    "details": {
+      "href": "/apps/plausible"
+    }
   },
   {
     "id": "plex",
@@ -1363,7 +1626,10 @@
         "title": "Turning an OLD PC/Laptop into a Media Server! (Ubuntu/PLEX Guide)",
         "published": "2021-01-21"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/plex"
+    }
   },
   {
     "id": "pocket-id",
@@ -1380,7 +1646,10 @@
         "title": "REAL Self-Hosted Remote Access for YOUR Home Server",
         "published": "2026-03-19"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/pocket-id"
+    }
   },
   {
     "id": "podgrab",
@@ -1395,7 +1664,10 @@
         "published": "2023-12-06"
       }
     ],
-    "icon": "/app-icons/podgrab.png"
+    "icon": "/app-icons/podgrab.png",
+    "details": {
+      "href": "/apps/podgrab"
+    }
   },
   {
     "id": "podman",
@@ -1403,7 +1675,8 @@
     "category": "Server Management",
     "description": "Run containers as part of a Fedora Server homelab.",
     "coverage": [
-      "/fedora-server-guide-cockpit-zfs-podman"
+      "/fedora-server-guide-cockpit-zfs-podman",
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
     ],
     "icon": "/app-icons/podman.png",
     "videos": [
@@ -1412,14 +1685,19 @@
         "title": "the ULTIMATE Fedora Server Guide - Full Walkthrough (Podman, Cockpit, ZFS)",
         "published": "2025-12-22"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/podman"
+    }
   },
   {
     "id": "portainer",
     "name": "Portainer",
     "category": "Server Management",
     "description": "Deploy and manage Docker containers through a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/self-host-immich-photo-backup"
+    ],
     "videos": [
       {
         "id": "olUD_F37n0E",
@@ -1427,7 +1705,10 @@
         "published": "2023-05-31"
       }
     ],
-    "icon": "/app-icons/portainer.png"
+    "icon": "/app-icons/portainer.png",
+    "details": {
+      "href": "/apps/portainer"
+    }
   },
   {
     "id": "project-nomad",
@@ -1444,7 +1725,10 @@
         "title": "The Doomsday App Every Home Lab Needs",
         "published": "2026-05-05"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/project-nomad"
+    }
   },
   {
     "id": "prometheus",
@@ -1461,7 +1745,10 @@
         "title": "BEST Home Server Monitoring Setup! (Linux, Proxmox, Unraid, and more)",
         "published": "2024-07-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/prometheus"
+    }
   },
   {
     "id": "prowlarr",
@@ -1476,7 +1763,10 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/prowlarr.png"
+    "icon": "/app-icons/prowlarr.png",
+    "details": {
+      "href": "/apps/prowlarr"
+    }
   },
   {
     "id": "proxmox-backup-server",
@@ -1498,14 +1788,20 @@
         "title": "my Proxmox Backup Server Guide -  Full Walkthrough Series Pt.4",
         "published": "2024-12-30"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/proxmox-backup-server"
+    }
   },
   {
     "id": "proxmox-ve",
     "name": "Proxmox VE",
     "category": "Backup & Virtualization",
     "description": "Host and manage virtual machines, containers and server storage.",
-    "coverage": [],
+    "coverage": [
+      "/proxmox-backup-server-complete-guide",
+      "/monitor-home-server-grafana-prometheus-influxdb"
+    ],
     "videos": [
       {
         "id": "qmSizZUbCOA",
@@ -1523,7 +1819,10 @@
         "published": "2021-12-01"
       }
     ],
-    "icon": "/app-icons/proxmox-ve.png"
+    "icon": "/app-icons/proxmox-ve.png",
+    "details": {
+      "href": "/apps/proxmox-ve"
+    }
   },
   {
     "id": "psensor",
@@ -1532,7 +1831,10 @@
     "description": "Monitor temperatures with a graphical sensor interface on Linux.",
     "coverage": [
       "/monitor-amd-ryzen-temps-in-linux"
-    ]
+    ],
+    "details": {
+      "href": "/apps/psensor"
+    }
   },
   {
     "id": "putty",
@@ -1547,7 +1849,10 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/putty.png"
+    "icon": "/app-icons/putty.png",
+    "details": {
+      "href": "/apps/putty"
+    }
   },
   {
     "id": "qbittorrent",
@@ -1562,14 +1867,19 @@
         "published": "2025-05-17"
       }
     ],
-    "icon": "/app-icons/qbittorrent.png"
+    "icon": "/app-icons/qbittorrent.png",
+    "details": {
+      "href": "/apps/qbittorrent"
+    }
   },
   {
     "id": "radarr",
     "name": "Radarr",
     "category": "Media",
     "description": "Organize and automate a movie library in a self-hosted media stack.",
-    "coverage": [],
+    "coverage": [
+      "/seerr-overseerr-migration"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1582,7 +1892,10 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/radarr.png"
+    "icon": "/app-icons/radarr.png",
+    "details": {
+      "href": "/apps/radarr"
+    }
   },
   {
     "id": "retropie",
@@ -1599,7 +1912,10 @@
         "published": "2022-10-19"
       }
     ],
-    "icon": "/app-icons/retropie.svg"
+    "icon": "/app-icons/retropie.svg",
+    "details": {
+      "href": "/apps/retropie"
+    }
   },
   {
     "id": "return-youtube-dislike",
@@ -1614,7 +1930,10 @@
         "published": "2021-11-23"
       }
     ],
-    "icon": "/app-icons/return-youtube-dislike.svg"
+    "icon": "/app-icons/return-youtube-dislike.svg",
+    "details": {
+      "href": "/apps/return-youtube-dislike"
+    }
   },
   {
     "id": "rustdesk",
@@ -1629,7 +1948,10 @@
         "published": "2026-07-07"
       }
     ],
-    "icon": "/app-icons/rustdesk.png"
+    "icon": "/app-icons/rustdesk.png",
+    "details": {
+      "href": "/apps/rustdesk"
+    }
   },
   {
     "id": "samba",
@@ -1644,7 +1966,10 @@
         "published": "2025-04-19"
       }
     ],
-    "icon": "/app-icons/samba.png"
+    "icon": "/app-icons/samba.png",
+    "details": {
+      "href": "/apps/samba"
+    }
   },
   {
     "id": "search-light",
@@ -1658,7 +1983,10 @@
         "title": "macOS Spotlight for GNOME Shell",
         "published": "2022-11-09"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/search-light"
+    }
   },
   {
     "id": "seerr",
@@ -1675,7 +2003,10 @@
         "title": "You need to DITCH Overseerr and Migrate to Seerr",
         "published": "2026-03-06"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/seerr"
+    }
   },
   {
     "id": "sleek",
@@ -1690,14 +2021,19 @@
         "published": "2021-03-30"
       }
     ],
-    "icon": "/app-icons/sleek.png"
+    "icon": "/app-icons/sleek.png",
+    "details": {
+      "href": "/apps/sleek"
+    }
   },
   {
     "id": "sonarr",
     "name": "Sonarr",
     "category": "Media",
     "description": "Organize and automate a TV library in a self-hosted media stack.",
-    "coverage": [],
+    "coverage": [
+      "/seerr-overseerr-migration"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1710,7 +2046,10 @@
         "published": "2024-10-01"
       }
     ],
-    "icon": "/app-icons/sonarr.png"
+    "icon": "/app-icons/sonarr.png",
+    "details": {
+      "href": "/apps/sonarr"
+    }
   },
   {
     "id": "startallback",
@@ -1725,7 +2064,10 @@
         "published": "2021-11-01"
       }
     ],
-    "icon": "/app-icons/startallback.png"
+    "icon": "/app-icons/startallback.png",
+    "details": {
+      "href": "/apps/startallback"
+    }
   },
   {
     "id": "sunshine",
@@ -1740,7 +2082,10 @@
         "published": "2025-09-28"
       }
     ],
-    "icon": "/app-icons/sunshine.png"
+    "icon": "/app-icons/sunshine.png",
+    "details": {
+      "href": "/apps/sunshine"
+    }
   },
   {
     "id": "super-productivity",
@@ -1755,7 +2100,10 @@
         "published": "2024-09-07"
       }
     ],
-    "icon": "/app-icons/super-productivity.png"
+    "icon": "/app-icons/super-productivity.png",
+    "details": {
+      "href": "/apps/super-productivity"
+    }
   },
   {
     "id": "superfile",
@@ -1763,7 +2111,8 @@
     "category": "Terminal",
     "description": "Manage files and folders in a keyboard-driven terminal interface.",
     "coverage": [
-      "/superfile-terminal-file-manager"
+      "/superfile-terminal-file-manager",
+      "/ghostty-best-terminal-emulator-linux-mac"
     ],
     "icon": "/app-icons/superfile.svg",
     "videos": [
@@ -1772,7 +2121,10 @@
         "title": "Superfile is AWESOME",
         "published": "2026-07-22"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/superfile"
+    }
   },
   {
     "id": "synaptic",
@@ -1787,7 +2139,10 @@
         "published": "2021-09-05"
       }
     ],
-    "icon": "/app-icons/synaptic.svg"
+    "icon": "/app-icons/synaptic.svg",
+    "details": {
+      "href": "/apps/synaptic"
+    }
   },
   {
     "id": "synology-surveillance-station",
@@ -1802,7 +2157,10 @@
         "published": "2023-02-21"
       }
     ],
-    "icon": "/app-icons/synology-surveillance-station.png"
+    "icon": "/app-icons/synology-surveillance-station.png",
+    "details": {
+      "href": "/apps/synology-surveillance-station"
+    }
   },
   {
     "id": "synth-shell",
@@ -1816,7 +2174,10 @@
         "title": "Fancy Bash Prompt! Customize Linux Terminal with SYNTH-SHELL",
         "published": "2021-06-02"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/synth-shell"
+    }
   },
   {
     "id": "sysmontask",
@@ -1831,7 +2192,10 @@
         "published": "2021-03-01"
       }
     ],
-    "icon": "/app-icons/sysmontask.png"
+    "icon": "/app-icons/sysmontask.png",
+    "details": {
+      "href": "/apps/sysmontask"
+    }
   },
   {
     "id": "tabby",
@@ -1846,7 +2210,10 @@
         "published": "2021-12-10"
       }
     ],
-    "icon": "/app-icons/tabby.svg"
+    "icon": "/app-icons/tabby.svg",
+    "details": {
+      "href": "/apps/tabby"
+    }
   },
   {
     "id": "tangram",
@@ -1861,7 +2228,10 @@
         "published": "2021-10-09"
       }
     ],
-    "icon": "/app-icons/tangram.png"
+    "icon": "/app-icons/tangram.png",
+    "details": {
+      "href": "/apps/tangram"
+    }
   },
   {
     "id": "tgpt",
@@ -1877,7 +2247,10 @@
         "title": "ChatGPT in YOUR Linux Terminal",
         "published": "2023-04-22"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/tgpt"
+    }
   },
   {
     "id": "twingate",
@@ -1893,7 +2266,10 @@
       }
     ],
     "icon": "/app-icons/twingate.png",
-    "iconDark": "/app-icons/twingate-light.png"
+    "iconDark": "/app-icons/twingate-light.png",
+    "details": {
+      "href": "/apps/twingate"
+    }
   },
   {
     "id": "ulaa",
@@ -1908,7 +2284,10 @@
         "published": "2023-06-05"
       }
     ],
-    "icon": "/app-icons/ulaa.png"
+    "icon": "/app-icons/ulaa.png",
+    "details": {
+      "href": "/apps/ulaa"
+    }
   },
   {
     "id": "ulauncher",
@@ -1923,7 +2302,10 @@
         "published": "2021-03-13"
       }
     ],
-    "icon": "/app-icons/ulauncher.svg"
+    "icon": "/app-icons/ulauncher.svg",
+    "details": {
+      "href": "/apps/ulauncher"
+    }
   },
   {
     "id": "umbrel",
@@ -1938,7 +2320,10 @@
         "published": "2022-08-04"
       }
     ],
-    "icon": "/app-icons/umbrel.png"
+    "icon": "/app-icons/umbrel.png",
+    "details": {
+      "href": "/apps/umbrel"
+    }
   },
   {
     "id": "unbound",
@@ -1953,7 +2338,10 @@
         "published": "2022-08-22"
       }
     ],
-    "icon": "/app-icons/unbound.png"
+    "icon": "/app-icons/unbound.png",
+    "details": {
+      "href": "/apps/unbound"
+    }
   },
   {
     "id": "unifi-os-server",
@@ -1968,7 +2356,10 @@
         "published": "2025-11-29"
       }
     ],
-    "icon": "/app-icons/unifi-os-server.png"
+    "icon": "/app-icons/unifi-os-server.png",
+    "details": {
+      "href": "/apps/unifi-os-server"
+    }
   },
   {
     "id": "ventoy",
@@ -1983,7 +2374,10 @@
         "published": "2021-08-15"
       }
     ],
-    "icon": "/app-icons/ventoy.png"
+    "icon": "/app-icons/ventoy.png",
+    "details": {
+      "href": "/apps/ventoy"
+    }
   },
   {
     "id": "vmware",
@@ -2000,7 +2394,10 @@
         "title": "Run ANY Windows App on Linux - VMware with 3D Acceleration",
         "published": "2022-03-11"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/vmware"
+    }
   },
   {
     "id": "whisper",
@@ -2009,7 +2406,10 @@
     "description": "Transcribe audio as part of a local automation stack.",
     "coverage": [
       "/local-ai-automation-n8n-ollama-whisper"
-    ]
+    ],
+    "details": {
+      "href": "/apps/whisper"
+    }
   },
   {
     "id": "wsl",
@@ -2025,7 +2425,10 @@
       }
     ],
     "icon": "/app-icons/wsl.png",
-    "iconDark": "/app-icons/wsl-light.png"
+    "iconDark": "/app-icons/wsl-light.png",
+    "details": {
+      "href": "/apps/wsl"
+    }
   },
   {
     "id": "yacht",
@@ -2040,7 +2443,10 @@
         "published": "2021-12-31"
       }
     ],
-    "icon": "/app-icons/yacht.png"
+    "icon": "/app-icons/yacht.png",
+    "details": {
+      "href": "/apps/yacht"
+    }
   },
   {
     "id": "zen-browser",
@@ -2057,7 +2463,10 @@
         "title": "FINALLY Ditching Microsoft Edge... for Zen Browser",
         "published": "2024-08-29"
       }
-    ]
+    ],
+    "details": {
+      "href": "/apps/zen-browser"
+    }
   },
   {
     "id": "zerobyte",
@@ -2072,6 +2481,9 @@
         "published": "2025-12-24"
       }
     ],
-    "icon": "/app-icons/zerobyte.png"
+    "icon": "/app-icons/zerobyte.png",
+    "details": {
+      "href": "/apps/zerobyte"
+    }
   }
 ]

@@ -1,0 +1,32 @@
+{
+  "summary": "Stream games from a Sunshine host to another device.",
+  "overview": "Moonlight is the client side of a game-streaming setup: the game runs on a host machine, and Moonlight displays the stream while sending your input back. Pairing it with a host such as Sunshine lets you use another device as the screen and controller endpoint. The experience depends on both the host's encoding capabilities and the connection between the devices.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Android",
+    "iOS"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/moonlight-stream/moonlight-qt/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/moonlight-stream/moonlight-qt"
+    }
+  ],
+  "features": [
+    "Remote game streaming",
+    "Controller input",
+    "High-resolution streaming"
+  ],
+  "sources": [
+    "https://github.com/moonlight-stream/moonlight-qt#readme",
+    "https://github.com/moonlight-stream/moonlight-qt/blob/HEAD/LICENSE"
+  ]
+}

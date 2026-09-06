@@ -1,0 +1,31 @@
+{
+  "summary": "Build a self-hosted dashboard for feeds and services.",
+  "overview": "Glance combines feeds and service information into a dashboard you configure for your own needs. You can bring several sources into one view and keep frequently checked information close together. It works well as a personal start page for someone who wants to catch up on updates and check service status without opening a separate page for every source.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/glanceapp/glance/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/glanceapp/glance"
+    }
+  ],
+  "features": [
+    "Feed widgets",
+    "Service status",
+    "Configurable dashboard"
+  ],
+  "sources": [
+    "https://github.com/glanceapp/glance#readme",
+    "https://github.com/glanceapp/glance/blob/HEAD/LICENSE"
+  ]
+}

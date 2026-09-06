@@ -1,0 +1,31 @@
+{
+  "summary": "Chat with AI providers from the terminal using a command-line client with interactive and scripted modes.",
+  "overview": "tgpt puts access to supported AI providers into a command-line workflow. You can use interactive conversations or incorporate the tool into scripted work, depending on what you need to do with the response. It is a client for those providers rather than a local model runtime, so the provider you select determines where the request is processed.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "FreeBSD"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/aandrew-me/tgpt/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/aandrew-me/tgpt"
+    }
+  ],
+  "features": [
+    "Terminal AI chat",
+    "Multiple providers",
+    "Shell integration"
+  ],
+  "sources": [
+    "https://github.com/aandrew-me/tgpt#readme",
+    "https://github.com/aandrew-me/tgpt/blob/HEAD/LICENSE"
+  ]
+}

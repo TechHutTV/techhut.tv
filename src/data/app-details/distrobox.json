@@ -1,0 +1,33 @@
+{
+  "summary": "Run applications from other Linux distributions inside integrated containers.",
+  "overview": "Distrobox creates Linux containers that integrate with your existing desktop and user environment. You can work with another distribution's software and export graphical applications so they appear in your desktop launcher. This is useful when a tool needs a different package ecosystem from the one on your host, while still needing access to the files and desktop resources you normally use.",
+  "kind": "Container tool",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/89luca89/distrobox/blob/main/COPYING.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://distrobox.it/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/89luca89/distrobox"
+    }
+  ],
+  "features": [
+    "Distribution containers",
+    "Desktop app export",
+    "Host integration"
+  ],
+  "sources": [
+    "https://distrobox.it/",
+    "https://github.com/89luca89/distrobox#readme",
+    "https://github.com/89luca89/distrobox/blob/main/COPYING.md"
+  ]
+}

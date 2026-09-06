@@ -1,0 +1,30 @@
+{
+  "summary": "Transfer files between a desktop and remote servers using SFTP.",
+  "overview": "FileZilla shows local and remote files together so you can browse folders and queue transfers between machines. It supports SFTP as well as FTP and FTPS, allowing it to work with several kinds of file servers. Saved connection details and a visible transfer queue make it practical for recurring jobs such as updating website files or moving media to a server.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later",
+    "type": "Open source",
+    "url": "https://filezilla-project.org/license.php"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://filezilla-project.org/"
+    }
+  ],
+  "features": [
+    "FTP and FTPS",
+    "SFTP",
+    "Transfer queue"
+  ],
+  "sources": [
+    "https://filezilla-project.org/",
+    "https://filezilla-project.org/license.php"
+  ]
+}

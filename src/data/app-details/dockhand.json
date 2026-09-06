@@ -1,0 +1,33 @@
+{
+  "summary": "Manage Docker environments, containers, and Compose stacks.",
+  "overview": "Dockhand puts routine container work and Compose configuration into a browser interface. You can manage workloads across multiple Docker hosts and work with stacks without treating every server as a separate command-line session. Its Compose editor is useful when a deployment involves several services, while the container controls help with everyday administration after those services are running.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Docker"
+  ],
+  "license": {
+    "name": "BSL-1.1",
+    "type": "Source available",
+    "url": "https://github.com/Finsys/dockhand/blob/main/LICENSE.txt"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://dockhand.pro"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Finsys/dockhand"
+    }
+  ],
+  "features": [
+    "Container management",
+    "Compose editor",
+    "Multiple Docker hosts"
+  ],
+  "sources": [
+    "https://dockhand.pro",
+    "https://github.com/Finsys/dockhand#readme",
+    "https://github.com/Finsys/dockhand/blob/main/LICENSE.txt"
+  ]
+}

@@ -1,6 +1,7 @@
-import { writeFileSync, readdirSync } from 'fs'
+import { writeFileSync, readdirSync, readFileSync } from 'fs'
 import { join } from 'path'
 import { articles } from '../src/data/articles.js'
+import { getAppDetail } from '../src/lib/appDetails.server.js'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://techhut.tv'
 
@@ -10,13 +11,14 @@ function generateSitemap() {
     { path: '', priority: '1.0' },
     { path: 'content', priority: '0.9' },
     { path: 'apps', priority: '0.8' },
-    { path: 'apps/copyparty', priority: '0.8' },
     { path: 'decks', priority: '0.8' },
     { path: 'team', priority: '0.8' },
     { path: 'jobs', priority: '0.8' },
     { path: 'jobs/technical-content-producer', priority: '0.8' },
     { path: 'partner', priority: '0.8' },
   ]
+  const apps = JSON.parse(readFileSync(join(process.cwd(), 'src/data/apps.json'), 'utf8'))
+  staticPages.push(...apps.map(app => ({ path: `apps/${app.id}`, priority: '0.8', lastmod: getAppDetail(app.id, apps, articles).details.updatedAt.slice(0, 10) })))
 
   // Get category pages
   const categoriesDir = join(process.cwd(), 'src/pages/categories')
@@ -36,7 +38,7 @@ function generateSitemap() {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${staticPages.map(page => `  <url>
     <loc>${SITE_URL}/${page.path}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${page.lastmod || today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>${page.priority}</priority>
   </url>`).join('\n')}

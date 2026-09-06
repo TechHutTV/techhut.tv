@@ -1,0 +1,27 @@
+{
+  "summary": "Customize the Windows Start menu, taskbar and Explorer interface.",
+  "overview": "StartAllBack changes several familiar parts of the Windows 11 interface, including the Start menu, taskbar, and File Explorer presentation. Its controls let you adjust how these areas look and behave to better match the way you use the desktop. It is a commercial customization utility for people who want different navigation and layout choices within Windows.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Windows 11"
+  ],
+  "license": {
+    "name": "Proprietary commercial license",
+    "type": "Proprietary",
+    "url": "https://www.startallback.com/"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.startallback.com/"
+    }
+  ],
+  "features": [
+    "Start menu customization",
+    "Taskbar controls",
+    "Explorer customization"
+  ],
+  "sources": [
+    "https://www.startallback.com/"
+  ]
+}

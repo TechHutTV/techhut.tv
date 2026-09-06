@@ -1,0 +1,35 @@
+{
+  "summary": "Run a recursive DNS resolver alongside a local DNS filter.",
+  "overview": "Unbound resolves DNS queries by working through the DNS hierarchy and caches answers so repeated lookups can be served locally. DNSSEC validation checks supported signed responses as part of that process. It can sit behind a local filtering service as the resolver that performs lookups, separating the decision about which domains to block from the work of resolving allowed ones.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Unix",
+    "Windows"
+  ],
+  "license": {
+    "name": "BSD-3-Clause",
+    "type": "Open source",
+    "url": "https://github.com/NLnetLabs/unbound/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://nlnetlabs.nl/unbound"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/NLnetLabs/unbound"
+    }
+  ],
+  "features": [
+    "Recursive DNS",
+    "DNSSEC validation",
+    "Response caching"
+  ],
+  "sources": [
+    "https://nlnetlabs.nl/unbound",
+    "https://github.com/NLnetLabs/unbound#readme",
+    "https://github.com/NLnetLabs/unbound/blob/HEAD/LICENSE"
+  ]
+}

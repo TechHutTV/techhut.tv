@@ -1,0 +1,35 @@
+{
+  "summary": "Manage local shells and remote connections in a configurable terminal.",
+  "overview": "Tabby brings local terminals, SSH connections, and serial sessions into a configurable desktop application. Split panes let you keep related sessions visible together, which is helpful when administering several machines or watching output while running commands elsewhere. It acts as the interface around those connections, with appearance and interaction settings you can adapt to your terminal workflow.",
+  "kind": "Terminal tool",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/Eugeny/tabby/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://tabby.sh"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Eugeny/tabby"
+    }
+  ],
+  "features": [
+    "SSH connections",
+    "Serial terminal",
+    "Split panes"
+  ],
+  "sources": [
+    "https://tabby.sh",
+    "https://github.com/Eugeny/tabby#readme",
+    "https://github.com/Eugeny/tabby/blob/HEAD/LICENSE"
+  ]
+}

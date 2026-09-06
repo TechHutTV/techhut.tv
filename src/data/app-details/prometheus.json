@@ -1,0 +1,36 @@
+{
+  "summary": "Collect and query metrics from your home server.",
+  "overview": "Prometheus collects measurements from configured targets at regular intervals and stores them as time-series data. PromQL lets you query those measurements to examine changes or combine related signals, while alert rules can identify conditions that need attention. In a homelab monitoring stack, it often supplies the data that a separate dashboard application uses to show how servers and services are behaving.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/prometheus/prometheus/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://prometheus.io/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/prometheus/prometheus"
+    }
+  ],
+  "features": [
+    "Metric collection",
+    "PromQL queries",
+    "Alert rules"
+  ],
+  "sources": [
+    "https://prometheus.io/",
+    "https://github.com/prometheus/prometheus#readme",
+    "https://github.com/prometheus/prometheus/blob/HEAD/LICENSE"
+  ]
+}

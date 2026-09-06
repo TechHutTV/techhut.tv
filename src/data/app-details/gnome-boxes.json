@@ -1,0 +1,34 @@
+{
+  "summary": "Create and run local virtual machines with automatic operating-system defaults. Current Boxes is distributed as a self-contained Flatpak; older TechHut coverage shows the earlier GNOME implementation.",
+  "overview": "Boxes focuses on creating and running local virtual machines with relatively little setup. It uses operating-system information to choose suitable defaults and bundles the virtualization components it needs in its Flatpak distribution. This makes it a convenient way to try another operating system or keep a separate test environment available from a Linux desktop.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux (Flatpak)"
+  ],
+  "license": {
+    "name": "GPL-3.0 (current); LGPL (legacy GNOME)",
+    "type": "Open source",
+    "url": "https://gitlab.gnome.org/felipeborges/boxes/-/blob/main/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://apps.gnome.org/Boxes/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://gitlab.gnome.org/felipeborges/boxes"
+    }
+  ],
+  "features": [
+    "Local virtual machines",
+    "Automatic OS configuration",
+    "Bundled QEMU and libvirt"
+  ],
+  "sources": [
+    "https://apps.gnome.org/Boxes/",
+    "https://gitlab.gnome.org/GNOME/gnome-boxes/-/blob/main/COPYING",
+    "https://gitlab.gnome.org/felipeborges/boxes/-/blob/main/README.md",
+    "https://gitlab.gnome.org/felipeborges/boxes/-/blob/main/COPYING"
+  ]
+}

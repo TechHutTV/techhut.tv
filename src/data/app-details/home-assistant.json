@@ -1,0 +1,34 @@
+{
+  "summary": "Connect devices and build automations on your own home server.",
+  "overview": "Home Assistant brings supported devices and services into a shared system of entities, dashboards, and automations. You can combine information from different integrations to make devices respond to events or conditions around the home. Its self-hosted approach gives you control over the automation server, while the dashboards provide a common interface for interacting with the devices you have connected.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Home Assistant OS",
+    "Linux (container)"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/home-assistant/core/blob/dev/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.home-assistant.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/home-assistant/core"
+    }
+  ],
+  "features": [
+    "Local automations",
+    "Device integrations",
+    "Dashboards"
+  ],
+  "sources": [
+    "https://www.home-assistant.io",
+    "https://github.com/home-assistant/core#readme",
+    "https://github.com/home-assistant/core/blob/dev/LICENSE.md"
+  ]
+}

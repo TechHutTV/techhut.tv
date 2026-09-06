@@ -1,0 +1,34 @@
+{
+  "summary": "Edit videos with a timeline, effects and customizable export settings.",
+  "overview": "Kdenlive uses a multitrack timeline to combine video, audio, titles, and effects into an edited project. Proxy clips let you edit using lighter versions of source media, which can help when the originals are demanding to work with. Its effects and transition tools cover the creative side of an edit, followed by export settings for producing the finished video.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "Windows",
+    "macOS"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://invent.kde.org/multimedia/kdenlive/-/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://kdenlive.org/"
+    },
+    {
+      "label": "GitLab",
+      "url": "https://invent.kde.org/multimedia/kdenlive"
+    }
+  ],
+  "features": [
+    "Multitrack editing",
+    "Proxy clips",
+    "Effects and transitions"
+  ],
+  "sources": [
+    "https://kdenlive.org/",
+    "https://invent.kde.org/multimedia/kdenlive/-/blob/master/COPYING"
+  ]
+}

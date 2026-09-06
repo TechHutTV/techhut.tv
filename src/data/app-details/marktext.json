@@ -1,0 +1,35 @@
+{
+  "summary": "Write Markdown with editing modes, themes and a command palette.",
+  "overview": "MarkText combines Markdown editing with a live visual presentation of the document, so you can work on structure and wording while seeing how the formatting reads. Syntax highlighting helps when a document includes code, and focus mode reduces the surrounding interface. It suits notes, documentation, and longer writing that you want to keep in portable Markdown files.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/marktext/marktext/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.marktext.me"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/marktext/marktext"
+    }
+  ],
+  "features": [
+    "Live Markdown preview",
+    "Syntax highlighting",
+    "Focus mode"
+  ],
+  "sources": [
+    "https://www.marktext.me",
+    "https://github.com/marktext/marktext#readme",
+    "https://github.com/marktext/marktext/blob/HEAD/LICENSE"
+  ]
+}

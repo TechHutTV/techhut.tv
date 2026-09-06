@@ -1,9 +1,9 @@
 export function prepareApps(records, articles) {
   const articleByHref = new Map(articles.map(article => [article.href, article]))
   return records.map(app => {
-    const coverage = app.coverage.map(href => articleByHref.get(href)).filter(Boolean)
+    const coverage = [...new Set(app.coverage.map(href => href.replace(/\/$/, '')))].map(href => articleByHref.get(href)).filter(Boolean)
       .sort((a, b) => b.date.localeCompare(a.date))
-    const videos = [...(app.videos || [])].sort((a, b) => b.published.localeCompare(a.published))
+    const videos = [...new Map([...(app.videos || [])].sort((a, b) => a.published.localeCompare(b.published)).map(video => [video.id, video])).values()].sort((a, b) => b.published.localeCompare(a.published))
     const latestDate = [coverage[0]?.date, videos[0]?.published].filter(Boolean).sort().at(-1) || ''
     return { ...app, coverage, videos, latestDate }
   }).filter(app => app.coverage.length || app.videos.length)

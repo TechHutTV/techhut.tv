@@ -1,0 +1,35 @@
+{
+  "summary": "Host file storage, sharing and collaboration tools on your own server.",
+  "overview": "Nextcloud combines a browser-based file service with clients that synchronize files between devices. Sharing controls let you make selected content available to other people, and its app system can extend the installation with additional collaboration tools. It is suited to building a shared workspace around your own server, with storage, user administration, and ongoing server maintenance under your control.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker",
+    "Desktop/mobile clients"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/nextcloud/server/blob/master/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://nextcloud.com"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/nextcloud/server"
+    }
+  ],
+  "features": [
+    "File sync",
+    "Sharing controls",
+    "App extensions"
+  ],
+  "sources": [
+    "https://nextcloud.com",
+    "https://github.com/nextcloud/server#readme",
+    "https://github.com/nextcloud/server/blob/master/COPYING"
+  ]
+}

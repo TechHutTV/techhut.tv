@@ -1,0 +1,33 @@
+{
+  "summary": "Launch applications and extensions with a configurable desktop search tool.",
+  "overview": "Ulauncher provides a keyboard-driven search box for opening applications and reaching additional actions through extensions. It gives you a place to start common desktop tasks without navigating application menus or leaving your hands on the keyboard for long. Themes let you adjust the launcher to your desktop, while extensions determine which extra workflows you want it to handle.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Linux"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Ulauncher/Ulauncher/blob/HEAD/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://ulauncher.io"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Ulauncher/Ulauncher"
+    }
+  ],
+  "features": [
+    "Application search",
+    "Extensions",
+    "Custom themes"
+  ],
+  "sources": [
+    "https://ulauncher.io",
+    "https://github.com/Ulauncher/Ulauncher#readme",
+    "https://github.com/Ulauncher/Ulauncher/blob/HEAD/LICENSE"
+  ]
+}

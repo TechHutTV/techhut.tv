@@ -1,0 +1,33 @@
+{
+  "summary": "Browse Windows files with tabs, multiple panels and customizable views.",
+  "overview": "Files offers a different interface for working with folders on Windows, including tabs and a dual-pane layout for keeping locations open together. Tags provide another way to organize items beyond their folder paths. These tools can make repeated browsing and file moves easier to manage, especially when you regularly work across several directories in the same session.",
+  "kind": "Desktop app",
+  "platforms": [
+    "Windows"
+  ],
+  "license": {
+    "name": "MIT",
+    "type": "Open source",
+    "url": "https://github.com/files-community/Files/blob/main/LICENSE-MIT"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://files.community"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/files-community/Files"
+    }
+  ],
+  "features": [
+    "Tabbed file browsing",
+    "File tags",
+    "Dual-pane view"
+  ],
+  "sources": [
+    "https://files.community",
+    "https://github.com/files-community/Files#readme",
+    "https://github.com/files-community/Files/blob/main/LICENSE-MIT"
+  ]
+}

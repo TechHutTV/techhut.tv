@@ -25,7 +25,7 @@ export function formatDate(dateString, format = 'long') {
     short: { year: 'numeric', month: 'numeric', day: 'numeric' },
   }
 
-  return date.toLocaleDateString('en-US', options[format] || options.long)
+  return date.toLocaleDateString('en-US', { ...(options[format] || options.long), timeZone: 'UTC' })
 }
 
 /**
