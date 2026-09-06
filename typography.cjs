@@ -170,9 +170,18 @@ module.exports = ({ theme }) => ({
         borderLeftWidth: '0.25rem',
         borderLeftColor: 'var(--tw-prose-quote-borders)',
         quotes: '"\\201C""\\201D""\\2018""\\2019"',
-        marginTop: '1.6em',
-        marginBottom: '1.6em',
-        paddingLeft: '1em',
+        marginTop: '2em',
+        marginBottom: '2em',
+        paddingTop: '1em',
+        paddingBottom: '1em',
+        paddingLeft: '1.25em',
+        paddingRight: '1.25em',
+      },
+      'blockquote > :first-child': {
+        marginTop: '0',
+      },
+      'blockquote > :last-child': {
+        marginBottom: '0',
       },
       'blockquote p:first-of-type::before': {
         content: 'open-quote',
