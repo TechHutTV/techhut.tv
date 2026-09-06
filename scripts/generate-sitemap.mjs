@@ -16,6 +16,8 @@ function generateSitemap() {
     { path: 'jobs', priority: '0.8' },
     { path: 'jobs/technical-content-producer', priority: '0.8' },
     { path: 'partner', priority: '0.8' },
+    { path: 'privacy', priority: '0.3' },
+    { path: 'privacy-settings', priority: '0.3' },
   ]
   const apps = JSON.parse(readFileSync(join(process.cwd(), 'src/data/apps.json'), 'utf8'))
   staticPages.push(...apps.map(app => ({ path: `apps/${app.id}`, priority: '0.8', lastmod: getAppDetail(app.id, apps, articles).details.updatedAt.slice(0, 10) })))

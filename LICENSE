@@ -1,4 +1,31 @@
+License scope
+=============
+
+The BSD 3-Clause License below applies to the TechHut website's original
+software source code, including reusable UI components, layouts, styles,
+scripts, configuration, tests, and developer documentation.
+
+It does not apply to original editorial content: articles, tutorials, guides,
+reviews, app descriptions, or their original illustrations and other media.
+This includes content in src/content/, editorial text in src/pages/ and
+src/data/, and copies or excerpts in generated indexes, feeds, or built pages.
+See CONTENT-LICENSE for the copyright notice and terms for that material.
+In files containing both software and editorial content, the respective
+terms apply to each portion.
+
+TechHut branding is also excluded from the software license. This includes
+the TechHut and TechHut Media names, TECH/HUT wordmark, logos, favicons,
+app icons, and other TechHut brand artwork, including branding embedded in
+components or generated files. See BRANDING.md for the scope and terms.
+Reusable implementation code remains BSD-licensed; the brand identity and
+artwork it displays do not receive that license.
+
+Third-party code, fonts, logos, images, quotations, and other materials retain
+their own licenses and ownership. Preserve their existing notices; this
+license does not replace those terms or grant rights to trademarks.
+
 BSD 3-Clause License
+====================
 
 Copyright (c) 2025 TechHut Media & AUTHORS
 

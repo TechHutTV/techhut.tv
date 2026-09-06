@@ -46,7 +46,13 @@ Internal documentation for contributors and maintainers:
 
 ## License
 
-This project is licensed under the BSD 3-Clause License - see the [LICENSE](LICENSE) file for details.
+The website's original **source code and reusable components are open source** under the [BSD 3-Clause License](LICENSE). This includes layouts, styles, scripts, configuration, tests, and developer documentation. The software license terms follow the [standard BSD 3-Clause license](https://opensource.org/license/BSD-3-clause).
+
+**Written content and articles are copyright protected and are not included in the software license.** Original articles, tutorials, guides, reviews, app descriptions, and accompanying original media are reserved to TechHut Media and their respective authors, unless separately licensed. This also applies to copies and excerpts in generated data, feeds, and rendered pages. See [CONTENT-LICENSE](CONTENT-LICENSE) for the content terms, including legally permitted uses.
+
+**TechHut branding is not open source.** The TechHut names, TECH/HUT wordmark, logos, favicons, and other TechHut brand artwork are excluded from the software license, even when embedded in a component. Reusing the code does not grant permission to brand your project as TechHut or imply its endorsement. See [BRANDING.md](BRANDING.md) for details, including replacing branding in independent deployments while preserving required software copyright notices.
+
+Third-party code and assets retain their own licenses and notices. In particular, app logos and other third-party artwork are not relicensed by this repository; see their provenance and notices in [public/app-icons](public/app-icons).
 
 ## Thank you
 

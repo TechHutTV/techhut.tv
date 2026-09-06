@@ -1,5 +1,6 @@
 import { memo } from 'react'
 
+// Component code: BSD-3-Clause. TechHut wordmark: reserved; see BRANDING.md.
 // "Slash" mark — Outfit 800 TECH/HUT file-path split.
 // Only the slash carries the brand color: sea green on light, spearmint on dark.
 export const Logo = memo(function Logo({ className, ...props }) {

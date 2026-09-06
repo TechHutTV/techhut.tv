@@ -203,15 +203,20 @@ function FooterContent() {
       </div>
 
       {/* Bottom bar */}
-      <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-zinc-900/5 pt-8 dark:border-white/5 sm:flex-row">
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-zinc-900/5 pt-8 dark:border-white/5">
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          &copy; {new Date().getFullYear()} TechHut. All rights reserved.
+          &copy; {new Date().getFullYear()} TechHut.{' '}
+          <a href="https://github.com/TechHutTV/techhut.tv/blob/main/CONTENT-LICENSE" className="underline underline-offset-4 hover:text-zinc-700 dark:hover:text-zinc-300">Articles &amp; original content: all rights reserved.</a>
         </p>
+        <nav aria-label="Privacy" className="flex flex-wrap items-center gap-x-6">
+          <Link href="/privacy" className="inline-flex min-h-11 items-center text-xs text-zinc-500 underline underline-offset-4 hover:text-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-zinc-400 dark:hover:text-zinc-300">Privacy policy</Link>
+          <Link href="/privacy-settings" className="inline-flex min-h-11 items-center text-xs text-zinc-500 underline underline-offset-4 hover:text-zinc-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-zinc-400 dark:hover:text-zinc-300">Analytics opt-out</Link>
+        </nav>
         <Link
           href="https://github.com/TechHutTV/techhut.tv"
           className="text-xs text-zinc-500 transition hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
         >
-          Open source on GitHub
+          Website code: open source (BSD-3-Clause)
         </Link>
       </div>
     </div>
