@@ -534,6 +534,22 @@
     "changes": "None"
   },
   {
+    "app": "opencloud",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/opencloud.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "sha256": "a75b5548227165de6c6c9fd310a3971542db3604203e495b3092cbaf73a0d125"
+  },
+  {
+    "app": "opencloud",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/opencloud-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "sha256": "753799a81e7b6e5767b31edbb9380de2cdb3bf9b7da9e27178367afb36ff3872"
+  },
+  {
     "app": "nginx-proxy-manager",
     "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nginx-proxy-manager.png",
     "repository": "https://github.com/selfhst/icons",
