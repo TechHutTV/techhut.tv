@@ -1561,6 +1561,20 @@
     }
   },
   {
+    "id": "opencloud",
+    "name": "OpenCloud",
+    "category": "Files & Photos",
+    "description": "Host file storage, sharing, search, and document collaboration with Docker.",
+    "coverage": [
+      "/self-host-opencloud-docker-compose"
+    ],
+    "icon": "/app-icons/opencloud.png",
+    "iconDark": "/app-icons/opencloud-light.png",
+    "details": {
+      "href": "/apps/opencloud"
+    }
+  },
+  {
     "id": "pi-hole",
     "name": "Pi-hole",
     "category": "Networking",

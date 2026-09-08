@@ -1,0 +1,54 @@
+{
+  "summary": "Host file storage, sharing, search, and browser-based document collaboration on your own server.",
+  "overview": "OpenCloud provides a browser-based file service with desktop and mobile clients for access and synchronization. Spaces keep team files separate from personal storage, while sharing controls and optional office integrations support collaboration. Its Go-based server stores data and metadata on the filesystem instead of requiring a separate relational database.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Docker",
+    "Desktop/mobile clients"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/opencloud-eu/opencloud/blob/main/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://opencloud.eu"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/opencloud-eu/opencloud"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://docs.opencloud.eu/"
+    },
+    {
+      "label": "Download apps",
+      "url": "https://opencloud.eu/en/product/download-apps"
+    },
+    {
+      "label": "Docker Compose",
+      "url": "https://github.com/opencloud-eu/opencloud-compose"
+    }
+  ],
+  "features": [
+    "File synchronization",
+    "Sharing controls",
+    "Team Spaces",
+    "Full-text search",
+    "Web office integration",
+    "Desktop and mobile clients"
+  ],
+  "sources": [
+    "https://opencloud.eu/en",
+    "https://opencloud.eu/en/features",
+    "https://opencloud.eu/en/product/download-apps",
+    "https://docs.opencloud.eu/",
+    "https://github.com/opencloud-eu/opencloud#readme",
+    "https://github.com/opencloud-eu/opencloud/blob/main/LICENSE",
+    "https://github.com/opencloud-eu/opencloud-compose#readme"
+  ]
+}

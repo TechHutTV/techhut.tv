@@ -747,6 +747,16 @@
       "https://api.github.com/repos/open-webui/open-webui"
     ]
   },
+  "opencloud": {
+    "repository": "opencloud-eu/opencloud",
+    "label": "OpenCloud server",
+    "link": "https://github.com/opencloud-eu/opencloud",
+    "reason": "Count the official OpenCloud server repository used by the covered self-hosted deployment; do not aggregate the separate desktop and mobile client repositories.",
+    "sources": [
+      "https://github.com/opencloud-eu/opencloud",
+      "https://api.github.com/repos/opencloud-eu/opencloud"
+    ]
+  },
   "pi-hole": {
     "repository": "pi-hole/pi-hole",
     "label": "Pi-hole",
