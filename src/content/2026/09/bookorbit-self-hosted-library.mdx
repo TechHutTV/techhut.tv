@@ -213,6 +213,16 @@ Book Dock is designed as a holding area where uploaded files can be reviewed, ma
 
 Use one disposable file. Upload it, inspect the proposed metadata and destination, correct one field if needed, finalize it, and confirm the resulting book and file location.
 
+Book Dock also becomes part of the pipeline when [Book Requests](https://bookorbit.app/book-requests/) sends a completed download through metadata review before placing it in a library. If you enable hardlinks, the download directory, Book Dock, and destination library should resolve to the same filesystem from inside the BookOrbit container.
+
+I hit an `EXDEV` error because the downloads and libraries were mounted beneath `/books`, while Book Dock still used `/data/book-dock`. Even though both host paths were on the same server, `/books` and `/data` were separate Docker mounts. Moving Book Dock beneath `/books` removed that boundary:
+
+```dotenv
+BOOK_DOCK_PATH=/books/book-dock
+```
+
+Use **Test hardlink** in the download-client settings before relying on this behavior. If the test fails, BookOrbit copies the import instead, which uses additional disk space.
+
 
 ## Extend the library beyond the browser
 
