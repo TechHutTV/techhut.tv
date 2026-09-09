@@ -142,6 +142,18 @@
     }
   },
   {
+    "id": "bookorbit",
+    "name": "BookOrbit",
+    "category": "Media",
+    "description": "Organize and read ebooks, PDFs, comics, and audiobooks from one self-hosted library.",
+    "coverage": [
+      "/bookorbit-self-hosted-library"
+    ],
+    "details": {
+      "href": "/apps/bookorbit"
+    }
+  },
+  {
     "id": "bottles",
     "name": "Bottles",
     "category": "Gaming & Compatibility",
@@ -461,7 +473,8 @@
       "/seerr-overseerr-migration",
       "/copyparty-file-server-linux",
       "/dockhand-docker-manager",
-      "/proxmox-backup-server-complete-guide"
+      "/proxmox-backup-server-complete-guide",
+      "/bookorbit-self-hosted-library"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [

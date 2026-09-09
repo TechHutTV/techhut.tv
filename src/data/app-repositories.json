@@ -80,6 +80,16 @@
       "https://api.github.com/repos/henrygd/beszel"
     ]
   },
+  "bookorbit": {
+    "repository": "bookorbit/bookorbit",
+    "label": "BookOrbit",
+    "link": "https://github.com/bookorbit/bookorbit",
+    "reason": "Official BookOrbit software repository linked from the project website and app metadata; current upstream identity, description, license, and active status verified through GitHub.",
+    "sources": [
+      "https://github.com/bookorbit/bookorbit",
+      "https://api.github.com/repos/bookorbit/bookorbit"
+    ]
+  },
   "bottles": {
     "repository": "bottlesdevs/bottles",
     "label": "Bottles",
