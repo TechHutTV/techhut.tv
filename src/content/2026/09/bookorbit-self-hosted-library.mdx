@@ -1,0 +1,270 @@
+export const title = "BookOrbit: One Library for Ebooks, PDFs, Comics, and Audiobooks"
+export const description = "Set up BookOrbit, a Docker-based self-hosted library for ebooks, PDFs, comics, and audiobooks, then explore its readers, metadata, users, and device integrations."
+export const date = "2026-09-04"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Docker", "Homelab", "Self-Host"]
+export const cover = "/docs-static/img/2026/09/bookorbit-self-hosted-library/cover.jpg"
+export const imagePosition = "center"
+
+Most self-hosted reading setups split along format lines. Ebooks live in one app, comics in another, and audiobooks somewhere else. BookOrbit takes the opposite approach: one library system, one set of users, and built-in readers for ebooks, PDFs, comics, and audiobooks.
+
+That is a much more interesting pitch than another web bookshelf. The useful question is what the whole workflow looks like, from mounting a folder and scanning books to reading, organizing, sharing access, and connecting another device.
+
+This guide is built around [BookOrbit v2.8.1](https://github.com/bookorbit/bookorbit/releases/tag/v2.8.1). It covers the complete path from the Docker deployment to the readers and device integrations, with the parts that can modify files kept behind deliberate safety boundaries.
+
+## What BookOrbit puts in one place
+
+BookOrbit is an [AGPL-3.0 self-hosted application](https://bookorbit.app/) that runs with Docker and PostgreSQL. Its [documented format support](https://bookorbit.app/what-is-bookorbit/#readers-and-formats) covers:
+
+| Reader | Formats |
+|---|---|
+| Ebook | EPUB, KEPUB, MOBI, AZW3, AZW, FB2 |
+| PDF | PDF |
+| Comics | CBZ, CBR, CB7 |
+| Audiobook | M4B, MP3, M4A, OPUS, OGG, FLAC |
+
+The library layer adds authors, series, collections, Smart Scopes, metadata providers, multiple users, OIDC, reading statistics, and per-user progress. Then OPDS, Kobo, and a dedicated KOReader plugin extend the library beyond the browser.
+
+That breadth is BookOrbit's advantage. It is also the reason to evaluate the everyday workflow instead of stopping at the feature list.
+
+## Install BookOrbit with Docker Compose
+
+The [official installation guide](https://bookorbit.app/installation/) only requires Docker and Compose on the host. This guide pins the application to v2.8.1 instead of relying on a floating `latest` tag.
+
+Create the project and persistent directories:
+
+```bash
+sudo mkdir -p /srv/bookorbit/{books,data/app,data/postgres}
+sudo chown -R "$(id -u):$(id -g)" /srv/bookorbit
+cd /srv/bookorbit
+
+curl -fsSLo .env \
+  https://raw.githubusercontent.com/bookorbit/bookorbit/v2.8.1/.env.example
+curl -fsSLo docker-compose.yml \
+  https://raw.githubusercontent.com/bookorbit/bookorbit/v2.8.1/docker-compose.yml
+```
+
+Open `.env` and set the public or LAN address, media path, application image, and new secrets:
+
+```dotenv
+APP_IMAGE=ghcr.io/bookorbit/bookorbit:2.8.1
+APP_URL=http://YOUR_SERVER_IP:3000
+BOOKS_HOST_PATH=./books
+POSTGRES_PASSWORD=REPLACE_WITH_RANDOM_VALUE
+JWT_SECRET=REPLACE_WITH_RANDOM_VALUE
+SETUP_BOOTSTRAP_TOKEN=REPLACE_WITH_RANDOM_VALUE
+```
+
+Generate secrets instead of reusing those placeholders:
+
+```bash
+openssl rand -hex 24
+openssl rand -hex 32
+openssl rand -hex 32
+```
+
+Keep the generated values out of screenshots, shell history, and the content repository. If the books already live elsewhere, point `BOOKS_HOST_PATH` at that host directory. BookOrbit sees the mount as `/books` inside the container.
+
+Start the stack and verify that both services are healthy:
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+Open the URL from `APP_URL`. The setup screen asks for the bootstrap token and then creates the first administrator.
+
+
+### The first likely problem is file permissions
+
+BookOrbit runs as the numeric `PUID` and `PGID` configured in `.env`, with `1000:1000` as the documented default. The mounted book folder must be readable by that identity. It also needs write access if BookOrbit will upload files, finalize Book Dock items, or write metadata into files.
+
+Check the numeric owner of an existing library:
+
+```bash
+ls -ldn /path/to/books
+id YOUR_MEDIA_USER
+```
+
+Set `PUID` and `PGID` to the IDs that should access the folder, then apply the change:
+
+```bash
+docker compose up -d
+```
+
+A scan that finds zero books, `EACCES` in the logs, failed uploads, and Book Dock finalize errors all point back to this boundary.
+
+## Create the first mixed-format library
+
+The [library wizard](https://bookorbit.app/creating-a-library/) turns mounted folders into BookOrbit libraries. The most important detail is that paths are resolved from BookOrbit's point of view. A host folder mounted as `/books` must be selected as `/books` in the interface, even if its host path is `/srv/media/books`.
+
+For a safe first pass, use an isolated legal or public-domain fixture set with:
+
+- one EPUB;
+- one PDF;
+- one CBZ and one CBR comic;
+- one M4B audiobook;
+- one multi-file MP3 audiobook; and
+- one title that has more than one supported file format.
+
+
+### Choose how files become books
+
+**Folder as Book** is the documented default and the safer starting point for a mixed library. Files in one folder stay attached to one book record, including alternate formats, sidecar metadata, covers, and audiobook tracks. It also keeps a multi-file audiobook together.
+
+**File as Book** treats each supported file as its own title. That can work for a flat directory, but it does not associate folder-level sidecars or extras.
+
+Run **Check folders** before creating the library. The prescan should report whether BookOrbit can access the path, how many matching files it sees, and whether the folder overlaps another library.
+
+### Set metadata and format priority
+
+The wizard separates two decisions:
+
+1. **Metadata source priority** decides whether embedded metadata or a nearby OPF file wins.
+2. **Format priority** decides which registered file becomes primary for reading, downloads, and embedded-metadata import.
+
+Format priority does not exclude a format. Use the scanner's **Allowed formats** when you want a library to ignore a file type entirely.
+
+For a mixed test library, leave the defaults first. For an audiobook-only library, move M4B, M4A, or MP3 higher. The primary file affects normal downloads and integrations such as Kobo.
+
+### Leave file updates off for the first pass
+
+BookOrbit can rename files and write metadata or covers back into supported files, but those controls are off by default. Keep them off while learning the application. Database-only metadata changes are easier to reverse, and the original fixture remains useful for comparison.
+
+Folder watching is also storage-dependent. Local filesystems usually provide reliable events. Network mounts may not, so a scheduled scan can be a better safety net.
+
+
+## Start from the dashboard
+
+Once the scan completes, the dashboard is the first useful stop. BookOrbit documents widgets for currently reading titles, goals, streaks, reading rhythm, projections, and other statistics. A new instance will not have meaningful history yet, so those analytics become more useful after you have recorded some reading activity.
+
+Move from the dashboard into the library and try the three main views:
+
+- **Grid** for visual browsing;
+- **List** for a compact library view; and
+- **Table** for sortable metadata-heavy management.
+
+Then open the author directory, one series, and the book detail page. These views make it clear that BookOrbit organizes records and relationships rather than merely displaying filenames.
+
+
+## Collections and Smart Scopes solve different jobs
+
+A collection is a deliberate group of books. A Smart Scope is a saved rule-based filter that updates as the library changes. BookOrbit's own example is the sort of query that shows why this matters: unread science fiction over a certain length and rating.
+
+Create one manual collection and one Smart Scope from the fixture library. The collection should remain stable until you edit it. The Smart Scope should change when a book's matching metadata or reading status changes.
+
+
+## Metadata control is deeper than a one-click match
+
+BookOrbit documents configurable metadata providers, bulk editing, field-level locks, and provider priority by field. That means a cover can come from one provider while title, author, description, or series data follows another rule.
+
+Choose a disposable fixture and change one field with an obvious expected result. Check the provider identifiers, the field rule, the edited value, and whether the file itself remains unchanged while file updates are disabled.
+
+Do not use a personal library for this demonstration. Metadata automation is exactly where a polished interface can cause broad changes faster than expected.
+
+
+## Open every built-in reader
+
+The readers are the core proof of BookOrbit's mixed-format pitch. For each fixture, open the file, move to a known checkpoint, close it, reopen it, and confirm the saved position.
+
+### Ebook reader
+
+Test an EPUB with chapter navigation, text size, theme, and layout controls. Select text, create a highlight, add a note, and reopen the book from that annotation.
+
+
+### PDF reader
+
+Open a PDF, move to a known page, close it, and resume. Keep PDF annotations separate from ebook highlights unless direct testing proves the same behavior.
+
+
+### Comic reader
+
+Test both CBZ and CBR if the fixture is available. Check fit mode, page or spread behavior, progress, resume, and movement into the next series item.
+
+
+### Audiobook player
+
+Test an M4B with chapters and a multi-file MP3 title. Seek into a known chapter or file, close the player, and confirm that BookOrbit resumes the correct position in the correct file.
+
+
+## Annotations become a library-wide workspace
+
+The [annotations system](https://bookorbit.app/annotations/) combines web-reader, KOReader, and Kobo highlights in one searchable view. It can filter by book, color, style, and source, then export the current result.
+
+Create a web-reader highlight and note, find it from the global annotations page, edit it, jump back to the passage, and export it as Markdown. The source and position badges matter because a stored highlight can exist even when another reader cannot place it exactly.
+
+
+## Add a second user before calling it multi-user
+
+BookOrbit supports multiple libraries, per-library access, granular permissions, and isolated reading progress. Prove the boundary with a second user rather than stopping at the settings page.
+
+Create:
+
+- an administrator with access to both test libraries; and
+- a reader with access to only one library and no administrative controls.
+
+Sign in through a separate private browser window. Confirm that the reader can browse and open an allowed title, cannot see the excluded library, and cannot fetch an excluded file through a direct request.
+
+
+## Book Dock gives uploads a staging area
+
+Book Dock is designed as a holding area where uploaded files can be reviewed, matched, and cleaned up before they are finalized into a library. That is a better boundary than dropping an unknown file directly into the final folder and hoping the scanner organizes it correctly.
+
+Use one disposable file. Upload it, inspect the proposed metadata and destination, correct one field if needed, finalize it, and confirm the resulting book and file location.
+
+
+## Extend the library beyond the browser
+
+The integrations are useful, but they are separate workflows with separate prerequisites. Treat each one as an optional extension rather than assuming every installation needs all of them.
+
+### OPDS
+
+The [OPDS server](https://bookorbit.app/opds/) creates separate credentials for compatible clients and filters the catalog through the parent BookOrbit user's permissions. Create a client-specific account, connect a supported reader, browse the allowed library, and download one primary file.
+
+
+### Kobo
+
+[Kobo sync](https://bookorbit.app/kobo/) uses a private device URL and collections marked **Sync to Kobo**. Eligible books must be present, allowed for the user, included in a synced collection, and use EPUB as the primary file. Precise outbound progress and highlight placement depends on BookOrbit's KEPUB delivery path.
+
+
+### KOReader
+
+The [BookOrbit KOReader plugin](https://bookorbit.app/koreader-plugin/) adds a native catalog, downloads, progress, highlights, ratings, and separate revocable credentials. This is more capable than using OPDS alone, but it requires plugin installation and a server the device can reach.
+
+
+### OIDC
+
+The [OIDC integration](https://bookorbit.app/oidc/) supports multiple providers, account auto-provisioning, local account linking, and group-to-permission mappings. Existing users need local account linking configured before their first provider login if the identity should attach to the original account.
+
+
+## Where a specialist can still be better
+
+One interface is convenient, but breadth is not the same as depth.
+
+- [Audiobookshelf](https://audiobookshelf.org/docs/documentation/introduction/) remains the obvious comparison for podcasts, native companion apps, offline listening, and audio-first use.
+- [Calibre-Web Automated](https://github.com/crocodilestick/Calibre-Web-Automated) is still relevant when Calibre ingest, conversion, and automation are the core workflow.
+- [Kavita](https://www.kavitareader.com/) and [Komga](https://komga.org/docs/introduction/) deserve a look when comics and manga are the priority.
+- [Booklore](https://github.com/booklore-app/booklore) is a close comparison for ebook and comic management with several similar self-hosting integrations.
+
+There is no universal winner here. The useful question is whether BookOrbit's combined workflow is good enough to reduce the number of interfaces you maintain.
+
+## The recommendation depends on the everyday details
+
+BookOrbit is worth a test install if one mixed reading library solves a real problem for you. The project has broad documented format support, a thoughtful library model, and unusually ambitious Kobo and KOReader integrations.
+
+The final recommendation still depends on direct use. Reader quality, scanner grouping, metadata safety, multi-user boundaries, and client behavior are the parts that decide whether this becomes a daily service or another impressive demo.
+
+
+## Official references
+
+- [BookOrbit home](https://bookorbit.app/)
+- [What is BookOrbit?](https://bookorbit.app/what-is-bookorbit/)
+- [Installation](https://bookorbit.app/installation/)
+- [Creating a library](https://bookorbit.app/creating-a-library/)
+- [Annotations and highlights](https://bookorbit.app/annotations/)
+- [OPDS](https://bookorbit.app/opds/)
+- [Kobo sync](https://bookorbit.app/kobo/)
+- [KOReader plugin](https://bookorbit.app/koreader-plugin/)
+- [OIDC and SSO](https://bookorbit.app/oidc/)
+- [v2.8.1 release](https://github.com/bookorbit/bookorbit/releases/tag/v2.8.1)

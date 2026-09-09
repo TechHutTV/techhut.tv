@@ -1,0 +1,48 @@
+{
+  "summary": "Organize and read ebooks, PDFs, comics, and audiobooks from one self-hosted library.",
+  "overview": "BookOrbit combines mixed-format library management with browser-based readers, metadata tools, collections, saved filters, and separate progress for multiple users. OPDS, Kobo, and KOReader integrations can extend the same library to compatible reading devices, while Book Dock provides a staging area for uploads before files enter the main collection.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows (WSL2)",
+    "Docker"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/bookorbit/bookorbit/blob/main/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://bookorbit.app/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/bookorbit/bookorbit"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://bookorbit.app/what-is-bookorbit/"
+    },
+    {
+      "label": "Releases",
+      "url": "https://github.com/bookorbit/bookorbit/releases"
+    }
+  ],
+  "features": [
+    "Mixed-format libraries",
+    "Built-in readers",
+    "Metadata management",
+    "Multi-user access",
+    "OPDS, Kobo & KOReader integrations",
+    "Book Dock upload staging"
+  ],
+  "sources": [
+    "https://bookorbit.app/what-is-bookorbit/",
+    "https://bookorbit.app/installation/",
+    "https://github.com/bookorbit/bookorbit#readme",
+    "https://github.com/bookorbit/bookorbit/blob/main/LICENSE"
+  ]
+}
