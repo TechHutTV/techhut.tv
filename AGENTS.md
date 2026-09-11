@@ -34,7 +34,7 @@ Do not silently skip the audit.
 - `src/data/app-details/<id>.json`: add a complete summary, overview, kind, platforms, verified license, official links, features, and authoritative sources.
 - `src/data/app-repositories.json`: select one verified official GitHub repository or use `repository: null`; explain the decision and cite evidence. A mapped `link` must exactly match one link in the detail file.
 - `public/app-icons/`: add a verified standalone icon when suitable, then record its source, license, hash, and any changes in `sources.json`. Use generated initials when provenance or contrast is uncertain.
-- `src/data/github-stars.json`: run `npm run refresh:stars` when a repository mapping is added or changed and network access is available. A first-time fetch failure may leave the count absent; never invent or transfer a count.
+- `src/data/github-stars.json`: leave star refreshes to the GitHub Actions workflow. Do not run `npm run refresh:stars` or change the cache as part of routine article or app-listing work, including new repository mappings, unless the user explicitly requests a manual refresh. A new app may have no count until the workflow runs; never invent or transfer a count.
 
 ## Repository map
 

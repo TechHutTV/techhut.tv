@@ -1546,6 +1546,18 @@
     }
   },
   {
+    "id": "onlyoffice-docs",
+    "name": "ONLYOFFICE Docs",
+    "category": "Files & Photos",
+    "description": "Add browser-based document, spreadsheet, and presentation editing to Seafile with Document Server.",
+    "coverage": [
+      "/self-host-seafile-docker-unraid"
+    ],
+    "details": {
+      "href": "/apps/onlyoffice-docs"
+    }
+  },
+  {
     "id": "onlyoffice-workspace",
     "name": "ONLYOFFICE Workspace",
     "category": "Desktop",

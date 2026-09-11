@@ -1,0 +1,33 @@
+{
+  "summary": "Host collaborative office editors that open and save documents through your existing file platform.",
+  "overview": "ONLYOFFICE Docs is the browser-based editing service packaged as Document Server. It integrates with file platforms such as Seafile to edit documents, spreadsheets, and presentations while the file platform manages accounts, libraries, and saved files. The TechHut guide connects its Docker container to Seafile through the same HTTPS domain, with JWT authentication, local working storage, and time for documents to save before shutdown.",
+  "kind": "Self-hosted",
+  "platforms": ["Linux", "Docker", "Web browser"],
+  "license": {
+    "name": "AGPL-3.0 (Community Edition)",
+    "type": "Open source · Commercial editions",
+    "url": "https://github.com/ONLYOFFICE/DocumentServer/blob/master/LICENSE"
+  },
+  "links": [
+    {"label": "Official site", "url": "https://www.onlyoffice.com"},
+    {"label": "Document Server on GitHub", "url": "https://github.com/ONLYOFFICE/DocumentServer"},
+    {"label": "Docker installation", "url": "https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx"},
+    {"label": "Seafile integration", "url": "https://manual.seafile.com/13.0/extension/only_office/"}
+  ],
+  "features": [
+    "Browser-based document, spreadsheet, and presentation editors",
+    "Office Open XML format support",
+    "Collaborative editing, comments, and tracked changes",
+    "Seafile file opening and save callbacks",
+    "JWT authentication between integrated services",
+    "Self-hosted Docker deployment"
+  ],
+  "sources": [
+    "https://github.com/ONLYOFFICE/DocumentServer",
+    "https://github.com/ONLYOFFICE/DocumentServer/blob/master/LICENSE",
+    "https://github.com/ONLYOFFICE/Docker-DocumentServer",
+    "https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx",
+    "https://manual.seafile.com/13.0/extension/only_office/",
+    "https://github.com/ONLYOFFICE/document-server-proxy/blob/master/nginx/proxy-to-virtual-path.conf"
+  ]
+}

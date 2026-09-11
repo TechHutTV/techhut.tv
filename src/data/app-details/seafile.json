@@ -21,7 +21,9 @@
     "Version history",
     "Browser, desktop, and mobile access",
     "SeaDoc document integration",
-    "Notification server integration"
+    "Notification server integration",
+    "OnlyOffice document editing integration",
+    "Native Linux CLI for synchronizing existing folders"
   ],
   "sources": [
     "https://www.seafile.com/en/product/seafile_on_premise/",
@@ -31,6 +33,8 @@
     "https://github.com/haiwen/seafile-server/blob/master/LICENSE.txt",
     "https://github.com/haiwen/seahub/blob/master/LICENSE.txt",
     "https://manual.seafile.com/13.0/extension/setup_seadoc/",
-    "https://manual.seafile.com/13.0/extension/notification-server/"
+    "https://manual.seafile.com/13.0/extension/notification-server/",
+    "https://manual.seafile.com/13.0/extension/only_office/",
+    "https://help.seafile.com/syncing_client/linux-cli/"
   ]
 }

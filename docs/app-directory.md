@@ -66,7 +66,9 @@ The initial snapshot contains **104 repositories for 104 apps**, with **22 expli
 
 After verifying a new repository or transfer against authoritative project sources, update the mapping and its evidence. Keep `link` equal to the corresponding URL in the app's detail JSON. A known redirect can retain the old official link; the `repository` must name the current destination. Add a clearly labeled link to the detail file if no corresponding link exists. Explicitly selected official packaging repositories, issue trackers, and mirrors must be labeled for what they represent; AMP is the owner's explicit tracker selection. Do not infer substitutions from icon provenance, dependencies, unofficial mirrors, or organization-wide totals.
 
-### Refresh locally
+### Manual refresh when requested
+
+GitHub Actions handles routine star-cache refreshes. Article and app-listing changes should update repository mappings when needed and leave `src/data/github-stars.json` alone. A new app can omit its badge until the workflow fetches its first count. Run a local refresh only when explicitly requested, such as when troubleshooting the refresh workflow.
 
 With Node.js 22 or later, run `npm run refresh:stars` from the project root. Set `GITHUB_TOKEN` or `GH_TOKEN` through the environment if available; do not put tokens in files or command arguments. Public repository metadata requires no write permission. Unauthenticated requests work but GitHub's lower rate limit may prevent refreshing the full directory in one run.
 

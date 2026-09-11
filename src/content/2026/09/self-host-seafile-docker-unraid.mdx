@@ -1,5 +1,5 @@
 export const title = "Self-Host Seafile with Docker, Unraid Storage, and Nginx Proxy Manager"
-export const description = "Build a Seafile 13 server in a Fedora VM with a local database, files on Unraid, SeaDoc editing, real-time notifications, HTTPS, and nightly database backups."
+export const description = "Set up Seafile 13 on Fedora with Unraid storage, HTTPS, SeaDoc, OnlyOffice, backups, and a server-to-server migration from a Nextcloud network share."
 export const date = "2026-09-10"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
@@ -9,6 +9,8 @@ export const cover = "/docs-static/img/2026/09/self-host-seafile-docker-unraid/c
 I wanted Seafile running in its own VM, with my files on Unraid and HTTPS handled by the Nginx Proxy Manager instance I already use. That sounds pretty simple, but there are a few pieces to connect: the storage mount, database, document editor, and notification service all need to agree on where things live.
 
 In this guide, we'll build that setup with Seafile Community Edition 13, Fedora Server, and Docker Compose. We'll also include SeaDoc for editing documents in the browser and Seafile's notification server for real-time library updates. Everything will be available through one address, such as `https://seafile.example.com`.
+
+I've also included an optional OnlyOffice setup for Word, Excel, and PowerPoint files, followed by the steps I used to bring an existing Nextcloud folder into a Seafile library. The migration runs inside the VM, so your computer doesn't have to relay several terabytes of files.
 
 My deployment ran Seafile **13.0.25** and SeaDoc **2.0.9**. The examples follow the 13.x configuration and use its update tags. I've combined the services into one Compose file to make the walkthrough easier to follow. This is a customized version of the [official Seafile 13 Docker setup](https://manual.seafile.com/13.0/setup/setup_ce_by_docker/), with an existing reverse proxy and separate local and Unraid storage.
 
@@ -38,7 +40,7 @@ VM local disk                     Unraid share, mounted in the VM
                                     Database and configuration backups
 ```
 
-There are six containers: those three application services, MariaDB, Redis, and the NGINX gateway. Only the gateway publishes a port on the VM. The database and Redis stay on Docker's internal network.
+The base setup shown above has six containers: those three application services, MariaDB, Redis, and the NGINX gateway. Only the gateway publishes a port on the VM. The optional OnlyOffice section adds a seventh container, reached through `/office/` on the same domain.
 
 ## Before you start
 
@@ -46,8 +48,8 @@ This walkthrough assumes a **new, dedicated Fedora Server VM on Unraid**. It is 
 
 You'll need:
 
-- An x86-64 Fedora Server VM. I used Fedora 44, with 4 GB of RAM and four virtual CPUs across two physical cores.
-- A local virtual disk with room for Fedora, container images, and the growing database. I'd start around 50 GB or larger, depending on your library size.
+- An x86-64 Fedora Server VM. I used Fedora 44 and four virtual CPUs across two physical cores. The base setup worked with 4 GB of RAM; I increased it to **8 GB before adding OnlyOffice**.
+- A local virtual disk with room for Fedora, container images, the database, and working files. I used a 64 GB disk. For OnlyOffice, check that Fedora actually has at least **40 GB free** before installation; an 80 GB or larger virtual disk gives a new combined installation more headroom.
 - An Unraid user share named `seafile`, with enough space for your files and backups.
 - An existing NPM instance that can reach the VM over your network.
 - A domain you control, with its Seafile hostname pointing to NPM.
@@ -101,13 +103,18 @@ Here's the storage split we're going to use:
 | --- | --- | --- |
 | `/srv/seafile` | VM's local virtual disk | Compose project, environment file, proxy configuration, backup script |
 | `/srv/seafile/mysql` | VM's local virtual disk | Live MariaDB database |
+| `/srv/seafile/onlyoffice` | VM's local virtual disk | Optional OnlyOffice configuration, fonts, logs, and working cache |
+| `/srv/seafile/migration` | VM's local virtual disk | Temporary migration client configuration, index, and block cache |
 | `/mnt/seafile/seafile-data` | Unraid share | Seafile's stored file blocks, application configuration, and logs |
 | `/mnt/seafile/seadoc-data` | Unraid share | SeaDoc's persistent directory, including logs |
 | `/mnt/seafile/backups` | Unraid share | Nightly SQL dumps and configuration archives |
+| `/mnt/archive-source` | Separate SMB mount from the NAS | Read-only source folder during the optional migration |
 
 `/srv` is a conventional place for service-related data. `/mnt` is a conventional place to mount another filesystem. **The directory names don't move data onto a different disk.** Mounting the Unraid share at `/mnt/seafile` is what makes files written there land on Unraid.
 
 I'm keeping MariaDB local because it does frequent small reads and writes and depends on reliable filesystem behavior. A local Linux filesystem is a more straightforward home for that workload than the VM's 9p share. We can still send database backups to Unraid every night.
+
+OnlyOffice's working files stay local for the same general reason. Once the editor saves a document back to Seafile, that document is stored on Unraid with the rest of the library. Its working cache can contain edits awaiting a save, so we'll also give it time to finish saving during shutdown.
 
 Also, putting the Compose project in `/srv/seafile` doesn't relocate Docker itself. Docker's images, writable container layers, and runtime storage still use its local defaults, including `/var/lib/docker` and, depending on the installation, containerd's storage.
 
@@ -659,7 +666,7 @@ In a library, use the **New** menu to create a SeaDoc document. Enter a few line
 
 SeaDoc edits Seafile's `.sdoc` documents. Its persistent directory includes logs, while document contents live in Seafile and its operation log uses the existing `seahub_db` database. It doesn't need a separate `sdoc_db` for this version. The [Seafile 13 SeaDoc instructions](https://manual.seafile.com/13.0/extension/setup_seadoc/) explain that integration.
 
-This is useful for notes and shared documentation. Opening an uploaded Word document is a separate feature: SeaDoc doesn't provide the browser viewer for `.docx` files. With the setup in this guide, you can still store, sync, and download those files, but Seafile may display **"Online view is not applicable to this file format"** when you try to preview one.
+This is useful for notes and shared documentation. Opening an uploaded Word document is a separate feature: SeaDoc doesn't provide the browser viewer for `.docx` files. With just the base setup, you can store, sync, and download those files, but Seafile may display **"Online view is not applicable to this file format"** when you try to preview one.
 
 #### Optional: OnlyOffice or Collabora for Office files
 
@@ -670,9 +677,240 @@ Seafile supports two additional office suites for viewing and editing documents 
 
 Either can work alongside SeaDoc. Both require an additional office service, a connection to Seafile, and reverse proxy configuration. Enabling SeaDoc alone doesn't enable either integration.
 
-Plan extra resources before adding one. For example, [OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM and 40 GB of free disk space for its deployment. Don't treat the 4 GB Seafile VM used above as a sizing recommendation for the combined stack. Document complexity and the number of simultaneous editors matter, so test opening, editing, saving, and reopening a few of your own files.
+I chose OnlyOffice for this deployment and tested opening, editing, saving, and reopening a DOCX file. The steps below add it to the existing Compose project. Collabora remains an alternative if you prefer its editors; follow its linked integration guide instead of installing both for the same file types.
 
-These are optional next steps; the Compose file in this guide installs Seafile, SeaDoc, and notifications. Follow the linked version-specific integration instructions when you're ready to add an office suite.
+#### Check resources and create OnlyOffice's folders
+
+[OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM, 40 GB of free disk space, and at least 4 GB of swap for its deployment. My combined VM has 8 GB of RAM. That's a starting point for a small homelab, and larger documents or more simultaneous editors may need more.
+
+Check the resources **inside Fedora**:
+
+```bash
+free -h
+swapon --show
+df -h / /srv/seafile
+```
+
+If you resize the virtual disk in Unraid, check `df` again afterward. Increasing the virtual disk doesn't necessarily grow Fedora's partition, logical volume, and filesystem automatically. Resolve that before pulling another large image.
+
+Create the local directories:
+
+```bash
+cd /srv/seafile
+sudo install -d -o 1000 -g 1000 -m 0755 onlyoffice
+sudo mkdir -p onlyoffice/{data,lib,logs,fonts}
+nano onlyoffice/local-production-linux.json
+```
+
+Paste this small configuration file. It asks OnlyOffice to send saved document versions back every five minutes while editing:
+
+```json
+{
+  "services": {
+    "CoAuthoring": {
+      "autoAssembly": {
+        "enable": true,
+        "interval": "5m"
+      }
+    }
+  }
+}
+```
+
+Make this particular file readable by the container's worker processes:
+
+```bash
+chmod 644 onlyoffice/local-production-linux.json
+```
+
+It contains no passwords. Keep `.env` private at mode `600`; don't apply `644` to your other configuration files. I initially made this JSON file too restrictive, which prevented OnlyOffice's document service and converter from starting.
+
+#### Add the container and its secret
+
+Run this once to append the tested image version and a separate random JWT secret to `.env`. The guard keeps a second run from replacing an existing secret:
+
+```bash
+cd /srv/seafile
+if ! grep -q '^ONLYOFFICE_JWT_SECRET=' .env; then
+  cat >> .env << EOF
+
+ONLYOFFICE_IMAGE=onlyoffice/documentserver:9.4.0.1
+ONLYOFFICE_JWT_SECRET=$(openssl rand -hex 32)
+EOF
+fi
+chmod 600 .env
+nano compose.yaml
+```
+
+Add the following **inside the existing `services:` section**, aligned with `seafile:`, `db:`, and `gateway:`. Don't add another `services:` heading. All seven services use the same default Compose network.
+
+```yaml
+  onlyoffice:
+    image: ${ONLYOFFICE_IMAGE:?Set in .env}
+    restart: unless-stopped
+    stop_grace_period: 6m
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET:?Set in .env}
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: "true"
+      ALLOW_PRIVATE_IP_ADDRESS: "true"
+      ALLOW_META_IP_ADDRESS: "false"
+      USE_UNAUTHORIZED_STORAGE: "false"
+      EXAMPLE_ENABLED: "false"
+      ADMINPANEL_ENABLED: "false"
+      TZ: ${TIME_ZONE}
+    volumes:
+      - type: bind
+        source: /srv/seafile/onlyoffice/data
+        target: /var/www/onlyoffice/Data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/lib
+        target: /var/lib/onlyoffice
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/logs
+        target: /var/log/onlyoffice
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/fonts
+        target: /usr/share/fonts/truetype/custom
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/local-production-linux.json
+        target: /etc/onlyoffice/documentserver/local-production-linux.json
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "test \"$$(curl -fsS http://127.0.0.1/healthcheck)\" = true"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+```
+
+The doubled dollar sign in the health check tells Compose to leave that command substitution for the container's shell.
+
+OnlyOffice needs to fetch documents from Seafile and send saves back. `ALLOW_PRIVATE_IP_ADDRESS` permits that connection when your Seafile hostname resolves to NPM's LAN address. Certificate verification stays enabled, and JWT authentication stays enabled. This container doesn't publish an additional host port.
+
+#### Route `/office/` through the existing gateway
+
+Open `/srv/seafile/gateway.conf`. Add these locations **inside the existing `server` block**, above `location /`:
+
+```nginx
+    location = /office {
+        return 301 /office/;
+    }
+
+    location /office/ {
+        resolver 127.0.0.11 valid=30s ipv6=off;
+        set $office_backend http://onlyoffice:80;
+        rewrite ^/office/(.*)$ /$1 break;
+        proxy_pass $office_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $host/office;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+```
+
+The browser requests `/office/...`, while the gateway removes that prefix before forwarding to Document Server. The forwarded host includes `/office` so the editor generates the right public URLs, following [OnlyOffice's virtual-path proxy example](https://github.com/ONLYOFFICE/document-server-proxy/blob/master/nginx/proxy-to-virtual-path.conf). Docker's DNS resolver lets NGINX resolve the optional service when a request arrives.
+
+Keep this path as **`/office/`**. Seafile uses `/onlyoffice/` for its own integration endpoints, so routing that whole prefix to Document Server would break callbacks. Your NPM proxy host still forwards to the same VM address and port **8080**, with WebSockets enabled; no additional domain or Custom Location is needed.
+
+Validate and start the editor, then reload the gateway:
+
+```bash
+cd /srv/seafile
+sudo docker compose config --quiet
+sudo docker compose pull onlyoffice
+sudo docker compose up -d --wait --wait-timeout 360 onlyoffice
+sudo docker compose exec -T gateway nginx -t
+sudo docker compose exec -T gateway nginx -s reload
+```
+
+Only continue after startup and the NGINX configuration check succeed. From the VM, confirm these URLs work, using your domain:
+
+```bash
+curl -fsS https://seafile.example.com/office/healthcheck
+curl -fsS -o /dev/null https://seafile.example.com/office/web-apps/apps/api/documents/api.js
+```
+
+The health check should return `true`; the second command should finish without an error. If either fails, check `sudo docker compose logs --tail=100 onlyoffice gateway` before enabling the integration.
+
+#### Enable OnlyOffice in Seafile
+
+Open `.env` in nano and copy the value of `ONLYOFFICE_JWT_SECRET`. Then open Seafile's generated settings file:
+
+```bash
+sudo nano /mnt/seafile/seafile-data/seafile/conf/seahub_settings.py
+```
+
+Add these settings at the end. Replace the example domain and paste the **same OnlyOffice secret** between the quotes. If these settings already exist, edit them instead of adding duplicates.
+
+```python
+ENABLE_ONLYOFFICE = True
+ONLYOFFICE_APIJS_URL = 'https://seafile.example.com/office/web-apps/apps/api/documents/api.js'
+ONLYOFFICE_JWT_SECRET = 'PASTE_THE_ONLYOFFICE_JWT_SECRET_FROM_ENV'
+ONLYOFFICE_FORCE_SAVE = True
+VERIFY_ONLYOFFICE_CERTIFICATE = True
+ONLYOFFICE_FILE_EXTENSION = (
+    'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx',
+    'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'ppsx', 'pps', 'csv'
+)
+ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'csv')
+```
+
+These settings follow the [Seafile 13 integration](https://manual.seafile.com/13.0/extension/only_office/). The explicit file lists enable Office previews and supported editable formats while leaving PDFs with Seafile's existing viewer. The OnlyOffice secret is separate from the shared `JWT_PRIVATE_KEY` used by SeaDoc and notifications.
+
+Restart Seafile to load the settings:
+
+```bash
+sudo chmod 600 /mnt/seafile/seafile-data/seafile/conf/seahub_settings.py
+sudo docker compose restart seafile
+sudo docker compose ps
+```
+
+Wait for Seafile to become healthy again. Upload a disposable `.docx` to a test library, open it, change a sentence, save, close the editor, and reopen it. Finally, download the document and open that copy too. A working editor page alone doesn't confirm that saves made it back into Seafile.
+
+#### Give active documents time to save during shutdown
+
+OnlyOffice provides a [shutdown preparation command](https://github.com/ONLYOFFICE/Docker-DocumentServer#stopping-docker-documentserver) that sends pending document changes back before stopping. Add a drop-in to the Seafile service so it runs while Seafile and the gateway are still available:
+
+```bash
+sudo mkdir -p /etc/systemd/system/seafile.service.d
+sudo nano /etc/systemd/system/seafile.service.d/onlyoffice.conf
+```
+
+```ini
+[Service]
+ExecStop=
+ExecStop=-/usr/bin/docker compose exec -T onlyoffice documentserver-prepare4shutdown.sh
+ExecStop=/usr/bin/docker compose down --timeout 360
+TimeoutStopSec=900
+```
+
+The empty `ExecStop=` clears the shorter stop command from the base unit. The following commands prepare documents for shutdown and then stop the stack. The leading `-` lets systemd continue stopping if the editor is already unavailable; check the journal if preparation reports an error.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Use `sudo systemctl stop seafile.service` or `sudo systemctl restart seafile.service` for planned maintenance so this step runs. Give the VM time to shut down normally, and close editing sessions before maintenance. This cannot protect unsaved work from a sudden power loss. The backup section below includes the editor's configuration and custom fonts; saved documents remain part of Seafile's data on Unraid.
 
 ### Notifications: live connections, separate from email
 
@@ -726,11 +964,15 @@ config_paths=(
   etc/systemd/system/seafile-backup.timer
 )
 
-for directory in \
+for optional_path in \
   mnt/seafile/seafile-data/seafile/conf \
-  mnt/seafile/seafile-data/nginx; do
-  if [[ -d "/$directory" ]]; then
-    config_paths+=("$directory")
+  mnt/seafile/seafile-data/nginx \
+  srv/seafile/onlyoffice/local-production-linux.json \
+  srv/seafile/onlyoffice/data \
+  srv/seafile/onlyoffice/fonts \
+  etc/systemd/system/seafile.service.d/onlyoffice.conf; do
+  if [[ -e "/$optional_path" ]]; then
+    config_paths+=("$optional_path")
   fi
 done
 
@@ -745,6 +987,8 @@ printf 'Backup completed: %s/%s\n' "$backup_root" "$stamp"
 If your user IDs aren't `1000:1000`, change that one ownership line. The script uses a temporary directory and only renames it after success. A folder starting with `.incomplete` means that run didn't finish; check the journal before relying on it.
 
 The configuration archive includes `.env`, so treat backups as private too. This script doesn't delete old backups automatically. Check how much space they use and decide on retention once you know your database's size.
+
+If you installed OnlyOffice, the archive also includes its custom settings, data directory, fonts, and shutdown override. Its working cache and logs are excluded. Documents already saved back to Seafile belong to the file-data backup; this job doesn't capture an open editor's unsaved session.
 
 Make it executable:
 
@@ -770,7 +1014,7 @@ RequiresMountsFor=/mnt/seafile
 [Service]
 Type=oneshot
 WorkingDirectory=/srv/seafile
-ExecStart=/srv/seafile/backup.sh
+ExecStart=/usr/bin/bash /srv/seafile/backup.sh
 UMask=0077
 TimeoutStartSec=1h
 ```
@@ -844,6 +1088,285 @@ For this type of systemd service, `active (exited)` is normal. The containers ke
 
 Reopen your test document and download a test file. That confirms the application came back with its existing data after a reboot.
 
+## 13. Optional: move a Nextcloud folder into a Seafile library
+
+For my migration, the files were already available through an SMB network share. I wanted the contents of `ncdata/__groupfolders/1/files` to become the contents of a new **Archive** library in Seafile, keeping the folder structure underneath it.
+
+We'll mount that exact folder read-only in the Seafile VM and use Seafile's Linux command-line client to upload it. This is a **file migration**: it doesn't bring over Nextcloud accounts, shares, permissions, comments, or version history. The source must expose normal, readable files. If Nextcloud encryption or another storage backend hides the originals, export readable files through Nextcloud first.
+
+### How the files travel
+
+```text
+NAS SMB share, read-only
+  //192.168.1.10/ncdata/__groupfolders/1/files
+              |
+              | LAN read
+              v
+Seafile client running in the Fedora VM
+  /mnt/archive-source
+              |
+              | Upload to https://seafile.example.com
+              v
+Existing NPM -> VM gateway -> Seafile's Archive library
+                                      |
+                                      v
+                          Unraid /mnt/seafile storage
+```
+
+Your laptop or desktop only controls the job over SSH. The files travel between the NAS, VM, and reverse proxy. With the Seafile hostname resolving to NPM's LAN address, that traffic stays on the LAN. If you use a CDN or other external proxy, check the VM's DNS and routing before starting a multi-terabyte transfer.
+
+Seafile writes its own blocks on the destination share. This requires space for the new library while the original files still exist, even when both shares live on the same NAS. It also means the NAS handles both source reads and destination writes. Don't copy the source directly into Seafile's internal `seafile-data` directory.
+
+### Prepare an empty destination and a stable source
+
+In Seafile's web interface, create an **empty, unencrypted library named Archive**. Leave it unused by other people and clients until the migration is finished and disconnected. This procedure uses a synchronization client, so changes made on either side can affect what it tries to synchronize.
+
+Stop editing the Nextcloud source during the copy, or use a read-only snapshot of the source where your storage supports one. Our read-only SMB mount protects against writes from this VM; it doesn't prevent Nextcloud or another NAS client from changing the original files.
+
+In the examples below, replace `192.168.1.10`, the share/subfolder path, and `nasuser` with your values. Run everything in the **Seafile VM**.
+
+```bash
+sudo dnf install -y cifs-utils python3 python3-requests
+sudo install -d -m 0750 /mnt/archive-source
+sudo mount -t cifs //192.168.1.10/ncdata/__groupfolders/1/files \
+  /mnt/archive-source \
+  -o ro,username=nasuser,vers=3.1.1,uid=1000,gid=1000,nosuid,nodev,noexec,cache=strict
+```
+
+Enter the **SMB account's password** at the prompt. It stays out of the command and shell history. The path includes the folder inside the share, so `files` itself won't become an extra folder inside Archive.
+
+Check the mount and its contents before proceeding:
+
+```bash
+findmnt -T /mnt/archive-source -o TARGET,SOURCE,FSTYPE,OPTIONS
+sudo ls -la /mnt/archive-source
+```
+
+Expect the target `/mnt/archive-source`, filesystem `cifs`, and the `ro` option. The listing must show the folders you want inside Archive. I caught a mount that exposed the top of `ncdata` instead of the intended subfolder during setup; checking here prevented uploading the wrong tree.
+
+### Record the source size and file list
+
+Create a private working directory on the VM's local disk. Substitute your user IDs if they differ from `1000:1000`:
+
+```bash
+sudo install -d -o 1000 -g 1000 -m 0700 /srv/seafile/migration
+mkdir -p /srv/seafile/migration/tools /srv/seafile/migration/client
+```
+
+This inventory records relative paths, sizes, and modification times without reading every file's contents. Run the whole block:
+
+```bash
+sudo python3 - << 'PY'
+from json import dumps
+from os import umask, walk
+from pathlib import Path
+
+umask(0o077)
+source = Path('/mnt/archive-source')
+if not source.is_mount():
+    raise SystemExit('Source is not mounted; stop and fix the mount.')
+work = Path('/srv/seafile/migration')
+totals = {'files': 0, 'directories': 0, 'bytes': 0}
+
+def stop_on_error(error):
+    raise error
+
+with (work / 'source-manifest.jsonl').open('w') as manifest:
+    for parent, directories, files in walk(source, onerror=stop_on_error):
+        for name in directories + files:
+            path = Path(parent) / name
+            if path.is_symlink():
+                raise SystemExit(f'Review symbolic link before migration: {path}')
+            info = path.stat()
+            kind = 'dir' if path.is_dir() else 'file'
+            if kind == 'file' and not path.is_file():
+                raise SystemExit(f'Review non-regular file: {path}')
+            row = {'path': str(path.relative_to(source)), 'type': kind,
+                   'size': info.st_size if kind == 'file' else 0,
+                   'mtime_ns': info.st_mtime_ns}
+            manifest.write(dumps(row) + '\n')
+            totals['directories' if kind == 'dir' else 'files'] += 1
+            if kind == 'file':
+                totals['bytes'] += info.st_size
+(work / 'source-inventory.json').write_text(dumps(totals, indent=2) + '\n')
+print(dumps(totals, indent=2))
+PY
+```
+
+Don't start the transfer if this reports an unreadable folder or another error. Keep both inventory files for comparison after the copy. My source turned out to contain **10,675 files totaling 4.58 TB**, which was larger than my initial estimate.
+
+### Install the native Seafile client
+
+I used the official x86-64 CLI AppImage, version **9.0.21**, with Seafile Server 13.0.25. Client and server version numbers don't need to match. The [Seafile download page](https://www.seafile.com/en/download/) links the CLI package.
+
+```bash
+cd /srv/seafile/migration/tools
+curl -fL --retry 3 \
+  -o Seafile-cli-x86_64-9.0.21.AppImage \
+  https://sos-ch-dk-2.exo.io/seafile-downloads/Seafile-cli-x86_64-9.0.21.AppImage
+chmod 755 Seafile-cli-x86_64-9.0.21.AppImage
+./Seafile-cli-x86_64-9.0.21.AppImage --appimage-extract
+sudo mv squashfs-root /opt/seafile-cli-9.0.21
+sudo chown -R root:root /opt/seafile-cli-9.0.21
+sudo restorecon -RF /opt/seafile-cli-9.0.21
+```
+
+Extracting the AppImage lets systemd run the client without a FUSE mount. Putting the executable under `/opt` and restoring its normal Fedora labels also avoids the SELinux execution denial I encountered when running it as a service from `/srv`. These installation commands are for the first run; don't move another extraction over an existing installation.
+
+Create a small shortcut so you don't need to repeat the client paths in every command:
+
+```bash
+sudo nano /usr/local/bin/seafile-migrate
+```
+
+```bash
+#!/usr/bin/env bash
+export APPDIR=/opt/seafile-cli-9.0.21
+exec "$APPDIR/AppRun" "$@" -c /srv/seafile/migration/client-config
+```
+
+Install its permissions and initialize the isolated client:
+
+```bash
+sudo chmod 755 /usr/local/bin/seafile-migrate
+sudo restorecon /usr/local/bin/seafile-migrate
+sudo seafile-migrate init -d /srv/seafile/migration/client
+```
+
+Let `init` create `client-config`; don't create that directory beforehand. The client keeps its index and temporary blocks under `/srv/seafile/migration`, while its working folder will be the already-mounted SMB source. It doesn't need a complete second staging copy on the VM, but the cache still needs free space.
+
+### Run the client in the background with systemd
+
+Create the service:
+
+```bash
+sudo nano /etc/systemd/system/seafile-archive-client.service
+```
+
+```ini
+[Unit]
+Description=Seafile client for Archive migration
+After=network-online.target seafile.service mnt-archive\x2dsource.mount
+Wants=network-online.target
+RequiresMountsFor=/mnt/archive-source /mnt/seafile
+BindsTo=mnt-archive\x2dsource.mount
+
+[Service]
+Type=simple
+Environment=SEAFILE_SSL_CA_PATH=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+Environment=APPDIR=/opt/seafile-cli-9.0.21
+Environment=LD_LIBRARY_PATH=/opt/seafile-cli-9.0.21/usr/lib
+ExecStartPre=/usr/bin/mountpoint -q /mnt/archive-source
+ExecStart=/opt/seafile-cli-9.0.21/usr/bin/seaf-daemon -c /srv/seafile/migration/client-config -d /srv/seafile/migration/client/seafile-data -w /srv/seafile/migration/client/seafile
+Restart=on-failure
+RestartSec=15s
+TimeoutStopSec=90
+UMask=0077
+Nice=5
+```
+
+Keep the literal `\x2d` in that mount-unit name. It's how systemd escapes the hyphen in `archive-source`. The mount dependency stops the client if systemd sees that source mount disappear.
+
+The certificate-bundle path is for this Fedora installation. Check it exists, then start the service:
+
+```bash
+test -r /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+sudo systemctl daemon-reload
+sudo systemctl start seafile-archive-client.service
+sudo systemctl status seafile-archive-client.service --no-pager
+sudo seafile-migrate config -k delete_confirm_threshold -v 1
+```
+
+If the `test` command fails, find your distribution's trusted CA bundle before continuing. Seafile documents `SEAFILE_SSL_CA_PATH` in its [Linux client installation notes](https://help.seafile.com/syncing_client/install_linux_client/). This fixed a certificate-path issue on my VM while keeping HTTPS verification enabled.
+
+The low deletion threshold adds a pause for deletion confirmation; it doesn't turn synchronization into a dedicated upload-only mode. The empty destination, stable source, read-only mount, and final disconnect are still part of the procedure. Use this systemd service to manage the daemon, rather than also running `seaf-cli start`.
+
+### Connect the source to Archive
+
+List your remote libraries using your Seafile domain and account email:
+
+```bash
+sudo seafile-migrate list-remote \
+  -s https://seafile.example.com -u you@example.com
+```
+
+Enter your **Seafile account password** at the prompt. Find Archive and copy its library ID. Confirm you're selecting the empty library you just created, then replace `YOUR_ARCHIVE_LIBRARY_ID` below:
+
+```bash
+sudo seafile-migrate sync \
+  -l YOUR_ARCHIVE_LIBRARY_ID \
+  -s https://seafile.example.com \
+  -u you@example.com \
+  -d /mnt/archive-source
+```
+
+The [native client's `sync` command](https://help.seafile.com/syncing_client/linux-cli/) connects an existing folder to a library. The initial message can say it's starting a download while it gets the remote library information. With our empty destination, the existing source files are then indexed and uploaded.
+
+Once the job is running under systemd, you can disconnect SSH or turn off your computer. Leave the VM, NAS, and NPM running. This one-time source mount isn't saved in `/etc/fstab`, and the client service isn't enabled at boot: after a VM reboot, repeat the SMB mount, check its contents, and start the same service. Keep the client configuration so it can resume; don't initialize it again.
+
+### Monitor progress and estimate the remaining time
+
+Check the client from any later SSH session:
+
+```bash
+sudo seafile-migrate status
+sudo seafile-migrate status --json
+sudo tail -n 30 /srv/seafile/migration/client-config/logs/seafile.log
+df -h / /mnt/seafile
+sudo du -sh /srv/seafile/migration/client
+```
+
+For a live view, run `sudo watch -n 10 seafile-migrate status`. Press **Ctrl+C** to close the view; the transfer keeps running.
+
+`committing` means the client is indexing files. `uploading` means a batch is being sent. **The displayed percentage is for the current batch, not the whole library**, so reaching 100% and starting another batch is normal. Upload speed can drop to zero while the next batch is prepared.
+
+Check Archive's growing size in Seafile's library information alongside the source inventory. For an overall estimate, record the destination's saved size twice, several minutes apart. Divide the increase in saved bytes by the elapsed seconds, then use that average:
+
+```text
+Remaining seconds = (source bytes - destination saved bytes) / average bytes per second
+Remaining hours   = remaining seconds / 3600
+```
+
+For example, 4.58 TB takes about **28 hours at a sustained 43 MiB/s overall**. At 70 MiB/s overall, it's about **17 hours**. These are transfer estimates before final verification. Small-file indexing, large files, source and destination disk activity, and pauses change the result. A brief 80 MiB/s upload burst doesn't mean the entire job will average that speed.
+
+Watch local free space as well as NAS capacity. To pause the transfer if space gets low or you need maintenance:
+
+```bash
+sudo systemctl stop seafile-archive-client.service
+```
+
+Start the same service to resume after resolving the issue and confirming both mounts. Don't delete its cache or configuration to pause it.
+
+### Verify the copy, then disconnect the source
+
+Wait for the client to report **`synchronized`**, with no active errors, and check that Archive's file count and logical size agree with your source inventory. Compare nested folders, including empty ones, and check file modification times. File count alone isn't enough: a failed large file matters more than thousands of completed small ones.
+
+Download a selection of files from Archive, including documents, images, and larger files from different folders. Open them, and compare checksums against the originals where practical. For a downloaded test file placed outside the source folder, use:
+
+```bash
+sha256sum /path/to/downloaded-test-file
+sudo sha256sum /mnt/archive-source/path/to/original-file
+```
+
+The two hashes should match. Sampling gives useful confidence, but only reading and comparing every file provides a complete byte-for-byte check. Keep the original Nextcloud files until you're satisfied with verification and have a separate backup of the new Seafile installation.
+
+Once verification is satisfactory, **disconnect synchronization while the source is still mounted**, then stop the client and unmount it:
+
+```bash
+sudo seafile-migrate desync -d /mnt/archive-source
+sudo seafile-migrate list
+```
+
+Confirm Archive is no longer in the client's local library list before continuing:
+
+```bash
+sudo systemctl stop seafile-archive-client.service
+sudo umount /mnt/archive-source
+sudo systemctl start seafile-backup.service
+```
+
+`desync` leaves the files in Seafile and on the NAS; it removes the synchronization relationship. Archive is now ready for normal use. The database/configuration backup records the imported library, but you still need the separate file-data backup described earlier. This migration doesn't delete anything from Nextcloud.
+
 ## Updates and everyday commands
 
 To see recent logs:
@@ -875,7 +1398,7 @@ sudo systemctl restart seafile.service
 sudo docker compose ps
 ```
 
-The `13.0-latest` tag follows Seafile's 13.0 series; it doesn't move you to the next major version. SeaDoc and the supporting containers have their own tags. For a major upgrade, follow the version-specific instructions in the manual and review the Compose changes too. Don't assume replacing every image tag is the entire upgrade process.
+The `13.0-latest` tag follows Seafile's 13.0 series; it doesn't move you to the next major version. SeaDoc and the supporting containers have their own tags. OnlyOffice is pinned to the tested `9.4.0.1` tag here, so review its release notes and edit that tag deliberately when updating. For a major Seafile upgrade, follow the version-specific instructions in the manual and review the Compose changes too. Don't assume replacing every image tag is the entire upgrade process.
 
 Keep an eye on both disks:
 
@@ -896,18 +1419,25 @@ File uploads go to Unraid, but the local database and container images still con
 | NPM shows a 502 error | Confirm the VM's reserved IP, port 8080, and `docker compose ps`. NPM needs a network route to that address. |
 | Login page loads but requests return 500 | Read Seafile's logs. If they mention missing `X86_V2` CPU support, check the VM CPU mode. |
 | SeaDoc opens but won't connect or save | Check `/sdoc-server/`, WebSocket support, the shared JWT, and the `seadoc` logs. |
+| DOCX says online view isn't applicable | SeaDoc edits `.sdoc` files. Complete the optional OnlyOffice integration for Office previews. |
+| OnlyOffice reports an invalid security token | The OnlyOffice JWT in `.env` and `seahub_settings.py` must match; restart the affected services after correcting it. |
+| OnlyOffice opens but can't download or save | Check its access to the public Seafile hostname, certificate validation, private-IP setting, and `/office/` routing. |
+| OnlyOffice stays unhealthy | Check its logs, VM resources, and that `local-production-linux.json` is readable at mode `644`. |
 | Notification ping works but live updates don't | Check the `/notification` WebSocket connection for status 101. |
 | Large uploads fail with 413 or time out | Check the body-size and timeout settings in both NPM and the gateway, plus any upstream proxy limits. |
 | A bind mount reports permission denied | Check the specific directory's ownership and any SELinux denials before changing permissions. |
+| Migration reports a TLS error | Check `SEAFILE_SSL_CA_PATH` and the certificate chain; don't disable verification. |
+| Migration percentage repeatedly resets | It's a batch percentage. Check the growing destination library size for overall progress. |
+| Migration service fails with `203/EXEC` | Check the `/opt/seafile-cli-9.0.21` path, executable permissions, and Fedora SELinux labels. |
 
 My Fedora deployment kept SELinux enforcing. Don't disable it as a general installation step, and don't add `:Z` relabeling to the 9p mounts without understanding whether that filesystem supports the labels your Docker configuration needs.
 
 ## Where the advanced add-ons fit
 
-The manual separates **Advanced topics** from **Extensions**. For this setup, the advanced pieces are using an existing reverse proxy and controlling startup around mounted storage. SeaDoc and the notification server are the extensions we've enabled and connected.
+The manual separates **Advanced topics** from **Extensions**. For this setup, the advanced pieces are using an existing reverse proxy and controlling startup around mounted storage. SeaDoc and the notification server are part of our base installation; the optional OnlyOffice section adds Office document editing through the same gateway.
 
 If you're comparing this guide with the upstream files, the official deployment separates services into `seafile-server.yml`, `seadoc.yml`, and `notification-server.yml`, selected through `COMPOSE_FILE`. Its usual proxy configuration includes Caddy. Our single `compose.yaml` contains those application services and the NGINX gateway, with NPM handling the public certificate.
 
-The [Extensions section](https://manual.seafile.com/13.0/extension/setup_seadoc/) also links to OnlyOffice, Collabora, WebDAV, and other integrations. Add those when you have a use for them and check the version and edition requirements. SeaDoc and notifications are already enough to get file storage, shared documents, and live updates working through the same domain.
+The [Extensions section](https://manual.seafile.com/13.0/extension/setup_seadoc/) also links to Collabora, WebDAV, and other integrations. Check their version and edition requirements if you add them. Our network-share migration uses the native Seafile client, so it doesn't need WebDAV or a direct import into the server's internal storage.
 
 At this point, you can create your real libraries and connect a Seafile client using your HTTPS address. Start with a small library, confirm it syncs as expected, and then bring over the rest of your files.

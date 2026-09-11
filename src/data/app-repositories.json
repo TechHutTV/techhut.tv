@@ -747,6 +747,16 @@
       "https://api.github.com/repos/ONLYOFFICE/DesktopEditors"
     ]
   },
+  "onlyoffice-docs": {
+    "repository": "onlyoffice/documentserver",
+    "label": "ONLYOFFICE Document Server",
+    "link": "https://github.com/ONLYOFFICE/DocumentServer",
+    "reason": "Official ONLYOFFICE Docs project, packaged as Document Server for the Seafile integration. Count this project separately from Desktop Editors and Workspace's CommunityServer component.",
+    "sources": [
+      "https://github.com/ONLYOFFICE/DocumentServer",
+      "https://manual.seafile.com/13.0/extension/only_office/"
+    ]
+  },
   "onlyoffice-workspace": {
     "repository": "onlyoffice/communityserver",
     "label": "ONLYOFFICE Community Server",
