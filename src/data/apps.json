@@ -449,6 +449,7 @@
     "category": "Server Management",
     "description": "Run applications in containers and learn the core Docker workflow.",
     "coverage": [
+      "/self-host-seafile-docker-unraid",
       "/7-docker-basics-for-beginners",
       "/run-windows-nas-home-server",
       "/nixos-best-server-os-setup",
@@ -1159,6 +1160,18 @@
     }
   },
   {
+    "id": "mariadb",
+    "name": "MariaDB",
+    "category": "Server Management",
+    "description": "Store application data in a relational database with persistent storage and SQL backups.",
+    "coverage": [
+      "/self-host-seafile-docker-unraid"
+    ],
+    "details": {
+      "href": "/apps/mariadb"
+    }
+  },
+  {
     "id": "marktext",
     "name": "MarkText",
     "category": "Desktop",
@@ -1436,11 +1449,27 @@
     }
   },
   {
+    "id": "nginx",
+    "name": "NGINX",
+    "category": "Networking",
+    "description": "Serve web content and route application traffic with a configurable reverse proxy.",
+    "coverage": [
+      "/self-host-seafile-docker-unraid",
+      "/kubernetes-homelab-k3s-cluster",
+      "/7-docker-basics-for-beginners"
+    ],
+    "details": {
+      "href": "/apps/nginx"
+    }
+  },
+  {
     "id": "nginx-proxy-manager",
     "name": "Nginx Proxy Manager",
     "category": "Networking",
     "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/self-host-seafile-docker-unraid"
+    ],
     "videos": [
       {
         "id": "DFUmfHqQWyg",
@@ -1983,6 +2012,30 @@
     "icon": "/app-icons/samba.png",
     "details": {
       "href": "/apps/samba"
+    }
+  },
+  {
+    "id": "seadoc",
+    "name": "SeaDoc",
+    "category": "Files & Photos",
+    "description": "Edit and collaborate on documents in the browser through a Seafile extension.",
+    "coverage": [
+      "/self-host-seafile-docker-unraid"
+    ],
+    "details": {
+      "href": "/apps/seadoc"
+    }
+  },
+  {
+    "id": "seafile",
+    "name": "Seafile",
+    "category": "Files & Photos",
+    "description": "Host file synchronization, shared libraries, and access through web, desktop, and mobile clients.",
+    "coverage": [
+      "/self-host-seafile-docker-unraid"
+    ],
+    "details": {
+      "href": "/apps/seafile"
     }
   },
   {

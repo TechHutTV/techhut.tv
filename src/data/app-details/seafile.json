@@ -1,0 +1,36 @@
+{
+  "summary": "Host file synchronization, shared libraries, and browser-based access on your own server.",
+  "overview": "Seafile organizes files into libraries that users can synchronize, share, and access through its web interface and clients. Community Edition provides the core file service, with optional integrations such as SeaDoc for collaborative documents. The server core uses AGPLv3, while the Seahub web interface uses Apache-2.0; other components and Professional Edition have their own licensing terms.",
+  "kind": "Self-hosted",
+  "platforms": ["Linux", "Docker", "Desktop/mobile clients"],
+  "license": {
+    "name": "AGPLv3 (server core); Apache-2.0 (Seahub)",
+    "type": "Open source (Community Edition)",
+    "url": "https://manual.seafile.com/13.0/"
+  },
+  "links": [
+    {"label": "Official site", "url": "https://www.seafile.com"},
+    {"label": "Server core on GitHub", "url": "https://github.com/haiwen/seafile-server"},
+    {"label": "Seahub on GitHub", "url": "https://github.com/haiwen/seahub"},
+    {"label": "Documentation", "url": "https://manual.seafile.com/13.0/"},
+    {"label": "Download clients", "url": "https://www.seafile.com/en/download/"}
+  ],
+  "features": [
+    "Library-based file synchronization",
+    "File and library sharing",
+    "Version history",
+    "Browser, desktop, and mobile access",
+    "SeaDoc document integration",
+    "Notification server integration"
+  ],
+  "sources": [
+    "https://www.seafile.com/en/product/seafile_on_premise/",
+    "https://manual.seafile.com/13.0/",
+    "https://manual.seafile.com/13.0/setup/setup_ce_by_docker/",
+    "https://github.com/haiwen/seafile-server",
+    "https://github.com/haiwen/seafile-server/blob/master/LICENSE.txt",
+    "https://github.com/haiwen/seahub/blob/master/LICENSE.txt",
+    "https://manual.seafile.com/13.0/extension/setup_seadoc/",
+    "https://manual.seafile.com/13.0/extension/notification-server/"
+  ]
+}

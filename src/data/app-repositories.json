@@ -569,6 +569,16 @@
       "https://api.github.com/repos/Foundry376/Mailspring"
     ]
   },
+  "mariadb": {
+    "repository": "mariadb/server",
+    "label": "MariaDB Server",
+    "link": "https://github.com/MariaDB/server",
+    "reason": "The MariaDB Foundation identifies this as the MariaDB Server source repository. It contains the database server covered by the Seafile guide, rather than a connector or Docker packaging repository.",
+    "sources": [
+      "https://mariadb.org/about/",
+      "https://github.com/MariaDB/server"
+    ]
+  },
   "marktext": {
     "repository": "marktext/marktext",
     "label": "MarkText",
@@ -675,6 +685,16 @@
     "sources": [
       "https://github.com/nextcloud/server",
       "https://api.github.com/repos/nextcloud/server"
+    ]
+  },
+  "nginx": {
+    "repository": "nginx/nginx",
+    "label": "NGINX Open Source",
+    "link": "https://github.com/nginx/nginx",
+    "reason": "The project identifies this as the official NGINX Open Source repository. Nginx Proxy Manager is a separate application.",
+    "sources": [
+      "https://github.com/nginx/nginx",
+      "https://api.github.com/repos/nginx/nginx"
     ]
   },
   "nginx-proxy-manager": {
@@ -951,6 +971,26 @@
     "reason": "Source is hosted at git.samba.org; no GitHub count assigned.",
     "sources": [
       "https://www.samba.org/"
+    ]
+  },
+  "seadoc": {
+    "repository": "haiwen/seadoc-editor",
+    "label": "SeaDoc editor",
+    "link": "https://github.com/haiwen/seadoc-editor",
+    "reason": "The official repository identifies its editor components as powering SeaDoc and Seafile wiki editing. This mapping counts the editor repository, not the separately distributed server image.",
+    "sources": [
+      "https://github.com/haiwen/seadoc-editor",
+      "https://api.github.com/repos/haiwen/seadoc-editor"
+    ]
+  },
+  "seafile": {
+    "repository": "haiwen/seafile-server",
+    "label": "Seafile Server Core",
+    "link": "https://github.com/haiwen/seafile-server",
+    "reason": "The official repository identifies itself as the Seafile server core covered by this deployment guide. Client and web-interface repositories are separate components.",
+    "sources": [
+      "https://github.com/haiwen/seafile-server",
+      "https://api.github.com/repos/haiwen/seafile-server"
     ]
   },
   "search-light": {

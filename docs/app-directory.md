@@ -78,7 +78,7 @@ Successful changed counts get the time of their API response. Unchanged counts r
 
 ### Daily automation and deployment setup
 
-`.github/workflows/refresh-app-stars.yml` prepares a daily **09:23 UTC** refresh plus manual dispatch on `main`. GitHub schedules may be delayed. It is gated by `APP_STARS_ENABLED` and does not run on pushes or pull requests, preventing a refresh/commit loop. The workflow needs no dependency installation: its script and offline tests use Node built-ins.
+`.github/workflows/refresh-app-stars.yml` prepares a daily **09:23 UTC** refresh plus manual dispatch on `main`. GitHub schedules may be delayed. It is gated by `APP_STARS_ENABLED` and does not run on pushes or pull requests, preventing a refresh/commit loop. Before running the offline tests, it generates the ignored `src/data/articles.js` index with `npm run gen:articles`; a fresh checkout does not contain that file. The workflow needs no dependency installation: its generator, refresh script, and offline tests use Node built-ins.
 
 The existing deployment documentation specifies Vercel's Git integration and production pushes to `main`. The workflow therefore makes a normal push with a dedicated fine-grained personal access token, and the existing Vercel integration builds the committed snapshot. It does not add a second deploy hook. GitHub documents that ordinary push events made with `GITHUB_TOKEN` do not trigger other Actions workflows; a PAT also preserves the normal event path if deployment checks are added later. See [GitHub workflow triggering](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow) and [Vercel's GitHub integration](https://vercel.com/docs/git/vercel-for-github).
 
