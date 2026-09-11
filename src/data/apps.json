@@ -2044,6 +2044,7 @@
     "category": "Files & Photos",
     "description": "Host file synchronization, shared libraries, and access through web, desktop, and mobile clients.",
     "coverage": [
+      "/migrate-nextcloud-files-to-seafile",
       "/self-host-seafile-docker-unraid"
     ],
     "details": {

@@ -1,0 +1,251 @@
+export const title = "Move Nextcloud Files to Seafile from a Network Share"
+export const description = "Copy a Nextcloud folder from an SMB share into Seafile using its Linux client, with the transfer running on your server."
+export const date = "2026-09-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab", "Linux", "Fedora", "Terminal"]
+export const cover = "/docs-static/img/2026/09/migrate-nextcloud-files-to-seafile/cover.png"
+
+After setting up Seafile, I wanted to bring over a Nextcloud folder that was already available through an SMB share. My source was `ncdata/__groupfolders/1/files`, and I wanted its contents in a new **Archive** library with the same folder structure.
+
+We'll run Seafile's Linux client inside the server VM, so your computer only needs to control the job over SSH. This copies files and folders; Nextcloud accounts, shares, permissions, comments, and version history stay behind.
+
+## Before you start
+
+This follows my [Seafile on Fedora and Unraid setup](/self-host-seafile-docker-unraid). The commands assume that VM's `/srv/seafile` project, mounted `/mnt/seafile` storage, and `seafile.service` already exist. Seafile should be working through its HTTPS address before starting the migration.
+
+You'll also need an SMB account that can read the source folder and enough destination space to keep both copies. The source must expose ordinary, readable files. If Nextcloud encryption or another storage backend hides the originals, export readable files through Nextcloud first.
+
+Run the commands in the **Fedora VM over SSH**. Replace the NAS address, share path, Seafile domain, and account names with your values. The ownership examples use user and group IDs `1000:1000`; substitute yours if they differ. We'll use `nano` for editing: **Ctrl+O**, **Enter** to save, then **Ctrl+X** to exit.
+
+## How the files travel
+
+![Files travel from the read-only NAS share through the Seafile client in Fedora, then through NPM and the gateway into a Seafile library on Unraid.](/docs-static/img/2026/09/migrate-nextcloud-files-to-seafile/cover.png)
+
+Your laptop or desktop only controls the job over SSH. The files travel between the NAS, VM, and reverse proxy. With the Seafile hostname resolving to NPM's LAN address, that traffic stays on the LAN. If you use a CDN or other external proxy, check the VM's DNS and routing before starting a multi-terabyte transfer.
+
+Seafile writes its own blocks on the destination share. This requires space for the new library while the original files still exist, even when both shares live on the same NAS. It also means the NAS handles both source reads and destination writes. Don't copy the source directly into Seafile's internal `seafile-data` directory.
+
+## 1. Prepare an empty destination and a stable source
+
+In Seafile's web interface, create an **empty, unencrypted library named Archive**. Leave it unused by other people and clients until the migration is finished and disconnected. This procedure uses a synchronization client, so changes made on either side can affect what it tries to synchronize.
+
+Stop editing the Nextcloud source during the copy, or use a read-only snapshot of the source where your storage supports one. Our read-only SMB mount protects against writes from this VM; it doesn't prevent Nextcloud or another NAS client from changing the original files.
+
+In the examples below, replace `192.168.1.10`, the share/subfolder path, and `nasuser` with your values. Run everything in the **Seafile VM**.
+
+```bash
+sudo dnf install -y cifs-utils python3 python3-requests
+sudo install -d -m 0750 /mnt/archive-source
+sudo mount -t cifs //192.168.1.10/ncdata/__groupfolders/1/files \
+  /mnt/archive-source \
+  -o ro,username=nasuser,vers=3.1.1,uid=1000,gid=1000,nosuid,nodev,noexec,cache=strict
+```
+
+Enter the **SMB account's password** at the prompt. It stays out of the command and shell history. The path includes the folder inside the share, so `files` itself won't become an extra folder inside Archive.
+
+Check the mount and its contents before proceeding:
+
+```bash
+findmnt -T /mnt/archive-source -o TARGET,SOURCE,FSTYPE,OPTIONS
+sudo ls -la /mnt/archive-source
+```
+
+Expect the target `/mnt/archive-source`, filesystem `cifs`, and the `ro` option. The listing must show the folders you want inside Archive. I caught a mount that exposed the top of `ncdata` instead of the intended subfolder during setup; checking here prevented uploading the wrong tree.
+
+## 2. Install the native Seafile client
+
+Create private working folders on the VM's local disk for the client configuration, index, and temporary blocks:
+
+```bash
+sudo install -d -o 1000 -g 1000 -m 0700 /srv/seafile/migration
+mkdir -p /srv/seafile/migration/tools /srv/seafile/migration/client
+```
+
+I used the official x86-64 CLI AppImage, version **9.0.21**, with Seafile Server 13.0.25. Client and server version numbers don't need to match. The [Seafile download page](https://www.seafile.com/en/download/) links the CLI package.
+
+```bash
+cd /srv/seafile/migration/tools
+curl -fL --retry 3 \
+  -o Seafile-cli-x86_64-9.0.21.AppImage \
+  https://sos-ch-dk-2.exo.io/seafile-downloads/Seafile-cli-x86_64-9.0.21.AppImage
+chmod 755 Seafile-cli-x86_64-9.0.21.AppImage
+./Seafile-cli-x86_64-9.0.21.AppImage --appimage-extract
+sudo mv squashfs-root /opt/seafile-cli-9.0.21
+sudo chown -R root:root /opt/seafile-cli-9.0.21
+sudo restorecon -RF /opt/seafile-cli-9.0.21
+```
+
+Extracting the AppImage lets systemd run the client without a FUSE mount. Putting the executable under `/opt` and restoring its normal Fedora labels also avoids the SELinux execution denial I encountered when running it as a service from `/srv`. These installation commands are for the first run; don't move another extraction over an existing installation.
+
+Create a small shortcut so you don't need to repeat the client paths in every command:
+
+```bash
+sudo nano /usr/local/bin/seafile-migrate
+```
+
+```bash
+#!/usr/bin/env bash
+export APPDIR=/opt/seafile-cli-9.0.21
+exec "$APPDIR/AppRun" "$@" -c /srv/seafile/migration/client-config
+```
+
+Install its permissions and initialize the isolated client:
+
+```bash
+sudo chmod 755 /usr/local/bin/seafile-migrate
+sudo restorecon /usr/local/bin/seafile-migrate
+sudo seafile-migrate init -d /srv/seafile/migration/client
+```
+
+Let `init` create `client-config`; don't create that directory beforehand. The client keeps its index and temporary blocks under `/srv/seafile/migration`, while its working folder will be the already-mounted SMB source. It doesn't need a complete second staging copy on the VM, but the cache still needs free space.
+
+### Optional: save a detailed source inventory
+
+Note the source folder's file count and logical size in your NAS or file manager for comparison when the copy finishes. My source contained **10,675 files totaling 4.58 TB**.
+
+For a detailed record of paths, sizes, and modification times, [download the inventory script](/docs-static/files/2026/09/migrate-nextcloud-files-to-seafile/source-inventory.py). Save and run it on the VM:
+
+```bash
+cd /srv/seafile/migration
+curl -fL -o source-inventory.py \
+  https://techhut.tv/docs-static/files/2026/09/migrate-nextcloud-files-to-seafile/source-inventory.py
+sudo python3 source-inventory.py
+```
+
+It reads file metadata without modifying the source and writes `source-manifest.jsonl` and `source-inventory.json` in this working directory. If it reports an unreadable path or another error, resolve that before copying.
+
+## 3. Run the client in the background with systemd
+
+Create the service:
+
+```bash
+sudo nano /etc/systemd/system/seafile-archive-client.service
+```
+
+```ini
+[Unit]
+Description=Seafile client for Archive migration
+After=network-online.target seafile.service mnt-archive\x2dsource.mount
+Wants=network-online.target
+RequiresMountsFor=/mnt/archive-source /mnt/seafile
+BindsTo=mnt-archive\x2dsource.mount
+
+[Service]
+Type=simple
+Environment=SEAFILE_SSL_CA_PATH=/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+Environment=APPDIR=/opt/seafile-cli-9.0.21
+Environment=LD_LIBRARY_PATH=/opt/seafile-cli-9.0.21/usr/lib
+ExecStartPre=/usr/bin/mountpoint -q /mnt/archive-source
+ExecStart=/opt/seafile-cli-9.0.21/usr/bin/seaf-daemon -c /srv/seafile/migration/client-config -d /srv/seafile/migration/client/seafile-data -w /srv/seafile/migration/client/seafile
+Restart=on-failure
+RestartSec=15s
+TimeoutStopSec=90
+UMask=0077
+Nice=5
+```
+
+Keep the literal `\x2d` in that mount-unit name. It's how systemd escapes the hyphen in `archive-source`. The mount dependency stops the client if systemd sees that source mount disappear.
+
+The certificate-bundle path is for this Fedora installation. Check it exists, then start the service:
+
+```bash
+test -r /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+sudo systemctl daemon-reload
+sudo systemctl start seafile-archive-client.service
+sudo systemctl status seafile-archive-client.service --no-pager
+sudo seafile-migrate config -k delete_confirm_threshold -v 1
+```
+
+If the `test` command fails, find your distribution's trusted CA bundle before continuing. Seafile documents `SEAFILE_SSL_CA_PATH` in its [Linux client installation notes](https://help.seafile.com/syncing_client/install_linux_client/). This fixed a certificate-path issue on my VM while keeping HTTPS verification enabled.
+
+The low deletion threshold adds a pause for deletion confirmation; it doesn't turn synchronization into a dedicated upload-only mode. The empty destination, stable source, read-only mount, and final disconnect are still part of the procedure. Use this systemd service to manage the daemon, rather than also running `seaf-cli start`.
+
+## 4. Connect the source to Archive
+
+List your remote libraries using your Seafile domain and account email:
+
+```bash
+sudo seafile-migrate list-remote \
+  -s https://seafile.example.com -u you@example.com
+```
+
+Enter your **Seafile account password** at the prompt. Find Archive and copy its library ID. Confirm you're selecting the empty library you just created, then replace `YOUR_ARCHIVE_LIBRARY_ID` below:
+
+```bash
+sudo seafile-migrate sync \
+  -l YOUR_ARCHIVE_LIBRARY_ID \
+  -s https://seafile.example.com \
+  -u you@example.com \
+  -d /mnt/archive-source
+```
+
+The [native client's `sync` command](https://help.seafile.com/syncing_client/linux-cli/) connects an existing folder to a library. The initial message can say it's starting a download while it gets the remote library information. With our empty destination, the existing source files are then indexed and uploaded.
+
+Once the job is running under systemd, you can disconnect SSH or turn off your computer. Leave the VM, NAS, and NPM running. This one-time source mount isn't saved in `/etc/fstab`, and the client service isn't enabled at boot: after a VM reboot, repeat the SMB mount, check its contents, and start the same service. Keep the client configuration so it can resume; don't initialize it again.
+
+## 5. Monitor progress
+
+Check the client from any later SSH session:
+
+```bash
+sudo seafile-migrate status
+sudo tail -n 30 /srv/seafile/migration/client-config/logs/seafile.log
+df -h / /mnt/seafile
+sudo du -sh /srv/seafile/migration/client
+```
+
+For a live view, run `sudo watch -n 10 seafile-migrate status`. Press **Ctrl+C** to close the view; the transfer keeps running.
+
+`committing` means the client is indexing files. `uploading` means a batch is being sent. **The displayed percentage is for the current batch, not the whole library**, so reaching 100% and starting another batch is normal. Upload speed can drop to zero while the next batch is prepared.
+
+Seafile's library information shows how much has reached Archive. Compare that with your source folder's size for a rough idea of overall progress.
+
+Watch local free space as well as NAS capacity. To pause the transfer if space gets low or you need maintenance:
+
+```bash
+sudo systemctl stop seafile-archive-client.service
+```
+
+Start the same service to resume after resolving the issue and confirming both mounts. Don't delete its cache or configuration to pause it.
+
+## 6. Verify the copy, then disconnect the source
+
+Wait for the client to report **`synchronized`**, with no active errors, and compare Archive's file count and logical size with the source folder or your saved inventory. Compare nested folders, including empty ones, and check file modification times. File count alone isn't enough: a failed large file matters more than thousands of completed small ones.
+
+Download a selection of files from Archive, including documents, images, and larger files from different folders. Open them, and compare checksums against the originals where practical. For a downloaded test file placed outside the source folder, use:
+
+```bash
+sha256sum /path/to/downloaded-test-file
+sudo sha256sum /mnt/archive-source/path/to/original-file
+```
+
+The two hashes should match. Sampling gives useful confidence, but only reading and comparing every file provides a complete byte-for-byte check. Keep the original Nextcloud files until you're satisfied with verification and have a separate backup of the new Seafile installation.
+
+Once verification is satisfactory, **disconnect synchronization while the source is still mounted**, then stop the client and unmount it:
+
+```bash
+sudo seafile-migrate desync -d /mnt/archive-source
+sudo seafile-migrate list
+```
+
+Confirm Archive is no longer in the client's local library list before continuing:
+
+```bash
+sudo systemctl stop seafile-archive-client.service
+sudo umount /mnt/archive-source
+```
+
+`desync` leaves the files in Seafile and on the NAS; it removes the synchronization relationship. Archive is now ready for normal use. This migration doesn't delete anything from Nextcloud.
+
+## If the transfer gets stuck
+
+| Symptom | First thing to check |
+| --- | --- |
+| The client reports a TLS error | Check `SEAFILE_SSL_CA_PATH` and the certificate chain. Keep certificate verification enabled. |
+| The percentage repeatedly resets | It's a batch percentage. Check the growing destination library size for overall progress. |
+| The service fails with `203/EXEC` | Check the `/opt/seafile-cli-9.0.21` path, executable permissions, and Fedora SELinux labels. |
+
+For service errors, run `sudo journalctl -u seafile-archive-client.service -n 80 --no-pager`. The client log is at `/srv/seafile/migration/client-config/logs/seafile.log`.
+
+Before relying on the new library, include it in your [Seafile backup setup](/self-host-seafile-docker-unraid#a-quick-note-on-backups).
