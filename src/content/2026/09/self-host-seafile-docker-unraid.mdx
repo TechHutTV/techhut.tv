@@ -1,0 +1,960 @@
+export const title = "Self-Host Seafile with Docker, Unraid Storage, and Nginx Proxy Manager"
+export const description = "Set up Seafile 13 on Fedora with Docker, Unraid storage, HTTPS, and SeaDoc, then optionally add OnlyOffice for Office documents."
+export const date = "2026-09-10"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux", "Fedora", "Virtualization"]
+export const cover = "/docs-static/img/2026/09/self-host-seafile-docker-unraid/cover.png"
+
+I wanted Seafile running in its own VM, with my files on Unraid and HTTPS handled by the Nginx Proxy Manager instance I already use. That sounds pretty simple, but there are a few pieces to connect: the storage mount, database, document editor, and notification service all need to agree on where things live.
+
+In this guide, we'll build that setup with Seafile Community Edition 13, Fedora Server, and Docker Compose. We'll also include SeaDoc for editing documents in the browser and Seafile's notification server for real-time library updates. Everything will be available through one address, such as `https://seafile.example.com`.
+
+Once Seafile is working, you can add OnlyOffice for Word, Excel, and PowerPoint files. Moving existing files is covered in my separate [Nextcloud-to-Seafile migration guide](/migrate-nextcloud-files-to-seafile).
+
+My deployment ran Seafile **13.0.25** and SeaDoc **2.0.9**. The examples follow the 13.x configuration and use its update tags. I've combined the services into one Compose file to make the walkthrough easier to follow. This is a customized version of the [official Seafile 13 Docker setup](https://manual.seafile.com/13.0/setup/setup_ce_by_docker/), with an existing reverse proxy and separate local and Unraid storage.
+
+## What we're building
+
+Nginx Proxy Manager, or NPM, stays on your existing server. It accepts the HTTPS connection and forwards requests to port **8080** on the Seafile VM. A small NGINX container inside that VM sends each request to the right service.
+
+```text
+Your browser or Seafile client
+          |
+          | HTTPS: seafile.example.com
+          v
+Existing Nginx Proxy Manager
+          |
+          | HTTP: 192.168.1.50:8080
+          v
+NGINX gateway in the Fedora VM
+          |
+          +-- Seafile: files, accounts, and web interface
+          +-- SeaDoc: collaborative document editor
+          +-- Notification server: real-time updates
+
+VM local disk                     Unraid share, mounted in the VM
+/srv/seafile                      /mnt/seafile
+  Compose files                     Seafile files and configuration
+  Live MariaDB database             SeaDoc persistent files
+```
+
+The base setup shown above has six containers: those three application services, MariaDB, Redis, and the NGINX gateway. Only the gateway publishes a port on the VM. The optional OnlyOffice section adds a seventh container, reached through `/office/` on the same domain.
+
+## Before you start
+
+This walkthrough assumes a **new, dedicated Fedora Server VM on Unraid**. It is a fresh installation guide, so don't paste these files over an existing Seafile deployment without reviewing its configuration first.
+
+You'll need:
+
+- An x86-64 Fedora Server VM. I used Fedora 44, four virtual CPUs across two physical cores, and **4 GB of RAM** for the base setup.
+- A local virtual disk with room for Fedora, container images, and the database. I used a **64 GB disk**. The optional OnlyOffice section adds its own resource requirements.
+- An Unraid user share named `seafile`, with enough space for your files.
+- An existing NPM instance that can reach the VM over your network.
+- A domain you control, with its Seafile hostname pointing to NPM.
+- A Fedora account with `sudo` access and basic familiarity with SSH.
+
+Seafile lists two CPU cores and 2 GB of memory for CE, with additional resources needed for extra services. See its [system requirements](https://manual.seafile.com/13.0/setup/system_requirements/) when sizing a larger installation.
+
+Use these examples consistently as you go:
+
+| Setting | Example | What to use |
+| --- | --- | --- |
+| VM address | `192.168.1.50` | Your Fedora VM's LAN address |
+| Public hostname | `seafile.example.com` | Your actual Seafile domain |
+| Administrator | `you@example.com` | Your email address |
+| Unraid mount tag | `seafile` | Must match the VM share setting |
+
+Reserve the VM's address in your router or DHCP server so NPM's forwarding target doesn't change after a reboot.
+
+Unless a step specifically says **Unraid**, **NPM**, or **your computer**, run its commands in the **Fedora VM over SSH**. We'll use `nano` to edit files. In nano, save with **Ctrl+O**, press **Enter**, then exit with **Ctrl+X**.
+
+## 1. Prepare the VM in Unraid
+
+Shut down the VM before changing its hardware settings. In Unraid's VM editor, set the CPU mode to **Host Passthrough** and assign at least two CPU cores. My setup uses two cores and their matching threads, giving Fedora four virtual CPUs.
+
+This fixed an issue I ran into during installation: the VM's generic QEMU CPU model hid instructions needed by a bundled Python dependency. The login page loaded, but an API request returned an error about `X86_V2`. Host Passthrough exposed the real CPU features. The physical CPU still needs to support the instructions the software requires.
+
+Add the Unraid share with these settings:
+
+| Unraid VM setting | Value |
+| --- | --- |
+| Unraid Share Mode | `9p Mode` |
+| Unraid Share | `User:seafile` |
+| Unraid Source Path | `/mnt/user/seafile/` |
+| Unraid Mount Tag | `seafile` |
+
+Start the VM and reconnect with SSH.
+
+## 2. Choose where the data lives
+
+| Path inside Fedora | Underlying storage | Purpose |
+| --- | --- | --- |
+| `/srv/seafile` | VM's local virtual disk | Compose project, environment file, and proxy configuration |
+| `/srv/seafile/mysql` | VM's local virtual disk | Live MariaDB database |
+| `/mnt/seafile/seafile-data` | Unraid share | Seafile's stored file blocks, application configuration, and logs |
+| `/mnt/seafile/seadoc-data` | Unraid share | SeaDoc's persistent directory, including logs |
+
+MariaDB stays on the VM's local Linux filesystem because it does frequent small reads and writes. Mounting the Unraid share at `/mnt/seafile` puts the larger file storage on the NAS; creating a directory with that name alone doesn't move anything there.
+
+Seafile stores uploads in its own block format. Add existing documents through its web interface or client so they appear in your libraries.
+
+## 3. Mount the Unraid share inside Fedora
+
+The 9p share is passed from Unraid to the VM through the virtual hardware. You don't enter an SMB server address or mount it using Unraid's IP. The name `seafile` below is the **mount tag** from the VM settings. Linux documents this transport in its [9p filesystem guide](https://docs.kernel.org/filesystems/9p.html).
+
+Create the mount point and try the mount:
+
+```bash
+sudo mkdir -p /mnt/seafile
+sudo mount -t 9p -o trans=virtio,version=9p2000.L,cache=none seafile /mnt/seafile
+findmnt /mnt/seafile
+```
+
+You should see `/mnt/seafile` with filesystem type `9p` and source `seafile`. If that fails, stop here and check the Unraid mount tag before creating application folders.
+
+Test that your normal Fedora user can write to the share:
+
+```bash
+touch /mnt/seafile/.write-test
+rm /mnt/seafile/.write-test
+```
+
+If you get a permission error, check the Unraid share's ownership and permissions for the mapped VM user. Don't apply a recursive `chmod 777` to your NAS to work around it.
+
+Make the mount persistent. Back up the existing file, then open it:
+
+```bash
+sudo cp -a /etc/fstab /etc/fstab.before-seafile
+sudo nano /etc/fstab
+```
+
+Add this as **one new line**, keeping the existing entries:
+
+```text
+seafile /mnt/seafile 9p trans=virtio,version=9p2000.L,cache=none,rw,nofail,x-systemd.mount-timeout=30s 0 0
+```
+
+Check the file and reload systemd:
+
+```bash
+sudo findmnt --verify
+sudo systemctl daemon-reload
+sudo systemctl start mnt-seafile.mount
+findmnt /mnt/seafile
+```
+
+`nofail` lets Fedora finish booting if the share is unavailable. Later, we'll tell Docker and Seafile to require the mount. That way, you can still reach the VM to fix storage without letting the application write into an empty local mount point.
+
+## 4. Install Docker and create the folders
+
+Install Docker Engine and its Compose plugin using the [official Fedora instructions](https://docs.docker.com/engine/install/fedora/):
+
+```bash
+sudo dnf install -y dnf-plugins-core nano curl openssl
+sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo systemctl enable --now docker
+```
+
+Use `docker compose` with a space. We'll run it with `sudo`, so you don't need to change your user's Docker group membership for this guide. If Docker reports a package conflict on a VM you've used before, review the conflict guidance on that Fedora installation page.
+
+Check your user's numeric IDs:
+
+```bash
+id -u
+id -g
+```
+
+The following commands assume both are **1000**. If yours differ, substitute your IDs in the ownership commands. We want the **project directory** owned by `1000:1000`; each container can still manage the ownership it needs for its own data.
+
+```bash
+sudo install -d -o 1000 -g 1000 -m 0750 /srv/seafile
+sudo install -d -m 0750 /srv/seafile/mysql
+```
+
+Confirm the share is mounted, then create its application directories:
+
+```bash
+mountpoint /mnt/seafile
+```
+
+Only continue when that reports that `/mnt/seafile` is a mount point:
+
+```bash
+sudo mkdir -p /mnt/seafile/seafile-data/seafile/logs
+sudo mkdir -p /mnt/seafile/seadoc-data
+cd /srv/seafile
+```
+
+Don't recursively change `/srv/seafile` to `1000:1000` after the database has started. MariaDB will set its data directory's ownership for the user inside its container. For the same reason, we aren't adding `user: "1000:1000"` to every service.
+
+## 5. Create the environment file
+
+The `.env` file holds the settings Compose will insert into the container configuration. We'll generate separate random passwords automatically, then edit the domain, IP, email, and time zone.
+
+Run this whole block from `/srv/seafile`. It is for the **first setup only**, since running it again would overwrite your saved settings and passwords.
+
+```bash
+umask 077
+cat > .env << EOF
+COMPOSE_PROJECT_NAME=seafile
+
+SEAFILE_BIND_IP=192.168.1.50
+SEAFILE_SERVER_HOSTNAME=seafile.example.com
+SEAFILE_SERVER_PROTOCOL=https
+TIME_ZONE=America/Los_Angeles
+
+SEAFILE_IMAGE=seafileltd/seafile-mc:13.0-latest
+SEAFILE_DB_IMAGE=mariadb:10.11
+SEAFILE_REDIS_IMAGE=redis:7.4-alpine
+SEADOC_IMAGE=seafileltd/sdoc-server:2.0-latest
+NOTIFICATION_SERVER_IMAGE=seafileltd/notification-server:13.0-latest
+GATEWAY_IMAGE=nginx:stable-alpine
+
+SEAFILE_VOLUME=/mnt/seafile/seafile-data
+SEADOC_VOLUME=/mnt/seafile/seadoc-data
+SEAFILE_MYSQL_VOLUME=/srv/seafile/mysql
+
+JWT_PRIVATE_KEY=$(openssl rand -hex 32)
+SEAFILE_MYSQL_DB_PASSWORD=$(openssl rand -hex 24)
+INIT_SEAFILE_MYSQL_ROOT_PASSWORD=$(openssl rand -hex 24)
+REDIS_PASSWORD=$(openssl rand -hex 24)
+INIT_SEAFILE_ADMIN_EMAIL=you@example.com
+INIT_SEAFILE_ADMIN_PASSWORD=$(openssl rand -hex 24)
+
+ENABLE_SEADOC=true
+ENABLE_NOTIFICATION_SERVER=true
+EOF
+nano .env
+```
+
+Replace `SEAFILE_BIND_IP`, `SEAFILE_SERVER_HOSTNAME`, and `INIT_SEAFILE_ADMIN_EMAIL` with your values. Set your time zone too. The hostname must contain just the domain, without `https://` or a trailing slash.
+
+Copy `INIT_SEAFILE_ADMIN_PASSWORD` into your password manager before closing the file. Leave `SEAFILE_SERVER_PROTOCOL=https`: that's the address your browser will use, even though NPM connects to the VM over HTTP.
+
+Leave the generated `JWT_PRIVATE_KEY` in place. Compose shares it with Seafile, SeaDoc, and notifications so they can authenticate with each other.
+
+The `INIT_` administrator settings initialize a new installation. Editing them later doesn't reset an existing account's password. Keep `.env` private and out of Git repositories.
+
+## 6. Add the Compose file
+
+Create the file:
+
+```bash
+nano compose.yaml
+```
+
+Paste the complete configuration below. It is long because it includes all six services, health checks, and explicit storage mounts. You shouldn't need to edit it if you used the paths above and customized `.env`.
+
+```yaml
+services:
+  db:
+    image: ${SEAFILE_DB_IMAGE}
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${INIT_SEAFILE_MYSQL_ROOT_PASSWORD:?Set in .env}
+      MYSQL_LOG_CONSOLE: "true"
+      MARIADB_AUTO_UPGRADE: "1"
+    volumes:
+      - type: bind
+        source: ${SEAFILE_MYSQL_VOLUME}
+        target: /var/lib/mysql
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--mariadbupgrade", "--innodb_initialized"]
+      interval: 20s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: ${SEAFILE_REDIS_IMAGE}
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set in .env}
+    command:
+      - /bin/sh
+      - -c
+      - exec redis-server --requirepass "$$REDIS_PASSWORD" --save "" --appendonly no
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  seafile:
+    image: ${SEAFILE_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${SEAFILE_VOLUME}
+        target: /shared
+        bind:
+          create_host_path: false
+    environment:
+      SEAFILE_MYSQL_DB_HOST: db
+      SEAFILE_MYSQL_DB_PORT: "3306"
+      SEAFILE_MYSQL_DB_USER: seafile
+      SEAFILE_MYSQL_DB_PASSWORD: ${SEAFILE_MYSQL_DB_PASSWORD:?Set in .env}
+      INIT_SEAFILE_MYSQL_ROOT_PASSWORD: ${INIT_SEAFILE_MYSQL_ROOT_PASSWORD:?Set in .env}
+      SEAFILE_MYSQL_DB_CCNET_DB_NAME: ccnet_db
+      SEAFILE_MYSQL_DB_SEAFILE_DB_NAME: seafile_db
+      SEAFILE_MYSQL_DB_SEAHUB_DB_NAME: seahub_db
+      INIT_SEAFILE_ADMIN_EMAIL: ${INIT_SEAFILE_ADMIN_EMAIL:?Set in .env}
+      INIT_SEAFILE_ADMIN_PASSWORD: ${INIT_SEAFILE_ADMIN_PASSWORD:?Set in .env}
+      SEAFILE_SERVER_HOSTNAME: ${SEAFILE_SERVER_HOSTNAME:?Set in .env}
+      SEAFILE_SERVER_PROTOCOL: ${SEAFILE_SERVER_PROTOCOL}
+      TIME_ZONE: ${TIME_ZONE}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?Set in .env}
+      NON_ROOT: "false"
+      CACHE_PROVIDER: redis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set in .env}
+      ENABLE_SEADOC: ${ENABLE_SEADOC}
+      SEADOC_SERVER_URL: ${SEAFILE_SERVER_PROTOCOL}://${SEAFILE_SERVER_HOSTNAME}/sdoc-server
+      ENABLE_NOTIFICATION_SERVER: ${ENABLE_NOTIFICATION_SERVER}
+      INNER_NOTIFICATION_SERVER_URL: http://notification-server:8083
+      NOTIFICATION_SERVER_URL: ${SEAFILE_SERVER_PROTOCOL}://${SEAFILE_SERVER_HOSTNAME}/notification
+      ENABLE_SEAFILE_AI: "false"
+      ENABLE_FACE_RECOGNITION: "false"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -H \"Host: $$SEAFILE_SERVER_HOSTNAME\" http://localhost:80/api2/server-info/ > /dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  seadoc:
+    image: ${SEADOC_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${SEADOC_VOLUME}
+        target: /shared
+        bind:
+          create_host_path: false
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_USER: seafile
+      DB_PASSWORD: ${SEAFILE_MYSQL_DB_PASSWORD:?Set in .env}
+      DB_NAME: seahub_db
+      TIME_ZONE: ${TIME_ZONE}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?Set in .env}
+      NON_ROOT: "false"
+      SEAHUB_SERVICE_URL: http://seafile
+    depends_on:
+      db:
+        condition: service_healthy
+      seafile:
+        condition: service_healthy
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  notification-server:
+    image: ${NOTIFICATION_SERVER_IMAGE}
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ${SEAFILE_VOLUME}/seafile/logs
+        target: /shared/seafile/logs
+        bind:
+          create_host_path: false
+    environment:
+      SEAFILE_MYSQL_DB_HOST: db
+      SEAFILE_MYSQL_DB_PORT: "3306"
+      SEAFILE_MYSQL_DB_USER: seafile
+      SEAFILE_MYSQL_DB_PASSWORD: ${SEAFILE_MYSQL_DB_PASSWORD:?Set in .env}
+      SEAFILE_MYSQL_DB_CCNET_DB_NAME: ccnet_db
+      SEAFILE_MYSQL_DB_SEAFILE_DB_NAME: seafile_db
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY:?Set in .env}
+    depends_on:
+      db:
+        condition: service_healthy
+      seafile:
+        condition: service_healthy
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  gateway:
+    image: ${GATEWAY_IMAGE}
+    restart: unless-stopped
+    ports:
+      - "${SEAFILE_BIND_IP:?Set in .env}:8080:80"
+    volumes:
+      - type: bind
+        source: /srv/seafile/gateway.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+        bind:
+          create_host_path: false
+    depends_on:
+      seafile:
+        condition: service_healthy
+      seadoc:
+        condition: service_started
+      notification-server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/api2/server-info/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+```
+
+Compose creates a private network for this project automatically. On that network, the service name `db` resolves to MariaDB, `seafile` resolves to Seafile, and so on. These names aren't public DNS records you need to create.
+
+The `source` of each bind mount is a path on Fedora. The `target` is where that directory appears inside the container. `create_host_path: false` makes a missing source directory an error instead of silently creating one. We'll add a separate mount check too, because an existing directory alone doesn't prove Unraid is mounted.
+
+The logging settings cap Docker's own container logs. Application log files written into the shared data directories have their own rotation behavior and still need disk space.
+
+## 7. Add the internal NGINX gateway
+
+Create the gateway configuration:
+
+```bash
+nano gateway.conf
+```
+
+Paste this file exactly as shown. It uses the incoming domain automatically, so there is no example hostname to replace here.
+
+```nginx
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+    server_tokens off;
+
+    client_max_body_size 0;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+    proxy_read_timeout 3600s;
+    proxy_send_timeout 3600s;
+    proxy_buffering off;
+    proxy_request_buffering off;
+
+    location /sdoc-server/ {
+        proxy_pass http://seadoc:80/;
+    }
+
+    location /socket.io {
+        proxy_pass http://seadoc:80;
+    }
+
+    location = /notification {
+        proxy_pass http://notification-server:8083/;
+    }
+
+    location /notification/ {
+        proxy_pass http://notification-server:8083/;
+    }
+
+    location / {
+        proxy_pass http://seafile:80;
+    }
+}
+```
+
+The gateway keeps the NPM side pretty simple: one domain and one forwarding port. Seafile gets the normal application requests, while the other locations handle SeaDoc and notifications.
+
+Keep the trailing slashes as shown. For example, `/notification/ping` needs to arrive at the notification container as `/ping`. The WebSocket headers allow the persistent connections used by the add-ons. This follows the routing described in Seafile's [external reverse proxy guide](https://manual.seafile.com/13.0/setup/use_other_reverse_proxy/) and [NGINX's WebSocket documentation](https://nginx.org/en/docs/http/websocket.html).
+
+We explicitly forward `X-Forwarded-Proto https` because NPM handles the encrypted browser connection. Port 8080 is an HTTP backend for your trusted network; don't forward it directly from your internet router.
+
+Check the Compose configuration without printing its resolved passwords:
+
+```bash
+chmod 600 .env
+chmod 640 compose.yaml gateway.conf
+sudo docker compose config --quiet
+sudo docker compose pull
+```
+
+No output from `config --quiet` means validation passed. Image downloads can take a few minutes.
+
+## 8. Make startup wait for Unraid
+
+This step matters. If Docker starts before the share mounts, container restart policies can bring the application back before your storage is ready.
+
+Since this is a **dedicated Seafile VM**, we'll make the Docker daemon itself depend on the share. This affects every Docker container on the VM. On a shared Docker host, you'd need a startup arrangement that accounts for its other applications too.
+
+Create a Docker service override:
+
+```bash
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo nano /etc/systemd/system/docker.service.d/seafile-storage.conf
+```
+
+```ini
+[Unit]
+RequiresMountsFor=/mnt/seafile
+BindsTo=mnt-seafile.mount
+After=mnt-seafile.mount
+```
+
+Now create a systemd service for the Compose project:
+
+```bash
+sudo nano /etc/systemd/system/seafile.service
+```
+
+```ini
+[Unit]
+Description=Seafile Docker Compose stack
+Requires=docker.service
+Wants=network-online.target
+After=docker.service network-online.target mnt-seafile.mount
+RequiresMountsFor=/mnt/seafile /srv/seafile
+BindsTo=mnt-seafile.mount
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/seafile
+ExecStartPre=/usr/bin/mountpoint -q /mnt/seafile
+ExecStart=/usr/bin/docker compose up -d --wait --wait-timeout 360
+ExecStop=/usr/bin/docker compose down --timeout 60
+TimeoutStartSec=600
+TimeoutStopSec=180
+
+[Install]
+WantedBy=multi-user.target
+```
+
+This tells systemd where the project lives, checks the mount, and starts the containers. The mount dependency controls ordering, while `BindsTo` stops the dependent service if systemd sees the mount go away.
+
+Start everything:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo systemctl enable --now seafile.service
+sudo docker compose ps
+```
+
+The first start creates the databases, initial administrator, and application configuration. Give it a few minutes. The database, Redis, Seafile, and gateway should become healthy; SeaDoc and the notification server should be running. We'll check the add-ons through HTTPS shortly.
+
+If startup fails, read the logs before changing anything:
+
+```bash
+sudo journalctl -u seafile.service -n 80 --no-pager
+sudo docker compose logs --tail=100 db seafile
+```
+
+For a slow first initialization, inspect the logs and retry with `sudo systemctl restart seafile.service` once you've resolved the issue. You don't need to delete the database and start over.
+
+## 9. Point Nginx Proxy Manager at the VM
+
+In your **existing NPM interface**, create a Proxy Host with these settings:
+
+| NPM field | Value |
+| --- | --- |
+| Domain Names | Your domain, such as `seafile.example.com` |
+| Scheme | `http` |
+| Forward Hostname / IP | Your Fedora VM, such as `192.168.1.50` |
+| Forward Port | `8080` |
+| Websockets Support | Enabled |
+| Cache Assets | Disabled |
+
+In the **SSL** tab, select or request a valid certificate for the domain and enable **Force SSL**. Your DNS and certificate-validation method need to work with your existing NPM setup.
+
+In the **Advanced** tab, add:
+
+```nginx
+client_max_body_size 0;
+proxy_request_buffering off;
+proxy_buffering off;
+proxy_read_timeout 3600s;
+proxy_send_timeout 3600s;
+```
+
+These settings remove NGINX's request-body size cap and give transfers longer timeouts. Other services in front of NPM, such as a CDN, may still impose their own limits.
+
+You don't need extra NPM Custom Locations with this configuration. The gateway in the VM already handles `/sdoc-server/`, `/socket.io`, and `/notification`.
+
+Save the proxy host and open your HTTPS domain. Log in with the email and generated administrator password from `.env`.
+
+## 10. Upload files and try document editing
+
+Before adding your real files, make a temporary library and upload a small document or image. Download it again and check the contents. Then try a larger file representative of what you normally store.
+
+### SeaDoc: documents in the browser
+
+In a library, use the **New** menu to create a SeaDoc document. Enter a few lines, wait for saving to finish, close it, then reopen it. Your text should still be there. If you plan to collaborate, share a test document with a second account and try editing from two browser sessions.
+
+[SeaDoc](https://manual.seafile.com/13.0/extension/setup_seadoc/) edits Seafile's `.sdoc` documents, which work well for notes and shared documentation. To edit uploaded Office files such as `.docx` in the browser, add OnlyOffice after completing the base setup below.
+
+### Notifications: live connections, separate from email
+
+The [notification server](https://manual.seafile.com/13.0/extension/notification-server/) uses WebSockets to notify supported clients about changes to libraries. We enable it in Seafile, run its container, and route its public URL through the gateway.
+
+This service doesn't configure invitation emails, password-reset emails, or an SMTP server. Those are separate settings under the manual's **Configuration → Email Sending** section.
+
+## A quick note on backups
+
+Before adding your real files, back up **Seafile's databases, stored file data, and configuration**, including `.env` and any OnlyOffice settings. Copying the Unraid share alone misses the live database on the VM. Follow [Seafile's backup instructions](https://manual.seafile.com/13.0/administration/backup_recovery/) for a consistent copy.
+
+My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide#backing-up-docker-with-pbs-client) covers backing up Docker hosts and keeping an offsite copy. That's a good next step once Seafile is working, and do test a restore before relying on it.
+
+## 11. Reboot and check the complete setup
+
+Once file uploads and document editing work, reboot the VM:
+
+```bash
+sudo reboot
+```
+
+Reconnect with SSH and check that the share mounted and the containers came back:
+
+```bash
+findmnt /mnt/seafile
+cd /srv/seafile
+sudo docker compose ps
+```
+
+Open your HTTPS domain again, reopen your test document, and download a test file. That confirms the application came back with its existing data after a reboot.
+
+Your base setup is ready. You can create libraries and connect a Seafile client using your HTTPS address. If you're bringing over an existing Nextcloud folder, follow the [migration guide](/migrate-nextcloud-files-to-seafile).
+
+## Optional: add OnlyOffice for Office documents
+
+I chose [OnlyOffice Docs](https://manual.seafile.com/13.0/extension/only_office/) for editing Word, Excel, and PowerPoint files and tested opening, saving, and reopening a DOCX. We'll add its **Document Server** to the existing Compose project, alongside SeaDoc. [Collabora Online](https://manual.seafile.com/13.0/extension/collabora_online/) is another option if you prefer it.
+
+I increased the VM to **8 GB of RAM** for this combined setup. [OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM, 40 GB of free disk space, and at least 4 GB of swap. An 80 GB or larger virtual disk gives a fresh combined installation more room.
+
+### Create OnlyOffice's folders
+
+Keep its configuration, fonts, logs, and working cache on the VM's local disk at `/srv/seafile/onlyoffice`. Saved documents go back to Seafile on Unraid.
+
+Create the local directories:
+
+```bash
+cd /srv/seafile
+sudo install -d -o 1000 -g 1000 -m 0755 onlyoffice
+sudo mkdir -p onlyoffice/{data,lib,logs,fonts}
+nano onlyoffice/local-production-linux.json
+```
+
+Paste this small configuration file. It asks OnlyOffice to send saved document versions back every five minutes while editing:
+
+```json
+{
+  "services": {
+    "CoAuthoring": {
+      "autoAssembly": {
+        "enable": true,
+        "interval": "5m"
+      }
+    }
+  }
+}
+```
+
+Make this particular file readable by the container's worker processes:
+
+```bash
+chmod 644 onlyoffice/local-production-linux.json
+```
+
+It contains no passwords. Keep `.env` private at mode `600`; don't apply `644` to your other configuration files. I initially made this JSON file too restrictive, which prevented OnlyOffice's document service and converter from starting.
+
+### Add the container and its secret
+
+Run this once to append the tested image version and a separate random JWT secret to `.env`. The guard keeps a second run from replacing an existing secret:
+
+```bash
+cd /srv/seafile
+if ! grep -q '^ONLYOFFICE_JWT_SECRET=' .env; then
+  cat >> .env << EOF
+
+ONLYOFFICE_IMAGE=onlyoffice/documentserver:9.4.0.1
+ONLYOFFICE_JWT_SECRET=$(openssl rand -hex 32)
+EOF
+fi
+chmod 600 .env
+nano compose.yaml
+```
+
+Add the following **inside the existing `services:` section**, aligned with `seafile:`, `db:`, and `gateway:`. Don't add another `services:` heading. All seven services use the same default Compose network.
+
+```yaml
+  onlyoffice:
+    image: ${ONLYOFFICE_IMAGE:?Set in .env}
+    restart: unless-stopped
+    stop_grace_period: 6m
+    environment:
+      JWT_ENABLED: "true"
+      JWT_SECRET: ${ONLYOFFICE_JWT_SECRET:?Set in .env}
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: "true"
+      ALLOW_PRIVATE_IP_ADDRESS: "true"
+      ALLOW_META_IP_ADDRESS: "false"
+      USE_UNAUTHORIZED_STORAGE: "false"
+      EXAMPLE_ENABLED: "false"
+      ADMINPANEL_ENABLED: "false"
+      TZ: ${TIME_ZONE}
+    volumes:
+      - type: bind
+        source: /srv/seafile/onlyoffice/data
+        target: /var/www/onlyoffice/Data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/lib
+        target: /var/lib/onlyoffice
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/logs
+        target: /var/log/onlyoffice
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/fonts
+        target: /usr/share/fonts/truetype/custom
+        bind:
+          create_host_path: false
+      - type: bind
+        source: /srv/seafile/onlyoffice/local-production-linux.json
+        target: /etc/onlyoffice/documentserver/local-production-linux.json
+        read_only: true
+        bind:
+          create_host_path: false
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "test \"$$(curl -fsS http://127.0.0.1/healthcheck)\" = true"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+```
+
+`ALLOW_PRIVATE_IP_ADDRESS` lets OnlyOffice fetch documents and send saves back when your Seafile hostname resolves to NPM's LAN address. HTTPS certificate verification stays enabled.
+
+### Route `/office/` through the existing gateway
+
+Open `/srv/seafile/gateway.conf`. Add these locations **inside the existing `server` block**, above `location /`:
+
+```nginx
+    location = /office {
+        return 301 /office/;
+    }
+
+    location /office/ {
+        resolver 127.0.0.11 valid=30s ipv6=off;
+        set $office_backend http://onlyoffice:80;
+        rewrite ^/office/(.*)$ /$1 break;
+        proxy_pass $office_backend;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $host/office;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+    }
+```
+
+The browser requests `/office/...`, while the gateway removes that prefix before forwarding to Document Server. The forwarded host includes `/office` so the editor generates the right public URLs, following [OnlyOffice's virtual-path proxy example](https://github.com/ONLYOFFICE/document-server-proxy/blob/master/nginx/proxy-to-virtual-path.conf). Docker's DNS resolver lets NGINX resolve the optional service when a request arrives.
+
+Keep this path as **`/office/`**. Seafile uses `/onlyoffice/` for its own integration endpoints, so routing that whole prefix to Document Server would break callbacks. Your NPM proxy host still forwards to the same VM address and port **8080**, with WebSockets enabled; no additional domain or Custom Location is needed.
+
+Validate and start the editor, then reload the gateway:
+
+```bash
+cd /srv/seafile
+sudo docker compose config --quiet
+sudo docker compose pull onlyoffice
+sudo docker compose up -d --wait --wait-timeout 360 onlyoffice
+sudo docker compose exec -T gateway nginx -t
+sudo docker compose exec -T gateway nginx -s reload
+```
+
+Once startup and the NGINX configuration check succeed, connect the editor to Seafile below. If either command fails, check `sudo docker compose logs --tail=100 onlyoffice gateway`.
+
+### Enable OnlyOffice in Seafile
+
+Open `.env` in nano and copy the value of `ONLYOFFICE_JWT_SECRET`. Then open Seafile's generated settings file:
+
+```bash
+sudo nano /mnt/seafile/seafile-data/seafile/conf/seahub_settings.py
+```
+
+Add these settings at the end. Replace the example domain and paste the **same OnlyOffice secret** between the quotes. If these settings already exist, edit them instead of adding duplicates.
+
+```python
+ENABLE_ONLYOFFICE = True
+ONLYOFFICE_APIJS_URL = 'https://seafile.example.com/office/web-apps/apps/api/documents/api.js'
+ONLYOFFICE_JWT_SECRET = 'PASTE_THE_ONLYOFFICE_JWT_SECRET_FROM_ENV'
+ONLYOFFICE_FORCE_SAVE = True
+VERIFY_ONLYOFFICE_CERTIFICATE = True
+ONLYOFFICE_FILE_EXTENSION = (
+    'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx',
+    'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'ppsx', 'pps', 'csv'
+)
+ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'csv')
+```
+
+These settings follow the [Seafile 13 integration](https://manual.seafile.com/13.0/extension/only_office/). The file lists enable Office previews and editing while leaving PDFs with Seafile's existing viewer.
+
+Restart Seafile to load the settings:
+
+```bash
+sudo chmod 600 /mnt/seafile/seafile-data/seafile/conf/seahub_settings.py
+sudo docker compose restart seafile
+sudo docker compose ps
+```
+
+Wait for Seafile to become healthy again. Upload a disposable `.docx` to a test library, open it, change a sentence, save, close the editor, and reopen it. Finally, download the document and open that copy too. A working editor page alone doesn't confirm that saves made it back into Seafile.
+
+### Give active documents time to save during shutdown
+
+OnlyOffice provides a [shutdown preparation command](https://github.com/ONLYOFFICE/Docker-DocumentServer#stopping-docker-documentserver) that sends pending document changes back before stopping. Add a drop-in to the Seafile service so it runs while Seafile and the gateway are still available:
+
+```bash
+sudo mkdir -p /etc/systemd/system/seafile.service.d
+sudo nano /etc/systemd/system/seafile.service.d/onlyoffice.conf
+```
+
+```ini
+[Service]
+ExecStop=
+ExecStop=-/usr/bin/docker compose exec -T onlyoffice documentserver-prepare4shutdown.sh
+ExecStop=/usr/bin/docker compose down --timeout 360
+TimeoutStopSec=900
+```
+
+The empty `ExecStop=` clears the shorter stop command from the base unit. The following commands prepare documents for shutdown and then stop the stack. The leading `-` lets systemd continue stopping if the editor is already unavailable; check the journal if preparation reports an error.
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Use `sudo systemctl stop seafile.service` or `sudo systemctl restart seafile.service` for planned maintenance so this step runs. Give the VM time to shut down normally, and close editing sessions before maintenance. This cannot protect unsaved work from a sudden power loss. Saved documents remain part of Seafile's data on Unraid.
+
+## Updates and everyday commands
+
+To see recent logs:
+
+```bash
+cd /srv/seafile
+sudo docker compose logs --tail=100 seafile seadoc notification-server gateway
+```
+
+To stop or restart the whole application:
+
+```bash
+sudo systemctl stop seafile.service
+sudo systemctl start seafile.service
+```
+
+Before updating, read the release notes and make a backup using your chosen backup setup. Once it completes, pull the images and recreate the stack:
+
+```bash
+cd /srv/seafile
+sudo docker compose pull
+sudo systemctl restart seafile.service
+sudo docker compose ps
+```
+
+The `13.0-latest` tag follows Seafile's 13.0 series; it doesn't move you to the next major version. SeaDoc and the supporting containers have their own tags. OnlyOffice is pinned to the tested `9.4.0.1` tag here, so review its release notes and edit that tag deliberately when updating. For a major Seafile upgrade, follow the version-specific instructions in the manual and review the Compose changes too. Don't assume replacing every image tag is the entire upgrade process.
+
+Keep an eye on both disks:
+
+```bash
+df -h / /mnt/seafile
+sudo docker system df
+```
+
+File uploads go to Unraid, but the local database and container images still consume space inside the VM.
+
+## A few problems worth checking first
+
+| Symptom | First thing to check |
+| --- | --- |
+| `mount` can't find the 9p share | The Unraid VM mount tag must be `seafile`, and the share must be attached to this VM. |
+| Docker won't start after a reboot | Run `findmnt /mnt/seafile` and `journalctl -u mnt-seafile.mount`. The storage dependency may be doing its job. |
+| NPM shows a 502 error | Confirm the VM's reserved IP, port 8080, and `docker compose ps`. NPM needs a network route to that address. |
+| Login page loads but requests return 500 | Read Seafile's logs. If they mention missing `X86_V2` CPU support, check the VM CPU mode. |
+| SeaDoc opens but won't connect or save | Check `/sdoc-server/`, WebSocket support, the shared JWT, and the `seadoc` logs. |
+| DOCX says online view isn't applicable | SeaDoc edits `.sdoc` files. Complete the optional OnlyOffice integration for Office previews. |
+| OnlyOffice reports an invalid security token | The OnlyOffice JWT in `.env` and `seahub_settings.py` must match; restart the affected services after correcting it. |
+| OnlyOffice opens but can't download or save | Check its access to the public Seafile hostname, certificate validation, private-IP setting, and `/office/` routing. |
+| OnlyOffice stays unhealthy | Check its logs, VM resources, and that `local-production-linux.json` is readable at mode `644`. |
+| Notification ping works but live updates don't | Check the `/notification` WebSocket connection for status 101. |
+| Large uploads fail with 413 or time out | Check the body-size and timeout settings in both NPM and the gateway, plus any upstream proxy limits. |
+| A bind mount reports permission denied | Check the specific directory's ownership and any SELinux denials before changing permissions. |
+
+My Fedora deployment kept SELinux enforcing. Don't disable it as a general installation step, and don't add `:Z` relabeling to the 9p mounts without understanding whether that filesystem supports the labels your Docker configuration needs.
+
+### If an editor or live updates won't connect
+
+These endpoint checks can help narrow down a proxy problem. Run them from your computer or the VM, replacing the example domain:
+
+```bash
+curl -fsS https://seafile.example.com/api2/ping/
+curl -fsS https://seafile.example.com/sdoc-server/
+curl -fsS https://seafile.example.com/notification/ping
+```
+
+Expect `pong`, a SeaDoc welcome response, and a response containing `"ret":"pong"`, respectively. If HTTPS validation fails, fix the certificate or hostname instead of adding `-k`.
+
+If you installed OnlyOffice, check its route too:
+
+```bash
+curl -fsS https://seafile.example.com/office/healthcheck
+curl -fsS -o /dev/null https://seafile.example.com/office/web-apps/apps/api/documents/api.js
+```
+
+The health check should return `true`; the second command should finish without an error. If either fails, check `sudo docker compose logs --tail=100 onlyoffice gateway` from `/srv/seafile`.
+
+If the pings work but SeaDoc or live updates still won't connect, open your browser's developer tools, select **Network**, filter for **WS**, and reload the affected page. Look for `/notification` and, while editing a SeaDoc document, `/socket.io`. A successful WebSocket upgrade has status **101**.

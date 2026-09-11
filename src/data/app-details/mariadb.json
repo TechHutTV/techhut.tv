@@ -1,0 +1,30 @@
+{
+  "summary": "Run a relational database for self-hosted applications, with persistent storage and SQL backups.",
+  "overview": "MariaDB Server stores structured application data in tables and provides an SQL interface for querying it. It began as a fork of MySQL and supports transactional storage through InnoDB. The Seafile guide runs MariaDB in Docker, keeps the live database on the VM's local disk, and connects it to Seafile and its add-ons.",
+  "kind": "Self-hosted",
+  "platforms": ["Linux", "Docker"],
+  "license": {
+    "name": "GPLv2",
+    "type": "Open source",
+    "url": "https://github.com/MariaDB/server/blob/11.8/COPYING"
+  },
+  "links": [
+    {"label": "Official site", "url": "https://mariadb.org"},
+    {"label": "Server source on GitHub", "url": "https://github.com/MariaDB/server"},
+    {"label": "Documentation", "url": "https://mariadb.com/docs/server"},
+    {"label": "SQL backup guide", "url": "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump"}
+  ],
+  "features": [
+    "Relational data storage and SQL queries",
+    "InnoDB transactions",
+    "Docker deployment with persistent data",
+    "SQL database backups with mariadb-dump"
+  ],
+  "sources": [
+    "https://mariadb.org/about/",
+    "https://github.com/MariaDB/server",
+    "https://github.com/MariaDB/server/blob/11.8/COPYING",
+    "https://mariadb.com/docs/server/clients-and-utilities/backup-restore-and-import-clients/mariadb-dump",
+    "https://manual.seafile.com/13.0/repo/docker/ce/seafile-server.yml"
+  ]
+}

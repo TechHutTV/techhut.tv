@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Move Nextcloud files into Seafile</title>
+  <desc id="desc">An SMB share exposes readable Nextcloud files to the Seafile client in the Fedora VM at /mnt/archive-source. The VM uploads through the existing HTTPS hostname, Nginx Proxy Manager, and NGINX gateway into Seafile's Archive library. Seafile stores the copied data on Unraid at /mnt/seafile. The source stays read-only from the VM; the computer controls the job over SSH without relaying files.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#a8b7c8" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#101922"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="88" y="94" font-size="24" font-weight="700" letter-spacing="4" fill="#87c8eb">TECHHUT / FILE MIGRATION</text>
+    <text x="82" y="199" font-size="78" font-weight="700" fill="#ffffff">Nextcloud files → Seafile</text>
+    <text x="88" y="258" font-size="32" fill="#b8c9d9">The transfer runs on your server.</text>
+
+    <rect x="88" y="320" width="620" height="184" rx="12" fill="#172d3b" stroke="#72bce6" stroke-width="2"/>
+    <text x="122" y="365" font-size="22" font-weight="700" letter-spacing="2" fill="#87c8eb">SOURCE / NAS SMB SHARE</text>
+    <text x="122" y="414" font-size="32" font-weight="700" fill="#ffffff">Readable Nextcloud files</text>
+    <text x="122" y="462" font-size="24" fill="#d1e0eb">ncdata/__groupfolders/1/files</text>
+
+    <path d="M728 412 H872" stroke="#a8b7c8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="800" y="380" font-size="22" text-anchor="middle" fill="#b8c9d9">SMB read</text>
+
+    <rect x="892" y="320" width="620" height="184" rx="12" fill="#172d3b" stroke="#72bce6" stroke-width="2"/>
+    <text x="926" y="365" font-size="22" font-weight="700" letter-spacing="2" fill="#87c8eb">FEDORA VM / SEAFILE CLIENT</text>
+    <text x="926" y="414" font-size="32" font-weight="700" fill="#ffffff">/mnt/archive-source</text>
+    <text x="926" y="462" font-size="24" fill="#d1e0eb">Source mounted read-only</text>
+
+    <path d="M1202 522 V634" stroke="#a8b7c8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="1174" y="568" font-size="22" text-anchor="end" fill="#b8c9d9">HTTPS upload through</text>
+    <text x="1174" y="601" font-size="22" text-anchor="end" fill="#b8c9d9">NPM + NGINX gateway</text>
+
+    <rect x="892" y="654" width="620" height="154" rx="12" fill="#203328" stroke="#a8ce86" stroke-width="2"/>
+    <text x="926" y="700" font-size="22" font-weight="700" letter-spacing="2" fill="#badd9d">SEAFILE / ARCHIVE LIBRARY</text>
+    <text x="926" y="756" font-size="32" font-weight="700" fill="#ffffff">Files, folders, and subfolders</text>
+
+    <path d="M872 731 H730" stroke="#a8b7c8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="800" y="702" font-size="22" text-anchor="middle" fill="#b8c9d9">Store</text>
+
+    <rect x="88" y="654" width="620" height="154" rx="12" fill="#203328" stroke="#a8ce86" stroke-width="2"/>
+    <text x="122" y="700" font-size="22" font-weight="700" letter-spacing="2" fill="#badd9d">DESTINATION / UNRAID STORAGE</text>
+    <text x="122" y="756" font-size="32" font-weight="700" fill="#ffffff">/mnt/seafile · Seafile blocks</text>
+
+    <text x="88" y="574" font-size="25" fill="#b8c9d9">Your computer controls the job over SSH.</text>
+    <text x="88" y="612" font-size="25" fill="#b8c9d9">It does not relay the files.</text>
+    <text x="88" y="856" font-size="22" fill="#a7bacb">Both copies need storage space. Verify the copy before disconnecting the client.</text>
+  </g>
+</svg>
