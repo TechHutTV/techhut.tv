@@ -48,7 +48,7 @@ This walkthrough assumes a **new, dedicated Fedora Server VM on Unraid**. It is 
 You'll need:
 
 - An x86-64 Fedora Server VM. I used Fedora 44 and four virtual CPUs across two physical cores. The base setup worked with 4 GB of RAM; I increased it to **8 GB before adding OnlyOffice**.
-- A local virtual disk with room for Fedora, container images, the database, and working files. I used a 64 GB disk. For OnlyOffice, check that Fedora actually has at least **40 GB free** before installation; an 80 GB or larger virtual disk gives a new combined installation more headroom.
+- A local virtual disk with room for Fedora, container images, the database, and working files. I used a 64 GB disk. If you're adding OnlyOffice, allow at least **40 GB of free space** inside Fedora; an 80 GB or larger virtual disk gives a new combined installation more headroom.
 - An Unraid user share named `seafile`, with enough space for your files.
 - An existing NPM instance that can reach the VM over your network.
 - A domain you control, with its Seafile hostname pointing to NPM.
@@ -89,7 +89,6 @@ Start the VM and reconnect with SSH. Set its hostname:
 
 ```bash
 sudo hostnamectl set-hostname fedora-seafile
-hostnamectl
 ```
 
 The VM hostname is its Linux system name. Your public Seafile domain is a separate setting we'll configure later.
@@ -174,8 +173,6 @@ sudo dnf install -y dnf-plugins-core nano curl openssl
 sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
 sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo systemctl enable --now docker
-sudo docker version
-sudo docker compose version
 ```
 
 Use `docker compose` with a space. We'll run it with `sudo`, so you don't need to change your user's Docker group membership for this guide. If Docker reports a package conflict on a VM you've used before, review the conflict guidance on that Fedora installation page.
@@ -640,22 +637,9 @@ You don't need extra NPM Custom Locations with this configuration. The gateway i
 
 Save the proxy host and open your HTTPS domain. Log in with the email and generated administrator password from `.env`.
 
-## 10. Check files, SeaDoc, and notifications
+## 10. Upload files and try document editing
 
 Before adding your real files, make a temporary library and upload a small document or image. Download it again and check the contents. Then try a larger file representative of what you normally store.
-
-For my deployment, I also verified a 1 MiB upload and download through the public HTTPS endpoint and compared the downloaded bytes. That checks the complete proxy path, but it isn't a large-file performance benchmark.
-
-You can check the basic endpoints from **your computer or the VM**. Replace the example domain in these commands:
-
-```bash
-curl -fsS https://seafile.example.com/api2/ping/
-curl -fsS https://seafile.example.com/api2/server-info/
-curl -fsS https://seafile.example.com/sdoc-server/
-curl -fsS https://seafile.example.com/notification/ping
-```
-
-Expect `pong` from Seafile's ping, version information from `server-info`, a SeaDoc welcome response, and a response containing `"ret":"pong"` from the notification server. Don't add `-k` to hide certificate problems; fix the certificate or hostname if HTTPS validation fails.
 
 ### SeaDoc: documents in the browser
 
@@ -676,19 +660,9 @@ Either can work alongside SeaDoc. Both require an additional office service, a c
 
 I chose OnlyOffice for this deployment and tested opening, editing, saving, and reopening a DOCX file. The steps below add it to the existing Compose project. Collabora remains an alternative if you prefer its editors; follow its linked integration guide instead of installing both for the same file types.
 
-#### Check resources and create OnlyOffice's folders
+#### Create OnlyOffice's folders
 
 [OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM, 40 GB of free disk space, and at least 4 GB of swap for its deployment. My combined VM has 8 GB of RAM. That's a starting point for a small homelab, and larger documents or more simultaneous editors may need more.
-
-Check the resources **inside Fedora**:
-
-```bash
-free -h
-swapon --show
-df -h / /srv/seafile
-```
-
-If you resize the virtual disk in Unraid, check `df` again afterward. Increasing the virtual disk doesn't necessarily grow Fedora's partition, logical volume, and filesystem automatically. Resolve that before pulling another large image.
 
 Create the local directories:
 
@@ -840,14 +814,7 @@ sudo docker compose exec -T gateway nginx -t
 sudo docker compose exec -T gateway nginx -s reload
 ```
 
-Only continue after startup and the NGINX configuration check succeed. From the VM, confirm these URLs work, using your domain:
-
-```bash
-curl -fsS https://seafile.example.com/office/healthcheck
-curl -fsS -o /dev/null https://seafile.example.com/office/web-apps/apps/api/documents/api.js
-```
-
-The health check should return `true`; the second command should finish without an error. If either fails, check `sudo docker compose logs --tail=100 onlyoffice gateway` before enabling the integration.
+Once startup and the NGINX configuration check succeed, connect the editor to Seafile below. If either command fails, check `sudo docker compose logs --tail=100 onlyoffice gateway`.
 
 #### Enable OnlyOffice in Seafile
 
@@ -913,8 +880,6 @@ Use `sudo systemctl stop seafile.service` or `sudo systemctl restart seafile.ser
 
 The [notification server](https://manual.seafile.com/13.0/extension/notification-server/) uses WebSockets to notify supported clients about changes to libraries. We enable it in Seafile, run its container, and route its public URL through the gateway.
 
-An HTTP ping confirms the route works, but doesn't prove WebSockets work. Open your browser's developer tools, select **Network**, filter for **WS**, and reload an open library or SeaDoc document. Look for connections to `/notification` and, while editing a SeaDoc document, `/socket.io`. A successful WebSocket upgrade has status **101**.
-
 This service doesn't configure invitation emails, password-reset emails, or an SMTP server. Those are separate settings under the manual's **Configuration → Email Sending** section.
 
 ## A quick note on backups
@@ -931,18 +896,15 @@ Once file uploads and document editing work, reboot the VM:
 sudo reboot
 ```
 
-Reconnect with SSH and check:
+Reconnect with SSH and check that the share mounted and the containers came back:
 
 ```bash
 findmnt /mnt/seafile
-systemctl status seafile.service --no-pager
 cd /srv/seafile
 sudo docker compose ps
 ```
 
-For this type of systemd service, `active (exited)` is normal. The containers keep running after Compose finishes its startup command. Check their status with `docker compose ps` and open your HTTPS domain again.
-
-Reopen your test document and download a test file. That confirms the application came back with its existing data after a reboot.
+Open your HTTPS domain again, reopen your test document, and download a test file. That confirms the application came back with its existing data after a reboot.
 
 ## 12. Optional: move a Nextcloud folder into a Seafile library
 
@@ -1166,7 +1128,6 @@ Check the client from any later SSH session:
 
 ```bash
 sudo seafile-migrate status
-sudo seafile-migrate status --json
 sudo tail -n 30 /srv/seafile/migration/client-config/logs/seafile.log
 df -h / /mnt/seafile
 sudo du -sh /srv/seafile/migration/client
@@ -1279,6 +1240,29 @@ File uploads go to Unraid, but the local database and container images still con
 | Migration service fails with `203/EXEC` | Check the `/opt/seafile-cli-9.0.21` path, executable permissions, and Fedora SELinux labels. |
 
 My Fedora deployment kept SELinux enforcing. Don't disable it as a general installation step, and don't add `:Z` relabeling to the 9p mounts without understanding whether that filesystem supports the labels your Docker configuration needs.
+
+### If an editor or live updates won't connect
+
+These endpoint checks can help narrow down a proxy problem. Run them from your computer or the VM, replacing the example domain:
+
+```bash
+curl -fsS https://seafile.example.com/api2/ping/
+curl -fsS https://seafile.example.com/sdoc-server/
+curl -fsS https://seafile.example.com/notification/ping
+```
+
+Expect `pong`, a SeaDoc welcome response, and a response containing `"ret":"pong"`, respectively. If HTTPS validation fails, fix the certificate or hostname instead of adding `-k`.
+
+If you installed OnlyOffice, check its route too:
+
+```bash
+curl -fsS https://seafile.example.com/office/healthcheck
+curl -fsS -o /dev/null https://seafile.example.com/office/web-apps/apps/api/documents/api.js
+```
+
+The health check should return `true`; the second command should finish without an error. If either fails, check `sudo docker compose logs --tail=100 onlyoffice gateway` from `/srv/seafile`.
+
+If the pings work but SeaDoc or live updates still won't connect, open your browser's developer tools, select **Network**, filter for **WS**, and reload the affected page. Look for `/notification` and, while editing a SeaDoc document, `/socket.io`. A successful WebSocket upgrade has status **101**.
 
 ## Where the advanced add-ons fit
 
