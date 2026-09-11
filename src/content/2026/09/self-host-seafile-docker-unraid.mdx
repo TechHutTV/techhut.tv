@@ -1,5 +1,5 @@
 export const title = "Self-Host Seafile with Docker, Unraid Storage, and Nginx Proxy Manager"
-export const description = "Set up Seafile 13 on Fedora with Unraid storage, HTTPS, SeaDoc, OnlyOffice, backups, and a server-to-server migration from a Nextcloud network share."
+export const description = "Set up Seafile 13 on Fedora with Unraid storage, HTTPS, SeaDoc, OnlyOffice, and a server-to-server migration from a Nextcloud network share."
 export const date = "2026-09-10"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
@@ -37,7 +37,6 @@ VM local disk                     Unraid share, mounted in the VM
 /srv/seafile                      /mnt/seafile
   Compose files                     Seafile files and configuration
   Live MariaDB database             SeaDoc persistent files
-                                    Database and configuration backups
 ```
 
 The base setup shown above has six containers: those three application services, MariaDB, Redis, and the NGINX gateway. Only the gateway publishes a port on the VM. The optional OnlyOffice section adds a seventh container, reached through `/office/` on the same domain.
@@ -50,7 +49,7 @@ You'll need:
 
 - An x86-64 Fedora Server VM. I used Fedora 44 and four virtual CPUs across two physical cores. The base setup worked with 4 GB of RAM; I increased it to **8 GB before adding OnlyOffice**.
 - A local virtual disk with room for Fedora, container images, the database, and working files. I used a 64 GB disk. For OnlyOffice, check that Fedora actually has at least **40 GB free** before installation; an 80 GB or larger virtual disk gives a new combined installation more headroom.
-- An Unraid user share named `seafile`, with enough space for your files and backups.
+- An Unraid user share named `seafile`, with enough space for your files.
 - An existing NPM instance that can reach the VM over your network.
 - A domain you control, with its Seafile hostname pointing to NPM.
 - A Fedora account with `sudo` access and basic familiarity with SSH.
@@ -101,18 +100,17 @@ Here's the storage split we're going to use:
 
 | Path inside Fedora | Underlying storage | Purpose |
 | --- | --- | --- |
-| `/srv/seafile` | VM's local virtual disk | Compose project, environment file, proxy configuration, backup script |
+| `/srv/seafile` | VM's local virtual disk | Compose project, environment file, and proxy configuration |
 | `/srv/seafile/mysql` | VM's local virtual disk | Live MariaDB database |
 | `/srv/seafile/onlyoffice` | VM's local virtual disk | Optional OnlyOffice configuration, fonts, logs, and working cache |
 | `/srv/seafile/migration` | VM's local virtual disk | Temporary migration client configuration, index, and block cache |
 | `/mnt/seafile/seafile-data` | Unraid share | Seafile's stored file blocks, application configuration, and logs |
 | `/mnt/seafile/seadoc-data` | Unraid share | SeaDoc's persistent directory, including logs |
-| `/mnt/seafile/backups` | Unraid share | Nightly SQL dumps and configuration archives |
 | `/mnt/archive-source` | Separate SMB mount from the NAS | Read-only source folder during the optional migration |
 
 `/srv` is a conventional place for service-related data. `/mnt` is a conventional place to mount another filesystem. **The directory names don't move data onto a different disk.** Mounting the Unraid share at `/mnt/seafile` is what makes files written there land on Unraid.
 
-I'm keeping MariaDB local because it does frequent small reads and writes and depends on reliable filesystem behavior. A local Linux filesystem is a more straightforward home for that workload than the VM's 9p share. We can still send database backups to Unraid every night.
+I'm keeping MariaDB local because it does frequent small reads and writes and depends on reliable filesystem behavior. A local Linux filesystem is a more straightforward home for that workload than the VM's 9p share.
 
 OnlyOffice's working files stay local for the same general reason. Once the editor saves a document back to Seafile, that document is stored on Unraid with the rest of the library. Its working cache can contain edits awaiting a save, so we'll also give it time to finish saving during shutdown.
 
@@ -207,7 +205,6 @@ Only continue when that reports that `/mnt/seafile` is a mount point:
 ```bash
 sudo mkdir -p /mnt/seafile/seafile-data/seafile/logs
 sudo mkdir -p /mnt/seafile/seadoc-data
-sudo install -d -o 1000 -g 1000 -m 0700 /mnt/seafile/backups
 cd /srv/seafile
 ```
 
@@ -910,7 +907,7 @@ The empty `ExecStop=` clears the shorter stop command from the base unit. The fo
 sudo systemctl daemon-reload
 ```
 
-Use `sudo systemctl stop seafile.service` or `sudo systemctl restart seafile.service` for planned maintenance so this step runs. Give the VM time to shut down normally, and close editing sessions before maintenance. This cannot protect unsaved work from a sudden power loss. The backup section below includes the editor's configuration and custom fonts; saved documents remain part of Seafile's data on Unraid.
+Use `sudo systemctl stop seafile.service` or `sudo systemctl restart seafile.service` for planned maintenance so this step runs. Give the VM time to shut down normally, and close editing sessions before maintenance. This cannot protect unsaved work from a sudden power loss. Saved documents remain part of Seafile's data on Unraid.
 
 ### Notifications: live connections, separate from email
 
@@ -920,155 +917,15 @@ An HTTP ping confirms the route works, but doesn't prove WebSockets work. Open y
 
 This service doesn't configure invitation emails, password-reset emails, or an SMTP server. Those are separate settings under the manual's **Configuration → Email Sending** section.
 
-## 11. Send database and configuration backups to Unraid
+## A quick note on backups
 
-Our uploaded files already live on Unraid, but the live database is on the VM. We'll create a nightly SQL dump of all three Seafile databases and archive the configuration alongside it.
+Before adding your real files, back up **Seafile's databases, stored file data, and configuration**, including `.env` and any OnlyOffice settings. Copying the Unraid share alone misses the live database on the VM. Follow [Seafile's backup instructions](https://manual.seafile.com/13.0/administration/backup_recovery/) for a consistent copy.
 
-**This job isn't a second copy of your uploaded files.** It places database and configuration backups on the same Unraid system holding the file data. For protection from losing that system, also replicate the Seafile data directories and these backups to another device or location.
+My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide#backing-up-docker-with-pbs-client) covers backing up Docker hosts and keeping an offsite copy. That's a good next step once Seafile is working, and do test a restore before relying on it.
 
-Create the backup script in the Fedora VM:
+## 11. Reboot and check the complete setup
 
-```bash
-cd /srv/seafile
-nano backup.sh
-```
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-umask 077
-
-cd /srv/seafile
-mountpoint -q /mnt/seafile
-
-backup_root=/mnt/seafile/backups
-stamp=$(date -u +%Y%m%dT%H%M%SZ)
-work_dir=$(mktemp -d "$backup_root/.incomplete.$stamp.XXXXXX")
-
-# The root password is read inside the database container.
-docker compose exec -T db sh -c '
-  MYSQL_PWD="$MYSQL_ROOT_PASSWORD" exec mariadb-dump --user=root \
-    --single-transaction --quick --routines --events --triggers --hex-blob \
-    --databases ccnet_db seafile_db seahub_db
-' | gzip > "$work_dir/databases.sql.gz"
-
-config_paths=(
-  srv/seafile/.env
-  srv/seafile/compose.yaml
-  srv/seafile/gateway.conf
-  srv/seafile/backup.sh
-  etc/fstab
-  etc/systemd/system/docker.service.d/seafile-storage.conf
-  etc/systemd/system/seafile.service
-  etc/systemd/system/seafile-backup.service
-  etc/systemd/system/seafile-backup.timer
-)
-
-for optional_path in \
-  mnt/seafile/seafile-data/seafile/conf \
-  mnt/seafile/seafile-data/nginx \
-  srv/seafile/onlyoffice/local-production-linux.json \
-  srv/seafile/onlyoffice/data \
-  srv/seafile/onlyoffice/fonts \
-  etc/systemd/system/seafile.service.d/onlyoffice.conf; do
-  if [[ -e "/$optional_path" ]]; then
-    config_paths+=("$optional_path")
-  fi
-done
-
-tar -C / -czf "$work_dir/config.tar.gz" "${config_paths[@]}"
-gzip -t "$work_dir/databases.sql.gz" "$work_dir/config.tar.gz"
-chmod 600 "$work_dir/databases.sql.gz" "$work_dir/config.tar.gz"
-chown -R 1000:1000 "$work_dir"
-mv "$work_dir" "$backup_root/$stamp"
-printf 'Backup completed: %s/%s\n' "$backup_root" "$stamp"
-```
-
-If your user IDs aren't `1000:1000`, change that one ownership line. The script uses a temporary directory and only renames it after success. A folder starting with `.incomplete` means that run didn't finish; check the journal before relying on it.
-
-The configuration archive includes `.env`, so treat backups as private too. This script doesn't delete old backups automatically. Check how much space they use and decide on retention once you know your database's size.
-
-If you installed OnlyOffice, the archive also includes its custom settings, data directory, fonts, and shutdown override. Its working cache and logs are excluded. Documents already saved back to Seafile belong to the file-data backup; this job doesn't capture an open editor's unsaved session.
-
-Make it executable:
-
-```bash
-chmod 750 backup.sh
-```
-
-### Schedule the backup
-
-Create a service:
-
-```bash
-sudo nano /etc/systemd/system/seafile-backup.service
-```
-
-```ini
-[Unit]
-Description=Back up Seafile databases and configuration to Unraid
-Requires=docker.service
-After=docker.service seafile.service
-RequiresMountsFor=/mnt/seafile
-
-[Service]
-Type=oneshot
-WorkingDirectory=/srv/seafile
-ExecStart=/usr/bin/bash /srv/seafile/backup.sh
-UMask=0077
-TimeoutStartSec=1h
-```
-
-Create its timer:
-
-```bash
-sudo nano /etc/systemd/system/seafile-backup.timer
-```
-
-```ini
-[Unit]
-Description=Nightly Seafile database backup
-
-[Timer]
-OnCalendar=*-*-* 03:30:00
-Persistent=true
-RandomizedDelaySec=5m
-Unit=seafile-backup.service
-
-[Install]
-WantedBy=timers.target
-```
-
-This runs around 3:30 a.m. in the **VM's system time zone**, with up to five minutes of delay. Check `timedatectl` if that differs from your expected time. The container's `.env` time-zone setting doesn't change Fedora's system clock settings.
-
-Enable the schedule and run a backup now:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable --now seafile-backup.timer
-sudo systemctl start seafile-backup.service
-sudo journalctl -u seafile-backup.service -n 30 --no-pager
-systemctl list-timers seafile-backup.timer
-ls -lh /mnt/seafile/backups
-```
-
-You should see a completed timestamped directory containing `databases.sql.gz` and `config.tar.gz`. Run the backup before major maintenance too:
-
-```bash
-sudo systemctl start seafile-backup.service
-```
-
-### What you need for a restore
-
-A usable restore needs the **database dumps, Seafile's stored file data, and configuration**, including the shared secrets. Keeping only the SQL file or copying only `/srv/seafile` isn't enough.
-
-When making a second copy of the files, run the database backup first and then back up the file data, following Seafile's [backup and recovery guidance](https://manual.seafile.com/13.0/administration/backup_recovery/). For a controlled restore test, use an isolated VM and keep client writes stopped while capturing a matching database and file-data backup.
-
-The broad recovery order is to restore the data directories and configuration, start MariaDB, import all three SQL databases, and then start the application services. Test that on an isolated instance before depending on it. Copying MariaDB's live `/srv/seafile/mysql` directory while it is running is not a substitute for the SQL dump in this guide.
-
-## 12. Reboot and check the complete setup
-
-Once file uploads, document editing, and the first backup work, reboot the VM:
+Once file uploads and document editing work, reboot the VM:
 
 ```bash
 sudo reboot
@@ -1081,14 +938,13 @@ findmnt /mnt/seafile
 systemctl status seafile.service --no-pager
 cd /srv/seafile
 sudo docker compose ps
-systemctl list-timers seafile-backup.timer
 ```
 
 For this type of systemd service, `active (exited)` is normal. The containers keep running after Compose finishes its startup command. Check their status with `docker compose ps` and open your HTTPS domain again.
 
 Reopen your test document and download a test file. That confirms the application came back with its existing data after a reboot.
 
-## 13. Optional: move a Nextcloud folder into a Seafile library
+## 12. Optional: move a Nextcloud folder into a Seafile library
 
 For my migration, the files were already available through an SMB network share. I wanted the contents of `ncdata/__groupfolders/1/files` to become the contents of a new **Archive** library in Seafile, keeping the folder structure underneath it.
 
@@ -1362,10 +1218,9 @@ Confirm Archive is no longer in the client's local library list before continuin
 ```bash
 sudo systemctl stop seafile-archive-client.service
 sudo umount /mnt/archive-source
-sudo systemctl start seafile-backup.service
 ```
 
-`desync` leaves the files in Seafile and on the NAS; it removes the synchronization relationship. Archive is now ready for normal use. The database/configuration backup records the imported library, but you still need the separate file-data backup described earlier. This migration doesn't delete anything from Nextcloud.
+`desync` leaves the files in Seafile and on the NAS; it removes the synchronization relationship. Archive is now ready for normal use. This migration doesn't delete anything from Nextcloud.
 
 ## Updates and everyday commands
 
@@ -1383,16 +1238,10 @@ sudo systemctl stop seafile.service
 sudo systemctl start seafile.service
 ```
 
-For an update within the configured image versions, read the release notes, make a backup, pull the images, and recreate the stack:
+Before updating, read the release notes and make a backup using your chosen backup setup. Once it completes, pull the images and recreate the stack:
 
 ```bash
 cd /srv/seafile
-sudo systemctl start seafile-backup.service
-```
-
-Make sure that backup succeeds before continuing:
-
-```bash
 sudo docker compose pull
 sudo systemctl restart seafile.service
 sudo docker compose ps
@@ -1405,7 +1254,6 @@ Keep an eye on both disks:
 ```bash
 df -h / /mnt/seafile
 sudo docker system df
-du -sh /mnt/seafile/backups
 ```
 
 File uploads go to Unraid, but the local database and container images still consume space inside the VM.

@@ -1,6 +1,6 @@
 {
   "summary": "Run a relational database for self-hosted applications, with persistent storage and SQL backups.",
-  "overview": "MariaDB Server stores structured application data in tables and provides an SQL interface for querying it. It began as a fork of MySQL and supports transactional storage through InnoDB. The Seafile guide runs MariaDB in Docker, keeps the live database on the VM's local disk, and schedules SQL dumps to Unraid. Those database backups complement the separate backup of Seafile's stored file data.",
+  "overview": "MariaDB Server stores structured application data in tables and provides an SQL interface for querying it. It began as a fork of MySQL and supports transactional storage through InnoDB. The Seafile guide runs MariaDB in Docker, keeps the live database on the VM's local disk, and connects it to Seafile and its add-ons.",
   "kind": "Self-hosted",
   "platforms": ["Linux", "Docker"],
   "license": {

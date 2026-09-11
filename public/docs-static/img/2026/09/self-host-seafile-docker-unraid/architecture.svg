@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
   <title id="title">Seafile 13: local services, Unraid storage</title>
-  <desc id="desc">The request-routing panel shows a browser or client connecting to Nginx Proxy Manager over HTTPS, then NPM forwarding HTTP traffic on port 8080 to the Fedora VM's NGINX gateway and application services. A separate storage panel shows Compose and the live MariaDB database at /srv/seafile on the VM's local disk, and Seafile data and backups on the Unraid share mounted at /mnt/seafile. There are no routing arrows between the gateway and the storage locations.</desc>
+  <desc id="desc">The request-routing panel shows a browser or client connecting to Nginx Proxy Manager over HTTPS, then NPM forwarding HTTP traffic on port 8080 to the Fedora VM's NGINX gateway and application services. A separate storage panel shows Compose and the live MariaDB database at /srv/seafile on the VM's local disk, and Seafile data, configuration, and logs on the Unraid share mounted at /mnt/seafile. There are no routing arrows between the gateway and the storage locations.</desc>
   <defs>
     <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#a8b7c8" stroke-width="1.5"/></marker>
   </defs>
@@ -39,7 +39,7 @@
     <text x="874" y="617" font-size="23" font-weight="700" letter-spacing="2" fill="#badd9d">UNRAID SHARE · 9P MOUNT</text>
     <text x="874" y="677" font-family="Menlo, monospace" font-size="41" font-weight="700" fill="#ffffff">/mnt/seafile</text>
     <text x="874" y="731" font-size="27" fill="#d9e8d5">Seafile data + SeaDoc persistence</text>
-    <text x="874" y="773" font-size="27" fill="#d9e8d5">SQL + configuration backups</text>
+    <text x="874" y="773" font-size="27" fill="#d9e8d5">Application configuration + logs</text>
     <text x="88" y="856" font-size="21" fill="#a7bacb">The mount determines where data lives. The directory name alone does not.</text>
   </g>
 </svg>
