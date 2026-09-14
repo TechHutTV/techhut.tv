@@ -48,7 +48,7 @@ This walkthrough assumes a **new, dedicated Fedora Server VM on Unraid**. It is 
 You'll need:
 
 - An x86-64 Fedora Server VM. I used Fedora 44, four virtual CPUs across two physical cores, and **4 GB of RAM** for the base setup.
-- A local virtual disk with room for Fedora, container images, and the database. I used a **64 GB disk**. The optional OnlyOffice section adds its own resource requirements.
+- A local virtual disk with room for Fedora, container images, and the database. I started with **64 GB**, then expanded it to **128 GB** for OnlyOffice and a multi-terabyte migration. If you're following both guides, start with the larger disk and check the migration cache requirements below.
 - An Unraid user share named `seafile`, with enough space for your files.
 - An existing NPM instance that can reach the VM over your network.
 - A domain you control, with its Seafile hostname pointing to NPM.
@@ -96,6 +96,8 @@ Start the VM and reconnect with SSH.
 | `/mnt/seafile/seadoc-data` | Unraid share | SeaDoc's persistent directory, including logs |
 
 MariaDB stays on the VM's local Linux filesystem because it does frequent small reads and writes. Mounting the Unraid share at `/mnt/seafile` puts the larger file storage on the NAS; creating a directory with that name alone doesn't move anything there.
+
+If you're also following the [migration guide](/migrate-nextcloud-files-to-seafile), the client's index and temporary blocks go under `/srv/seafile/migration` on the local disk. Those are working files for the copy. Seafile's permanent file blocks still go to `/mnt/seafile` on Unraid.
 
 Seafile stores uploads in its own block format. Add existing documents through its web interface or client so they appear in your libraries.
 
@@ -665,7 +667,7 @@ Your base setup is ready. You can create libraries and connect a Seafile client 
 
 I chose [OnlyOffice Docs](https://manual.seafile.com/13.0/extension/only_office/) for editing Word, Excel, and PowerPoint files and tested opening, saving, and reopening a DOCX. We'll add its **Document Server** to the existing Compose project, alongside SeaDoc. [Collabora Online](https://manual.seafile.com/13.0/extension/collabora_online/) is another option if you prefer it.
 
-I increased the VM to **8 GB of RAM** for this combined setup. [OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM, 40 GB of free disk space, and at least 4 GB of swap. An 80 GB or larger virtual disk gives a fresh combined installation more room.
+I increased the VM to **8 GB of RAM** for this combined setup. [OnlyOffice's Docker requirements](https://helpcenter.onlyoffice.com/docs/installation/docs-community-install-docker.aspx) list 4 GB of RAM, 40 GB of free disk space, and at least 4 GB of swap. I ended up using a **128 GB virtual disk** to leave room for the combined installation and migration cache. Check free space inside Fedora; the disk's advertised capacity includes the OS, images, database, and anything else already stored there.
 
 ### Create OnlyOffice's folders
 

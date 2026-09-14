@@ -100,7 +100,24 @@ sudo seafile-migrate init -d /srv/seafile/migration/client
 
 Let `init` create `client-config`; don't create that directory beforehand. The client keeps its index and temporary blocks under `/srv/seafile/migration`, while its working folder will be the already-mounted SMB source. It doesn't need a complete second staging copy on the VM, but the cache still needs free space.
 
-### Optional: save a detailed source inventory
+### Leave room for the migration cache
+
+My source included a single file around **47 GB**. The original 64 GB VM disk ran short of room once Fedora, the containers, and temporary blocks shared that disk. I expanded the virtual disk to **128 GB**, then grew Fedora's partition, LVM volume, and filesystem so the guest could use the additional space.
+
+Plan for your largest file, additional files being prepared in the same batch, and free space for the running server. A 128 GB disk worked for my source; it isn't a guarantee for larger files or a VM with more data already on it. Check `df -h /` before starting. If you expand the VM disk, check it again afterward: increasing the virtual disk alone doesn't grow Fedora's filesystem.
+
+Keep these two directories on the **same local filesystem**:
+
+```text
+/srv/seafile/migration/client/seafile-data/tmpfiles
+/srv/seafile/migration/client/seafile-data/storage/blocks
+```
+
+The client creates temporary chunks, then renames them into its block cache. Moving only `storage/blocks` to the NAS left those directories on different filesystems in my setup and caused `Invalid cross-device link` errors. Keeping both in their default local location avoids that problem and reduces extra NAS reads and writes. The index and configuration should stay local too; permanent Seafile data remains on Unraid.
+
+If you need to change storage during a transfer, stop the client service first and preserve its configuration, index, and both cache directories. After expanding the filesystem, start the same service to resume. An unfinished file may need to be indexed again, so don't mistake that for the whole library starting over.
+
+### Save a detailed source inventory
 
 Note the source folder's file count and logical size in your NAS or file manager for comparison when the copy finishes. My source contained **10,675 files totaling 4.58 TB**.
 
@@ -114,6 +131,12 @@ sudo python3 source-inventory.py
 ```
 
 It reads file metadata without modifying the source and writes `source-manifest.jsonl` and `source-inventory.json` in this working directory. If it reports an unreadable path or another error, resolve that before copying.
+
+### Check files the client may exclude
+
+The client has [built-in exclusions](https://github.com/haiwen/seafile/blob/master/daemon/repo-mgr.c), including `.DS_Store`, `Thumbs.db`, and, by default, `*.tmp`. A library can also have a [`seafile-ignore.txt` file](https://help.seafile.com/syncing_client/excluding_files/) with additional patterns. An excluded file can remain on the source without appearing as a sync error.
+
+In my migration, **27 files totaling 3.29 GB** were excluded: 26 Finder or Windows thumbnail metadata files and one video ending in `.mov.tmp`. I chose to leave those out after reviewing the missing paths. Don't assume every temporary-looking file is disposable; check it before accepting a difference in the totals. Keep the original inventory intact and record any exclusions you accept separately.
 
 ## 3. Run the client in the background with systemd
 
@@ -197,9 +220,15 @@ sudo du -sh /srv/seafile/migration/client
 
 For a live view, run `sudo watch -n 10 seafile-migrate status`. Press **Ctrl+C** to close the view; the transfer keeps running.
 
-`committing` means the client is indexing files. `uploading` means a batch is being sent. **The displayed percentage is for the current batch, not the whole library**, so reaching 100% and starting another batch is normal. Upload speed can drop to zero while the next batch is prepared.
+`committing` means the client is indexing files. `uploading` means a batch is being sent. **The displayed client percentage isn't a reliable measure of the whole migration.** Upload speed can drop to zero while more files are prepared, and the saved library size may stay unchanged until an upload is committed.
 
 Seafile's library information shows how much has reached Archive. Compare that with your source folder's size for a rough idea of overall progress.
+
+For a useful speed estimate, note the library's saved size, wait 30 to 60 minutes, and check it again. Divide the increase by the elapsed time. That includes indexing and server processing, which an instantaneous upload reading leaves out. Use the same units for both readings; decimal GB and binary GiB aren't interchangeable.
+
+With both temporary-cache directories on my VM's local disk, I measured roughly **34–38 MiB/s overall**, around **130–143 GB per hour**, during the remaining transfer. Moving the cache onto the Unraid array earlier in the migration had reduced that to about **15–17 MiB/s**. These are measurements from my setup, where the NAS was reading the source and writing the destination at the same time. Your disks, file sizes, and network will affect the result.
+
+Estimate the time left from the remaining bytes and that overall rate. Keep verification time separate, and stop extending the estimate once the client is idle: a gap in the totals then needs investigation, not another countdown.
 
 Watch local free space as well as NAS capacity. To pause the transfer if space gets low or you need maintenance:
 
@@ -209,9 +238,13 @@ sudo systemctl stop seafile-archive-client.service
 
 Start the same service to resume after resolving the issue and confirming both mounts. Don't delete its cache or configuration to pause it.
 
+Do note that this guide's service doesn't automatically pause when disk space runs low. Watch free space and stop it before the filesystem fills. Also read the client log even when `status` shows no errors; my cross-filesystem cache problem appeared in the log without a matching sync error in the status output.
+
 ## 6. Verify the copy, then disconnect the source
 
 Wait for the client to report **`synchronized`**, with no active errors, and compare Archive's file count and logical size with the source folder or your saved inventory. Compare nested folders, including empty ones, and check file modification times. File count alone isn't enough: a failed large file matters more than thousands of completed small ones.
+
+**`synchronized` doesn't mean every source file was copied.** If totals differ, identify the exact missing paths and check exclusions, source changes, and client logs. Account for every difference before treating the migration as finished. For my copy, the destination contained **10,648 files totaling 4.579 TB**; the 27 reviewed exclusions explained the entire difference from the original inventory.
 
 Download a selection of files from Archive, including documents, images, and larger files from different folders. Open them, and compare checksums against the originals where practical. For a downloaded test file placed outside the source folder, use:
 
@@ -243,7 +276,10 @@ sudo umount /mnt/archive-source
 | Symptom | First thing to check |
 | --- | --- |
 | The client reports a TLS error | Check `SEAFILE_SSL_CA_PATH` and the certificate chain. Keep certificate verification enabled. |
-| The percentage repeatedly resets | It's a batch percentage. Check the growing destination library size for overall progress. |
+| The percentage resets or the saved total pauses | Check the client state and saved library size over time. Indexing and commit delays can leave the saved total unchanged temporarily. |
+| `synchronized`, but the totals don't match | Compare missing paths with built-in exclusions and `seafile-ignore.txt`; investigate any remaining differences. |
+| `No space left on device` | Stop the service and check local cache space as well as NAS capacity. Preserve client state before changing storage. |
+| `Invalid cross-device link` or `failed to commit block` | Stop the service. Check that `tmpfiles` and `storage/blocks` are on the same filesystem. |
 | The service fails with `203/EXEC` | Check the `/opt/seafile-cli-9.0.21` path, executable permissions, and Fedora SELinux labels. |
 
 For service errors, run `sudo journalctl -u seafile-archive-client.service -n 80 --no-pager`. The client log is at `/srv/seafile/migration/client-config/logs/seafile.log`.
