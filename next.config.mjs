@@ -116,6 +116,10 @@ const nextConfig = {
                 source: '/decks/lfnw26',
                 destination: '/decks/lfnw26/index.html',
             },
+            {
+                source: '/decks/ato26',
+                destination: '/decks/ato26/index.html',
+            },
         ]
     }
 }
