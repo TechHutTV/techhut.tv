@@ -69,6 +69,12 @@ Reserve the VM's address in your router or DHCP server so NPM's forwarding targe
 
 Unless a step specifically says **Unraid**, **NPM**, or **your computer**, run its commands in the **Fedora VM over SSH**. We'll use `nano` to edit files. In nano, save with **Ctrl+O**, press **Enter**, then exit with **Ctrl+X**.
 
+Install the few command-line tools we'll use:
+
+```bash
+sudo dnf install -y nano curl openssl
+```
+
 ## 1. Prepare the VM in Unraid
 
 Shut down the VM before changing its hardware settings. In Unraid's VM editor, set the CPU mode to **Host Passthrough** and assign at least two CPU cores. My setup uses two cores and their matching threads, giving Fedora four virtual CPUs.
@@ -110,19 +116,10 @@ Create the mount point and try the mount:
 ```bash
 sudo mkdir -p /mnt/seafile
 sudo mount -t 9p -o trans=virtio,version=9p2000.L,cache=none seafile /mnt/seafile
-findmnt /mnt/seafile
+df -h /mnt/seafile
 ```
 
-You should see `/mnt/seafile` with filesystem type `9p` and source `seafile`. If that fails, stop here and check the Unraid mount tag before creating application folders.
-
-Test that your normal Fedora user can write to the share:
-
-```bash
-touch /mnt/seafile/.write-test
-rm /mnt/seafile/.write-test
-```
-
-If you get a permission error, check the Unraid share's ownership and permissions for the mapped VM user. Don't apply a recursive `chmod 777` to your NAS to work around it.
+You should see `seafile` in the **Filesystem** column and `/mnt/seafile` under **Mounted on**. If it shows the VM's root filesystem instead, the share isn't mounted; check the Unraid mount tag before creating application folders.
 
 Make the mount persistent. Back up the existing file, then open it:
 
@@ -137,51 +134,41 @@ Add this as **one new line**, keeping the existing entries:
 seafile /mnt/seafile 9p trans=virtio,version=9p2000.L,cache=none,rw,nofail,x-systemd.mount-timeout=30s 0 0
 ```
 
-Check the file and reload systemd:
+Save the file, reload systemd, and apply the mount entries:
 
 ```bash
-sudo findmnt --verify
 sudo systemctl daemon-reload
-sudo systemctl start mnt-seafile.mount
-findmnt /mnt/seafile
+sudo mount -a
 ```
 
 `nofail` lets Fedora finish booting if the share is unavailable. Later, we'll tell Docker and Seafile to require the mount. That way, you can still reach the VM to fix storage without letting the application write into an empty local mount point.
 
 ## 4. Install Docker and create the folders
 
-Install Docker Engine and its Compose plugin using the [official Fedora instructions](https://docs.docker.com/engine/install/fedora/):
+Install Docker with the quickstart script, then enable its service on Fedora. My [Docker basics guide](/7-docker-basics-for-beginners) covers the installation and how containers, volumes, and Compose work.
 
 ```bash
-sudo dnf install -y dnf-plugins-core nano curl openssl
-sudo dnf config-manager addrepo --from-repofile https://download.docker.com/linux/fedora/docker-ce.repo
-sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+curl -fsSL https://get.docker.com | sudo sh
 sudo systemctl enable --now docker
 ```
 
-Use `docker compose` with a space. We'll run it with `sudo`, so you don't need to change your user's Docker group membership for this guide. If Docker reports a package conflict on a VM you've used before, review the conflict guidance on that Fedora installation page.
+The script includes the Compose plugin. We'll use `sudo docker compose` throughout this guide.
 
-Check your user's numeric IDs:
-
-```bash
-id -u
-id -g
-```
-
-The following commands assume both are **1000**. If yours differ, substitute your IDs in the ownership commands. We want the **project directory** owned by `1000:1000`; each container can still manage the ownership it needs for its own data.
+Check your user and group IDs:
 
 ```bash
-sudo install -d -o 1000 -g 1000 -m 0750 /srv/seafile
-sudo install -d -m 0750 /srv/seafile/mysql
+id
 ```
 
-Confirm the share is mounted, then create its application directories:
+Look for `uid=` and `gid=` in the output. The commands below use **1000:1000**; replace those numbers if yours differ. Create the project and database folders, then give your user ownership of the project folder so you can edit its configuration files:
 
 ```bash
-mountpoint /mnt/seafile
+sudo mkdir -p /srv/seafile/mysql
+sudo chown 1000:1000 /srv/seafile
+sudo chmod 750 /srv/seafile /srv/seafile/mysql
 ```
 
-Only continue when that reports that `/mnt/seafile` is a mount point:
+With the Unraid share mounted from the previous step, create its application directories:
 
 ```bash
 sudo mkdir -p /mnt/seafile/seafile-data/seafile/logs
@@ -189,17 +176,25 @@ sudo mkdir -p /mnt/seafile/seadoc-data
 cd /srv/seafile
 ```
 
-Don't recursively change `/srv/seafile` to `1000:1000` after the database has started. MariaDB will set its data directory's ownership for the user inside its container. For the same reason, we aren't adding `user: "1000:1000"` to every service.
+The `chown` command applies only to the project folder. MariaDB manages ownership inside `mysql`, so leave that directory's ownership to the container.
 
 ## 5. Create the environment file
 
-The `.env` file holds the settings Compose will insert into the container configuration. We'll generate separate random passwords automatically, then edit the domain, IP, email, and time zone.
-
-Run this whole block from `/srv/seafile`. It is for the **first setup only**, since running it again would overwrite your saved settings and passwords.
+The `.env` file holds the settings Compose will insert into the container configuration. Generate a separate random value for each of the five blank password/key fields in the template below. Run this command once per field and save the values in your password manager:
 
 ```bash
-umask 077
-cat > .env << EOF
+openssl rand -hex 32
+```
+
+Create the file in `/srv/seafile`:
+
+```bash
+nano .env
+```
+
+Paste this template and fill in the blank fields with your generated values:
+
+```dotenv
 COMPOSE_PROJECT_NAME=seafile
 
 SEAFILE_BIND_IP=192.168.1.50
@@ -218,24 +213,28 @@ SEAFILE_VOLUME=/mnt/seafile/seafile-data
 SEADOC_VOLUME=/mnt/seafile/seadoc-data
 SEAFILE_MYSQL_VOLUME=/srv/seafile/mysql
 
-JWT_PRIVATE_KEY=$(openssl rand -hex 32)
-SEAFILE_MYSQL_DB_PASSWORD=$(openssl rand -hex 24)
-INIT_SEAFILE_MYSQL_ROOT_PASSWORD=$(openssl rand -hex 24)
-REDIS_PASSWORD=$(openssl rand -hex 24)
+JWT_PRIVATE_KEY=
+SEAFILE_MYSQL_DB_PASSWORD=
+INIT_SEAFILE_MYSQL_ROOT_PASSWORD=
+REDIS_PASSWORD=
 INIT_SEAFILE_ADMIN_EMAIL=you@example.com
-INIT_SEAFILE_ADMIN_PASSWORD=$(openssl rand -hex 24)
+INIT_SEAFILE_ADMIN_PASSWORD=
 
 ENABLE_SEADOC=true
 ENABLE_NOTIFICATION_SERVER=true
-EOF
-nano .env
 ```
 
 Replace `SEAFILE_BIND_IP`, `SEAFILE_SERVER_HOSTNAME`, and `INIT_SEAFILE_ADMIN_EMAIL` with your values. Set your time zone too. The hostname must contain just the domain, without `https://` or a trailing slash.
 
-Copy `INIT_SEAFILE_ADMIN_PASSWORD` into your password manager before closing the file. Leave `SEAFILE_SERVER_PROTOCOL=https`: that's the address your browser will use, even though NPM connects to the VM over HTTP.
+Save the file, then restrict it to your user:
 
-Leave the generated `JWT_PRIVATE_KEY` in place. Compose shares it with Seafile, SeaDoc, and notifications so they can authenticate with each other.
+```bash
+chmod 600 .env
+```
+
+`INIT_SEAFILE_ADMIN_PASSWORD` is the password you'll use for your first login. Leave `SEAFILE_SERVER_PROTOCOL=https`: that's the address your browser will use, even though NPM connects to the VM over HTTP.
+
+Compose shares `JWT_PRIVATE_KEY` with Seafile, SeaDoc, and notifications so they can authenticate with each other.
 
 The `INIT_` administrator settings initialize a new installation. Editing them later doesn't reset an existing account's password. Keep `.env` private and out of Git repositories.
 
@@ -440,7 +439,7 @@ services:
 
 Compose creates a private network for this project automatically. On that network, the service name `db` resolves to MariaDB, `seafile` resolves to Seafile, and so on. These names aren't public DNS records you need to create.
 
-The `source` of each bind mount is a path on Fedora. The `target` is where that directory appears inside the container. `create_host_path: false` makes a missing source directory an error instead of silently creating one. We'll add a separate mount check too, because an existing directory alone doesn't prove Unraid is mounted.
+The `source` of each bind mount is a path on Fedora. The `target` is where that directory appears inside the container. `create_host_path: false` makes a missing source directory an error instead of silently creating one. The systemd setup below makes startup wait for the Unraid mount.
 
 The logging settings cap Docker's own container logs. Application log files written into the shared data directories have their own rotation behavior and still need disk space.
 
@@ -510,8 +509,6 @@ We explicitly forward `X-Forwarded-Proto https` because NPM handles the encrypte
 Check the Compose configuration without printing its resolved passwords:
 
 ```bash
-chmod 600 .env
-chmod 640 compose.yaml gateway.conf
 sudo docker compose config --quiet
 sudo docker compose pull
 ```
@@ -558,7 +555,6 @@ PartOf=docker.service
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=/srv/seafile
-ExecStartPre=/usr/bin/mountpoint -q /mnt/seafile
 ExecStart=/usr/bin/docker compose up -d --wait --wait-timeout 360
 ExecStop=/usr/bin/docker compose down --timeout 60
 TimeoutStartSec=600
@@ -568,7 +564,7 @@ TimeoutStopSec=180
 WantedBy=multi-user.target
 ```
 
-This tells systemd where the project lives, checks the mount, and starts the containers. The mount dependency controls ordering, while `BindsTo` stops the dependent service if systemd sees the mount go away.
+This tells systemd where the project lives and starts the containers after the share mounts. `BindsTo` stops the dependent service if systemd sees the mount go away.
 
 Start everything:
 
@@ -654,7 +650,7 @@ sudo reboot
 Reconnect with SSH and check that the share mounted and the containers came back:
 
 ```bash
-findmnt /mnt/seafile
+df -h /mnt/seafile
 cd /srv/seafile
 sudo docker compose ps
 ```
@@ -677,8 +673,7 @@ Create the local directories:
 
 ```bash
 cd /srv/seafile
-sudo install -d -o 1000 -g 1000 -m 0755 onlyoffice
-sudo mkdir -p onlyoffice/{data,lib,logs,fonts}
+mkdir -p onlyoffice/{data,lib,logs,fonts}
 nano onlyoffice/local-production-linux.json
 ```
 
@@ -707,18 +702,24 @@ It contains no passwords. Keep `.env` private at mode `600`; don't apply `644` t
 
 ### Add the container and its secret
 
-Run this once to append the tested image version and a separate random JWT secret to `.env`. The guard keeps a second run from replacing an existing secret:
+Generate a separate JWT secret for OnlyOffice, then open `.env`:
 
 ```bash
 cd /srv/seafile
-if ! grep -q '^ONLYOFFICE_JWT_SECRET=' .env; then
-  cat >> .env << EOF
+openssl rand -hex 32
+nano .env
+```
 
+Add these two lines at the end and paste the generated value after `ONLYOFFICE_JWT_SECRET=`. If the settings already exist, keep the existing secret.
+
+```dotenv
 ONLYOFFICE_IMAGE=onlyoffice/documentserver:9.4.0.1
-ONLYOFFICE_JWT_SECRET=$(openssl rand -hex 32)
-EOF
-fi
-chmod 600 .env
+ONLYOFFICE_JWT_SECRET=
+```
+
+Save `.env`, then open the Compose file:
+
+```bash
 nano compose.yaml
 ```
 
@@ -817,8 +818,8 @@ cd /srv/seafile
 sudo docker compose config --quiet
 sudo docker compose pull onlyoffice
 sudo docker compose up -d --wait --wait-timeout 360 onlyoffice
-sudo docker compose exec -T gateway nginx -t
-sudo docker compose exec -T gateway nginx -s reload
+sudo docker compose exec gateway nginx -t
+sudo docker compose exec gateway nginx -s reload
 ```
 
 Once startup and the NGINX configuration check succeed, connect the editor to Seafile below. If either command fails, check `sudo docker compose logs --tail=100 onlyoffice gateway`.
@@ -924,7 +925,7 @@ File uploads go to Unraid, but the local database and container images still con
 | Symptom | First thing to check |
 | --- | --- |
 | `mount` can't find the 9p share | The Unraid VM mount tag must be `seafile`, and the share must be attached to this VM. |
-| Docker won't start after a reboot | Run `findmnt /mnt/seafile` and `journalctl -u mnt-seafile.mount`. The storage dependency may be doing its job. |
+| Docker won't start after a reboot | Check `df -h /mnt/seafile` and `sudo journalctl -u mnt-seafile.mount`. The storage dependency may be doing its job. |
 | NPM shows a 502 error | Confirm the VM's reserved IP, port 8080, and `docker compose ps`. NPM needs a network route to that address. |
 | Login page loads but requests return 500 | Read Seafile's logs. If they mention missing `X86_V2` CPU support, check the VM CPU mode. |
 | SeaDoc opens but won't connect or save | Check `/sdoc-server/`, WebSocket support, the shared JWT, and the `seadoc` logs. |
