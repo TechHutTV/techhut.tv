@@ -116,6 +116,10 @@ const nextConfig = {
                 source: '/decks/lfnw26',
                 destination: '/decks/lfnw26/index.html',
             },
+            {
+                source: '/decks/agentarena26',
+                destination: '/decks/agentarena26/index.html',
+            },
         ]
     }
 }

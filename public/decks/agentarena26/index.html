@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetBird at The Agent Arena Hackathon</title>
+<style>
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    src: url('/decks/agentarena26/fonts/inter-latin.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/decks/agentarena26/fonts/jetbrains-mono-latin.woff2') format('woff2');
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: #000; overflow: hidden; }
+  body { font-family: 'Inter', Arial, sans-serif; color: #C1C1C1; }
+  .stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  section { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  section:not([style*="display"]) { display: flex; flex-direction: column; }
+  section:not(.active) { display: none !important; }
+  div:not([style*="display"]) { display: flex; flex-direction: column; }
+  h1 { font-size: 96px; font-weight: 600; line-height: 1.1; }
+  h2 { font-size: 64px; font-weight: 600; line-height: 1.15; }
+  h3 { font-size: 44px; font-weight: 600; line-height: 1.2; }
+  p { font-size: 32px; line-height: 1.4; }
+  ul { padding-left: 1.2em; }
+  li + li { margin-top: 0.2em; }
+  img { display: block; }
+  hr { border: none; height: 0; width: 100%; }
+  aside { display: none; }
+  #notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 40vh; overflow: auto; padding: 16px 24px 20px;
+           background: rgba(10,10,10,.94); border-top: 1px solid #333; color: #e6e6e6; font: 17px/1.5 Inter, Arial, sans-serif; display: none; }
+  #notes.show { display: block; }
+  #notes b { color: #F68330; }
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { overflow: visible; height: auto; background: none; }
+    .stage { position: static; transform: none !important; width: auto; height: auto; }
+    section { position: relative; break-after: page; }
+    #notes { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<section id="cover" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:space-between">
+  <svg aria-label="Decorative mesh of connected peers" width="600" height="600" viewBox="0 0 600 600" style="position:absolute; left:1220px; top:120px">
+    <circle cx="330" cy="300" r="268" fill="none" stroke="#1f1f1f" stroke-width="2"/>
+    <circle cx="330" cy="300" r="178" fill="none" stroke="#1f1f1f" stroke-width="2"/>
+    <g stroke="#F68330" stroke-width="2" stroke-opacity="0.3">
+      <line x1="300" y1="80" x2="520" y2="170"/>
+      <line x1="300" y1="80" x2="170" y2="230"/>
+      <line x1="170" y1="230" x2="330" y2="300"/>
+      <line x1="520" y1="170" x2="330" y2="300"/>
+      <line x1="330" y1="300" x2="300" y2="520"/>
+      <line x1="520" y1="170" x2="500" y2="420"/>
+      <line x1="500" y1="420" x2="300" y2="520"/>
+    </g>
+    <g stroke="#F68330" stroke-width="3" stroke-opacity="0.9">
+      <line x1="300" y1="80" x2="330" y2="300"/>
+      <line x1="330" y1="300" x2="500" y2="420"/>
+    </g>
+    <circle cx="330" cy="300" r="16" fill="#F68330"/>
+    <circle cx="300" cy="80" r="10" fill="#F68330"/>
+    <circle cx="500" cy="420" r="10" fill="#F68330"/>
+    <circle cx="520" cy="170" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+    <circle cx="170" cy="230" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+    <circle cx="300" cy="520" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+  </svg>
+  <div style="display:flex; align-items:stretch; gap:40px">
+    <div style="display:flex; flex-direction:column; justify-content:space-between; gap:16px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">HOSTED BY</p>
+      <img src="/decks/agentarena26/assets/vultr-logo.png" alt="Vultr" style="width:234px; height:56px; object-fit:contain">
+    </div>
+    <div style="width:2px; background:#2e2e2e"></div>
+    <div style="display:flex; flex-direction:column; justify-content:space-between; gap:16px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">TRACK PARTNER</p>
+      <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:236px; height:40px; object-fit:contain">
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:32px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#C1C1C1">THE AGENT ARENA HACKATHON · SEP 26–27 · SAN FRANCISCO</p>
+    <h1 style="font-size:108px; font-weight:800; line-height:1.04; letter-spacing:-4px; color:#F7F5F2; width:1240px">Connect your stack.<br><span style="color:#F68330">Expose what matters.</span></h1>
+    <p style="font-size:32px; line-height:1.4; color:#C1C1C1; width:1040px">How hackathon teams use NetBird: peer-to-peer WireGuard networking, a built-in reverse proxy, and one-command sharing with netbird expose.</p>
+    <p style="font-size:24px; color:#8a8a8a">Brandon Hopkins · Head of Content and Developer Relations, NetBird</p>
+  </div>
+  <aside>~30 sec. Hey everyone, I'm Brandon. I run content and developer relations at NetBird, and we're one of the track partners this weekend, so you'll see me around. I've got ten minutes, and the title is pretty much the talk. First: how to connect everything your team is running into one private network. Second: how to expose just the parts you want people to see, like your demo for the judges. And last: how to get it running today, free in our cloud or self-hosted on Vultr.</aside>
+</section>
+<section id="problem" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:56px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">THE PROBLEM</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">Your stack is spread everywhere</h2>
+  </div>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#161616; border:1px solid #262626; border-radius:16px; padding:40px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:48px; height:48px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Your laptops</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Agent code, the demo UI and local tools</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#161616; border:1px solid #262626; border-radius:16px; padding:40px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:48px; height:48px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Vultr VMs</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Agent backends and tool servers</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#161616; border:1px solid #262626; border-radius:16px; padding:40px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:48px; height:48px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">A GPU box</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">A teammate's machine serving a model</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#161616; border:1px solid #262626; border-radius:16px; padding:40px">
+      <svg aria-label="Stacked layers icon" width="48" height="48" viewBox="0 0 48 48">
+        <path d="M24 4 L44 14 L24 24 L4 14 Z" fill="none" stroke="#F68330" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M4 24 L24 34 L44 24" fill="none" stroke="#F68330" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+        <path d="M4 33 L24 43 L44 33" fill="none" stroke="#F68330" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Isolated networks</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">A Docker stack or a subnet with no way in</p>
+    </div>
+  </div>
+  <p style="font-size:32px; line-height:1.4; color:#C1C1C1; width:1400px">The quick fixes are <span style="color:#F7F5F2">public IPs, open ports and shared SSH keys.</span> Each one widens what an agent, or anyone scanning the internet, can reach.</p>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~35 sec. Quick show of hands: who's going to have something running on more than one machine this weekend? Yeah, that's everyone. That's the normal hackathon stack. Your agent's on a Vultr VM. Somebody's laptop is serving the model because it has the GPU. There's a Docker stack with a database and a few services in it. And the UI you're demoing lives on your laptop. Getting all of that talking usually means public IPs, open ports and an SSH key pasted into Slack at 2 a.m. And every one of those is now reachable by your agent, and by anyone scanning the internet.</aside>
+</section>
+<section id="what" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:56px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">WHAT NETBIRD IS</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">Open Source networking on WireGuard</h2>
+  </div>
+  <div style="display:flex; gap:64px; align-items:flex-start">
+    <div style="width:560px; display:flex; flex-direction:column; gap:24px">
+      <p style="font-size:32px; line-height:1.4; color:#F7F5F2">Install the client on any machine and sign in. It joins your private network with its own 100.x address.</p>
+      <p style="font-size:32px; line-height:1.4; color:#C1C1C1">From there it can reach any peer your policies allow, from any network, behind any NAT.</p>
+    </div>
+    <div style="flex:1; display:grid; grid-template-columns:repeat(2, 1fr); gap:24px">
+      <div style="display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+        <div style="display:flex; gap:16px; align-items:center">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:36px; height:36px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Peer-to-peer</h3>
+        </div>
+        <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Direct WireGuard tunnels between machines, with NAT traversal and an encrypted relay as fallback.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+        <div style="display:flex; gap:16px; align-items:center">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:36px; height:36px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Access by identity</h3>
+        </div>
+        <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Sign in with SSO and MFA. Groups and policies replace IP allowlists.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+        <div style="display:flex; gap:16px; align-items:center">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:36px; height:36px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Runs everywhere</h3>
+        </div>
+        <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Linux, macOS, Windows, iOS, Android, Docker and Kubernetes.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+        <div style="display:flex; gap:16px; align-items:center">
+          <svg viewBox="0 0 24 24" aria-hidden="true" style="color:#F68330; width:36px; height:36px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Open source</h3>
+        </div>
+        <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Use NetBird Cloud, or run the whole control plane yourself.</p>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~40 sec. That's the problem NetBird solves. It's an open-source network built on WireGuard. You install the client on each machine, sign in, and that machine joins your private network with its own 100-dot address. From there it can reach anything your policies allow, from any network, even behind NAT. Access is based on who you are and which group you're in, not on IP allowlists. It runs on pretty much everything: Linux, Mac, Windows, phones, Docker, Kubernetes. And it's open source, so you can use our cloud or run the whole thing yourself. So what's actually happening under the hood?</aside>
+</section>
+<section id="p2p" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">PEER-TO-PEER CONNECTIVITY</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">How two peers connect</h2>
+  </div>
+  <div style="position:relative; width:1664px; height:615px">
+    <div style="position:absolute; left:500px; top:72px; width:840px; height:220px; display:flex; align-items:center; justify-content:center; gap:20px; background:radial-gradient(ellipse at 30% 0%, #3d2820 0%, #1c1411 55%, #120e0c 100%); border-radius:20px">
+      <p style="width:240px; font-size:32px; line-height:1.4; text-align:center; color:#F7F5F2; background:#0a0a0a; border-radius:10px; padding:28px 0px">Management</p>
+      <p style="width:170px; font-size:32px; line-height:1.4; text-align:center; color:#F7F5F2; background:#0a0a0a; border-radius:10px; padding:28px 0px">Signal</p>
+      <p style="width:150px; font-size:32px; line-height:1.4; text-align:center; color:#F7F5F2; background:#0a0a0a; border-radius:10px; padding:28px 0px">STUN</p>
+      <p style="width:150px; font-size:32px; line-height:1.4; text-align:center; color:#F7F5F2; background:#0a0a0a; border-radius:10px; padding:28px 0px">Relay</p>
+    </div>
+    <div style="position:absolute; left:0px; top:120px; width:340px; height:124px; display:flex; flex-direction:column; justify-content:center; align-items:center; border:2px solid #F68330; border-radius:14px; padding:20px">
+      <p style="font-size:32px; line-height:1.3; text-align:center; color:#F7F5F2">Identity provider<br>(e.g., Okta)</p>
+    </div>
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="position:absolute; left:802px; top:12px; width:236px; height:40px; object-fit:contain">
+    <svg aria-label="Peer A, a computer" width="88" height="80" viewBox="0 0 88 80" style="position:absolute; left:336px; top:440px">
+      <rect x="4" y="4" width="80" height="52" rx="5" fill="none" stroke="#F68330" stroke-width="5"/>
+      <line x1="4" y1="44" x2="84" y2="44" stroke="#F68330" stroke-width="5"/>
+      <line x1="38" y1="58" x2="38" y2="70" stroke="#F68330" stroke-width="5"/>
+      <line x1="50" y1="58" x2="50" y2="70" stroke="#F68330" stroke-width="5"/>
+      <line x1="24" y1="73" x2="64" y2="73" stroke="#F68330" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <svg aria-label="Peer B, a server stack" width="88" height="80" viewBox="0 0 88 80" style="position:absolute; left:1375px; top:440px">
+      <path d="M44 5 L83 24 L44 43 L5 24 Z" fill="none" stroke="#F68330" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M5 41 L44 60 L83 41" fill="none" stroke="#F68330" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="M5 56 L44 75 L83 56" fill="none" stroke="#F68330" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+    </svg>
+    <svg viewBox="0 0 24 24" aria-hidden="true" style="position:absolute; left:878px; top:458px; width:44px; height:44px; color:#F68330; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    <div style="position:absolute; left:321px; top:536px; width:290px; display:flex; align-items:center; gap:16px">
+      <p style="font-size:32px; font-weight:700; line-height:1.2; white-space:nowrap; color:#F7F5F2">Peer A</p>
+      <svg aria-label="Verified NetBird agent" width="40" height="46" viewBox="0 0 40 46">
+        <path d="M20 3 L37 9 V22 C37 33 29 40 20 43 C11 40 3 33 3 22 V9 Z" fill="none" stroke="#22A06B" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M12 23 L18 29 L29 17" fill="none" stroke="#22A06B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">netbird<br>agent</p>
+    </div>
+    <div style="position:absolute; left:1360px; top:536px; width:304px; display:flex; align-items:center; gap:16px">
+      <p style="font-size:32px; font-weight:700; line-height:1.2; white-space:nowrap; color:#F7F5F2">Peer B</p>
+      <svg aria-label="Verified NetBird agent" width="40" height="46" viewBox="0 0 40 46">
+        <path d="M20 3 L37 9 V22 C37 33 29 40 20 43 C11 40 3 33 3 22 V9 Z" fill="none" stroke="#22A06B" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M12 23 L18 29 L29 17" fill="none" stroke="#22A06B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">netbird<br>agent</p>
+    </div>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 340.0 182.0 L 500.0 182.0" fill="none" stroke="#F68330" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 6"/><polygon points="500.0,182.0 491.6,186.8 491.6,177.2" fill="#F68330"/><polygon points="340.0,182.0 348.4,177.2 348.4,186.8" fill="#F68330"/></svg>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 170.0 244.0 L 170.0 480.0 L 336.0 480.0" fill="none" stroke="#F68330" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="8 6"/><polygon points="336.0,480.0 327.6,484.8 327.6,475.2" fill="#F68330"/><polygon points="170.0,244.0 174.8,252.4 165.2,252.4" fill="#F68330"/></svg>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 500.0 262.0 L 380.0 262.0 L 380.0 440.0" fill="none" stroke="#F68330" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 1340.0 262.0 L 1419.0 262.0 L 1419.0 440.0" fill="none" stroke="#F68330" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 440.0 480.0 L 866.0 480.0" fill="none" stroke="#22A06B" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg aria-hidden="true" width="1" height="1" style="position:absolute; left:0; top:0; overflow:visible; pointer-events:none"><path d="M 934.0 480.0 L 1359.0 480.0" fill="none" stroke="#22A06B" stroke-width="3.0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <p style="position:absolute; left:1370px; top:14px; width:240px; font-size:24px; line-height:1.4; text-align:center; color:#C1C1C1">managed or<br>self-hosted</p>
+    <p style="position:absolute; left:40px; top:340px; width:110px; font-size:24px; line-height:1.4; text-align:right; color:#C1C1C1">auth</p>
+    <p style="position:absolute; left:404px; top:316px; width:180px; font-size:24px; line-height:1.4; text-align:left; color:#C1C1C1">control<br>channel</p>
+    <p style="position:absolute; left:1215px; top:316px; width:180px; font-size:24px; line-height:1.4; text-align:right; color:#C1C1C1">control<br>channel</p>
+    <p style="position:absolute; left:630px; top:510px; width:540px; font-size:24px; font-weight:700; line-height:1.4; text-align:center; color:#F7F5F2">point-to-point WireGuard connection</p>
+  </div>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~45 sec. Here's the picture. Each machine runs the NetBird agent, and you sign in through your identity provider: Okta, Google, whatever your team already uses. Both peers keep a control channel open to the control plane, which is our cloud or your own server. Management holds the network map and your policies, and your private keys never leave your machine. When Peer A wants to talk to Peer B, they use STUN to find their public addresses, trade connection details through Signal, and then build a WireGuard tunnel straight to each other. Your traffic doesn't go through us. And if a firewall blocks the direct path, it falls back to the relay, still encrypted end to end.</aside>
+</section>
+<section id="usecases" data-transition="fade" style="background:#0a0a0a">
+  <div id="e1-1h1oqf5" style="position:absolute; right:128px; bottom:64px; left:128px; height:24px; display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <div id="b7feeb6c" style="position:absolute; top:128px; left:128px; width:1664px; height:137px; display:flex; flex-direction:column; gap:24px">
+    <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">IN YOUR PROJECT</p>
+    <h2 style="font-family:Inter, Arial, sans-serif; font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#f7f5f2">How teams use it</h2>
+  </div>
+  <div id="32ef319d" style="position:absolute; top:321px; left:128px; width:1664px; height:479px; display:flex; flex-direction:row; gap:32px">
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1; padding:48px; background:#161616; border:1px solid #262626; border-radius:16px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:56px; height:56px; color:#f68330; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.2; letter-spacing:-1px; color:#f7f5f2">Share an MCP server</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">Run tools on your laptop and let an agent on a Vultr VM call them at a private NetBird address.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1; padding:48px; background:#161616; border:1px solid #262626; border-radius:16px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:56px; height:56px; color:#f68330; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.2; letter-spacing:-1px; color:#f7f5f2">Keep data private</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">Postgres, Redis or a vector store never gets a public IP. Only allowed peers connect.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1; padding:48px; background:#161616; border:1px solid #262626; border-radius:16px">
+      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:56px; height:56px; color:#f68330; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.2; letter-spacing:-1px; color:#f7f5f2">Fence in your agents</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">Give agents their own group and allow only the hosts and ports they need.</p>
+    </div>
+  </div>
+  <aside>~40 sec. So what does that get you this weekend? Three quick ones. You've built an MCP server with your agent's tools, and it's running on your laptop, but the agent lives on a Vultr VM. Put NetBird on both, and the agent calls those tools at your laptop's private address. No port forwarding, and nobody else can reach them. Your database never needs a public IP. And this one matters for agents: put them in their own group, and write a policy that only allows the hosts and ports they need. If an agent goes off script, there's nothing else on the network for it to touch.</aside>
+</section>
+<section id="proxy" data-transition="fade" style="display:flex; flex-direction:column; gap:48px; padding:128px 128px 160px; background:#121212">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">REVERSE PROXY · CLOUD (BETA) AND SELF-HOSTED</p>
+    <h2 style="font-family:Inter, Arial, sans-serif; font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#f7f5f2">Put a private service on the web</h2>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:24px">
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:32px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">THE INTERNET</p>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:32px; font-weight:600; line-height:1.2; color:#f7f5f2">A visitor's browser</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; color:#c1c1c1">Plain HTTPS, no client to install</p>
+    </div>
+    <div style="width:150px; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:center">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; text-align:center; color:#c1c1c1">HTTPS</p>
+      <svg aria-hidden="true" width="96" height="24" viewBox="0 0 96 24" style="flex:none; overflow:visible"><line x1="0" y1="12.0" x2="88.0" y2="12.0" stroke="#f68330" stroke-width="4.0" stroke-linecap="round"/><polygon points="96.0,12.0 79.2,21.6 79.2,2.4" fill="#f68330"/></svg>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:32px; background:#1c1c1c; border:2px solid #f68330; border-radius:16px">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">NETBIRD PROXY</p>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:32px; font-weight:600; line-height:1.2; color:#f7f5f2">TLS and auth at the edge</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; color:#c1c1c1">Certificates issued for you</p>
+    </div>
+    <div style="width:150px; display:flex; flex-direction:column; gap:8px; align-items:center; align-self:center">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; text-align:center; color:#c1c1c1">WireGuard</p>
+      <svg aria-hidden="true" width="96" height="24" viewBox="0 0 96 24" style="flex:none; overflow:visible"><line x1="0" y1="12.0" x2="88.0" y2="12.0" stroke="#f68330" stroke-width="4.0" stroke-linecap="round"/><polygon points="96.0,12.0 79.2,21.6 79.2,2.4" fill="#f68330"/></svg>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:32px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">YOUR PEER</p>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:32px; font-weight:600; line-height:1.2; color:#f7f5f2">Your service</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; color:#c1c1c1">No public IP, no open ports</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:row; gap:64px">
+    <div style="width:920px; display:flex; flex-direction:column; gap:20px">
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:32px; font-weight:600; line-height:1.2; color:#f7f5f2">Protect it with</h3>
+      <div style="display:flex; flex-direction:row; flex-wrap:wrap; gap:12px">
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">SSO / OIDC</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">Password</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">6-digit PIN</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">API key header</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">NetBird peers only</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">IP and country rules</p>
+        <p style="padding:10px 24px; font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1.4; white-space:nowrap; color:#f7f5f2; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:256px">CrowdSec reputation</p>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:20px; flex:1">
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:32px; font-weight:600; line-height:1.2; color:#f7f5f2">Route it</h3>
+      <ul style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">
+        <li>Your own domain via one CNAME</li>
+        <li>Routing by URL path</li>
+        <li>HTTP or TCP, UDP, TLS</li>
+      </ul>
+    </div>
+  </div>
+  <div style="position:absolute; right:128px; bottom:64px; left:128px; height:24px; display:flex; flex-direction:row; align-items:center; justify-content:space-between">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-family:Inter, Arial, sans-serif; font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~45 sec. That's the connect half. Now the expose half. Everything so far is private, but at some point this weekend someone outside your network has to see your work: a judge, a webhook, a friend's browser. That's the reverse proxy. A request comes in over HTTPS, the NetBird proxy handles the certificate and the login, then sends it down a WireGuard tunnel to your service. Your service still has no public IP and no open ports. Put SSO, a password, a PIN or an API key in front of it, filter by IP or country, and use your own domain if you want. It handles HTTP, plus raw TCP, UDP and TLS.</aside>
+</section>
+<section id="expose" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">NETBIRD EXPOSE · v0.66 AND LATER</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">One command, one public URL</h2>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:16px; background:#161616; border:1px solid #262626; border-radius:16px; padding:40px 48px; font-family:'JetBrains Mono', 'Courier New', monospace">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:44px; line-height:1.4; color:#F7F5F2"><span style="color:#8a8a8a">$</span> netbird expose 3000 --with-name-prefix demo</p>
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:44px; line-height:1.4; color:#F68330">→ https://demo-a1b2c3.proxy.example.com</p>
+  </div>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Lock it down</h3>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">--with-pin<br>--with-password<br>--with-user-groups</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Any protocol</h3>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">--protocol tcp | udp | tls<br>--with-external-port<br>--with-custom-domain</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#161616; border:1px solid #262626; border-radius:16px; padding:36px">
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Gone on Ctrl+C</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">The URL lives only while the command runs. No cleanup, no forgotten tunnels.</p>
+    </div>
+  </div>
+  <p style="font-size:24px; line-height:1.4; color:#8a8a8a">An admin enables Peer Expose in account settings first. Up to 10 active sessions per peer.</p>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~40 sec. The dashboard is great for things you want up all weekend. For everything temporary, there's netbird expose. Give it a port, and you get back a public HTTPS link. Add a name so the URL is readable, add a PIN or a password, or lock it to your team's SSO group. It does TCP and UDP too. My favorite part: it only lives as long as the command is running. Hit Ctrl+C and it's gone, so there are no forgotten tunnels left open after the hackathon. Picture it: your app is running on your laptop, you run one command, and the judges open the link on their phones. Your demo is in front of them without deploying anything. Quick heads-up: an admin has to switch on Peer Expose in the settings first.</aside>
+</section>
+<section id="bonus" data-transition="fade" style="background:#121212; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">🔐 BONUS · ADD-ON TO CHALLENGE 1 OR 2</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">Zero-Port Access</h2>
+    <p style="font-size:32px; line-height:1.4; color:#C1C1C1; width:1500px">Serve your project through the NetBird reverse proxy instead of opening ports on your Vultr VM, and earn bonus points on top of your challenge score.</p>
+  </div>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px; padding:40px">
+      <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330">1</p>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">No open ports</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Your public demo URL is served through NetBird, with no inbound application ports on the VM.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px; padding:40px">
+      <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330">2</p>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Gated access</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">The service sits behind SSO, password, PIN or header auth, matched to a real user role.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px; padding:40px">
+      <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330">3</p>
+      <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Peer-to-peer</h3>
+      <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Demo the connectivity: machines on your NetBird network reaching each other directly over WireGuard.</p>
+    </div>
+  </div>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~30 sec. And here's why this matters for your score. We're running a bonus on top of Challenge 1 and 2 — it's not a separate challenge, it's extra points on whatever you're already building. Three things we want to see. Serve your project through the reverse proxy you just saw, with no inbound application ports open on your VM: firewall closed, URL loads anyway. Put real auth in front of it, tied to an actual user role. And show us the peer-to-peer connectivity in your demo — machines on your NetBird network talking to each other directly. The docs links are on the resources slide at the end, and I'm around all weekend to help you wire it up.</aside>
+</section>
+<section id="deploy" data-transition="fade" style="background:radial-gradient(ellipse at 20% 0%, #3d2820 0%, #1a1310 45%, #0a0a0a 100%), #0a0a0a">
+  <div id="8e6a22db" style="position:absolute; top:290px; left:128px; width:1664px; display:flex; flex-direction:column; gap:24px">
+    <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">DEPLOYMENT</p>
+    <h1 style="font-family:Inter, Arial, sans-serif; font-size:108px; font-weight:800; line-height:1.04; letter-spacing:-4px; color:#f7f5f2">Two ways to run it</h1>
+  </div>
+  <div id="74b6160b" style="position:absolute; top:539px; left:128px; width:1664px; height:251px; display:flex; flex-direction:row; gap:64px">
+    <div style="display:flex; flex-direction:column; gap:16px; flex:1; padding:40px 0 0; border-top:3px solid #f68330">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">OPTION 1 · FASTEST</p>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.2; letter-spacing:-1px; color:#f7f5f2">NetBird Cloud</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">Free for up to 5 users and 100 machines. Nothing to host.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; flex:1; padding:40px 0 0; border-top:3px solid #f68330">
+      <p style="font-family:Inter, Arial, sans-serif; font-size:24px; font-weight:600; letter-spacing:4px; color:#f68330">OPTION 2 · FULL CONTROL</p>
+      <h3 style="font-family:Inter, Arial, sans-serif; font-size:44px; font-weight:700; line-height:1.2; letter-spacing:-1px; color:#f7f5f2">Self-hosted on Vultr</h3>
+      <p style="font-family:Inter, Arial, sans-serif; font-size:32px; line-height:1.4; color:#c1c1c1">A one-click Marketplace app on your own server and domain.</p>
+    </div>
+  </div>
+  <aside>~10 sec. So how do you get this running today? Two ways. The fastest is NetBird Cloud. If you'd rather own the whole thing, self-host it on Vultr.</aside>
+</section>
+<section id="cloud" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:56px">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">OPTION 1 · NETBIRD CLOUD</p>
+    <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">Start free on NetBird Cloud</h2>
+  </div>
+  <div style="display:flex; gap:64px; align-items:flex-start">
+    <div style="width:620px; display:flex; flex-direction:column; gap:16px">
+      <p style="font-size:108px; font-weight:800; line-height:1; letter-spacing:-4px; color:#F68330">$0</p>
+      <p style="font-size:32px; line-height:1.4; color:#F7F5F2">for up to 5 users and 100 machines</p>
+      <hr style="border:1px solid #262626">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">INCLUDED ON THE FREE PLAN</p>
+      <ul style="font-size:32px; line-height:1.4; color:#C1C1C1">
+        <li>Peer-to-peer connections</li>
+        <li>Social SSO and MFA</li>
+        <li>Access policies</li>
+        <li>Private DNS and routes</li>
+        <li>NetBird SSH</li>
+      </ul>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:20px">
+      <div style="display:flex; gap:28px; align-items:flex-start; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">1</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Sign up</h3>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">app.netbird.io</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:28px; align-items:flex-start; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">2</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Install the client on each machine</h3>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">curl -fsSL https://pkgs.netbird.io/install.sh | sh</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:28px; align-items:flex-start; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">3</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Connect it</h3>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">netbird up</p>
+        </div>
+      </div>
+      <p style="font-size:24px; line-height:1.4; color:#8a8a8a">macOS, Windows, iOS and Android installers: docs.netbird.io</p>
+    </div>
+  </div>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~35 sec. Option one: NetBird Cloud. It's free for up to five users and a hundred machines, which covers a team of four plus every VM you spin up. Sign up at app.netbird.io. Install the client with that one-line script, or grab the installer for Mac, Windows or your phone, then run netbird up. It pops open a browser to sign in, and you're on the network. Do that on each machine and they can all see each other. That's it. [Before the talk: confirm which plans include the reverse proxy and netbird expose.]</aside>
+</section>
+<section id="vultr" data-transition="fade" style="background:#121212; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:56px">
+  <div style="display:flex; justify-content:space-between; align-items:flex-end">
+    <div style="display:flex; flex-direction:column; gap:24px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#F68330">OPTION 2 · SELF-HOSTED</p>
+      <h2 style="font-size:72px; font-weight:700; line-height:1.1; letter-spacing:-2px; color:#F7F5F2">Self-host it on Vultr</h2>
+    </div>
+    <img src="/decks/agentarena26/assets/vultr-logo.png" alt="Vultr" style="width:234px; height:56px; object-fit:contain">
+  </div>
+  <div style="display:flex; gap:64px; align-items:flex-start">
+    <div style="flex:1; display:flex; flex-direction:column; gap:28px">
+      <div style="display:flex; gap:28px; align-items:flex-start">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">1</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Deploy the Marketplace app</h3>
+          <p style="font-size:24px; line-height:1.4; color:#C1C1C1">Shared CPU with at least 2 GB of memory. Under Marketplace Apps, search for NetBird.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:28px; align-items:flex-start">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">2</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Enter an email and a domain</h3>
+          <p style="font-size:24px; line-height:1.4; color:#C1C1C1">The email is for Let's Encrypt. The domain is where NetBird lives, like netbird.example.com.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:28px; align-items:flex-start">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">3</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Add two DNS records</h3>
+          <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.4; color:#C1C1C1">A · netbird → your server IP<br>CNAME · *.netbird → netbird.example.com</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:28px; align-items:flex-start">
+        <p style="font-size:44px; font-weight:700; line-height:1; color:#F68330; width:32px">4</p>
+        <div style="flex:1; display:flex; flex-direction:column; gap:8px">
+          <h3 style="font-size:32px; font-weight:600; line-height:1.2; color:#F7F5F2">Create your admin account</h3>
+          <p style="font-size:24px; line-height:1.4; color:#C1C1C1">When the console prints “NetBird setup is complete”, open your domain in a browser.</p>
+        </div>
+      </div>
+    </div>
+    <div style="width:600px; display:flex; flex-direction:column; gap:20px; background:#1c1c1c; border:1px solid #2c2c2c; border-radius:16px; padding:40px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">WHAT THE IMAGE RUNS</p>
+      <ul style="font-size:24px; line-height:1.4; color:#C1C1C1">
+        <li>Management, Signal and Relay</li>
+        <li>Dashboard with a built-in identity provider</li>
+        <li>NetBird Proxy for the reverse proxy and expose</li>
+        <li>Traefik with automatic Let's Encrypt TLS</li>
+        <li>CrowdSec to block known threats</li>
+        <li>All in Docker on one instance</li>
+      </ul>
+    </div>
+  </div>
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; height:24px; display:flex; justify-content:space-between; align-items:center">
+    <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:142px; height:24px; object-fit:contain">
+    <p style="font-size:24px; line-height:1; color:#8a8a8a">The Agent Arena Hackathon · San Francisco</p>
+  </div>
+  <aside>~45 sec. Option two: self-host it. And since we're at a Vultr event, NetBird is right there in the Vultr Marketplace. Deploy a shared CPU instance with at least 2 gigs of RAM, pick NetBird from Marketplace Apps, and give it an email and a domain. Then add two DNS records: an A record for your server and a wildcard CNAME for the reverse proxy. Pro tip: reserve your IP first, so DNS is ready by the time the server boots. When the console says setup is complete, open your domain and create your admin account. You get the whole stack on one box: control plane, dashboard, reverse proxy and CrowdSec.</aside>
+</section>
+<section id="close" data-transition="fade" style="background:#0a0a0a; color:#C1C1C1; font-family:'Inter', Arial, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:space-between">
+  <svg aria-label="Decorative mesh of connected peers" width="600" height="600" viewBox="0 0 600 600" style="position:absolute; left:1220px; top:0px">
+    <circle cx="330" cy="300" r="268" fill="none" stroke="#1f1f1f" stroke-width="2"/>
+    <circle cx="330" cy="300" r="178" fill="none" stroke="#1f1f1f" stroke-width="2"/>
+    <g stroke="#F68330" stroke-width="2" stroke-opacity="0.3">
+      <line x1="300" y1="80" x2="520" y2="170"/>
+      <line x1="300" y1="80" x2="170" y2="230"/>
+      <line x1="170" y1="230" x2="330" y2="300"/>
+      <line x1="520" y1="170" x2="330" y2="300"/>
+      <line x1="330" y1="300" x2="300" y2="520"/>
+      <line x1="520" y1="170" x2="500" y2="420"/>
+      <line x1="500" y1="420" x2="300" y2="520"/>
+    </g>
+    <g stroke="#F68330" stroke-width="3" stroke-opacity="0.9">
+      <line x1="300" y1="80" x2="330" y2="300"/>
+      <line x1="330" y1="300" x2="500" y2="420"/>
+    </g>
+    <circle cx="330" cy="300" r="16" fill="#F68330"/>
+    <circle cx="300" cy="80" r="10" fill="#F68330"/>
+    <circle cx="500" cy="420" r="10" fill="#F68330"/>
+    <circle cx="520" cy="170" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+    <circle cx="170" cy="230" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+    <circle cx="300" cy="520" r="11" fill="#0a0a0a" stroke="#F68330" stroke-width="3"/>
+  </svg>
+  <img src="/decks/agentarena26/assets/netbird-logo.png" alt="NetBird" style="width:283px; height:48px; object-fit:contain">
+  <div style="display:flex; flex-direction:column; gap:24px">
+    <h1 style="font-size:108px; font-weight:800; line-height:1.04; letter-spacing:-4px; color:#F7F5F2">Start building</h1>
+    <p style="font-size:32px; line-height:1.4; color:#C1C1C1; width:1000px">Free on NetBird Cloud, or yours on Vultr. Either way, your whole stack is one private network.</p>
+    <p style="font-size:24px; line-height:1.4; color:#8a8a8a">Questions this weekend? Find Brandon Hopkins, or reach out at community@netbird.io.</p>
+  </div>
+  <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:24px">
+    <div style="display:flex; flex-direction:column; gap:8px; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">NETBIRD CLOUD, FREE</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.4; color:#F68330">app.netbird.io</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">DOCS</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.4; color:#F68330">docs.netbird.io</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">SOURCE</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.4; color:#F68330">github.com/netbirdio/netbird</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; background:#161616; border:1px solid #262626; border-radius:16px; padding:32px 40px">
+      <p style="font-size:24px; font-weight:600; letter-spacing:4px; color:#8a8a8a">VULTR MARKETPLACE · SEARCH NETBIRD</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.4; color:#F68330">vultr.com/marketplace</p>
+    </div>
+  </div>
+  <aside>~20 sec. So: connect your stack, expose what matters. Start free at app.netbird.io, or grab it from the Vultr Marketplace. The docs are at docs.netbird.io, and all the code is on GitHub. I'm here all weekend, so if you get stuck wiring NetBird into your project, come find me. Thanks, and good luck, everyone.</aside>
+</section>
+</div>
+<div id="notes"></div>
+<script>
+  const slides = [...document.querySelectorAll('.stage > section')];
+  const notes = document.getElementById('notes');
+  let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1)) || 1) - 1));
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    const st = document.getElementById('stage');
+    st.style.transform = `scale(${s})`;
+    st.style.left = (innerWidth - 1920 * s) / 2 + 'px';
+    st.style.top = (innerHeight - 1080 * s) / 2 + 'px';
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle('active', k === i));
+    const a = slides[i].querySelector('aside');
+    notes.innerHTML = '<b>' + (i + 1) + '/' + slides.length + '</b>&nbsp; ' + (a ? a.textContent : '');
+    history.replaceState(null, '', '#' + (i + 1));
+  }
+  addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) show(i + 1);
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) show(i - 1);
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key.toLowerCase() === 'n') notes.classList.toggle('show');
+    else if (e.key.toLowerCase() === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  addEventListener('click', e => { if (!notes.contains(e.target)) show(e.clientX > innerWidth / 3 ? i + 1 : i - 1); });
+  addEventListener('resize', fit);
+  window.addEventListener('beforeprint', () => slides.forEach(el => el.classList.add('active')));
+  window.addEventListener('afterprint', () => show(i));
+  fit(); show(i);
+</script>
+</body>
+</html>
