@@ -1,4 +1,4 @@
-# TechHut branding
+/# TechHut branding
 
 **TechHut branding is not included in the website's open-source license.** TechHut Media reserves its rights in the TechHut and TechHut Media names, the TECH/HUT wordmark, logos, favicons, app icons, and other TechHut brand artwork. Copyright in original brand artwork is reserved to its respective rights holders. No trademark license is granted by the [BSD software license](LICENSE).
 
