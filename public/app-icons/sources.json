@@ -1260,5 +1260,16 @@
     "licenseSource": "https://github.com/selfhst/icons/blob/4798f7b385ce4d9b18520e4f2091635be6370bc4/LICENSE",
     "changes": "Unmodified SVG; CSS inversion in dark theme for contrast.",
     "sha256": "d710c4424318f666f2aa63e9a9baeeae28cfa4c636dda8449b12cd6adf09a4aa"
+  },
+  {
+    "app": "bookorbit",
+    "source": "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/376beb617e6354468fd677f2ce455d9f50144e9f/png/bookorbit.png",
+    "sourcePage": "https://dashboardicons.com/icons/bookorbit",
+    "repository": "https://github.com/homarr-labs/dashboard-icons",
+    "provenance": "User-supplied PNG verified byte-for-byte against the pinned Dashboard Icons asset.",
+    "license": "Apache-2.0 (icon collection); BookOrbit branding remains the property of its owner.",
+    "licenseSource": "https://github.com/homarr-labs/dashboard-icons/blob/376beb617e6354468fd677f2ce455d9f50144e9f/LICENSE",
+    "changes": "None",
+    "sha256": "e9f02f3ba23ed7069e835c307fc46b3dee8a1b54a1a40c022179448f7c68b2ad"
   }
 ]

@@ -1,0 +1,57 @@
+{
+  "summary": "Organize and read ebooks, PDFs, comics, and audiobooks from one self-hosted library.",
+  "overview": "BookOrbit combines mixed-format library management with browser-based readers, metadata tools, collections, saved filters, and separate progress for multiple users. OPDS, Kobo, and KOReader integrations extend the library to compatible reading devices. Book Dock stages uploads for review, and Book Requests can track requests fulfilled manually with authorized files. A separate iOS companion app offers offline access and paid Premium features; the current app requires server 3.0.0 or newer.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows (WSL2)",
+    "Docker"
+  ],
+  "license": {
+    "name": "AGPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/bookorbit/bookorbit/blob/main/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://bookorbit.app/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/bookorbit/bookorbit"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://bookorbit.app/what-is-bookorbit/"
+    },
+    {
+      "label": "Releases",
+      "url": "https://github.com/bookorbit/bookorbit/releases"
+    },
+    {
+      "label": "iOS companion app (in-app purchases)",
+      "url": "https://apps.apple.com/us/app/bookorbit-the-official-app/id6811807346"
+    }
+  ],
+  "features": [
+    "Mixed-format libraries",
+    "Built-in readers",
+    "Metadata management",
+    "Multi-user access",
+    "OPDS, Kobo & KOReader integrations",
+    "Book Dock upload staging",
+    "Book requests with manual fulfillment"
+  ],
+  "sources": [
+    "https://bookorbit.app/what-is-bookorbit/",
+    "https://bookorbit.app/installation/",
+    "https://github.com/bookorbit/bookorbit#readme",
+    "https://github.com/bookorbit/bookorbit/blob/main/LICENSE",
+    "https://bookorbit.app/book-requests/",
+    "https://bookorbit.app/support/",
+    "https://apps.apple.com/us/app/bookorbit-the-official-app/id6811807346",
+    "https://github.com/bookorbit/bookorbit/releases/tag/v3.1.0"
+  ]
+}

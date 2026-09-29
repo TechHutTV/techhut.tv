@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">BookOrbit: host folders and container paths</title>
+  <desc id="desc">Storage example for a Docker host using an Unraid share. Books mounted on the host at /mnt/media/books are bind-mounted into the BookOrbit app as /books. Library subfolders are selected as /books/ebooks and /books/audiobooks. Separate local directories under /srv/bookorbit hold app data and PostgreSQL data. Lines show filesystem mappings, not request routing or startup dependencies.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#b8c9d9" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#101922"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="72" y="68" font-size="22" font-weight="700" letter-spacing="3" fill="#87c8eb">TECHHUT / BOOKORBIT</text>
+    <text x="72" y="135" font-size="52" font-weight="700" fill="#ffffff">Host folders → container paths</text>
+    <text x="72" y="180" font-size="26" fill="#b8c9d9">Example: books on a mounted Unraid share, app and database on local disk</text>
+
+    <rect x="64" y="215" width="1472" height="310" rx="12" fill="#172d3b" stroke="#72bce6" stroke-width="2"/>
+    <text x="96" y="262" font-size="23" font-weight="700" letter-spacing="2" fill="#87c8eb">BOOK STORAGE · NETWORK SHARE</text>
+    <rect x="96" y="291" width="294" height="155" rx="10" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="120" y="334" font-size="25" font-weight="700" fill="#ffffff">Unraid data share</text>
+    <text x="120" y="376" font-size="24" fill="#d1e0eb">Your book folders</text>
+    <text x="120" y="411" font-size="24" fill="#d1e0eb">ebooks / audiobooks</text>
+    <path d="M403 370 H518" stroke="#b8c9d9" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="460" y="342" text-anchor="middle" font-size="21" fill="#d1e0eb">Mounted</text>
+    <text x="460" y="414" text-anchor="middle" font-size="21" fill="#d1e0eb">on host</text>
+    <rect x="535" y="291" width="430" height="155" rx="10" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="562" y="334" font-size="23" font-weight="700" fill="#d1e0eb">DOCKER HOST</text>
+    <text x="562" y="383" font-family="Menlo, monospace" font-size="30" font-weight="700" fill="#ffffff">/mnt/media/books</text>
+    <text x="562" y="421" font-size="22" fill="#d1e0eb">Set as BOOKS_HOST_PATH</text>
+    <path d="M978 370 H1110" stroke="#b8c9d9" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="1045" y="342" text-anchor="middle" font-size="21" fill="#d1e0eb">Docker</text>
+    <text x="1045" y="414" text-anchor="middle" font-size="21" fill="#d1e0eb">bind mount</text>
+    <rect x="1127" y="291" width="377" height="155" rx="10" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="1154" y="334" font-size="23" font-weight="700" fill="#d1e0eb">BOOKORBIT APP</text>
+    <text x="1154" y="386" font-family="Menlo, monospace" font-size="40" font-weight="700" fill="#ffffff">/books</text>
+    <text x="1154" y="421" font-size="22" fill="#d1e0eb">Path inside the container</text>
+    <text x="96" y="489" font-size="25" fill="#ffffff">Library folders in the app: /books/ebooks and /books/audiobooks</text>
+
+    <rect x="64" y="553" width="1472" height="260" rx="12" fill="#203328" stroke="#a8ce86" stroke-width="2"/>
+    <text x="96" y="598" font-size="23" font-weight="700" letter-spacing="2" fill="#badd9d">APP + DATABASE STORAGE · LOCAL DISK</text>
+    <text x="96" y="640" font-size="23" fill="#d9e8d5">Compose project: /srv/bookorbit</text>
+    <text x="96" y="693" font-family="Menlo, monospace" font-size="27" fill="#ffffff">./data/app</text>
+    <path d="M600 684 H736" stroke="#b8c9d9" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="769" y="693" font-size="27" fill="#ffffff">BookOrbit app: /data</text>
+    <text x="96" y="753" font-family="Menlo, monospace" font-size="27" fill="#ffffff">./data/postgres</text>
+    <path d="M600 744 H736" stroke="#b8c9d9" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="769" y="753" font-size="27" fill="#ffffff">PostgreSQL: /var/lib/postgresql/data</text>
+    <text x="600" y="792" font-size="20" fill="#d9e8d5">Each arrow is a separate Docker bind mount.</text>
+
+    <text x="72" y="862" font-size="23" fill="#b8c9d9">Mount the share before starting the app. The /books and /data mounts are separate.</text>
+  </g>
+</svg>
