@@ -1,6 +1,6 @@
 {
   "summary": "Organize and read ebooks, PDFs, comics, and audiobooks from one self-hosted library.",
-  "overview": "BookOrbit combines mixed-format library management with browser-based readers, metadata tools, collections, saved filters, and separate progress for multiple users. OPDS, Kobo, and KOReader integrations can extend the same library to compatible reading devices, while Book Dock provides a staging area for uploads before files enter the main collection.",
+  "overview": "BookOrbit combines mixed-format library management with browser-based readers, metadata tools, collections, saved filters, and separate progress for multiple users. OPDS, Kobo, and KOReader integrations extend the library to compatible reading devices. Book Dock stages uploads for review, and Book Requests can track requests fulfilled manually with authorized files. A separate iOS companion app offers offline access and paid Premium features; the current app requires server 3.0.0 or newer.",
   "kind": "Self-hosted",
   "platforms": [
     "Linux",
@@ -29,6 +29,10 @@
     {
       "label": "Releases",
       "url": "https://github.com/bookorbit/bookorbit/releases"
+    },
+    {
+      "label": "iOS companion app (in-app purchases)",
+      "url": "https://apps.apple.com/us/app/bookorbit-the-official-app/id6811807346"
     }
   ],
   "features": [
@@ -37,12 +41,16 @@
     "Metadata management",
     "Multi-user access",
     "OPDS, Kobo & KOReader integrations",
-    "Book Dock upload staging"
+    "Book Dock upload staging",
+    "Book requests with manual fulfillment"
   ],
   "sources": [
     "https://bookorbit.app/what-is-bookorbit/",
     "https://bookorbit.app/installation/",
     "https://github.com/bookorbit/bookorbit#readme",
-    "https://github.com/bookorbit/bookorbit/blob/main/LICENSE"
+    "https://github.com/bookorbit/bookorbit/blob/main/LICENSE",
+    "https://bookorbit.app/book-requests/",
+    "https://bookorbit.app/support/",
+    "https://apps.apple.com/us/app/bookorbit-the-official-app/id6811807346"
   ]
 }
