@@ -149,6 +149,7 @@
     "coverage": [
       "/bookorbit-self-hosted-library"
     ],
+    "icon": "/app-icons/bookorbit.png",
     "details": {
       "href": "/apps/bookorbit"
     }
