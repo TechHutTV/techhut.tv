@@ -1,17 +1,21 @@
 export const title = "BookOrbit: One Library for Ebooks, PDFs, Comics, and Audiobooks"
 export const description = "Set up BookOrbit, a Docker-based self-hosted library for ebooks, PDFs, comics, and audiobooks, then explore its readers, metadata, users, and device integrations."
-export const date = "2026-09-04"
+export const date = "2026-09-29"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Docker", "Homelab", "Self-Host"]
 export const cover = "/docs-static/img/2026/09/bookorbit-self-hosted-library/cover.jpg"
 export const imagePosition = "center"
 
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="lcaE8rXNrd8" title="TechHut's BookOrbit walkthrough" />
+
 I've covered quite a few tools for organizing a media collection, and [BookOrbit](https://bookorbit.app/) brings that same idea to books. It puts ebooks, PDFs, comics, and audiobooks into one self-hosted library, with readers, metadata tools, and progress tracking built in.
 
 For me, this is as much a collection and tracking tool as it is a reader. I still prefer paper whenever possible, but having my library organized in one place is really nice, almost like a self-hosted Goodreads. I can keep track of titles and mark something as read even when I finished it away from the browser.
 
-I've been trying it out rather than using it as my daily reader for months. This walkthrough focuses on my setup, the ebook reader, and the audiobook controls I explored in the video. The install commands stay pinned to [BookOrbit v2.8.1](https://github.com/bookorbit/bookorbit/releases/tag/v2.8.1); the mobile-app update below covers a newer development separately.
+I've been trying it out rather than using it as my daily reader for months. This walkthrough focuses on my setup, the ebook reader, and the audiobook controls I explored in the video. The written installation has been updated for [BookOrbit v3.1.0](https://github.com/bookorbit/bookorbit/releases/tag/v3.1.0), released September 25, 2026, so it includes the Requests feature and support for the official mobile app. My hands-on impressions come from the recorded walkthrough, and I've marked the mobile update separately.
 
 ## What BookOrbit puts in one place
 
@@ -38,7 +42,9 @@ If your files are on another machine, mount that share on the Docker host first.
 
 ## Install BookOrbit with Docker Compose
 
-The [official installation guide](https://bookorbit.app/installation/) only requires Docker and Compose on the host. This guide pins the application to v2.8.1 instead of relying on a floating `latest` tag.
+The [official installation guide](https://bookorbit.app/installation/) only requires Docker and Compose on the host. This example pins the application and its configuration templates to v3.1.0 instead of relying on a floating `latest` tag.
+
+These commands are for a fresh installation. If you already have BookOrbit running, preserve your existing `.env` and data and follow the [updating instructions](https://bookorbit.app/installation/#updating) and release notes, including any secret or database migration steps.
 
 Create the project and persistent directories:
 
@@ -48,28 +54,30 @@ sudo chown -R "$(id -u):$(id -g)" /srv/bookorbit
 cd /srv/bookorbit
 
 curl -fsSLo .env \
-  https://raw.githubusercontent.com/bookorbit/bookorbit/v2.8.1/.env.example
+  https://raw.githubusercontent.com/bookorbit/bookorbit/v3.1.0/.env.example
 curl -fsSLo docker-compose.yml \
-  https://raw.githubusercontent.com/bookorbit/bookorbit/v2.8.1/docker-compose.yml
+  https://raw.githubusercontent.com/bookorbit/bookorbit/v3.1.0/docker-compose.yml
 ```
 
 Open `.env` and set the public or LAN address, media path, application image, and new secrets:
 
 ```dotenv
-APP_IMAGE=ghcr.io/bookorbit/bookorbit:2.8.1
+APP_IMAGE=ghcr.io/bookorbit/bookorbit:3.1.0
 APP_URL=http://YOUR_SERVER_IP:3000
 BOOKS_HOST_PATH=./books
 POSTGRES_PASSWORD=REPLACE_WITH_RANDOM_VALUE
 JWT_SECRET=REPLACE_WITH_RANDOM_VALUE
+PODCAST_ENCRYPTION_KEY=REPLACE_WITH_RANDOM_VALUE
 SETUP_BOOTSTRAP_TOKEN=REPLACE_WITH_RANDOM_VALUE
 ```
 
 Generate secrets instead of reusing those placeholders:
 
 ```bash
-openssl rand -hex 24
-openssl rand -hex 32
-openssl rand -hex 32
+openssl rand -hex 24  # POSTGRES_PASSWORD
+openssl rand -hex 32  # JWT_SECRET
+openssl rand -hex 32  # PODCAST_ENCRYPTION_KEY
+openssl rand -hex 32  # SETUP_BOOTSTRAP_TOKEN
 ```
 
 Use a separate generated value for each secret, and keep your completed `.env` private. If the books already live elsewhere, replace `BOOKS_HOST_PATH=./books` with the host directory containing them, for example:
@@ -86,7 +94,7 @@ The diagram shows the network-share example. Keep the share mounted before start
 
 For a reverse proxy, set `APP_URL` to the full HTTPS address you actually use, such as `https://books.example.com`. For direct LAN access, use `http://YOUR_SERVER_IP:3000`.
 
-Start the stack and verify that both services are healthy:
+Start the stack and check that the app is running and PostgreSQL reports healthy:
 
 ```bash
 docker compose up -d
@@ -94,7 +102,6 @@ docker compose ps
 ```
 
 Open the URL from `APP_URL`. The setup screen asks for the bootstrap token and then creates the first administrator.
-
 
 ### Check file permissions
 
@@ -146,7 +153,6 @@ BookOrbit can rename files and write metadata or covers back into supported file
 
 Folder watching is also storage-dependent. Local filesystems usually provide reliable events. Network mounts may not, so a scheduled scan can be a better safety net.
 
-
 ## Start from the dashboard
 
 Once the scan finishes, the dashboard brings together currently reading titles, recently added books, goals, streaks, and reading statistics. I set a goal of six books by the end of the year. My one-day streak wasn't particularly impressive, but that's partly because I spend more time reading paper books.
@@ -161,13 +167,11 @@ The library has three views:
 
 You can also browse by author or series. Opening a book brings up its description, genres, identifiers, files, reading log, and highlights. The reading log gets quite detailed, which is useful if you do most of your reading through the app.
 
-
 ## Collections and Smart Scopes solve different jobs
 
 A collection is a deliberate group of books. A Smart Scope is a saved rule-based filter that updates as the library changes. BookOrbit's own example is the sort of query that shows why this matters: unread science fiction over a certain length and rating.
 
 A collection works well for something like a reading list you picked yourself. A Smart Scope is handy when you want that list to follow a rule automatically as you add books or change their reading status.
-
 
 ## Metadata control is deeper than a one-click match
 
@@ -176,7 +180,6 @@ On a book's page, **Edit Metadata** gives you access to the title, authors, genr
 The default providers worked pretty well for my collection. Some providers need additional setup, and the [metadata settings](https://bookorbit.app/metadata/) let you control provider priority and lock individual fields. That's useful when you've corrected something by hand and want to keep it that way.
 
 The **Tools** area also includes bulk renaming, duplicate review, and missing-resource checks. Those are useful as the library grows. Review the proposed changes before applying a batch rename or cleanup, especially when other apps use the same files.
-
 
 ## Reading and listening in the browser
 
@@ -204,7 +207,7 @@ BookOrbit also has dedicated PDF and comic readers. The [reader documentation](h
 
 **Update, September 29, 2026:** In the video I say I wish there were a mobile app. There is now an [official BookOrbit app for iPhone and Apple Watch](https://apps.apple.com/us/app/bookorbit-the-official-app/id6811807346). Its listing describes offline reading and listening, with paid Premium features including unlimited downloads and Apple Watch listening.
 
-Do note that the developer says the current mobile app requires **BookOrbit server 3.0.0 or newer**, so it won't work with the `2.8.1` install pinned in this walkthrough. Check the [release notes](https://github.com/bookorbit/bookorbit/releases) before upgrading for it. I haven't tested the native app; my mobile impressions here are about the browser reader. The [official iOS support page](https://bookorbit.app/support/) has the current support information.
+Do note that the developer says the current mobile app requires **BookOrbit server 3.0.0 or newer**. The `3.1.0` example above meets that requirement; if you're on an older release, check the [release notes](https://github.com/bookorbit/bookorbit/releases) before upgrading for it. I haven't tested the native app; my mobile impressions here are about the browser reader. The [official iOS support page](https://bookorbit.app/support/) has the current support information.
 
 ## Annotations become a library-wide workspace
 
@@ -212,13 +215,11 @@ The [annotations system](https://bookorbit.app/annotations/) combines web-reader
 
 That gives you one place to look up notes across your collection instead of opening each book individually. Markdown export is useful if you want to keep those notes alongside the rest of your writing.
 
-
 ## Sharing the server with other users
 
 BookOrbit supports separate accounts with their own reading progress, library access, and permissions. For a shared server, you can give someone access to a particular library while keeping administrative controls on your own account.
 
 Those controls are in the [users and permissions settings](https://bookorbit.app/users/). I showed the account settings in the walkthrough, but didn't perform a full multi-user permissions review.
-
 
 ## Book Dock gives uploads a staging area
 
@@ -248,7 +249,6 @@ BOOK_DOCK_PATH=/books/book-dock
 
 Use **Test hardlink** in the download-client settings before relying on this behavior. If the test fails, BookOrbit copies the import instead, which uses additional disk space.
 
-
 ## Extend the library beyond the browser
 
 There are several ways to connect another reader or sign-in provider. These are documented options beyond the browser workflow I showed, rather than integrations I've tested end to end for this article.
@@ -257,21 +257,17 @@ There are several ways to connect another reader or sign-in provider. These are 
 
 The [OPDS server](https://bookorbit.app/opds/) lets compatible reader apps browse and download from your library. It uses separate client credentials and follows the parent BookOrbit user's library permissions.
 
-
 ### Kobo
 
 [Kobo sync](https://bookorbit.app/kobo/) uses a private device URL and collections marked **Sync to Kobo**. Eligible books must be present, allowed for the user, included in a synced collection, and use EPUB as the primary file. Precise outbound progress and highlight placement depends on BookOrbit's KEPUB delivery path.
-
 
 ### KOReader
 
 The [BookOrbit KOReader plugin](https://bookorbit.app/koreader-plugin/) adds a native catalog, downloads, progress, highlights, ratings, and separate revocable credentials. This is more capable than using OPDS alone, but it requires plugin installation and a server the device can reach.
 
-
 ### OIDC
 
 The [OIDC integration](https://bookorbit.app/oidc/) supports multiple providers, account auto-provisioning, local account linking, and group-to-permission mappings. Existing users need local account linking configured before their first provider login if the identity should attach to the original account.
-
 
 ## My take after trying it
 
@@ -280,7 +276,6 @@ What I like most is having the collection, metadata, reading progress, and reade
 I still prefer paper, and I haven't spent enough time with every format or device integration to call this a replacement for everyone's existing setup. If audiobooks are your main use, [Audiobookshelf](https://audiobookshelf.org/) is still worth comparing. For my mix of collecting, tracking, and occasional browser reading, though, BookOrbit has been a really nice tool to try.
 
 Start with the live demo or a small library, then add the features that fit how you actually read. My install steps are above, and the official docs below go further into the options I only touched on in the video.
-
 
 ## Official references
 
@@ -298,4 +293,4 @@ Start with the live demo or a small library, then add the features that fit how 
 - [KOReader plugin](https://bookorbit.app/koreader-plugin/)
 - [OIDC and SSO](https://bookorbit.app/oidc/)
 - [iOS support](https://bookorbit.app/support/)
-- [v2.8.1 release](https://github.com/bookorbit/bookorbit/releases/tag/v2.8.1)
+- [v3.1.0 release](https://github.com/bookorbit/bookorbit/releases/tag/v3.1.0)
