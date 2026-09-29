@@ -124,7 +124,7 @@ A scan that finds zero books, `EACCES` in the logs, failed uploads, or Book Dock
 
 ## Create your libraries
 
-The [library wizard](https://bookorbit.app/creating-a-library/) turns mounted folders into BookOrbit libraries. The most important detail is that paths are resolved from BookOrbit's point of view. A host folder mounted as `/books` must be selected as `/books` in the interface, even if its host path is `/srv/media/books`.
+The [library wizard](https://bookorbit.app/creating-a-library/) turns mounted folders into BookOrbit libraries. Paths are resolved from BookOrbit's point of view: the host folder `/mnt/media/books` appears as `/books` inside the container. Select the subfolder containing the finished library, such as `/books/ebooks`, rather than the whole mount if it also contains staging folders.
 
 Give the library a name and icon, then select its folder. I keep Books and Audiobooks separate because that makes browsing easier for me, but BookOrbit also supports mixed-format libraries. With the example mount above, you could use `/books/ebooks` and `/books/audiobooks` as two separate library folders. Start with a few files you're authorized to use while you get the folder layout right.
 
@@ -246,6 +246,8 @@ I hit an `EXDEV` error because the downloads and libraries were mounted beneath 
 ```dotenv
 BOOK_DOCK_PATH=/books/book-dock
 ```
+
+Keep the [Book Dock staging folder](https://bookorbit.app/book-dock/) outside every scanned library folder. With this layout, select `/books/ebooks` and `/books/audiobooks` as your library folders, not `/books` or `/books/book-dock`. Scanning the parent `/books` would include the staging area and could import files before you've reviewed and finalized them.
 
 Use **Test hardlink** in the download-client settings before relying on this behavior. If the test fails, BookOrbit copies the import instead, which uses additional disk space.
 
