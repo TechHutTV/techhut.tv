@@ -1,0 +1,29 @@
+{
+  "summary": "Serve web content and route requests to application servers with NGINX Open Source.",
+  "overview": "NGINX is a web server and reverse proxy configured through text files. It can route requests by hostname or path, serve static content, terminate TLS, and proxy WebSocket connections. In a home lab, it can provide an internal gateway for several containers behind an existing public reverse proxy. This listing covers NGINX Open Source, separate from the Nginx Proxy Manager management interface.",
+  "kind": "Self-hosted",
+  "platforms": ["Linux", "Docker", "FreeBSD"],
+  "license": {
+    "name": "BSD-2-Clause",
+    "type": "Open source",
+    "url": "https://github.com/nginx/nginx/blob/master/LICENSE"
+  },
+  "links": [
+    {"label": "Official site", "url": "https://nginx.org"},
+    {"label": "GitHub", "url": "https://github.com/nginx/nginx"},
+    {"label": "Documentation", "url": "https://nginx.org/en/docs/"}
+  ],
+  "features": [
+    "HTTP reverse proxy",
+    "Static file serving",
+    "TLS termination",
+    "WebSocket proxying",
+    "Load balancing"
+  ],
+  "sources": [
+    "https://github.com/nginx/nginx",
+    "https://github.com/nginx/nginx/blob/master/LICENSE",
+    "https://nginx.org/en/docs/",
+    "https://nginx.org/en/docs/http/websocket.html"
+  ]
+}

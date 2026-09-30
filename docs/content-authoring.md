@@ -87,10 +87,41 @@ Reference images in your article:
 
 ### Image Guidelines
 
-- **Cover images**: JPG format, 16:9 aspect ratio recommended
+- **Cover images**: JPG format, 16:9 aspect ratio recommended; PNG works well for text-heavy technical diagrams
 - **Content images**: PNG for screenshots, JPG for photos
 - **GIFs**: Use for short animations/demos
 - **Alt text**: Auto-generated from filename if not provided
+
+### Technical Diagrams
+
+Use diagrams to explain a relationship that readers need to understand, such as how requests reach an application or which disk holds its data. The [Seafile architecture SVG](../public/docs-static/img/2026/09/self-host-seafile-docker-unraid/architecture.svg) is an editable reference for this style.
+
+1. Identify the concepts the article teaches. Give request routing, storage placement, and startup dependencies separate labeled panels when they describe different relationships.
+2. Use arrows for actual flows or connections. Label protocols, ports, and direction where useful. A reverse proxy routing requests to an application does not imply that it manages the application's database or filesystem.
+3. Match the article's paths, service names, and boundaries. Label local storage and mounted storage explicitly, and make clear whether a path belongs to the host or a container. Use example addresses without private deployment details.
+4. For a cover, start with a 1600×900 canvas. Use a dark navy background, white primary text, muted secondary text, and restrained blue/green panels. Make the key names or paths prominent, keep supporting text short, and leave space around labels and arrows. Color reinforces written labels.
+5. Save editable vector source, such as `architecture.svg`, in the article's image directory. Include an SVG `title` and `desc` explaining the diagram, and write descriptive alt text for inline use.
+6. Render a PNG with the project's existing Sharp dependency. Preserve the SVG alongside the image so later changes can be made precisely.
+
+For example, run this from the repository root to regenerate the Seafile cover:
+
+```bash
+node - <<'JS'
+const path = require('node:path')
+const sharp = require('sharp')
+const imageDir = 'public/docs-static/img/2026/09/self-host-seafile-docker-unraid'
+
+sharp(path.join(imageDir, 'architecture.svg'))
+  .png()
+  .toFile(path.join(imageDir, 'cover.png'))
+  .then(info => console.log(`${info.width}×${info.height} PNG written`))
+  .catch(error => { console.error(error); process.exitCode = 1 })
+JS
+```
+
+For another article, change `imageDir` and the filenames as needed. Set its MDX `cover` export to the rendered PNG's public path. Keep assets self-contained, with no external fonts or image dependencies needed to render the SVG.
+
+Open the final PNG at full resolution and at a reduced size such as 800×450. Check that text fits, important labels remain readable, lines end at the intended component, and the diagram conveys the correct technical relationships. If the layout becomes crowded, split it into simpler figures. After every SVG edit, regenerate and inspect the PNG too.
 
 ## Writing Content
 

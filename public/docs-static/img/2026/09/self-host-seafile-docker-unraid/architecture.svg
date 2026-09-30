@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Seafile 13: local services, Unraid storage</title>
+  <desc id="desc">The request-routing panel shows a browser or client connecting to Nginx Proxy Manager over HTTPS, then NPM forwarding HTTP traffic on port 8080 to the Fedora VM's NGINX gateway and application services. A separate storage panel shows Compose and the live MariaDB database at /srv/seafile on the VM's local disk, and Seafile data, configuration, and logs on the Unraid share mounted at /mnt/seafile. There are no routing arrows between the gateway and the storage locations.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="none" stroke="#a8b7c8" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#101922"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="88" y="94" font-size="24" font-weight="700" letter-spacing="4" fill="#87c8eb">TECHHUT / HOMELAB GUIDE</text>
+    <text x="82" y="200" font-size="94" font-weight="700" fill="#ffffff">Seafile 13</text>
+    <text x="88" y="258" font-size="32" fill="#b8c9d9">Docker + SeaDoc + notifications</text>
+
+    <text x="88" y="309" font-size="22" font-weight="700" letter-spacing="2" fill="#b8c9d9">REQUEST ROUTING</text>
+    <rect x="88" y="332" width="278" height="134" rx="12" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="227" y="389" font-size="27" font-weight="700" fill="#ffffff" text-anchor="middle">Browser or client</text>
+    <text x="227" y="427" font-size="21" fill="#b8c9d9" text-anchor="middle">Your Seafile domain</text>
+    <path d="M382 401 H488" stroke="#a8b7c8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="435" y="380" text-anchor="middle" font-size="21" fill="#b8c9d9">HTTPS</text>
+    <rect x="510" y="332" width="390" height="134" rx="12" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="705" y="389" font-size="27" font-weight="700" fill="#ffffff" text-anchor="middle">Nginx Proxy Manager</text>
+    <text x="705" y="427" font-size="21" fill="#b8c9d9" text-anchor="middle">Handles the TLS certificate</text>
+    <path d="M916 401 H1040" stroke="#a8b7c8" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <text x="979" y="368" text-anchor="middle" font-size="21" fill="#b8c9d9">HTTP</text>
+    <text x="979" y="437" text-anchor="middle" font-size="21" fill="#b8c9d9">port 8080</text>
+    <rect x="1062" y="332" width="450" height="134" rx="12" fill="#1c2a38" stroke="#57728b" stroke-width="2"/>
+    <text x="1287" y="362" font-size="19" font-weight="700" letter-spacing="2" fill="#b8c9d9" text-anchor="middle">FEDORA VM</text>
+    <text x="1287" y="399" font-size="25" font-weight="700" fill="#ffffff" text-anchor="middle">NGINX gateway → app services</text>
+    <text x="1287" y="437" font-size="21" fill="#b8c9d9" text-anchor="middle">Seafile · SeaDoc · notifications</text>
+
+    <path d="M88 504 H1512" stroke="#344757" stroke-width="2"/>
+    <text x="88" y="547" font-size="22" font-weight="700" letter-spacing="2" fill="#b8c9d9">STORAGE LOCATIONS</text>
+    <text x="1512" y="547" font-size="21" fill="#b8c9d9" text-anchor="end">Paths seen by the Fedora VM</text>
+    <rect x="88" y="570" width="676" height="241" rx="12" fill="#172d3b" stroke="#72bce6" stroke-width="2"/>
+    <rect x="836" y="570" width="676" height="241" rx="12" fill="#203328" stroke="#a8ce86" stroke-width="2"/>
+    <text x="126" y="617" font-size="23" font-weight="700" letter-spacing="2" fill="#87c8eb">VM LOCAL DISK</text>
+    <text x="126" y="677" font-family="Menlo, monospace" font-size="41" font-weight="700" fill="#ffffff">/srv/seafile</text>
+    <text x="126" y="731" font-size="27" fill="#d1e0eb">Compose + configuration</text>
+    <text x="126" y="773" font-size="27" fill="#d1e0eb">Live MariaDB database</text>
+    <text x="874" y="617" font-size="23" font-weight="700" letter-spacing="2" fill="#badd9d">UNRAID SHARE · 9P MOUNT</text>
+    <text x="874" y="677" font-family="Menlo, monospace" font-size="41" font-weight="700" fill="#ffffff">/mnt/seafile</text>
+    <text x="874" y="731" font-size="27" fill="#d9e8d5">Seafile data + SeaDoc persistence</text>
+    <text x="874" y="773" font-size="27" fill="#d9e8d5">Application configuration + logs</text>
+    <text x="88" y="856" font-size="21" fill="#a7bacb">The mount determines where data lives. The directory name alone does not.</text>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "summary": "Write and collaborate on Seafile documents directly in a browser with the SeaDoc extension.",
+  "overview": "SeaDoc adds a collaborative document editor to Seafile. It works with Seafile's document storage and permissions, and its Docker deployment includes a separate document service connected to Seafile. The official seadoc-editor repository contains the editor components used by SeaDoc and Seafile's wiki editing. The Apache-2.0 license linked here covers that editor source; it does not establish the licensing of every component in the separately distributed server image.",
+  "kind": "Self-hosted extension",
+  "platforms": ["Docker", "Web browser", "Seafile"],
+  "license": {
+    "name": "Apache-2.0 (editor source)",
+    "type": "Open source (editor component)",
+    "url": "https://github.com/haiwen/seadoc-editor/blob/main/LICENSE.txt"
+  },
+  "links": [
+    {"label": "Integration guide", "url": "https://manual.seafile.com/13.0/extension/setup_seadoc/"},
+    {"label": "Editor source on GitHub", "url": "https://github.com/haiwen/seadoc-editor"},
+    {"label": "Seafile", "url": "https://www.seafile.com"}
+  ],
+  "features": [
+    "Collaborative document editing",
+    "Seafile document storage integration",
+    "Inter-document links",
+    "Wiki editing components"
+  ],
+  "sources": [
+    "https://manual.seafile.com/13.0/extension/setup_seadoc/",
+    "https://github.com/haiwen/seadoc-editor",
+    "https://github.com/haiwen/seadoc-editor/blob/main/LICENSE.txt"
+  ]
+}
