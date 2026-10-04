@@ -251,6 +251,62 @@ h2.slide-title .g { color: var(--accent); }
   font-size: 0.92em;
 }
 
+/* === Backup setup and recovery example === */
+.backup-sequence {
+  list-style: none;
+  counter-reset: backup-step;
+  display: flex;
+  flex-direction: column;
+}
+.backup-sequence li {
+  counter-increment: backup-step;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 24px;
+  padding: 26px 0;
+  border-top: 1px solid var(--line-2);
+}
+.backup-sequence li::before {
+  content: counter(backup-step, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 34px;
+  line-height: 1.2;
+  color: var(--accent);
+}
+.backup-sequence h2 {
+  font-family: var(--display);
+  font-size: 36px;
+  line-height: 1.2;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.backup-sequence p { font-size: 28px; line-height: 1.4; }
+.backup-note {
+  margin-top: auto;
+  padding-top: 28px;
+  font-size: 28px;
+  line-height: 1.4;
+  color: var(--accent);
+}
+.backup-restore {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 56px;
+  align-items: start;
+}
+.backup-restore img {
+  display: block;
+  width: 100%;
+  height: 520px;
+  object-fit: contain;
+  object-position: top left;
+}
+.backup-restore figcaption {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-top: 12px;
+}
+
 /* === Section dividers === */
 .divider {
   display: flex;
