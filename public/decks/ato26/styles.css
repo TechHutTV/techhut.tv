@@ -454,4 +454,36 @@ h2.slide-title .g { color: var(--accent); }
 }
 .qa-giant .g { color: var(--accent); }
 
+/* === Starting a homelab: hardware options and platform comparisons === */
+.intro-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 20px; }
+.cost-note { border-left: 2px solid var(--line-2); padding-left: 48px; }
+.cost-note h2 { font-family: var(--display); font-size: 42px; color: var(--accent); margin-bottom: 28px; }
+.cost-note p { font-size: 32px; line-height: 1.5; margin-bottom: 28px; }
+.cost-note .cost-takeaway { color: var(--ink); font-weight: 600; }
+figcaption { font-size: 23px; line-height: 1.4; color: var(--ink-dim); margin-top: 18px; }
+.starter-options { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 64px; margin-top: 72px; margin-bottom: 42px; }
+.starter-options strong { display: block; font-family: var(--display); font-size: 38px; color: var(--ink); margin-bottom: 10px; }
+.starter-options span { font-size: 28px; line-height: 1.4; }
+.hardware-checks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 42px; margin-top: 38px; padding-top: 28px; border-top: 1px solid var(--line-2); }
+.hardware-checks dt { color: var(--accent); font-family: var(--mono); font-size: 25px; margin-bottom: 10px; }
+.hardware-checks dd { font-size: 27px; line-height: 1.4; }
+.resource-line { font-family: var(--mono); font-size: 23px; line-height: 1.5; color: var(--ink-dim); margin-top: 42px; }
+.foundation-table { width: 100%; border-collapse: collapse; margin-top: 12px; color: var(--ink); }
+.foundation-table th, .foundation-table td { text-align: left; vertical-align: middle; padding: 32px 26px; border-bottom: 1px solid var(--line-2); font-size: 32px; line-height: 1.4; }
+.foundation-table thead th { font-family: var(--mono); font-size: 22px; font-weight: 400; color: var(--ink-dim); padding-top: 0; padding-bottom: 18px; }
+.foundation-table tbody th { font-family: var(--display); font-size: 36px; width: 31%; }
+.foundation-table td:last-child { width: 24%; }
+.foundation-table .chosen-platform { background: var(--accent-soft); }
+.foundation-table .chosen-platform th, .foundation-table .chosen-platform td:last-child { color: var(--accent); }
+.foundation-choice { margin-top: 44px; max-width: 72ch; }
+.proxmox-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center; margin-top: 20px; }
+.proxmox-layout img { width: 100%; max-height: 520px; object-fit: contain; display: block; }
+.workload-table td:last-child { width: 30%; }
+.host-summary { display: flex; align-items: center; gap: 48px; border-top: 3px solid var(--accent); margin-top: 52px; padding-top: 30px; color: var(--ink); }
+.host-summary strong { font-family: var(--display); font-size: 36px; white-space: nowrap; }
+.host-summary span { font-size: 30px; line-height: 1.4; }
+.netbird-intro { display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; }
+.netbird-intro img { width: 100%; max-height: 450px; object-fit: contain; display: block; }
+.netbird-intro figcaption { font-size: 22px; }
+
 /* Print rules handled by deck-stage */
