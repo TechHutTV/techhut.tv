@@ -120,6 +120,10 @@ const nextConfig = {
                 source: '/decks/agentarena26',
                 destination: '/decks/agentarena26/index.html',
             },
+            {
+                source: '/decks/ncsulug26',
+                destination: '/decks/ncsulug26/index.html',
+            },
         ]
     }
 }
