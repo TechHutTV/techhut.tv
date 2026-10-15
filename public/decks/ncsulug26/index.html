@@ -1,0 +1,1231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="WireGuard, NAT traversal, and how NetBird connects two machines. NC State Linux Users’ Group, October 16, 2026."
+    />
+    <title>How two machines find each other · NC State LUG</title>
+    <link rel="stylesheet" href="/decks/ncsulug26/styles.css" />
+    <script src="/decks/ncsulug26/deck.js" defer></script>
+  </head>
+  <body>
+    <noscript
+      ><p class="noscript">
+        Reading view. Enable JavaScript for presentation controls.
+      </p></noscript
+    >
+    <main
+      class="stage"
+      id="stage"
+      aria-label="How two machines find each other"
+    >
+      <section
+        class="slide cover"
+        id="cover"
+        data-title="How two machines find each other"
+        data-steps="0"
+        aria-labelledby="cover-heading"
+      >
+        <svg class="cover-art" aria-hidden="true" viewBox="0 0 600 600">
+          <circle
+            cx="330"
+            cy="300"
+            r="268"
+            fill="none"
+            class="orbit"
+            stroke-width="2"
+          />
+          <circle
+            cx="330"
+            cy="300"
+            r="178"
+            fill="none"
+            class="orbit"
+            stroke-width="2"
+          />
+          <g stroke="currentColor" stroke-width="2" stroke-opacity="0.3">
+            <line x1="300" y1="80" x2="520" y2="170" />
+            <line x1="300" y1="80" x2="170" y2="230" />
+            <line x1="170" y1="230" x2="330" y2="300" />
+            <line x1="520" y1="170" x2="330" y2="300" />
+            <line x1="330" y1="300" x2="300" y2="520" />
+            <line x1="520" y1="170" x2="500" y2="420" />
+            <line x1="500" y1="420" x2="300" y2="520" />
+          </g>
+          <g stroke="currentColor" stroke-width="3" stroke-opacity="0.9">
+            <line x1="300" y1="80" x2="330" y2="300" />
+            <line x1="330" y1="300" x2="500" y2="420" />
+          </g>
+          <circle cx="330" cy="300" r="16" fill="currentColor" />
+          <circle cx="300" cy="80" r="10" fill="currentColor" />
+          <circle cx="500" cy="420" r="10" fill="currentColor" />
+          <circle
+            cx="520"
+            cy="170"
+            r="11"
+            class="node"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+          <circle
+            cx="170"
+            cy="230"
+            r="11"
+            class="node"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+          <circle
+            cx="300"
+            cy="520"
+            r="11"
+            class="node"
+            stroke="currentColor"
+            stroke-width="3"
+          />
+        </svg>
+        <img
+          class="brand"
+          src="/decks/ncsulug26/assets/netbird-logo.png"
+          width="283"
+          height="48"
+          alt="NetBird"
+        />
+        <div class="intro">
+          <p class="event">
+            NC STATE LINUX USERS’ GROUP · OCTOBER 16 · RALEIGH
+          </p>
+          <h1 id="cover-heading">
+            How two machines<br /><span>find each other.</span>
+          </h1>
+          <p>
+            WireGuard is the tunnel. NetBird handles the keys, NAT traversal,
+            and the fallback when a direct path is impossible.
+          </p>
+        </div>
+        <p class="byline">
+          Brandon Hopkins · Head of Content and Developer Relations, NetBird
+        </p>
+
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~30 sec. Hey, I’m Brandon. Thanks for having me, and thanks
+                Eleanor for getting me in the building. We’ll follow two
+                machines from disconnected to connected, then do it live.
+                Interrupt me. There’s plenty here to pull apart.
+              </p>
+              <div class="sources"></div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide"
+        id="who"
+        data-title="Brandon Hopkins"
+        data-steps="0"
+        aria-labelledby="who-heading"
+      >
+        <h2 id="who-heading">Brandon Hopkins</h2>
+        <div class="split bio">
+          <p class="statement">
+            Minecraft servers.<br />Linux videos.<br /><span
+              >Now, the network between them.</span
+            >
+          </p>
+          <ul class="plain-list">
+            <li>
+              <h3>TechHut</h3>
+              <p>
+                Linux, homelabs, and self-hosting.<br />Videos and guides at
+                <a href="https://techhut.tv">techhut.tv</a>.
+              </p>
+            </li>
+            <li>
+              <h3>NetBird</h3>
+              <p>
+                I work on the docs, demos, and explaining what happens after
+                <code>netbird up</code>.
+              </p>
+            </li>
+          </ul>
+        </div>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~45 sec. Real quick on me. I used to tinker with Xbox, fix
+                computers, and run Minecraft servers. That became TechHut, with
+                Linux videos and written guides. A lot of those projects came
+                back to the same question: how do I reach this box? Now I work
+                at NetBird on content and developer relations. That’s my
+                connection to the project.
+              </p>
+              <div class="sources"></div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide"
+        id="problem"
+        data-title="Two machines behind NAT"
+        data-steps="0"
+        aria-labelledby="problem-heading"
+      >
+        <h2 id="problem-heading">Two machines behind NAT</h2>
+        <p class="large-copy">I want to SSH from my laptop to my homelab.</p>
+        <figure class="diagram">
+          <svg
+            viewBox="0 0 1440 380"
+            role="img"
+            aria-labelledby="problem-title"
+          >
+            <title id="problem-title">
+              A laptop on campus and a homelab at home are both behind NAT.
+            </title>
+            <defs>
+              <marker
+                id="problem-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="problem-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box peer" x="80" y="160" width="320" height="120" />
+            <text x="240.0" y="208">Laptop</text>
+            <text class="small" x="240.0" y="248">Campus Wi-Fi</text>
+            <rect class="box peer" x="1040" y="160" width="320" height="120" />
+            <text x="1200.0" y="208">Homelab</text>
+            <text class="small" x="1200.0" y="248">Home network</text>
+            <path class="blocked dashed" d="M 425 220 H 1015" />
+            <text class="label-danger" x="720" y="185">
+              No incoming connection
+            </text>
+            <text class="small" x="720" y="280">Both behind NAT</text>
+          </svg>
+          <figcaption class="diagram-description">
+            <p>
+              A laptop on campus wants to reach a homelab at home. Both have
+              private addresses behind a router. Neither has an inbound port
+              forward.
+            </p>
+          </figcaption>
+        </figure>
+        <p class="takeaway">
+          Encryption needs a working path before it can help.
+        </p>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~90 sec. This is our running example. My laptop is on campus
+                Wi-Fi. My server is at home. Both can send traffic out, but
+                neither has a port forward. A private address like 192.168.1.50
+                doesn’t tell the other machine how to get there. NAT rewrites
+                addresses and ports, and the router also decides what return
+                traffic it accepts. We need the right keys, an address for each
+                peer, and a usable path between them.
+              </p>
+              <div class="sources">
+                <a href="https://www.wireguard.com/#cryptokey-routing"
+                  >WireGuard overview</a
+                ><a
+                  href="https://docs.netbird.io/help/troubleshooting-relayed-connections"
+                  >NetBird connectivity</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide"
+        id="wireguard"
+        data-title="What WireGuard handles"
+        data-steps="0"
+        aria-labelledby="wireguard-heading"
+      >
+        <h2 id="wireguard-heading">What WireGuard handles</h2>
+        <div class="split">
+          <div>
+            <p class="large-copy">
+              A public key identifies the peer.<br /><br /><strong
+                >AllowedIPs</strong
+              >
+              ties that key to tunnel addresses.
+            </p>
+          </div>
+          <ul class="plain-list">
+            <li>
+              <h3>Sending</h3>
+              <p>The destination address selects the peer.</p>
+            </li>
+            <li>
+              <h3>Receiving</h3>
+              <p>
+                The decrypted source address must match that peer’s AllowedIPs.
+              </p>
+            </li>
+            <li>
+              <h3>Transport</h3>
+              <p>Encrypted packets over UDP. No built-in TCP fallback.</p>
+            </li>
+          </ul>
+        </div>
+        <p class="takeaway">
+          Key distribution, address assignment, and NAT traversal live outside
+          WireGuard.
+        </p>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~2 min. WireGuard is deliberately small. You configure a private
+                key locally and give it the public keys of the peers it should
+                trust. AllowedIPs does two jobs. Outbound, the destination picks
+                a peer. Inbound, WireGuard checks the decrypted source address
+                against the authenticated peer’s allowed addresses. That’s
+                cryptokey routing. The handshake uses Noise with Curve25519, and
+                the data uses ChaCha20-Poly1305. There’s no cipher menu to
+                negotiate. On Linux, the tunnel can run in the kernel or through
+                wireguard-go in userspace. But WireGuard doesn’t distribute
+                those keys, choose your overlay addresses, or discover a path
+                through two NATs. That’s the work NetBird does around it.
+              </p>
+              <div class="sources">
+                <a href="https://www.wireguard.com/#cryptokey-routing"
+                  >WireGuard cryptokey routing</a
+                ><a href="https://www.wireguard.com/protocol/"
+                  >WireGuard protocol</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide architecture"
+        id="architecture"
+        data-title="How the peers connect"
+        data-steps="2"
+        aria-labelledby="architecture-heading"
+      >
+        <h2 id="architecture-heading">How the peers connect</h2>
+        <figure class="diagram">
+          <svg
+            viewBox="0 0 1440 500"
+            role="img"
+            aria-labelledby="architecture-title"
+          >
+            <title id="architecture-title">
+              Management registers peers. STUN discovers public addresses.
+              Signal exchanges candidates. WireGuard carries encrypted traffic.
+            </title>
+            <defs>
+              <marker
+                id="architecture-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="architecture-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box peer" x="20" y="330" width="300" height="120" />
+            <text x="170.0" y="378">Laptop</text>
+            <text class="small" x="170.0" y="418">NetBird client</text>
+            <rect class="box peer" x="1120" y="330" width="300" height="120" />
+            <text x="1270.0" y="378">Homelab</text>
+            <text class="small" x="1270.0" y="418">NetBird client</text>
+            <g data-reveal="0">
+              <rect class="box" x="160" y="20" width="350" height="115" />
+              <text x="335.0" y="68">Management</text>
+              <text class="small" x="335.0" y="108">
+                Keys, policy, addresses
+              </text>
+              <path
+                class="control"
+                d="M 170 330 V 195 H 250 V 135"
+                marker-end="url(#architecture-orange)"
+              />
+              <path
+                class="control"
+                d="M 1270 330 V 195 H 430 V 135"
+                marker-end="url(#architecture-orange)"
+              />
+            </g>
+            <g data-reveal="1">
+              <rect class="box" x="570" y="20" width="280" height="115" />
+              <text x="710.0" y="68">STUN</text>
+              <text class="small" x="710.0" y="108">Public IP:port</text>
+              <rect class="box" x="910" y="20" width="280" height="115" />
+              <text x="1050.0" y="68">Signal</text>
+              <text class="small" x="1050.0" y="108">Trade candidates</text>
+              <text class="label-control" x="720" y="255">
+                Discover and exchange possible paths
+              </text>
+              <path
+                class="control"
+                d="M 330 270 H 1110"
+                marker-end="url(#architecture-orange)"
+                marker-start="url(#architecture-orange)"
+              />
+            </g>
+            <g data-reveal="2">
+              <path
+                class="traffic"
+                d="M 345 390 H 1095"
+                marker-end="url(#architecture-green)"
+                marker-start="url(#architecture-green)"
+              />
+              <text class="label-data" x="720" y="375">
+                Encrypted WireGuard traffic
+              </text>
+              <text class="small" x="720" y="445">
+                Direct if possible. Relay if needed.
+              </text>
+            </g>
+          </svg>
+          <figcaption class="diagram-description">
+            <ol>
+              <li>
+                <strong>Register:</strong> clients send public keys to
+                Management, which provides addresses and policy.
+              </li>
+              <li>
+                <strong>Find a path:</strong> STUN discovers public addresses.
+                Signal exchanges encrypted candidates.
+              </li>
+              <li>
+                <strong>Connect:</strong> WireGuard carries traffic directly
+                when possible, or through a relay.
+              </li>
+            </ol>
+          </figcaption>
+        </figure>
+        <ol class="walkthrough">
+          <li data-reveal="0">
+            <strong>1. Register</strong>Sign in. Get the network map.
+          </li>
+          <li data-reveal="1">
+            <strong>2. Find a path</strong>Discover addresses. Test candidates.
+          </li>
+          <li data-reveal="2">
+            <strong>3. Connect</strong>Send encrypted traffic.
+          </li>
+        </ol>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~3 min. This is the whole sequence. First, each client generates
+                its keypair locally and registers using sign-in or a setup key.
+                Management receives the public key and sends back an overlay
+                address, authorized peers, and policy. Advance once. Each client
+                asks STUN what public address and port it sees. Signal carries
+                the encrypted candidate exchange between peers. The clients test
+                possible paths with ICE. Advance again. Once a path works,
+                WireGuard carries the session. If a direct path fails, the
+                native NetBird relay forwards the encrypted packets. Management
+                and Signal don’t carry that application traffic. You can use
+                NetBird Cloud or run these services yourself.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://docs.netbird.io/about-netbird/how-netbird-works"
+                  >How NetBird works</a
+                ><a
+                  href="https://docs.netbird.io/help/troubleshooting-relayed-connections"
+                  >Relay and ICE behavior</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide"
+        id="management"
+        data-title="Management distributes trust"
+        data-steps="0"
+        aria-labelledby="management-heading"
+      >
+        <h2 id="management-heading">Management distributes trust</h2>
+        <figure class="diagram">
+          <svg
+            viewBox="0 0 1440 500"
+            role="img"
+            aria-labelledby="management-title"
+          >
+            <title id="management-title">
+              Both peers keep private keys locally, send public keys to
+              Management, and receive their network map and policy.
+            </title>
+            <defs>
+              <marker
+                id="management-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="management-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box" x="480" y="20" width="480" height="115" />
+            <text x="720.0" y="68">Management</text>
+            <text class="small" x="720.0" y="108">Network map and policy</text>
+            <rect class="box peer" x="80" y="310" width="430" height="150" />
+            <text x="295.0" y="358">Laptop</text>
+            <text class="small" x="295.0" y="398">Private key stays here</text>
+            <rect class="box peer" x="930" y="310" width="430" height="150" />
+            <text x="1145.0" y="358">Homelab</text>
+            <text class="small" x="1145.0" y="398">Private key stays here</text>
+            <path
+              class="control"
+              d="M 295 310 V 205 H 560 V 145"
+              marker-end="url(#management-orange)"
+            />
+            <path
+              class="control"
+              d="M 880 145 V 205 H 1145 V 310"
+              marker-end="url(#management-orange)"
+            />
+            <text class="label-control" x="290" y="180">Public key</text>
+            <text class="label-control" x="1150" y="180">Map + policy</text>
+            <text class="small" x="720" y="270">
+              Both peers register and receive updates
+            </text>
+          </svg>
+          <figcaption class="diagram-description">
+            <p>
+              Both clients register their public keys and receive a network map.
+              Their private keys stay on the machines. Management distributes
+              policy; each client applies access rules locally.
+            </p>
+          </figcaption>
+        </figure>
+        <div class="dual-note">
+          <div>
+            <h3>Overlay addresses</h3>
+            <p>An account uses a /16 within <code>100.64.0.0/10</code>.</p>
+          </div>
+          <div>
+            <h3>Access rules</h3>
+            <p>Management distributes policy. Clients enforce it locally.</p>
+          </div>
+        </div>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~2 min. Management knows the public keys, addresses, and access
+                policy. The private key stays on the client. The account gets an
+                IPv4 range within 100.64.0.0/10, separate from the usual private
+                LAN ranges. That isn’t a promise that it can never overlap
+                another VPN. Management distributes the network map, policies,
+                and DNS configuration. The client applies the access rules
+                locally. Joining the account and being allowed to reach a
+                service are separate decisions. Check the actual policy,
+                including any default policy, before assuming the network is
+                restricted.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://docs.netbird.io/about-netbird/how-netbird-works"
+                  >How NetBird works</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide"
+        id="signal"
+        data-title="Discover an address, then test it"
+        data-steps="0"
+        aria-labelledby="signal-heading"
+      >
+        <h2 id="signal-heading">Discover an address, then test it</h2>
+        <figure class="diagram">
+          <svg viewBox="0 0 1440 500" role="img" aria-labelledby="signal-title">
+            <title id="signal-title">
+              Both peers discover their public IP and port through STUN and
+              exchange candidates through Signal.
+            </title>
+            <defs>
+              <marker
+                id="signal-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="signal-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box peer" x="20" y="260" width="300" height="120" />
+            <text x="170.0" y="308">Laptop</text>
+            <text class="small" x="170.0" y="348">Peer A</text>
+            <rect class="box peer" x="1120" y="260" width="300" height="120" />
+            <text x="1270.0" y="308">Homelab</text>
+            <text class="small" x="1270.0" y="348">Peer B</text>
+            <rect class="box" x="550" y="0" width="340" height="110" />
+            <text x="720.0" y="48">STUN</text>
+            <text class="small" x="720.0" y="88">Observed address</text>
+            <path
+              class="control"
+              d="M 170 250 V 55 H 540"
+              marker-end="url(#signal-orange)"
+            />
+            <path
+              class="control"
+              d="M 1270 250 V 55 H 900"
+              marker-end="url(#signal-orange)"
+            />
+            <text class="mono" x="385" y="170">203.0.113.10:33978</text>
+            <text class="mono" x="1055" y="170">198.51.100.20:48654</text>
+            <rect class="box" x="550" y="265" width="340" height="110" />
+            <text x="720.0" y="313">Signal</text>
+            <text class="small" x="720.0" y="353">Encrypted exchange</text>
+            <path
+              class="control"
+              d="M 335 320 H 535"
+              marker-end="url(#signal-orange)"
+              marker-start="url(#signal-orange)"
+            />
+            <path
+              class="control"
+              d="M 905 320 H 1105"
+              marker-end="url(#signal-orange)"
+              marker-start="url(#signal-orange)"
+            />
+            <text class="small" x="720" y="460">
+              Example addresses. The clients still have to test the path.
+            </text>
+          </svg>
+          <figcaption class="diagram-description">
+            <ol>
+              <li>
+                STUN observes Peer A at <code>203.0.113.10:33978</code> and Peer
+                B at <code>198.51.100.20:48654</code>. These are example
+                addresses.
+              </li>
+              <li>Peers exchange encrypted candidates through Signal.</li>
+              <li>
+                The clients test those candidates. A STUN response alone does
+                not establish a tunnel.
+              </li>
+            </ol>
+          </figcaption>
+        </figure>
+        <p class="takeaway">
+          STUN reports what it sees. ICE checks which candidate pairs actually
+          work.
+        </p>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~2 min. STUN sees the source address and port after NAT has
+                rewritten them. Those example ports are 33978 and 48654. They
+                are candidates, not proof that the other peer can reach us
+                there. The client also knows local interface addresses. Signal
+                passes the candidate messages to the other peer, encrypted
+                between the clients. The peers then test candidate pairs with
+                ICE and nominate a working pair. The pair selection uses
+                priorities and connectivity checks; it isn’t simply whichever
+                packet answers first. Signal remains available for coordination
+                when connections need to change, even though it doesn’t carry
+                the WireGuard session.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://docs.netbird.io/about-netbird/how-netbird-works"
+                  >How NetBird works</a
+                ><a href="https://www.rfc-editor.org/rfc/rfc8445#section-2.3"
+                  >ICE connectivity checks and nomination</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide nat"
+        id="nat"
+        data-title="UDP hole punching"
+        data-steps="0"
+        aria-labelledby="nat-heading"
+      >
+        <h2 id="nat-heading">UDP hole punching</h2>
+        <figure class="diagram">
+          <svg viewBox="0 0 1440 500" role="img" aria-labelledby="nat-title">
+            <title id="nat-title">
+              Example of UDP hole punching. An early laptop probe is dropped at
+              the home NAT. The homelab sends its own probe. Repeated checks can
+              establish a direct path when mappings and filtering allow it.
+            </title>
+            <defs>
+              <marker
+                id="nat-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="nat-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="6"
+                markerHeight="6"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box peer" x="0" y="20" width="280" height="110" />
+            <text x="140.0" y="68">Laptop</text>
+            <text class="small" x="140.0" y="108">Private address</text>
+            <rect class="box" x="390" y="20" width="280" height="110" />
+            <text x="530.0" y="68">Campus NAT</text>
+            <text class="small" x="530.0" y="108">Public mapping</text>
+            <rect class="box" x="770" y="20" width="280" height="110" />
+            <text x="910.0" y="68">Home NAT</text>
+            <text class="small" x="910.0" y="108">Public mapping</text>
+            <rect class="box peer" x="1160" y="20" width="280" height="110" />
+            <text x="1300.0" y="68">Homelab</text>
+            <text class="small" x="1300.0" y="108">Private address</text>
+            <path
+              class="dashed"
+              stroke="var(--rule)"
+              stroke-width="3"
+              d="M 140 130 V 490 M 530 130 V 490 M 910 130 V 490 M 1300 130 V 490"
+            />
+            <circle cx="140" cy="220" r="6" fill="var(--accent)" />
+            <path
+              class="control"
+              d="M 140 220 H 884"
+              marker-end="url(#nat-orange)"
+            />
+            <path class="blocked" d="M 898 208 L 922 232 M 922 208 L 898 232" />
+            <text class="label-control sequence-label" x="720" y="200">
+              1. An early probe can be dropped
+            </text>
+            <circle cx="1300" cy="330" r="6" fill="var(--accent)" />
+            <path
+              class="control"
+              d="M 1300 330 H 140"
+              marker-end="url(#nat-orange)"
+            />
+            <text class="label-control sequence-label" x="720" y="310">
+              2. Homelab sends its own probe
+            </text>
+            <path
+              class="traffic"
+              d="M 140 440 H 1300"
+              marker-end="url(#nat-green)"
+              marker-start="url(#nat-green)"
+            />
+            <text class="label-data sequence-label" x="720" y="420">
+              3. A direct path carries traffic
+            </text>
+          </svg>
+          <figcaption class="diagram-description">
+            <ol>
+              <li>
+                The laptop sends toward the homelab’s advertised public
+                endpoint. An early probe can be dropped before the homelab has
+                sent anything.
+              </li>
+              <li>
+                The homelab sends toward the laptop’s endpoint. Probes repeat;
+                they need not happen at the exact same instant.
+              </li>
+              <li>
+                If the mappings remain usable and the filters admit the return
+                traffic, a direct path works.
+              </li>
+            </ol>
+          </figcaption>
+        </figure>
+        <p class="takeaway">
+          Stable mappings help. Destination-dependent mappings or blocked UDP
+          can defeat the direct path.
+        </p>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~3 min. Here’s the hole punch. Both machines send outbound
+                probes to the candidate address on the other side. The NATs
+                create mappings, and their filtering rules decide whether the
+                return packets can pass. An early probe can be dropped before
+                the other side has sent anything. Probes repeat, so this doesn’t
+                need perfect timing. Endpoint-independent mapping helps because
+                the public endpoint stays usable across destinations.
+                Endpoint-dependent mapping, often called symmetric NAT, can give
+                you a different port when you talk to the peer than when you
+                talked to STUN. Filtering matters too, so NAT type alone isn’t
+                the whole story. If a working direct pair can’t be established,
+                the relay gives us another path.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://datatracker.ietf.org/doc/html/rfc5128#section-3.3"
+                  >UDP hole punching</a
+                ><a
+                  href="https://datatracker.ietf.org/doc/html/rfc8445#section-2.2"
+                  >ICE connectivity checks</a
+                ><a
+                  href="https://docs.netbird.io/help/troubleshooting-relayed-connections"
+                  >NetBird relay troubleshooting</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide relay"
+        id="relay"
+        data-title="The relay carries encrypted packets"
+        data-steps="0"
+        aria-labelledby="relay-heading"
+      >
+        <h2 id="relay-heading">The relay carries encrypted packets</h2>
+        <figure class="diagram">
+          <svg viewBox="0 0 1440 420" role="img" aria-labelledby="relay-title">
+            <title id="relay-title">
+              A relay forwards encrypted WireGuard packets between the two peers
+              when the direct path is unavailable.
+            </title>
+            <defs>
+              <marker
+                id="relay-orange"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--accent)" />
+              </marker>
+              <marker
+                id="relay-green"
+                viewBox="0 0 10 10"
+                refX="9"
+                refY="5"
+                markerWidth="8"
+                markerHeight="8"
+                orient="auto-start-reverse"
+              >
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--data)" />
+              </marker>
+            </defs>
+            <rect class="box peer" x="20" y="180" width="300" height="120" />
+            <text x="170.0" y="228">Laptop</text>
+            <text class="small" x="170.0" y="268">WireGuard encrypts</text>
+            <rect class="box peer" x="1120" y="180" width="300" height="120" />
+            <text x="1270.0" y="228">Homelab</text>
+            <text class="small" x="1270.0" y="268">WireGuard decrypts</text>
+            <rect class="box" x="550" y="180" width="340" height="120" />
+            <text x="720.0" y="228">NetBird relay</text>
+            <text class="small" x="720.0" y="268">Forwards ciphertext</text>
+            <path
+              class="traffic"
+              d="M 335 240 H 535"
+              marker-end="url(#relay-green)"
+              marker-start="url(#relay-green)"
+            />
+            <path
+              class="traffic"
+              d="M 905 240 H 1105"
+              marker-end="url(#relay-green)"
+              marker-start="url(#relay-green)"
+            />
+            <path class="blocked dashed" d="M 170 165 V 55 H 1270 V 165" />
+            <text class="label-danger" x="720" y="35">
+              Direct path unavailable
+            </text>
+            <text class="label-data" x="720" y="385">
+              WireGuard stays encrypted between the peers
+            </text>
+          </svg>
+          <figcaption class="diagram-description">
+            <p>
+              The laptop encrypts traffic with WireGuard. The relay forwards the
+              ciphertext to the homelab, which decrypts it. The same end-to-end
+              encryption applies in the reverse direction.
+            </p>
+          </figcaption>
+        </figure>
+        <div class="dual-note">
+          <div>
+            <h3>Two transports race</h3>
+            <p>
+              QUIC over UDP/443 and WebSocket over TCP/443. The first connection
+              wins.
+            </p>
+          </div>
+          <div>
+            <h3>A separate fallback path</h3>
+            <p>
+              The native relay is separate from ICE. An ICE
+              <code>relay</code> candidate means legacy TURN.
+            </p>
+          </div>
+        </div>
+        <p class="takeaway">
+          A relay can change latency and throughput. It cannot decrypt the
+          WireGuard payload.
+        </p>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~2 min. If the direct path is unavailable, both peers use a
+                relay connection. WireGuard encryption stays between the
+                endpoints. The relay forwards ciphertext. Current clients try
+                QUIC and WebSocket in parallel and keep whichever connects
+                first. WebSocket can win while UDP is working. Allowing TCP 443
+                helps, but a proxy or TLS inspection can still interfere. The
+                native relay is a separate path from ICE. The relay candidate
+                type in ICE is the legacy TURN path, not this native relay. In
+                status output, a native relayed connection normally shows no
+                selected ICE candidate pair. We’ll look for that in the demo.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://docs.netbird.io/about-netbird/ports-and-firewalls"
+                  >Relay transports and firewalls</a
+                ><a
+                  href="https://docs.netbird.io/help/troubleshooting-relayed-connections"
+                  >Native relay and TURN status</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+
+      <section
+        class="slide demo"
+        id="demo"
+        data-title="Demo time"
+        data-steps="0"
+        aria-labelledby="demo-heading"
+      >
+        <h2 id="demo-heading">Demo time</h2>
+        <ol class="demo-steps">
+          <li>
+            <span class="step-number">1</span>
+            <div>
+              <strong>Connect the laptop and homelab</strong
+              ><code>netbird up</code>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">2</span>
+            <div>
+              <strong>Inspect the actual path</strong
+              ><code>netbird status -d</code>
+            </div>
+          </li>
+          <li>
+            <span class="step-number">3</span>
+            <div>
+              <strong>Reach the service over its NetBird address</strong
+              ><code>ssh &lt;user&gt;@&lt;homelab-netbird-ip&gt;</code>
+            </div>
+          </li>
+        </ol>
+        <p>Watch the overlay IP, connection type, and WireGuard handshake.</p>
+        <div class="resource-links">
+          <a href="https://docs.netbird.io">docs.netbird.io</a
+          ><a href="https://github.com/netbirdio/netbird">GitHub repository</a>
+        </div>
+        <footer>
+          <img
+            src="/decks/ncsulug26/assets/netbird-logo.png"
+            width="142"
+            height="24"
+            alt="NetBird"
+          /><span>NC State Linux Users’ Group · October 16, 2026</span>
+        </footer>
+        <aside>
+          <details>
+            <summary>Speaker notes and sources</summary>
+            <div class="note-content">
+              <p>
+                ~30 sec, then demo. We’ve got our two machines. Now I’ll connect
+                them, inspect the route they actually took, and open an SSH
+                session. Use the server’s real username and NetBird IP in that
+                last command. SSH must already be running, and the NetBird
+                access policy must allow TCP 22 between these peers. A relayed
+                result still demonstrates the design. Before the talk, sign in
+                on both machines, check the SSH credentials, confirm the policy,
+                and keep the backup example below ready. Aim for 8 to 10 minutes
+                here, then questions.
+              </p>
+              <p>
+                <strong>Demo backup:</strong> this illustrative excerpt uses the
+                documented status fields. It is not a live capture. If the live
+                setup fails, use it to explain the expected evidence without
+                claiming the demo worked.
+              </p>
+              <pre
+                aria-label="Illustrative NetBird status output"
+              ><code>netbird status -d
+
+homelab.netbird.cloud:
+  NetBird IP: 100.75.226.48
+  Status: Connected
+  Connection type: Relayed
+  ICE candidate (Local/Remote): -/-
+  Last WireGuard handshake:
+    25 seconds ago</code></pre>
+              <p>
+                Connected plus a recent handshake indicates an active encrypted
+                tunnel. Relayed plus the dash pair indicates the native relay
+                path, with no selected direct ICE pair. A successful SSH session
+                also checks that the service is listening, policy permits the
+                port, and SSH authentication succeeds.
+              </p>
+              <div class="sources">
+                <a
+                  href="https://docs.netbird.io/help/troubleshooting-relayed-connections"
+                  >Detailed connection status</a
+                ><a href="https://docs.netbird.io/get-started"
+                  >NetBird quickstart</a
+                >
+              </div>
+            </div>
+          </details>
+        </aside>
+      </section>
+    </main>
+    <nav class="toolbar" aria-label="Presentation controls">
+      <button
+        id="previous"
+        aria-label="Previous slide or step"
+        title="Previous (left arrow)"
+      >
+        ←
+      </button>
+      <span id="counter" class="counter" aria-hidden="true"></span>
+      <label for="slide-picker" class="sr-only">Choose a slide</label
+      ><select id="slide-picker"></select>
+      <button
+        id="next"
+        aria-label="Next slide or step"
+        title="Next (right arrow)"
+      >
+        →
+      </button>
+      <button id="mode">Read</button>
+      <button
+        id="notes-toggle"
+        class="optional-control"
+        aria-expanded="false"
+        aria-controls="notes"
+      >
+        Notes
+      </button>
+      <button id="fullscreen" class="optional-control">Fullscreen</button>
+      <button id="print" class="optional-control">Print / PDF</button>
+      <button id="help-toggle" aria-label="Presentation help">?</button>
+    </nav>
+    <div
+      id="announcement"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <section
+      id="notes"
+      class="notes-panel"
+      tabindex="0"
+      aria-label="Speaker notes"
+      hidden
+    ></section>
+    <dialog id="help" aria-labelledby="help-heading">
+      <h2 id="help-heading">Presentation controls</h2>
+      <dl>
+        <dt>Right arrow, Space, or Page Down</dt>
+        <dd>Next step or slide. The architecture builds in three steps.</dd>
+        <dt>Left arrow or Page Up</dt>
+        <dd>Previous step or slide.</dd>
+        <dt>Home / End</dt>
+        <dd>First / last slide.</dd>
+        <dt>N / F</dt>
+        <dd>Show notes / toggle fullscreen.</dd>
+      </dl>
+      <p>
+        Click the right side of a slide to advance, or the left third to go
+        back. Links and controls work normally.
+      </p>
+      <p>
+        <strong>Read</strong> shows all slides with expandable notes and
+        sources. Phones open in reading view automatically. Use your browser’s
+        Print command to save all slides as a PDF.
+      </p>
+      <p>
+        Notes appear on this screen. A mirrored projector will show them too.
+      </p>
+      <button id="help-close">Close</button>
+    </dialog>
+  </body>
+</html>
