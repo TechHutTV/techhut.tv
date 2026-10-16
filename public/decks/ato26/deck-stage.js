@@ -1,619 +1,525 @@
 /**
- * <deck-stage> — reusable web component for HTML decks.
- *
- * Handles:
- *  (a) speaker notes — reads <script type="application/json" id="speaker-notes">
- *      and posts {slideIndexChanged: N} to the parent window on nav.
- *  (b) keyboard navigation — ←/→, PgUp/PgDn, Space, Home/End, number keys.
- *  (c) press R to reset to slide 0 (with a tasteful keyboard hint).
- *  (d) bottom-center overlay showing slide count + hints, fades out on idle.
- *  (e) auto-scaling — inner canvas is a fixed design size (default 1920×1080)
- *      scaled with `transform: scale()` to fit the viewport, letterboxed.
- *      Set the `noscale` attribute to render at authored size (1:1) — the
- *      PPTX exporter sets this so its DOM capture sees unscaled geometry.
- *  (f) print — `@media print` lays every slide out as its own page at the
- *      design size, so the browser's Print → Save as PDF produces a clean
- *      one-page-per-slide PDF with no extra setup.
- *
- * Slides are HIDDEN, not unmounted. Non-active slides stay in the DOM with
- * `visibility: hidden` + `opacity: 0`, so their state (videos, iframes,
- * form inputs, React trees) is preserved across navigation.
- *
- * Lifecycle event — the component dispatches a `slidechange` CustomEvent on
- * itself whenever the active slide changes (including the initial mount).
- * The event bubbles and composes out of shadow DOM, so you can listen on
- * the <deck-stage> element or on document:
- *
- *   document.querySelector('deck-stage').addEventListener('slidechange', (e) => {
- *     e.detail.index         // new 0-based index
- *     e.detail.previousIndex // previous index, or -1 on init
- *     e.detail.total         // total slide count
- *     e.detail.slide         // the new active slide element
- *     e.detail.previousSlide // the prior slide element, or null on init
- *     e.detail.reason        // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
- *   });
- *
- * Persistence: none at the deck level. The host app keeps the current slide
- * in its own URL (?slide=) and re-delivers it via location.hash on load, so a
- * bare load with no hash always starts at slide 1.
- *
- * Usage:
- *   <deck-stage width="1920" height="1080">
- *     <section data-label="Title">...</section>
- *     <section data-label="Agenda">...</section>
- *   </deck-stage>
- *
- * Slides are the direct element children of <deck-stage>. Each slide is
- * automatically tagged with:
- *   - data-screen-label="NN Label"   (1-indexed, for comment flow)
- *   - data-om-validate="no_overflowing_text,no_overlapping_text,slide_sized_text"
+ * Presentation controls for the ATO deck.
+ * Keeps the deck-stage API, numeric deep links, slidechange events, speaker
+ * notes JSON, and noscale export mode. Slides stay mounted during navigation.
  */
-
 (() => {
-  const DESIGN_W_DEFAULT = 1920;
-  const DESIGN_H_DEFAULT = 1080;
-  const OVERLAY_HIDE_MS = 1800;
-  const VALIDATE_ATTR = 'no_overflowing_text,no_overlapping_text,slide_sized_text';
-
-  const pad2 = (n) => String(n).padStart(2, '0');
-
   const stylesheet = `
-    :host {
-      position: fixed;
-      inset: 0;
-      display: block;
-      background: #000;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-      overflow: hidden;
+    :host { display:block; position:fixed; inset:0; overflow:hidden; background:#080808; color:var(--ink,#171717); font-family:var(--sans,system-ui); --deck-toolbar-height:64px; }
+    *, *::before, *::after { box-sizing:border-box; }
+    [hidden] { display:none !important; }
+    .stage { position:absolute; inset:0 0 var(--deck-toolbar-height); display:flex; align-items:center; justify-content:center; }
+    .canvas { position:relative; flex-shrink:0; transform-origin:center; }
+    ::slotted(section) { position:absolute !important; inset:0 !important; width:100% !important; height:100% !important; box-sizing:border-box !important; overflow:hidden; opacity:0; visibility:hidden; pointer-events:none; }
+    ::slotted([data-deck-active]) { opacity:1; visibility:visible; pointer-events:auto; }
+    .toolbar { position:fixed; inset:auto 0 0; z-index:20; display:flex; justify-content:center; align-items:center; gap:8px; padding:10px 16px; min-height:64px; background:var(--bg,#fafafa); border-top:1px solid var(--line-2,#d4d4d4); font-size:14px; }
+    button, select { font:inherit; color:inherit; background:var(--bg,#fafafa); border:1px solid var(--line-2,#d4d4d4); border-radius:4px; min-width:44px; min-height:44px; padding:8px 12px; cursor:pointer; }
+    button:hover { background:var(--accent-soft,#e3fbf0); }
+    button:disabled { opacity:.4; cursor:default; }
+    button, .count { white-space:nowrap; }
+    select { max-width:260px; min-width:0; }
+    a { color:var(--accent,#08734f); text-underline-offset:.2em; overflow-wrap:anywhere; }
+    :focus-visible { outline:3px solid var(--accent,#08734f); outline-offset:3px; }
+    .count { font-variant-numeric:tabular-nums; min-width:48px; text-align:center; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .notes { position:fixed; z-index:21; inset:auto 16px calc(var(--deck-toolbar-height) + 16px); max-height:45vh; overflow:auto; padding:24px; background:var(--bg,#fafafa); border:1px solid var(--line-2,#d4d4d4); border-radius:4px; font-size:18px; line-height:1.55; }
+    .notes-header { display:flex; justify-content:space-between; gap:20px; align-items:start; }
+    .notes h2 { font-size:20px; margin:0 0 12px; }
+    .notes p { margin:0 0 16px; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .notes > a { font-size:16px; }
+    dialog { width:calc(100% - 32px); max-width:580px; max-height:85vh; overflow:auto; padding:28px; background:var(--bg,#fafafa); color:var(--ink,#171717); border:1px solid var(--line-2,#d4d4d4); border-radius:4px; font:17px/1.5 var(--sans,system-ui); }
+    dialog::backdrop { background:#0009; }
+    dialog h2 { margin:0 0 20px; font-size:24px; }
+    dialog dl { margin:0 0 20px; }
+    dialog dt { font-weight:600; margin-top:12px; }
+    dialog dd { margin:4px 0 0; }
+    dialog p { margin:16px 0; }
+    :host([noscale]) .toolbar, :host([noscale]) .notes { display:none !important; }
+    :host([noscale]) .stage { inset:0; align-items:start; justify-content:start; }
+    @media screen {
+      :host([data-mode="reading"]) { position:relative; inset:auto; overflow:visible; background:var(--bg,#fafafa); }
+      :host([data-mode="reading"]) .stage { position:static; display:block; }
+      :host([data-mode="reading"]) .canvas { width:auto !important; height:auto !important; transform:none !important; max-width:1100px; margin:0 auto; }
+      :host([data-mode="reading"]) ::slotted(section) { position:relative !important; inset:auto !important; height:auto !important; overflow:visible; opacity:1; visibility:visible; pointer-events:auto; }
     }
-
-    .stage {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    @media (max-width:900px) {
+      .toolbar { gap:6px; padding:8px; }
+      .toolbar .optional { display:none; }
+      .toolbar select { flex:1; max-width:260px; width:0; }
+      .count { min-width:42px; font-size:12px; }
+      .notes { inset-inline:8px; padding:18px; }
     }
-
-    .canvas {
-      position: relative;
-      transform-origin: center center;
-      flex-shrink: 0;
-      background: #fff;
-      will-change: transform;
-    }
-
-    /* Slides live in light DOM (via <slot>) so authored CSS still applies.
-       We absolutely position each slotted child to stack them. */
-    ::slotted(*) {
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      box-sizing: border-box !important;
-      overflow: hidden;
-      opacity: 0;
-      pointer-events: none;
-      visibility: hidden;
-    }
-    ::slotted([data-deck-active]) {
-      opacity: 1;
-      pointer-events: auto;
-      visibility: visible;
-    }
-
-    /* Tap zones for mobile — back/forward thirds like Stories.
-       Transparent, no visible UI, don't block the overlay. */
-    .tapzones {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      z-index: 2147482000;
-      pointer-events: none;
-    }
-    .tapzone {
-      flex: 1;
-      pointer-events: auto;
-      -webkit-tap-highlight-color: transparent;
-    }
-    /* Only activate tap zones on coarse pointers (touch devices). */
-    @media (hover: hover) and (pointer: fine) {
-      .tapzones { display: none; }
-    }
-
-    .overlay {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translate(-50%, 6px) scale(0.92);
-      filter: blur(6px);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px;
-      background: #000;
-      color: #fff;
-      border-radius: 999px;
-      font-size: 12px;
-      font-feature-settings: "tnum" 1;
-      letter-spacing: 0.01em;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.8,.2,1), filter 260ms ease;
-      transform-origin: center bottom;
-      z-index: 2147483000;
-      user-select: none;
-    }
-    .overlay[data-visible] {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, 0) scale(1);
-      filter: blur(0);
-    }
-
-    .btn {
-      appearance: none;
-      -webkit-appearance: none;
-      background: transparent;
-      border: 0;
-      margin: 0;
-      padding: 0;
-      color: inherit;
-      font: inherit;
-      cursor: default;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      height: 28px;
-      min-width: 28px;
-      border-radius: 999px;
-      color: rgba(255,255,255,0.72);
-      transition: background 140ms ease, color 140ms ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-    .btn:active { background: rgba(255,255,255,0.18); }
-    .btn:focus { outline: none; }
-    .btn:focus-visible { outline: none; }
-    .btn::-moz-focus-inner { border: 0; }
-    .btn svg { width: 14px; height: 14px; display: block; }
-    .btn.reset {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      padding: 0 10px 0 12px;
-      gap: 6px;
-      color: rgba(255,255,255,0.72);
-    }
-    .btn.reset .kbd {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
-      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-      font-size: 10px;
-      line-height: 1;
-      color: rgba(255,255,255,0.88);
-      background: rgba(255,255,255,0.12);
-      border-radius: 4px;
-    }
-
-    .count {
-      font-variant-numeric: tabular-nums;
-      color: #fff;
-      font-weight: 500;
-      padding: 0 8px;
-      min-width: 42px;
-      text-align: center;
-      font-size: 12px;
-    }
-    .count .sep { color: rgba(255,255,255,0.45); margin: 0 3px; font-weight: 400; }
-    .count .total { color: rgba(255,255,255,0.55); }
-
-    .divider {
-      width: 1px;
-      height: 14px;
-      background: rgba(255,255,255,0.18);
-      margin: 0 2px;
-    }
-
-    /* ── Print: one page per slide, no chrome ────────────────────────────
-       The screen layout stacks every slide at inset:0 inside a scaled
-       canvas; for print we want them in document flow at the authored
-       design size so the browser paginates one slide per sheet. The
-       @page size is set from the width/height attributes via the inline
-       <style id="deck-stage-print-page"> that connectedCallback injects
-       into <head> (the @page at-rule has no effect inside shadow DOM). */
+    @media (max-width:360px) { .toolbar .count { display:none; } .toolbar button { padding-inline:9px; } }
     @media print {
-      :host {
-        position: static;
-        inset: auto;
-        background: none;
-        overflow: visible;
-        color: inherit;
-      }
-      .stage { position: static; display: block; }
-      .canvas {
-        transform: none !important;
-        width: auto !important;
-        height: auto !important;
-        background: none;
-        will-change: auto;
-      }
-      ::slotted(*) {
-        position: relative !important;
-        inset: auto !important;
-        width: var(--deck-design-w) !important;
-        height: var(--deck-design-h) !important;
-        box-sizing: border-box !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto;
-        break-after: page;
-        page-break-after: always;
-        break-inside: avoid;
-        overflow: hidden;
-      }
-      ::slotted(*:last-child) {
-        break-after: auto;
-        page-break-after: auto;
-      }
-      .overlay, .tapzones { display: none !important; }
+      :host { position:static; inset:auto; display:block; background:none; overflow:visible; }
+      .stage { position:static; display:block; }
+      .canvas { transform:none !important; width:auto !important; height:auto !important; background:none; }
+      ::slotted(section) { position:relative !important; inset:auto !important; width:var(--deck-design-w) !important; height:var(--deck-design-h) !important; opacity:1 !important; visibility:visible !important; pointer-events:auto; break-after:page; break-inside:avoid; overflow:hidden; }
+      ::slotted(section:last-of-type) { break-after:auto; }
+      .toolbar, .notes, dialog, .sr-only { display:none !important; }
     }
   `;
 
   class DeckStage extends HTMLElement {
-    static get observedAttributes() { return ['width', 'height', 'noscale']; }
-
+    static get observedAttributes() {
+      return ["width", "height", "noscale"];
+    }
     constructor() {
       super();
-      this._root = this.attachShadow({ mode: 'open' });
-      this._index = 0;
+      this._root = this.attachShadow({ mode: "open" });
       this._slides = [];
       this._notes = [];
-      this._hideTimer = null;
-      this._mouseIdleTimer = null;
-
-      this._onKey = this._onKey.bind(this);
-      this._onResize = this._onResize.bind(this);
-      this._onSlotChange = this._onSlotChange.bind(this);
-      this._onMouseMove = this._onMouseMove.bind(this);
-      this._onTapBack = this._onTapBack.bind(this);
-      this._onTapForward = this._onTapForward.bind(this);
+      this._index = 0;
+      this._previousIndex = -1;
+      this._scrollFrame = 0;
+      this._lastWidth = innerWidth;
+      this._narrow = matchMedia("(max-width:900px)");
     }
-
     get designWidth() {
-      return parseInt(this.getAttribute('width'), 10) || DESIGN_W_DEFAULT;
+      return parseInt(this.getAttribute("width"), 10) || 1920;
     }
     get designHeight() {
-      return parseInt(this.getAttribute('height'), 10) || DESIGN_H_DEFAULT;
+      return parseInt(this.getAttribute("height"), 10) || 1080;
+    }
+    get index() {
+      return this._index;
+    }
+    get length() {
+      return this._slides.length;
+    }
+    goTo(index) {
+      this._go(index, "api");
+    }
+    next() {
+      this._go(this._index + 1, "api");
+    }
+    prev() {
+      this._go(this._index - 1, "api");
+    }
+    reset() {
+      this._go(0, "api");
     }
 
     connectedCallback() {
+      this._events = new AbortController();
+      const on = (target, type, fn, options = {}) =>
+        target.addEventListener(type, fn, {
+          ...options,
+          signal: this._events.signal,
+        });
       this._render();
       this._loadNotes();
+      on(this._slot, "slotchange", () => this._collectSlides());
+      on(window, "keydown", (event) => this._onKey(event));
+      on(window, "resize", () => {
+        const widthChanged = this._lastWidth !== innerWidth;
+        this._lastWidth = innerWidth;
+        if (widthChanged) {
+          const requested = new URL(location.href).searchParams.get("view");
+          this._setMode(
+            ["slides", "reading"].includes(requested)
+              ? requested
+              : this._narrow.matches
+                ? "reading"
+                : "slides",
+          );
+        } else this._fit();
+      });
+      on(window, "hashchange", () => this._go(this._fromHash(), "hash"));
+      on(window, "scroll", () => this._onScroll(), { passive: true });
+      on(this._canvas, "click", (event) => {
+        if (
+          this.dataset.mode !== "slides" ||
+          getSelection().toString() ||
+          event.target.closest(
+            "a,button,input,select,textarea,summary,details,[contenteditable]",
+          )
+        )
+          return;
+        this._go(
+          this._index + (event.clientX < innerWidth / 3 ? -1 : 1),
+          "click",
+        );
+      });
+      on(this._previous, "click", () => this._go(this._index - 1, "click"));
+      on(this._next, "click", () => this._go(this._index + 1, "click"));
+      on(this._picker, "change", () =>
+        this._go(Number(this._picker.value), "click"),
+      );
+      on(this._modeButton, "click", () =>
+        this._setMode(
+          this.dataset.mode === "slides" ? "reading" : "slides",
+          true,
+        ),
+      );
+      on(this._notesButton, "click", () => this._toggleNotes());
+      on(this._root.querySelector("#notes-close"), "click", () =>
+        this._toggleNotes(false),
+      );
+      on(this._root.querySelector("#fullscreen"), "click", () =>
+        this._fullscreen(),
+      );
+      on(this._root.querySelector("#print"), "click", () => window.print());
+      on(this._root.querySelector("#help-open"), "click", () =>
+        this._help.showModal(),
+      );
+      on(this._root.querySelector("#help-close"), "click", () =>
+        this._help.close(),
+      );
+      this._observer = new ResizeObserver(() => this._fit());
+      this._observer.observe(this._toolbar);
       this._syncPrintPageRule();
-      window.addEventListener('keydown', this._onKey);
-      window.addEventListener('resize', this._onResize);
-      window.addEventListener('mousemove', this._onMouseMove, { passive: true });
-      // Initial collection + layout happens via slotchange, which fires on mount.
-    }
-
-    disconnectedCallback() {
-      window.removeEventListener('keydown', this._onKey);
-      window.removeEventListener('resize', this._onResize);
-      window.removeEventListener('mousemove', this._onMouseMove);
-      if (this._hideTimer) clearTimeout(this._hideTimer);
-      if (this._mouseIdleTimer) clearTimeout(this._mouseIdleTimer);
-    }
-
-    attributeChangedCallback() {
-      if (this._canvas) {
-        this._canvas.style.width = this.designWidth + 'px';
-        this._canvas.style.height = this.designHeight + 'px';
-        this._canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
-        this._canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
-        this._fit();
-        this._syncPrintPageRule();
-      }
-    }
-
-    _render() {
-      const style = document.createElement('style');
-      style.textContent = stylesheet;
-
-      const stage = document.createElement('div');
-      stage.className = 'stage';
-
-      const canvas = document.createElement('div');
-      canvas.className = 'canvas';
-      canvas.style.width = this.designWidth + 'px';
-      canvas.style.height = this.designHeight + 'px';
-      canvas.style.setProperty('--deck-design-w', this.designWidth + 'px');
-      canvas.style.setProperty('--deck-design-h', this.designHeight + 'px');
-
-      const slot = document.createElement('slot');
-      slot.addEventListener('slotchange', this._onSlotChange);
-      canvas.appendChild(slot);
-      stage.appendChild(canvas);
-
-      // Tap zones (mobile): left third = back, right third = forward.
-      const tapzones = document.createElement('div');
-      tapzones.className = 'tapzones export-hidden';
-      tapzones.setAttribute('aria-hidden', 'true');
-      tapzones.setAttribute('data-noncommentable', '');
-      const tzBack = document.createElement('div');
-      tzBack.className = 'tapzone tapzone--back';
-      const tzMid = document.createElement('div');
-      tzMid.className = 'tapzone tapzone--mid';
-      tzMid.style.pointerEvents = 'none';
-      const tzFwd = document.createElement('div');
-      tzFwd.className = 'tapzone tapzone--fwd';
-      tzBack.addEventListener('click', this._onTapBack);
-      tzFwd.addEventListener('click', this._onTapForward);
-      tapzones.append(tzBack, tzMid, tzFwd);
-
-      // Overlay: compact, solid black, with clickable controls.
-      const overlay = document.createElement('div');
-      overlay.className = 'overlay export-hidden';
-      overlay.setAttribute('role', 'toolbar');
-      overlay.setAttribute('aria-label', 'Deck controls');
-      overlay.setAttribute('data-noncommentable', '');
-      overlay.innerHTML = `
-        <button class="btn prev" type="button" aria-label="Previous slide" title="Previous (←)">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>
-        </button>
-        <span class="count" aria-live="polite"><span class="current">1</span><span class="sep">/</span><span class="total">1</span></span>
-        <button class="btn next" type="button" aria-label="Next slide" title="Next (→)">
-          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>
-        </button>
-        <span class="divider"></span>
-        <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
-      `;
-
-      overlay.querySelector('.prev').addEventListener('click', () => this._go(this._index - 1, 'click'));
-      overlay.querySelector('.next').addEventListener('click', () => this._go(this._index + 1, 'click'));
-      overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
-
-      this._root.append(style, stage, tapzones, overlay);
-      this._canvas = canvas;
-      this._slot = slot;
-      this._overlay = overlay;
-      this._countEl = overlay.querySelector('.current');
-      this._totalEl = overlay.querySelector('.total');
-    }
-
-    /** @page must live in the document stylesheet — it's a no-op inside
-     *  shadow DOM. Inject/update a single <head> style tag so the print
-     *  sheet matches the design size and Save-as-PDF yields one slide per
-     *  page with no margins. */
-    _syncPrintPageRule() {
-      const id = 'deck-stage-print-page';
-      let tag = document.getElementById(id);
-      if (!tag) {
-        tag = document.createElement('style');
-        tag.id = id;
-        document.head.appendChild(tag);
-      }
-      tag.textContent =
-        '@page { size: ' + this.designWidth + 'px ' + this.designHeight + 'px; margin: 0; } ' +
-        '@media print { html, body { margin: 0 !important; padding: 0 !important; background: none !important; overflow: visible !important; height: auto !important; } ' +
-        '* { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }';
-    }
-
-    _onSlotChange() {
       this._collectSlides();
-      this._restoreIndex();
-      this._applyIndex({ showOverlay: false, broadcast: true, reason: 'init' });
+      const requested = new URL(location.href).searchParams.get("view");
+      this._setMode(
+        ["slides", "reading"].includes(requested)
+          ? requested
+          : this._narrow.matches
+            ? "reading"
+            : "slides",
+      );
+    }
+    disconnectedCallback() {
+      this._events?.abort();
+      this._observer?.disconnect();
+      cancelAnimationFrame(this._scrollFrame);
+      cancelAnimationFrame(this._layoutFrame);
+    }
+    attributeChangedCallback() {
+      if (!this._canvas) return;
+      this._syncPrintPageRule();
+      if (this.hasAttribute("noscale")) this._setMode("slides");
       this._fit();
     }
-
-    _collectSlides() {
-      const assigned = this._slot.assignedElements({ flatten: true });
-      this._slides = assigned.filter((el) => {
-        // Skip template/style/script nodes even if someone slots them.
-        const tag = el.tagName;
-        return tag !== 'TEMPLATE' && tag !== 'SCRIPT' && tag !== 'STYLE';
-      });
-
-      this._slides.forEach((slide, i) => {
-        const n = i + 1;
-        // Determine a label for comment flow: prefer explicit data-label,
-        // then an existing data-screen-label, then first heading, else "Slide".
-        let label = slide.getAttribute('data-label');
-        if (!label) {
-          const existing = slide.getAttribute('data-screen-label');
-          if (existing) {
-            // Strip any leading number the author may have included.
-            label = existing.replace(/^\s*\d+\s*/, '').trim() || existing;
-          }
-        }
-        if (!label) {
-          const h = slide.querySelector('h1, h2, h3, [data-title]');
-          if (h) label = (h.textContent || '').trim().slice(0, 40);
-        }
-        if (!label) label = 'Slide';
-        slide.setAttribute('data-screen-label', `${pad2(n)} ${label}`);
-
-        // Validation attribute for comment flow / auto-checks.
-        if (!slide.hasAttribute('data-om-validate')) {
-          slide.setAttribute('data-om-validate', VALIDATE_ATTR);
-        }
-
-        slide.setAttribute('data-deck-slide', String(i));
-      });
-
-      if (this._totalEl) this._totalEl.textContent = String(this._slides.length || 1);
-      if (this._index >= this._slides.length) this._index = Math.max(0, this._slides.length - 1);
+    _render() {
+      this._root.innerHTML = `<style>${stylesheet}</style>
+        <div class="stage"><div class="canvas"><slot></slot></div></div>
+        <nav class="toolbar export-hidden" aria-label="Presentation controls" data-noncommentable>
+          <button id="previous" aria-label="Previous slide" title="Previous (left arrow)">←</button>
+          <span class="count" aria-hidden="true"></span>
+          <label for="slide-picker" class="sr-only">Choose a slide</label><select id="slide-picker"></select>
+          <button id="next" aria-label="Next slide" title="Next (right arrow)">→</button>
+          <button id="mode">Read</button>
+          <button id="notes-toggle" class="optional" aria-controls="notes" aria-expanded="false">Notes</button>
+          <button id="fullscreen" class="optional">Fullscreen</button>
+          <button id="print" class="optional">Print / PDF</button>
+          <button id="help-open" aria-label="Presentation help">?</button>
+        </nav>
+        <section id="notes" class="notes export-hidden" aria-labelledby="notes-heading" tabindex="0" hidden>
+          <div class="notes-header"><h2 id="notes-heading"></h2><button id="notes-close" aria-label="Close notes">×</button></div>
+          <div class="notes-content"></div><a href="./notes.html" target="_blank" rel="noopener">Full rehearsal notes ↗</a>
+        </section>
+        <div class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
+        <dialog aria-labelledby="help-heading">
+          <h2 id="help-heading">Presentation controls</h2>
+          <dl><dt>← / →, Page Up / Page Down</dt><dd>Previous or next slide. Space and Enter also advance.</dd>
+          <dt>Home / End / R</dt><dd>First slide, last slide, or reset. Number keys 1–9 jump to those slides; 0 jumps to slide 10.</dd>
+          <dt>N / F / ?</dt><dd>Show notes, toggle fullscreen, or open this help.</dd></dl>
+          <p>Use the slide menu to jump anywhere. Click the left third of a slide to go back, or the rest to advance. Links and text selection work normally.</p>
+          <p><strong>Read</strong> shows every slide with expandable speaker notes. Phones open in reading view automatically. Print / PDF exports one page per slide.</p>
+          <p>Notes appear on this screen, so a mirrored projector will show them too. <a href="./notes.html" target="_blank" rel="noopener">Open the full rehearsal notes</a> on a separate device or screen.</p>
+          <button id="help-close" autofocus>Close</button>
+        </dialog>`;
+      const find = (selector) => this._root.querySelector(selector);
+      this._slot = find("slot");
+      this._canvas = find(".canvas");
+      this._toolbar = find(".toolbar");
+      this._picker = find("#slide-picker");
+      this._previous = find("#previous");
+      this._next = find("#next");
+      this._modeButton = find("#mode");
+      this._notesButton = find("#notes-toggle");
+      this._notesPanel = find("#notes");
+      this._help = find("dialog");
+      this._announcement = find("#announcement");
     }
-
     _loadNotes() {
-      const tag = document.getElementById('speaker-notes');
-      if (!tag) { this._notes = []; return; }
       try {
-        const parsed = JSON.parse(tag.textContent || '[]');
-        if (Array.isArray(parsed)) this._notes = parsed;
-      } catch (e) {
-        console.warn('[deck-stage] Failed to parse #speaker-notes JSON:', e);
+        const parsed = JSON.parse(
+          document.getElementById("speaker-notes")?.textContent || "[]",
+        );
+        this._notes = Array.isArray(parsed) ? parsed : [];
+      } catch {
         this._notes = [];
       }
     }
-
-    _restoreIndex() {
-      // The host's ?slide= param is delivered as a #<int> hash (1-indexed) on
-      // the iframe src. No hash → slide 1; the deck itself keeps no position
-      // state across loads.
-      const h = (location.hash || '').match(/^#(\d+)$/);
-      if (h) {
-        const n = parseInt(h[1], 10) - 1;
-        if (n >= 0 && n < this._slides.length) this._index = n;
+    _noteContent(index) {
+      const paragraph = document.createElement("p");
+      const note =
+        typeof this._notes[index] === "string"
+          ? this._notes[index]
+          : "No speaker notes for this slide.";
+      for (const part of note.split(/(https?:\/\/[^\s;]+)/g)) {
+        if (/^https?:\/\//.test(part)) {
+          const link = document.createElement("a");
+          link.href = part;
+          link.textContent = part;
+          paragraph.append(link);
+        } else paragraph.append(document.createTextNode(part));
       }
+      return paragraph;
     }
-
-    _applyIndex({ showOverlay = true, broadcast = true, reason = 'init' } = {}) {
-      if (!this._slides.length) return;
-      const prev = this._prevIndex == null ? -1 : this._prevIndex;
-      const curr = this._index;
-      // Keep the iframe's own hash in sync so an in-iframe location.reload()
-      // (reload banner path in viewer-handle.ts) lands on the current slide,
-      // not the stale deep-link hash from initial load.
-      try { history.replaceState(null, '', '#' + (curr + 1)); } catch (e) {}
-      this._slides.forEach((s, i) => {
-        if (i === curr) s.setAttribute('data-deck-active', '');
-        else s.removeAttribute('data-deck-active');
+    _collectSlides() {
+      const slides = this._slot
+        .assignedElements()
+        .filter((el) => el.tagName === "SECTION");
+      if (
+        slides.length === this._slides.length &&
+        slides.every((slide, i) => slide === this._slides[i])
+      )
+        return;
+      this._slides = slides;
+      this._picker.replaceChildren();
+      this._labels = slides.map((slide, i) => {
+        let label =
+          slide.dataset.label ||
+          slide.dataset.screenLabel?.replace(/^\d+\s*/, "") ||
+          slide.querySelector("h1,h2,h3")?.textContent ||
+          "Slide";
+        if (/Divider$/.test(label)) {
+          const title = slide.querySelector(".divider .title")?.cloneNode(true);
+          title?.querySelectorAll("br").forEach((br) => br.replaceWith(" "));
+          label = title?.textContent || label;
+        }
+        if (label === "QA Big") label = "Q&A";
+        label = label.replace(/\s+/g, " ").trim();
+        slide.dataset.deckSlide = String(i);
+        if (!slide.hasAttribute("data-om-validate"))
+          slide.dataset.omValidate =
+            "no_overflowing_text,no_overlapping_text,slide_sized_text";
+        slide.setAttribute("aria-label", `${i + 1}. ${label}`);
+        this._picker.add(new Option(`${i + 1}. ${label}`, String(i)));
+        if (!slide.querySelector(".deck-reading-notes")) {
+          const details = document.createElement("details");
+          details.className = "deck-reading-notes";
+          const summary = document.createElement("summary");
+          summary.textContent = "Speaker notes";
+          details.append(summary, this._noteContent(i));
+          slide.append(details);
+        }
+        slide.querySelectorAll("table").forEach((table) => {
+          if (table.parentElement.classList.contains("deck-table")) return;
+          const wrap = document.createElement("div");
+          wrap.className = "deck-table";
+          wrap.tabIndex = 0;
+          wrap.setAttribute("role", "region");
+          wrap.setAttribute("aria-label", `${label} table`);
+          table.before(wrap);
+          wrap.append(table);
+        });
+        return label;
       });
-      if (this._countEl) this._countEl.textContent = String(curr + 1);
-
-      if (broadcast) {
-        // (1) Legacy: host-window postMessage for speaker-notes renderers.
-        try { window.postMessage({ slideIndexChanged: curr }, '*'); } catch (e) {}
-
-        // (2) In-page CustomEvent on the <deck-stage> element itself.
-        //     Bubbles and composes out of shadow DOM so slide code can listen:
-        //       document.querySelector('deck-stage').addEventListener('slidechange', e => {
-        //         e.detail.index, e.detail.previousIndex, e.detail.total, e.detail.slide, e.detail.reason
-        //       });
-        const detail = {
-          index: curr,
-          previousIndex: prev,
-          total: this._slides.length,
-          slide: this._slides[curr] || null,
-          previousSlide: prev >= 0 ? (this._slides[prev] || null) : null,
-          reason: reason, // 'init' | 'keyboard' | 'click' | 'tap' | 'api'
-        };
-        this.dispatchEvent(new CustomEvent('slidechange', {
+      this._index = this._fromHash();
+      this._applyIndex("init");
+      this._fit();
+    }
+    _fromHash() {
+      const hash = location.hash.match(/^#(\d+)$/);
+      return hash
+        ? Math.max(0, Math.min(this.length - 1, Number(hash[1]) - 1))
+        : 0;
+    }
+    _applyIndex(reason = "api") {
+      if (!this.length) return;
+      const reading = this.dataset.mode === "reading";
+      this._slides.forEach((slide, i) => {
+        slide.toggleAttribute("data-deck-active", i === this._index);
+        slide.inert = !reading && i !== this._index;
+        if (reading || i === this._index) slide.removeAttribute("aria-hidden");
+        else slide.setAttribute("aria-hidden", "true");
+      });
+      this._picker.value = String(this._index);
+      this._previous.disabled = this._index === 0;
+      this._next.disabled = this._index === this.length - 1;
+      this._root.querySelector(".count").textContent =
+        `${this._index + 1} / ${this.length}`;
+      this._announcement.textContent = `Slide ${this._index + 1} of ${this.length}: ${this._labels[this._index]}`;
+      this._root.querySelector("#notes-heading").textContent =
+        `Notes: ${this._labels[this._index]}`;
+      this._root
+        .querySelector(".notes-content")
+        .replaceChildren(this._noteContent(this._index));
+      const url = new URL(location.href);
+      url.hash = String(this._index + 1);
+      history.replaceState(null, "", url);
+      const detail = {
+        index: this._index,
+        previousIndex: this._previousIndex,
+        total: this.length,
+        slide: this._slides[this._index],
+        previousSlide: this._slides[this._previousIndex] || null,
+        reason,
+      };
+      window.postMessage({ slideIndexChanged: this._index }, "*");
+      this.dispatchEvent(
+        new CustomEvent("slidechange", {
           detail,
           bubbles: true,
           composed: true,
-        }));
+        }),
+      );
+      this._previousIndex = this._index;
+    }
+    _go(index, reason = "api") {
+      if (!this.length || !Number.isFinite(index)) return;
+      this._index = Math.max(0, Math.min(this.length - 1, Math.trunc(index)));
+      this._applyIndex(reason);
+      if (this.dataset.mode === "reading") this._alignView();
+    }
+    _setMode(mode, persist = false) {
+      cancelAnimationFrame(this._scrollFrame);
+      this._scrollFrame = 0;
+      if (this.hasAttribute("noscale")) mode = "slides";
+      this.dataset.mode = mode;
+      document.body.dataset.deckMode = mode;
+      document.documentElement.dataset.deckMode = mode;
+      this._modeButton.textContent = mode === "slides" ? "Read" : "Slides";
+      this._modeButton.setAttribute(
+        "aria-label",
+        mode === "slides" ? "Switch to reading view" : "Switch to slide view",
+      );
+      this._notesButton.hidden = mode === "reading";
+      this._toggleNotes(false, false);
+      if (persist) {
+        const url = new URL(location.href);
+        url.searchParams.set("view", mode);
+        history.replaceState(null, "", url);
       }
-
-      this._prevIndex = curr;
-      if (showOverlay) this._flashOverlay();
+      this._applyIndex("mode");
+      this._fit();
+      this._alignView();
     }
-
-    _flashOverlay() {
-      if (!this._overlay) return;
-      this._overlay.setAttribute('data-visible', '');
-      if (this._hideTimer) clearTimeout(this._hideTimer);
-      this._hideTimer = setTimeout(() => {
-        this._overlay.removeAttribute('data-visible');
-      }, OVERLAY_HIDE_MS);
+    _alignView() {
+      cancelAnimationFrame(this._layoutFrame);
+      this._layoutChanging = true;
+      this._layoutFrame = requestAnimationFrame(() => {
+        if (this.dataset.mode === "reading")
+          this._slides[this._index]?.scrollIntoView({ block: "start" });
+        else window.scrollTo(0, 0);
+        this._layoutFrame = requestAnimationFrame(() => {
+          this._layoutChanging = false;
+        });
+      });
     }
-
+    _toggleNotes(show = this._notesPanel.hidden, restoreFocus = true) {
+      if (show && this.dataset.mode !== "slides") return;
+      const hadFocus = this._notesPanel.contains(this._root.activeElement);
+      this._notesPanel.hidden = !show;
+      this._notesButton.setAttribute("aria-expanded", String(show));
+      if (show) this._notesPanel.focus();
+      else if (restoreFocus && hadFocus) this._notesButton.focus();
+    }
+    async _fullscreen() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (document.documentElement.requestFullscreen)
+          await document.documentElement.requestFullscreen();
+      } catch {
+        this._announcement.textContent =
+          "Fullscreen is unavailable. Use your browser’s fullscreen command.";
+      }
+    }
+    _onKey(event) {
+      if (
+        event.defaultPrevented ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        this._help.open
+      )
+        return;
+      const target = event.composedPath()[0];
+      if (
+        !(target instanceof Element) ||
+        target.closest("input,select,textarea,[contenteditable]")
+      )
+        return;
+      if (event.key === "Escape") {
+        this._toggleNotes(false);
+        return;
+      }
+      if (this._notesPanel.contains(target)) {
+        if (event.key.toLowerCase() === "n") this._toggleNotes(false);
+        return;
+      }
+      if (
+        target.closest("button,a,summary") &&
+        [" ", "Enter"].includes(event.key)
+      )
+        return;
+      if (event.key === "?") {
+        this._help.showModal();
+        return;
+      }
+      if (this.dataset.mode !== "slides") return;
+      let destination;
+      if (["ArrowRight", "PageDown", " ", "Enter"].includes(event.key))
+        destination = this._index + 1;
+      else if (["ArrowLeft", "PageUp"].includes(event.key))
+        destination = this._index - 1;
+      else if (["Home", "r", "R"].includes(event.key)) destination = 0;
+      else if (event.key === "End") destination = this.length - 1;
+      else if (/^[0-9]$/.test(event.key))
+        destination = event.key === "0" ? 9 : Number(event.key) - 1;
+      else if (event.key.toLowerCase() === "n") this._toggleNotes();
+      else if (event.key.toLowerCase() === "f") this._fullscreen();
+      if (destination !== undefined) {
+        event.preventDefault();
+        this._go(destination, "keyboard");
+      }
+    }
+    _onScroll() {
+      if (
+        this.dataset.mode !== "reading" ||
+        this._scrollFrame ||
+        this._layoutChanging
+      )
+        return;
+      this._scrollFrame = requestAnimationFrame(() => {
+        this._scrollFrame = 0;
+        if (this.dataset.mode !== "reading" || this._layoutChanging) return;
+        let index = this._slides.reduce(
+          (active, slide, i) =>
+            slide.getBoundingClientRect().top <= innerHeight * 0.3 ? i : active,
+          0,
+        );
+        if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2)
+          index = this.length - 1;
+        if (index !== this._index) {
+          this._index = index;
+          this._applyIndex("scroll");
+        }
+      });
+    }
     _fit() {
       if (!this._canvas) return;
-      // PPTX export sets noscale so the DOM capture sees authored-size
-      // geometry — the scaled canvas is in shadow DOM, so the exporter's
-      // resetTransformSelector can't reach .canvas.style.transform directly.
-      if (this.hasAttribute('noscale')) {
-        this._canvas.style.transform = 'none';
-        return;
+      const toolbarHeight = this.hasAttribute("noscale")
+        ? 0
+        : this._toolbar.getBoundingClientRect().height;
+      this.style.setProperty("--deck-toolbar-height", `${toolbarHeight}px`);
+      document.documentElement.style.setProperty(
+        "--deck-toolbar-height",
+        `${toolbarHeight}px`,
+      );
+      this._canvas.style.width = `${this.designWidth}px`;
+      this._canvas.style.height = `${this.designHeight}px`;
+      this._canvas.style.transform =
+        this.hasAttribute("noscale") || this.dataset.mode === "reading"
+          ? "none"
+          : `scale(${Math.min(innerWidth / this.designWidth, Math.max(1, innerHeight - toolbarHeight) / this.designHeight)})`;
+    }
+    _syncPrintPageRule() {
+      this.style.setProperty("--deck-design-w", `${this.designWidth}px`);
+      this.style.setProperty("--deck-design-h", `${this.designHeight}px`);
+      let style = document.getElementById("deck-stage-print-page");
+      if (!style) {
+        style = document.createElement("style");
+        style.id = "deck-stage-print-page";
+        document.head.append(style);
       }
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const s = Math.min(vw / this.designWidth, vh / this.designHeight);
-      this._canvas.style.transform = `scale(${s})`;
+      style.textContent = `@page { size:${this.designWidth}px ${this.designHeight}px; margin:0; } @media print { html,body { margin:0 !important; padding:0 !important; background:none !important; overflow:visible !important; height:auto !important; } * { -webkit-print-color-adjust:exact; print-color-adjust:exact; } }`;
     }
-
-    _onResize() { this._fit(); }
-
-    _onMouseMove() {
-      // Keep overlay visible while mouse moves; hide after idle.
-      this._flashOverlay();
-    }
-
-    _onTapBack(e) {
-      e.preventDefault();
-      this._go(this._index - 1, 'tap');
-    }
-
-    _onTapForward(e) {
-      e.preventDefault();
-      this._go(this._index + 1, 'tap');
-    }
-
-    _onKey(e) {
-      // Ignore when the user is typing.
-      const t = e.target;
-      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-
-      const key = e.key;
-      let handled = true;
-
-      if (key === 'ArrowRight' || key === 'PageDown' || key === ' ' || key === 'Spacebar') {
-        this._go(this._index + 1, 'keyboard');
-      } else if (key === 'ArrowLeft' || key === 'PageUp') {
-        this._go(this._index - 1, 'keyboard');
-      } else if (key === 'Home') {
-        this._go(0, 'keyboard');
-      } else if (key === 'End') {
-        this._go(this._slides.length - 1, 'keyboard');
-      } else if (key === 'r' || key === 'R') {
-        this._go(0, 'keyboard');
-      } else if (/^[0-9]$/.test(key)) {
-        // 1..9 jump to that slide; 0 jumps to 10.
-        const n = key === '0' ? 9 : parseInt(key, 10) - 1;
-        if (n < this._slides.length) this._go(n, 'keyboard');
-      } else {
-        handled = false;
-      }
-
-      if (handled) {
-        e.preventDefault();
-        this._flashOverlay();
-      }
-    }
-
-    _go(i, reason = 'api') {
-      if (!this._slides.length) return;
-      const clamped = Math.max(0, Math.min(this._slides.length - 1, i));
-      if (clamped === this._index) {
-        this._flashOverlay();
-        return;
-      }
-      this._index = clamped;
-      this._applyIndex({ showOverlay: true, broadcast: true, reason });
-    }
-
-    // Public API ------------------------------------------------------------
-
-    /** Current slide index (0-based). */
-    get index() { return this._index; }
-    /** Total slide count. */
-    get length() { return this._slides.length; }
-    /** Programmatically navigate. */
-    goTo(i) { this._go(i, 'api'); }
-    next() { this._go(this._index + 1, 'api'); }
-    prev() { this._go(this._index - 1, 'api'); }
-    reset() { this._go(0, 'api'); }
   }
-
-  if (!customElements.get('deck-stage')) {
-    customElements.define('deck-stage', DeckStage);
-  }
+  if (!customElements.get("deck-stage"))
+    customElements.define("deck-stage", DeckStage);
 })();
