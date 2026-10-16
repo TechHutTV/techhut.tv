@@ -124,6 +124,10 @@ const nextConfig = {
                 source: '/decks/ncsulug26',
                 destination: '/decks/ncsulug26/index.html',
             },
+            {
+                source: '/decks/ato26',
+                destination: '/decks/ato26/index.html',
+            },
         ]
     }
 }
