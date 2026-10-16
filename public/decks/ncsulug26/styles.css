@@ -370,12 +370,6 @@ button:disabled {
 .diagram .dashed {
   stroke-dasharray: 12 10;
 }
-.nat .sequence-label {
-  paint-order: stroke;
-  stroke: var(--paper);
-  stroke-width: 12px;
-  stroke-linejoin: round;
-}
 .diagram-description {
   display: none;
 }
