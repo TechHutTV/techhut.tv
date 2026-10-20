@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <title>The Self-Hosted Stack · Brandon Hopkins</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="/decks/ato26/styles.css?v=5" />
-<link rel="stylesheet" href="/decks/ato26/reading.css?v=2" />
+<link rel="stylesheet" href="/decks/ato26/styles.css?v=7" />
+<link rel="stylesheet" href="/decks/ato26/reading.css?v=3" />
 <script src="/decks/ato26/deck-stage.js?v=2" defer></script>
 </head>
 <body data-deck-mode="reading">
@@ -506,7 +506,39 @@
         <li><span>A routing peer at home can reach services that have no NetBird client.</span></li>
         <li><span>Policies limit access. Private DNS makes service names work away from home.</span></li>
       </ul>
-      <figure><img src="/decks/ato26/assets/mesh.png" alt="NetBird devices connected through a private mesh network" /><figcaption>WireGuard connects directly when possible, with an encrypted relay fallback.</figcaption></figure>
+      <figure class="connection-map netbird-map">
+        <svg viewBox="0 0 880 520" role="img" aria-labelledby="netbird-map-title netbird-map-description">
+          <title id="netbird-map-title">Private access to services at home</title>
+          <desc id="netbird-map-description">A laptop and phone running NetBird connect to a routing peer at home over WireGuard. The routing peer reaches services on the home network that do not have a NetBird client.</desc>
+          <defs>
+            <marker id="intro-arrow-private" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/></marker>
+            <marker id="intro-arrow-local" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--ink-faint)"/></marker>
+          </defs>
+          <text class="line-label muted" x="145" y="36">Away from home</text>
+          <text class="line-label muted" x="710" y="36">At home</text>
+          <rect class="peer-node" x="0" y="90" width="290" height="112"/>
+          <text class="node-title" x="145" y="138">My laptop</text>
+          <text class="node-detail" x="145" y="180">NetBird client</text>
+          <rect class="peer-node" x="0" y="320" width="290" height="112"/>
+          <text class="node-title" x="145" y="368">My phone</text>
+          <text class="node-detail" x="145" y="410">NetBird client</text>
+          <path class="direct-line" d="M 306 146 H 524" marker-start="url(#intro-arrow-private)" marker-end="url(#intro-arrow-private)"/>
+          <path class="direct-line" d="M 306 376 H 410 V 146" marker-start="url(#intro-arrow-private)"/>
+          <text class="line-label direct-label" x="415" y="118">WireGuard</text>
+          <rect class="peer-node" x="540" y="90" width="340" height="112"/>
+          <text class="node-title" x="710" y="138">My home peer</text>
+          <text class="node-detail" x="710" y="180">Routing peer</text>
+          <path class="coordination-line" d="M 710 218 V 364" marker-start="url(#intro-arrow-local)" marker-end="url(#intro-arrow-local)"/>
+          <text class="line-label muted local-label" x="680" y="300">Home network</text>
+          <rect class="coordination-node" x="540" y="380" width="340" height="112"/>
+          <text class="node-title" x="710" y="428">Home services</text>
+          <text class="node-detail" x="710" y="470">No NetBird client</text>
+        </svg>
+        <div class="connection-reading">
+          <p>My laptop and phone connect over WireGuard to my home routing peer, which provides access to services without a NetBird client.</p>
+        </div>
+        <figcaption>WireGuard connects directly when possible, with an encrypted relay fallback.</figcaption>
+      </figure>
     </div>
   </div>
   <div class="chrome-bottom"></div>
@@ -557,11 +589,11 @@
 </section>
 
 <section data-duration-seconds="35" data-screen-label="28 Self-Host Install">
-  <div class="content" style="padding: 56px 80px 46px 80px;">
+  <div class="content selfhost-slide">
     <div class="eyebrow">self-hosting</div>
     <h1 class="slide-title" style="font-size: 60px; margin-bottom: 16px;">Self-hosting<br/><span class="g">NetBird</span></h1>
 
-    <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1; align-items: center;">
+    <div class="selfhost-copy">
       <div>
         <div class="card" style="padding: 24px 28px; gap: 10px;">
           <div class="card-sub">// getting-started.sh</div>
@@ -577,8 +609,10 @@
           <li><span class="dim">Install the NetBird client separately on each device you want to connect.</span></li>
         </ul>
       </div>
-      <div><img src="/decks/ato26/assets/install-netbird.png" alt="NetBird Add new peer install panel" style="width:100%; max-height: 540px; object-fit: contain; display:block;"/><div style="font-family: var(--mono); font-size: 24px; color: var(--ink-dim); margin-top: 14px; text-align:center;">The separate client install joins a device to your network.</div></div>
     </div>
+    <figure class="selfhost-install">
+      <img src="/decks/ato26/assets/netbird-setup-key-install.png" alt="NetBird setup-key installation panel showing Linux client commands, with the setup key redacted" width="1230" height="1278"/>
+    </figure>
   </div>
   <div class="chrome-bottom"></div>
 </section>
@@ -590,7 +624,10 @@
     <h2 class="slide-title" style="font-size: 64px; margin-bottom: 28px;">Which devices can<br/><span class="g">reach my services?</span></h2>
 
     <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 32px; flex: 1; align-items: center;">
-      <img src="/decks/ato26/assets/control-center-peers.png" alt="NetBird Control Center peers view" style="width:100%; display:block;"/>
+      <picture style="display:block; min-width:0;">
+        <source media="(prefers-reduced-motion: reduce), print" srcset="/decks/ato26/assets/control-center-network-poster.png"/>
+        <img src="/decks/ato26/assets/control-center-network.gif" alt="NetBird Control Center showing animated policy connections to homelab peers, groups, and network resources" width="1400" height="792" style="width:100%; height:auto; display:block;"/>
+      </picture>
       <div>
         <ul class="term-list">
           <li><span><strong style="color:var(--ink);">Peers</strong> · every device in the mesh, status at a glance.</span></li>
@@ -618,7 +655,7 @@
         <li><span><span class="dim">This is public sharing. My private services remain on the client connection.</span></span></li>
       </ul>
       </div>
-      <img src="/decks/ato26/assets/proxy-modes.png" alt="NetBird Reverse Proxy service configuration" style="width:100%; display:block;"/>
+      <img src="/decks/ato26/assets/netbird-reverse-proxy-service.png" alt="NetBird HTTPS service editor publishing immich.hopkins.sh to an Immich server on the home network" width="1204" height="1024" style="width:100%; height:auto; max-height:680px; object-fit:contain; display:block;"/>
     </div>
   </div>
   <div class="chrome-bottom"></div>

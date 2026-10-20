@@ -552,7 +552,6 @@ figcaption { font-size: 25px; line-height: 1.4; color: var(--ink-dim); margin-to
 .host-summary strong { font-family: var(--display); font-size: 36px; white-space: nowrap; }
 .host-summary span { font-size: 30px; line-height: 1.4; }
 .netbird-intro { display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; }
-.netbird-intro img { width: 100%; max-height: 450px; object-fit: contain; display: block; }
 .netbird-intro figcaption { font-size: 24px; }
 
 /* Print rules handled by deck-stage */
@@ -614,3 +613,10 @@ figcaption { font-size: 25px; line-height: 1.4; color: var(--ink-dim); margin-to
 .connection-map .relay-line { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-dasharray: 12 8; }
 .connection-map figcaption { margin-top: 12px; text-align: center; font-size: 28px; }
 .connection-reading { display: none; }
+.netbird-map svg { height: auto; overflow: visible; }
+.netbird-map .local-label { text-anchor: end; }
+.selfhost-slide { padding: 56px 1050px 46px 80px; }
+.selfhost-copy { display: flex; flex: 1; align-items: center; }
+.selfhost-slide .term-list li { font-size: 30px; }
+.selfhost-install { position: absolute; top: 0; right: 0; width: 52%; height: 100%; margin: 0; }
+.selfhost-install img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: top right; filter: drop-shadow(-12px 0 24px rgba(23, 23, 23, 0.18)); }

@@ -339,6 +339,11 @@ deck-stage > section a:focus-visible,
   deck-stage[data-mode="reading"] .connection-map svg {
     display: none;
   }
+  deck-stage[data-mode="reading"] .selfhost-install {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
   deck-stage[data-mode="reading"] .connection-reading {
     display: grid;
     gap: 24px;
