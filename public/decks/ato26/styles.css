@@ -93,18 +93,12 @@ deck-stage > section {
   align-items: center;
   justify-content: space-between;
   font-family: var(--mono);
-  font-size: 16px;
+  font-size: 18px;
   color: var(--ink-faint);
   border-bottom: 1px solid var(--line);
   z-index: 5;
   background: var(--bg);
 }
-.chrome-top .dots { display: flex; gap: 8px; }
-.chrome-top .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }
-.chrome-top .dot.g { background: var(--accent-fill); }
-.chrome-top .dot.a { background: var(--amber-fill); }
-.chrome-top .dot.r { background: var(--rust-fill); }
-
 .chrome-top .path { letter-spacing: 0.02em; }
 .chrome-top .path .slash { color: var(--line-2); }
 .chrome-top .path .leaf { color: var(--ink-dim); }
@@ -116,41 +110,54 @@ deck-stage > section {
   padding: 0 48px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   font-family: var(--mono);
-  font-size: 15px;
+  font-size: 17px;
   color: var(--ink-faint);
   border-top: 1px solid var(--line);
   z-index: 5;
   background: var(--bg);
 }
-.chrome-bottom .tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.chrome-bottom .tag::before {
-  content: '';
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--accent);
-  animation: blink 2.2s var(--ease-swift) infinite;
-}
-@keyframes blink { 0%, 60%, 100% { opacity: 1; } 80% { opacity: 0.35; } }
 
-/* === Main content area === */
+/* === Main content area ===
+   Most slides have no chrome-top now, so content claims the full top of the canvas.
+   The cover slide keeps its chrome-top (terminal prompt) and restores the 50px reservation inline. */
 .content {
   position: absolute;
-  inset: 50px 0 46px 0;
+  inset: 0 0 46px 0;
   padding: 64px 100px 54px 100px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
+.content img {
+  filter: drop-shadow(0 8px 24px rgba(23, 23, 23, 0.14));
+}
+
+/* === Dark-mode slide override — for slides built around a dark-UI screenshot === */
+section.dark-slide {
+  --bg: #121317;
+  --bg-2: #1C1E24;
+  --bg-3: #26282F;
+  --ink: #F5F5F5;
+  --ink-dim: #C9C9CC;
+  --ink-faint: #85868C;
+  --line: #2B2D33;
+  --line-2: #3C3E46;
+  --accent: #4FE3A3;
+  --accent-dim: #4FE3A3;
+  --accent-soft: rgba(79, 227, 163, 0.12);
+  --cyan: #59E0FF;
+}
+section.dark-slide .content img {
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+}
+
 /* === Typography === */
 .eyebrow {
   font-family: var(--mono);
-  font-size: 19px;
+  font-size: 22px;
   color: var(--accent);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -211,7 +218,7 @@ h2.slide-title .g { color: var(--accent); }
 
 .kicker {
   font-family: var(--mono);
-  font-size: 17px;
+  font-size: 20px;
   color: var(--ink-faint);
   letter-spacing: 0.04em;
 }
@@ -302,7 +309,7 @@ h2.slide-title .g { color: var(--accent); }
   object-position: top left;
 }
 .backup-restore figcaption {
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1.4;
   margin-top: 12px;
 }
@@ -341,7 +348,7 @@ h2.slide-title .g { color: var(--accent); }
 }
 .divider .label {
   font-family: var(--mono);
-  font-size: 16px;
+  font-size: 18px;
   color: var(--ink-faint);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -381,7 +388,7 @@ h2.slide-title .g { color: var(--accent); }
   border-radius: 2px;
   background: var(--bg-2);
   font-family: var(--mono);
-  font-size: 20px;
+  font-size: 22px;
   color: var(--ink);
   letter-spacing: 0.01em;
 }
@@ -419,12 +426,12 @@ h2.slide-title .g { color: var(--accent); }
 .card .card-title .g { color: var(--accent); }
 .card .card-sub {
   font-family: var(--mono);
-  font-size: 15px;
+  font-size: 20px;
   color: var(--accent);
   letter-spacing: 0.04em;
 }
 .card .card-body {
-  font-size: 25px;
+  font-size: 27px;
   line-height: 1.45;
   color: var(--ink-dim);
   text-wrap: pretty;
@@ -499,8 +506,8 @@ h2.slide-title .g { color: var(--accent); }
   letter-spacing: 0;
 }
 
-/* === QA / closer === */
-.qa-giant {
+/* === Closing slide === */
+.closing-title {
   font-family: var(--display);
   font-size: 280px;
   font-weight: 800;
@@ -508,7 +515,7 @@ h2.slide-title .g { color: var(--accent); }
   letter-spacing: -0.06em;
   color: var(--ink);
 }
-.qa-giant .g { color: var(--accent); }
+.closing-title .g { color: var(--accent); }
 
 /* === Starting a homelab: hardware options and platform comparisons === */
 .intro-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 20px; }
@@ -516,31 +523,36 @@ h2.slide-title .g { color: var(--accent); }
 .cost-note h2 { font-family: var(--display); font-size: 42px; color: var(--accent); margin-bottom: 28px; }
 .cost-note p { font-size: 32px; line-height: 1.5; margin-bottom: 28px; }
 .cost-note .cost-takeaway { color: var(--ink); font-weight: 600; }
-figcaption { font-size: 23px; line-height: 1.4; color: var(--ink-dim); margin-top: 18px; }
+figcaption { font-size: 25px; line-height: 1.4; color: var(--ink-dim); margin-top: 18px; }
 .starter-options { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 64px; margin-top: 72px; margin-bottom: 42px; }
 .starter-options strong { display: block; font-family: var(--display); font-size: 38px; color: var(--ink); margin-bottom: 10px; }
 .starter-options span { font-size: 28px; line-height: 1.4; }
 .hardware-checks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 42px; margin-top: 38px; padding-top: 28px; border-top: 1px solid var(--line-2); }
 .hardware-checks dt { color: var(--accent); font-family: var(--mono); font-size: 25px; margin-bottom: 10px; }
 .hardware-checks dd { font-size: 27px; line-height: 1.4; }
-.resource-line { font-family: var(--mono); font-size: 23px; line-height: 1.5; color: var(--ink-dim); margin-top: 42px; }
+.resource-line { font-family: var(--mono); font-size: 25px; line-height: 1.5; color: var(--ink-dim); margin-top: 42px; }
+
+/* === "Other options" logo strip === */
+.option-logos { display: flex; align-items: flex-end; gap: 52px; margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.option-logos div { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.option-logos img { height: 52px; width: auto; display: block; }
+.option-logos span { font-family: var(--mono); font-size: 19px; color: var(--ink-faint); letter-spacing: 0.02em; }
 .foundation-table { width: 100%; border-collapse: collapse; margin-top: 12px; color: var(--ink); }
 .foundation-table th, .foundation-table td { text-align: left; vertical-align: middle; padding: 32px 26px; border-bottom: 1px solid var(--line-2); font-size: 32px; line-height: 1.4; }
-.foundation-table thead th { font-family: var(--mono); font-size: 22px; font-weight: 400; color: var(--ink-dim); padding-top: 0; padding-bottom: 18px; }
+.foundation-table thead th { font-family: var(--mono); font-size: 24px; font-weight: 400; color: var(--ink-dim); padding-top: 0; padding-bottom: 18px; }
 .foundation-table tbody th { font-family: var(--display); font-size: 36px; width: 31%; }
 .foundation-table td:last-child { width: 24%; }
 .foundation-table .chosen-platform { background: var(--accent-soft); }
 .foundation-table .chosen-platform th, .foundation-table .chosen-platform td:last-child { color: var(--accent); }
 .foundation-choice { margin-top: 44px; max-width: 72ch; }
-.proxmox-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center; margin-top: 20px; }
-.proxmox-layout img { width: 100%; max-height: 520px; object-fit: contain; display: block; }
+.proxmox-layout { display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; align-items: center; margin-top: 10px; }
+.proxmox-layout img { width: 100%; max-height: 620px; object-fit: contain; display: block; }
 .workload-table td:last-child { width: 30%; }
 .host-summary { display: flex; align-items: center; gap: 48px; border-top: 3px solid var(--accent); margin-top: 52px; padding-top: 30px; color: var(--ink); }
 .host-summary strong { font-family: var(--display); font-size: 36px; white-space: nowrap; }
 .host-summary span { font-size: 30px; line-height: 1.4; }
 .netbird-intro { display: grid; grid-template-columns: 1.05fr 1fr; gap: 60px; align-items: center; }
-.netbird-intro img { width: 100%; max-height: 450px; object-fit: contain; display: block; }
-.netbird-intro figcaption { font-size: 22px; }
+.netbird-intro figcaption { font-size: 24px; }
 
 /* Print rules handled by deck-stage */
 
@@ -558,7 +570,7 @@ figcaption { font-size: 23px; line-height: 1.4; color: var(--ink-dim); margin-to
 }
 .stack-overview dt, .stack-recap dt {
   font-family: var(--mono);
-  font-size: 22px;
+  font-size: 24px;
   color: var(--accent);
   margin-bottom: 12px;
 }
@@ -601,3 +613,10 @@ figcaption { font-size: 23px; line-height: 1.4; color: var(--ink-dim); margin-to
 .connection-map .relay-line { fill: none; stroke: var(--cyan); stroke-width: 4; stroke-dasharray: 12 8; }
 .connection-map figcaption { margin-top: 12px; text-align: center; font-size: 28px; }
 .connection-reading { display: none; }
+.netbird-map svg { height: auto; overflow: visible; }
+.netbird-map .local-label { text-anchor: end; }
+.selfhost-slide { padding: 56px 1050px 46px 80px; }
+.selfhost-copy { display: flex; flex: 1; align-items: center; }
+.selfhost-slide .term-list li { font-size: 30px; }
+.selfhost-install { position: absolute; top: 0; right: 0; width: 52%; height: 100%; margin: 0; }
+.selfhost-install img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: top right; filter: drop-shadow(-12px 0 24px rgba(23, 23, 23, 0.18)); }

@@ -4,53 +4,42 @@
 <meta charset="utf-8" />
 <title>The Self-Hosted Stack · Brandon Hopkins</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="/decks/ato26/styles.css?v=5" />
-<link rel="stylesheet" href="/decks/ato26/reading.css?v=2" />
-<script src="/decks/ato26/deck-stage.js?v=2" defer></script>
+<link rel="stylesheet" href="/decks/ato26/styles.css?v=8" />
+<link rel="stylesheet" href="/decks/ato26/reading.css?v=5" />
+<script src="/decks/ato26/deck-stage.js?v=5" defer></script>
 </head>
 <body data-deck-mode="reading">
 
-<!-- Rehearsal targets: 25:00 speaking + 05:00 Q&A = 30:00 total.
-     The stack starts at 06:00; Q&A starts at 25:00.
-     Each slide has data-duration-seconds; speaker-notes below follow slide order.
-     Open /decks/ato26/notes.html for the timed running order and speaking cues.
-     Targets are provisional until a spoken rehearsal. -->
 <deck-stage data-mode="reading">
 
 <!-- ============================================================ -->
 <!-- 00 · COVER                                                   -->
 <!-- ============================================================ -->
-<section data-duration-seconds="15" data-screen-label="01 Cover">
+<section data-screen-label="01 Cover">
   <div class="bg-grid"></div>
   <div class="brand-glow"></div>
   <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
     <div class="path"><span class="leaf">brandon@homelab</span><span class="slash">:</span><span class="leaf">~</span><span class="slash">$</span> <span style="color:var(--accent)">./talk.sh</span></div>
-    <div>20 · 10 · 2026</div>
   </div>
 
-  <div class="content" style="padding: 80px 96px 70px 96px; justify-content: space-between; z-index: 2;">
+  <div class="content" style="inset: 50px 0 46px 0; padding: 80px 96px 70px 96px; justify-content: space-between; z-index: 2;">
     <div>
-      <div class="eyebrow" style="margin-bottom: 40px;">A TALK IN 9 PARTS</div>
-      <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.04em;">
+      <div style="font-family: var(--mono); font-size: 22px; color: var(--ink-faint); margin-bottom: 18px; letter-spacing: 0.04em;">
         # /decks/ato26/index.html
       </div>
       <h1 class="slide-title" style="font-size: 108px; max-width: 16ch; margin-bottom: 0; line-height: 0.98;">
         The <span class="g">Self-Hosted</span><br/>Stack.
       </h1>
-      <div class="lede" style="margin-top: 32px; font-size: 28px; max-width: 48ch;">
+      <div class="lede" style="margin-top: 32px; font-size: 42px; max-width: 48ch;">
         Building your own cloud<br/>with open source.
-      </div>
-      <div style="margin-top: 28px; font-family: var(--mono); font-size: 18px; letter-spacing: 0.04em; color: var(--amber);">
-        Work in progress. This is the current cut, not the finished talk.
       </div>
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 60px;">
       <div>
         <div class="kicker" style="margin-bottom: 10px;">// speaker</div>
-        <div style="font-family: var(--sans); font-size: 26px; font-weight: 600; color: var(--ink);">Brandon Hopkins</div>
-        <div style="font-family: var(--mono); font-size: 20px; color: var(--ink-dim); margin-top: 6px;">
+        <div style="font-family: var(--sans); font-size: 40px; font-weight: 600; color: var(--ink);">Brandon Hopkins</div>
+        <div style="font-family: var(--mono); font-size: 26px; color: var(--ink-dim); margin-top: 8px;">
           Head of Content &amp; DevRel · NetBird<br/>
           <span style="color: var(--accent-dim);">@TechHut</span>
         </div>
@@ -58,57 +47,47 @@
     </div>
   </div>
 
-  <div class="chrome-bottom">
-    <div class="tag">All Things Open 2026</div>
-    <div>THE SELF-HOSTED STACK · 2026</div>
-  </div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
 <!-- SECTION 01 · INTRODUCTION                                    -->
 <!-- ============================================================ -->
-<section data-duration-seconds="25" data-screen-label="02 Who Am I">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">01-intro</span><span class="slash">/</span><span class="leaf">whoami</span></div>
-    <div>01 · INTRO</div>
-  </div>
+<section data-screen-label="02 Who Am I">
   <div class="content">
-    <div class="eyebrow">$ whoami</div>
-    <h1 class="slide-title">Brandon Hopkins</h1>
-    <ul class="term-list">
-      <li><span>Founder of <span class="mono">TechHut</span>.<br/><span class="dim">Linux, self-hosting, and open source on YouTube.</span></span></li>
-      <li><span>Head of Content &amp; Developer Relations at <span class="mono">NetBird</span>.</span></li>
-      <li><span>I've run a production homelab for years.<br/><span class="dim">These are the services I use every day.</span></span></li>
-    </ul>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; flex: 1; align-items: center;">
+      <div>
+        <div class="eyebrow">$ whoami</div>
+        <h1 class="slide-title">Brandon Hopkins</h1>
+        <ul class="term-list" style="font-size: 28px; gap: 24px;">
+          <li><span>Founder of <span class="mono">TechHut</span>.<br/><span class="dim">Linux, self-hosting, and open source on YouTube.</span></span></li>
+          <li><span>Head of Content &amp; Developer Relations at <span class="mono">NetBird</span>.</span></li>
+          <li><span>I've run these services at home for years.<br/><span class="dim">I use them every day.</span></span></li>
+        </ul>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 24px;">
+        <img src="/decks/ato26/assets/techhut-channel.png" alt="The TechHut YouTube channel page, showing subscriber count and recent videos" style="width:100%; max-height: 460px; object-fit: contain; display:block;"/>
+        <img src="/decks/ato26/assets/netbird-homelab-network.png" alt="NetBird Control Center showing Brandon's homelab peers, resources, and access policies" style="width:100%; max-height: 360px; object-fit: contain; display:block;"/>
+      </div>
+    </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>2 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="20" data-screen-label="03 What Is This Talk">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">01-intro</span><span class="slash">/</span><span class="leaf">what-is-this</span></div>
-    <div>01 · INTRO</div>
-  </div>
+<section data-screen-label="03 What Is This Talk">
   <div class="content">
     <div class="eyebrow">./readme.md</div>
     <h1 class="slide-title">What is this talk?</h1>
     <ul class="term-list" style="font-size: 26px; gap: 28px;">
-      <li><span>The open source services I run at home, plus an automation example.</span></li>
-      <li><span>What I use them for, how they connect, and how I recover when something breaks.</span></li>
-      <li><span>Leave here knowing what's possible, what it takes, and whether it's right for you.</span></li>
+      <li><span>The open source apps I use every day.</span></li>
+      <li><span>How I handle remote access, backups, and monitoring.</span></li>
+      <li><span>The hardware and maintenance involved in running it yourself.</span></li>
     </ul>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>3 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="35" data-screen-label="04 What Is A Self-Hosted Cloud">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">definitions</span></div>
-    <div>01 · INTRO</div>
-  </div>
+<section data-screen-label="04 What Is A Self-Hosted Cloud">
 
   <div class="content">
     <div class="eyebrow">./definitions</div>
@@ -136,37 +115,23 @@
     </div>
   </div>
 
-  <div class="chrome-bottom">
-    <div class="tag">All Things Open 2026</div>
-    <div>4 / 40</div>
-  </div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
 <!-- SECTION 02 · WHY SELF-HOST                                   -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="05 Section 02 Divider" class="divider-slide">
+<section data-screen-label="05 Section 02 Divider" class="divider-slide">
   <div class="bg-grid"></div>
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">02-why-self-host</span></div>
-    <div>SECTION · 02</div>
-  </div>
   <div class="divider">
     <div class="num">02</div>
     <div class="label">// section 02 of 9</div>
     <div class="title">Why <span style="color:var(--accent);">self-host?</span></div>
-    <div class="sub">The pitch, the subscription treadmill, and the honest trade-offs.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>5 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="35" data-screen-label="06 Control of Your Data">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">data-ownership</span></div>
-    <div>02 · WHY SELF-HOST</div>
-  </div>
+<section data-screen-label="06 Control of Your Data">
   <div class="content">
     <div class="eyebrow">the pitch, part one</div>
     <h1 class="slide-title">Who controls<br/><span class="g">your access?</span></h1>
@@ -176,8 +141,8 @@
         <li><span>TOS change. Accounts get banned. Companies shut down.</span></li>
         <li><span>Self-hosting gives you control over the server, its data, and its backups.</span></li>
       </ul>
-      <div style="display: flex; flex-direction: column; gap: 16px; font-family: var(--mono); font-size: 19px; align-self: center;">
-        <div style="color: var(--ink-faint); letter-spacing: 0.1em; font-size: 16px; text-transform: uppercase; margin-bottom: 4px;">// example notices</div>
+      <div style="display: flex; flex-direction: column; gap: 16px; font-family: var(--mono); font-size: 24px; align-self: center;">
+        <div style="color: var(--ink-faint); letter-spacing: 0.1em; font-size: 20px; text-transform: uppercase; margin-bottom: 4px;">// example notices</div>
         <div style="padding: 18px 22px; border: 1px solid var(--line); border-radius: 0; background: var(--bg-2); display: flex; gap: 12px; align-items: flex-start; line-height: 1.45;">
           <span style="color: var(--rust); flex-shrink: 0;">!</span> <span style="color: var(--ink-dim);">"Your account has been suspended for violating our community guidelines."</span>
         </div>
@@ -190,15 +155,10 @@
       </div>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>6 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="30" data-screen-label="07 Subscription Treadmill">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">subscriptions</span></div>
-    <div>02 · WHY SELF-HOST</div>
-  </div>
+<section data-screen-label="07 Subscription Treadmill">
   <div class="content">
     <div class="eyebrow">why people switch</div>
     <h1 class="slide-title">The subscription treadmill</h1>
@@ -215,15 +175,10 @@
       </div>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>7 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="40" data-screen-label="08 Living with the Stack">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">02-why</span><span class="slash">/</span><span class="leaf">tradeoffs</span></div>
-    <div>02 · WHY SELF-HOST</div>
-  </div>
+<section data-screen-label="08 Living with the Stack">
   <div class="content">
     <div class="eyebrow">what ownership involves</div>
     <h1 class="slide-title">Living with the stack</h1>
@@ -233,27 +188,25 @@
       <li><span><strong>Some cloud services can stay.</strong><br/><span class="dim">Choose what fits your time and the people using it.</span></span></li>
     </ul>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>8 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 
 <!-- ============================================================ -->
 <!-- SECTION 03 · BEFORE YOU START                                -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="09 Section 03 Divider">
+<section data-screen-label="09 Section 03 Divider">
   <div class="bg-grid"></div>
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">03-before-you-start</span></div><div>SECTION · 03</div></div>
   <div class="divider">
     <div class="num">03</div>
     <div class="label">// section 03 of 9</div>
     <div class="title">Before you <span style="color:var(--accent);">start.</span></div>
     <div class="sub">The services you want to use, then the hardware to run them.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>9 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="30" data-screen-label="10 Where to Start">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">03-before</span><span class="slash">/</span><span class="leaf">where-to-start</span></div><div>03 · BEFORE YOU START</div></div>
+<section data-screen-label="10 Where to Start">
   <div class="content">
     <div class="eyebrow">before buying hardware</div>
     <h1 class="slide-title">Your first <span class="g">one or two services</span></h1>
@@ -265,11 +218,10 @@
     </ul>
     <p class="resource-line">Configs and examples: github.com/TechHutTV/homelab</p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>10 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="55" data-screen-label="11 Hardware to Get Started">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">03-before</span><span class="slash">/</span><span class="leaf">hardware</span></div><div>03 · BEFORE YOU START</div></div>
+<section data-screen-label="11 Hardware to Get Started">
   <div class="content">
     <div class="eyebrow">match the machine to the job</div>
     <h1 class="slide-title">Hardware to get started</h1>
@@ -280,12 +232,12 @@
       <li><strong>Your old desktop</strong><span>Put the hardware you have to work.</span></li>
     </ul>
     <dl class="hardware-checks">
-      <div><dt>RAM</dt><dd>Capacity for your services</dd></div>
-      <div><dt>CPU</dt><dd>The work those services do</dd></div>
-      <div><dt>Storage</dt><dd>Room for your data and growth</dd></div>
+      <div><dt>Memory</dt><dd>Enough for your apps, with room to expand</dd></div>
+      <div><dt>Storage</dt><dd>Drive connections and space for more disks</dd></div>
+      <div><dt>Power</dt><dd>Check idle power draw</dd></div>
     </dl>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>11 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
@@ -294,12 +246,7 @@
 
 
 <!-- Foundation decision diagram -->
-<section data-duration-seconds="30" data-screen-label="12 Foundation Comparison">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">decision-tree</span></div>
-    <div>04 · FOUNDATION</div>
-  </div>
+<section data-screen-label="12 Foundation Comparison">
   <div class="content">
     <div class="eyebrow">a foundation for your services</div>
     <h1 class="slide-title">Choosing the platform</h1>
@@ -313,7 +260,7 @@
     </table>
     <p class="lede foundation-choice">I use <strong>Proxmox</strong> for the flexibility to run different systems on one machine.</p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>12 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
@@ -321,233 +268,181 @@
 <!-- ============================================================ -->
 
 
-<section data-duration-seconds="35" data-screen-label="13 Why I Use Proxmox">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">04-foundation</span><span class="slash">/</span><span class="leaf">why-proxmox</span></div>
-    <div>04 · FOUNDATION</div>
-  </div>
+<section data-screen-label="13 Why I Use Proxmox">
   <div class="content">
-    <div class="eyebrow">Proxmox VE</div>
-    <h1 class="slide-title">Why I use <span class="g">Proxmox</span></h1>
+    <div class="eyebrow" style="margin-bottom: 14px;">Proxmox VE</div>
+    <h1 class="slide-title" style="margin-bottom: 20px;">Why I use <span class="g">Proxmox</span></h1>
     <div class="proxmox-layout">
       <ul class="term-list">
         <li><span>Virtual machines and Linux containers, managed in one web interface.</span></li>
         <li><span>Keep services in separate environments on the same machine.</span></li>
         <li><span>Back up those environments from the same place.</span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-18-proxmox.png" alt="Proxmox VE dashboard showing virtual machines and LXC containers" />
+      <img src="/decks/ato26/assets/proxmox-node-overview.png" alt="Proxmox VE node summary showing the list of VMs and LXC containers alongside CPU, RAM, and uptime stats" />
     </div>
-    <p class="resource-line">Community setup scripts: <a href="https://community-scripts.github.io/ProxmoxVE/">community-scripts.github.io/ProxmoxVE</a></p>
+    <p class="resource-line" style="margin-top: 20px;">Community setup scripts: <a href="https://community-scripts.github.io/ProxmoxVE/">community-scripts.github.io/ProxmoxVE</a></p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>13 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 
 <!-- ============================================================ -->
 <!-- SECTION 05 · THE STACK                                       -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="14 Section 05 Divider">
+<section data-screen-label="14 Section 05 Divider">
   <div class="bg-grid"></div>
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">05-the-stack</span></div>
-    <div>SECTION · 05</div>
-  </div>
   <div class="divider">
     <div class="num">05</div>
     <div class="label">// section 05 of 9</div>
     <div class="title">The <span style="color:var(--accent);">stack.</span></div>
     <div class="sub">The actual services. What they do, what they replace.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>14 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<!-- Stack overview -->
-<section data-duration-seconds="25" data-screen-label="15 Stack Overview">
-  <div class="chrome-top">
-    <div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div>
-    <div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">overview</span></div>
-    <div>05 · THE STACK</div>
-  </div>
+<section data-screen-label="15 Nextcloud">
   <div class="content">
-    <div class="eyebrow">the services</div>
-    <h1 class="slide-title">The stack at a glance</h1>
-    <dl class="stack-overview">
-      <div><dt>Files &amp; tasks</dt><dd>Nextcloud</dd></div>
-      <div><dt>Photos &amp; videos</dt><dd>Immich</dd></div>
-      <div><dt>Personal media</dt><dd>Jellyfin</dd></div>
-      <div><dt>Passwords</dt><dd>Vaultwarden</dd></div>
-      <div><dt>Smart home</dt><dd>Home Assistant</dd></div>
-      <div><dt>Camera recordings</dt><dd>Frigate</dd></div>
-      <div><dt>Local names &amp; HTTPS</dt><dd>NGINX Proxy Manager</dd></div>
-      <div><dt>Remote access</dt><dd>NetBird</dd></div>
-    </dl>
-  </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>15 / 40</div></div>
-</section>
-
-<section data-duration-seconds="135" data-screen-label="16 Nextcloud">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">nextcloud</span></div><div>05 · THE STACK</div></div>
-  <div class="content">
-    <div class="eyebrow"><span class="chip">Nextcloud</span> &nbsp; files and tasks</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">My files and tasks,<br/><span class="g">in one place</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
+    <div class="eyebrow" style="margin-bottom: 16px;"><span class="chip">Nextcloud</span> &nbsp; files and tasks</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 16px;">My files and tasks,<br/><span class="g">in one place</span></h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; flex: 1; align-items: center;">
       <ul class="term-list">
         <li><span>I use Nextcloud for general file storage and organizing tasks.</span></li>
         <li><span>Files are available in the browser and through desktop or mobile clients.</span></li>
         <li><span><span class="mono">Nextcloud AIO</span> packages the services together. I run it in a Proxmox VM.</span></li>
         <li><span><span class="dim">I still manage updates, storage, and backups.</span></span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-25-nextcloud.png" alt="Nextcloud Files UI showing folders and storage usage" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/nextcloud-files.png" alt="Nextcloud Files UI showing the top-level folder list with sizes and modified dates" style="width:100%; max-height: 610px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>16 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="120" data-screen-label="17 Immich">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">immich</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="16 Immich">
   <div class="content">
-    <div class="eyebrow"><span class="chip">Immich</span> &nbsp; replaces Google Photos</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">My photo library<br/><span class="g">at home</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: start;">
+    <div class="eyebrow" style="margin-bottom: 16px;"><span class="chip">Immich</span> &nbsp; replaces Google Photos</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 16px;">My photo library<br/><span class="g">at home</span></h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; flex: 1; align-items: center;">
       <ul class="term-list">
         <li><span>My phone uploads photos and videos to Immich.</span></li>
         <li><span>I can find them again by person, place, or search.</span></li>
         <li><span>The server needs its own backup, including the photos and database.</span></li>
         <li><span><span class="dim">First stable release: October 1, 2025.</span></span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-26-immich.png" alt="Immich timeline showing photos by year with map and search" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/immich-timeline.png" alt="Immich timeline showing recent photos grouped by day, with memories at the top" style="width:100%; max-height: 610px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>17 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="105" data-screen-label="18 Jellyfin">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">jellyfin</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="17 Jellyfin">
   <div class="content">
-    <div class="eyebrow"><span class="chip">Jellyfin</span> &nbsp; your own streaming service</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">My media library,<br/><span class="g">ready to watch</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: start; margin-top: 12px;">
+    <div class="eyebrow" style="margin-bottom: 16px;"><span class="chip">Jellyfin</span> &nbsp; your own streaming service</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 16px;">My media library,<br/><span class="g">ready to watch</span></h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; align-items: center;">
       <ul class="term-list">
         <li><span>Browse my movies and shows, then pick up from Continue Watching.</span></li>
         <li><span>Jellyfin organizes and streams the media I supply.</span></li>
         <li><span>Free and open source, including hardware transcoding.</span></li>
         <li><span><span class="dim">Playback depends on the client. Some files need the server to convert them.</span></span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-27-jellyfin.png" alt="Jellyfin movies library showing Continue Watching and Recently Added" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/jellyfin-home.png" alt="Jellyfin home screen showing My Media libraries and Continue Watching" style="width:100%; max-height: 610px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>18 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="30" data-screen-label="19 Vaultwarden">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">vaultwarden</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="18 Vaultwarden">
   <div class="content">
     <div class="eyebrow"><span class="chip">Vaultwarden</span> &nbsp; replaces 1Password / LastPass</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your passwords, self-hosted.</h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: start;">
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Your passwords, self-hosted</h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; flex: 1; align-items: center;">
       <ul class="term-list">
-        <li><span>Lightweight Bitwarden-compatible server, written in Rust.</span></li>
-        <li><span>Works with the official Bitwarden clients. Browser, mobile, desktop.</span></li>
-        <li><span>End-to-end encrypted. Sync across devices without trusting a cloud.</span></li>
-        <li><span class="dim">Replaces 1Password, LastPass, hosted Bitwarden.</span></li>
+        <li><span>Vaultwarden is an unofficial server that works with Bitwarden's apps.</span></li>
+        <li><span>Your devices sync their encrypted vault through your server.</span></li>
+        <li><span class="dim">You handle the server's updates and backups.</span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-28-vaultwarden.png" alt="Vaultwarden web vault showing saved logins" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/vaultwarden-vault.png" alt="Vaultwarden All vaults view listing saved logins, with usernames and email addresses blurred" style="width:100%; max-height: 620px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>19 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="25" data-screen-label="20 Home Assistant">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">home-assistant</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="19 Home Assistant">
   <div class="content">
-    <div class="eyebrow"><span class="chip">Home Assistant</span> &nbsp; your smart home hub</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">A home that works<br/><span class="g">locally</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
-      <ul class="term-list" style="align-self: center;">
+    <div class="eyebrow" style="margin-bottom: 16px;"><span class="chip">Home Assistant</span> &nbsp; your smart home hub</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 16px;">A home that works<br/><span class="g">locally</span></h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; flex: 1; align-items: center;">
+      <ul class="term-list">
         <li><span>Local control of lights, sensors, automations, dashboards.</span></li>
         <li><span>Local devices and integrations can keep working without the cloud.</span></li>
         <li><span>Works with <strong style="color:var(--accent);">thousands</strong> of devices and integrations.</span></li>
         <li><span class="dim">Some integrations still depend on a vendor cloud. Check before buying devices.</span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-29-home-assistant.jpeg" alt="Home Assistant dashboard with rooms, devices and energy stats" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/home-assistant-settings.png" alt="Home Assistant Settings page listing devices &amp; services, automations &amp; scenes, areas, apps, and dashboards" style="width:100%; max-height: 610px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>20 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="20" data-screen-label="21 Frigate">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">frigate</span></div><div>05 · THE STACK</div></div>
-  <div class="content">
-    <div class="eyebrow"><span class="chip">Frigate</span> &nbsp; your own camera system</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Camera recordings<br/><span class="g">kept at home</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 32px; flex: 1; align-items: stretch;">
-      <ul class="term-list">
-        <li><span>Local recording and object detection for compatible cameras.</span></li>
-        <li><span>Choose a detector for your hardware: Intel OpenVINO, a GPU, or an accelerator.</span></li>
-        <li><span>Coral is still supported, but is no longer the default recommendation for new setups.</span></li>
-        <li><span><span class="dim">Detection events can trigger Home Assistant automations.</span></span></li>
-      </ul>
-      <img src="/decks/ato26/assets/slide-30-frigate.jpeg" alt="Frigate event log inside Home Assistant showing person detections in the backyard" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
-    </div>
+<section data-screen-label="20 Frigate" class="dark-slide">
+  <img src="/decks/ato26/assets/frigate-events.png" alt="Frigate event log showing person detections in the backyard" style="position:absolute; top:0; right:0; bottom:0; height:100%; width:auto; display:block; z-index:1;"/>
+  <div class="content" style="right: auto; bottom: 0; width: 660px;">
+    <div class="eyebrow" style="margin-bottom: 14px;"><span class="chip">Frigate</span></div>
+    <h1 class="slide-title" style="margin-top: 10px; margin-bottom: 20px; font-size: 60px; max-width: none;">Camera recordings<br/><span class="g">kept at home</span></h1>
+    <ul class="term-list" style="font-size: 30px; gap: 22px;">
+      <li><span>Local recording and object detection for compatible cameras.</span></li>
+      <li><span>Choose a detector for your hardware: Intel OpenVINO, a GPU, or Coral.</span></li>
+      <li><span><span class="dim">Detection events can trigger Home Assistant automations.</span></span></li>
+    </ul>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>21 / 40</div></div>
 </section>
 
-<section data-duration-seconds="25" data-screen-label="22 NPM">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">nginx-pm</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="21 NPM">
   <div class="content">
-    <div class="eyebrow"><span class="chip">NGINX Proxy Manager</span> &nbsp; clean local access</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Local names<br/><span class="g">and HTTPS</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: start; margin-top: 12px;">
+    <div class="eyebrow" style="margin-bottom: 16px;"><span class="chip">NGINX Proxy Manager</span> &nbsp; clean local access</div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 16px;">Local names<br/><span class="g">and HTTPS</span></h1>
+    <div style="display: grid; grid-template-columns: 0.6fr 1.4fr; gap: 40px; align-items: center;">
       <ul class="term-list">
         <li><span>Clean local domain names and HTTPS for internal services.</span></li>
         <li><span>Local DNS points at NPM. It forwards each name to the right service.</span></li>
         <li><span>In my setup, NPM serves the home network. It is not forwarded through my router.</span></li>
         <li><span class="dim">NetBird handles remote access separately.</span></li>
       </ul>
-      <img src="/decks/ato26/assets/slide-31-npm.png" alt="NGINX Proxy Manager Proxy Hosts list with Let's Encrypt certs and Online status" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
+      <img src="/decks/ato26/assets/npm-proxy-hosts.png" alt="NGINX Proxy Manager Proxy Hosts list with Let's Encrypt certs and Online status" style="width:100%; max-height: 610px; object-fit: contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>22 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="20" data-screen-label="23 Honorable Mentions">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">05-stack</span><span class="slash">/</span><span class="leaf">honorable-mentions</span></div><div>05 · THE STACK</div></div>
+<section data-screen-label="22 Honorable Mentions">
   <div class="content">
     <div class="eyebrow">honorable mentions</div>
-    <h1 class="slide-title">The ecosystem is massive.</h1>
+    <h1 class="slide-title">Other apps worth a look</h1>
     <div class="grid-2" style="margin-top: 20px;">
       <div class="card"><div class="card-title">AdGuard Home</div><div class="card-body">Blocks many ads and trackers through DNS. It cannot block every ad, including YouTube ads.</div></div>
       <div class="card"><div class="card-title">Uptime Kuma</div><div class="card-body">Service uptime checks and notifications.</div></div>
       <div class="card"><div class="card-title">Paperless-ngx</div><div class="card-body">Document management and OCR.</div></div>
       <div class="card"><div class="card-title">Mealie</div><div class="card-body">Recipe manager and meal planner.</div></div>
     </div>
-    <div style="margin-top: 30px; font-family: var(--mono); font-size: 21px; color: var(--ink-faint);">
-      // and that's just the surface.
-    </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>23 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
 <!-- SECTION 06 · NETBIRD                                         -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="24 Section 06 Divider">
+<section data-screen-label="23 Section 06 Divider">
   <div class="bg-grid"></div>
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">06-connecting</span></div><div>SECTION · 06</div></div>
   <div class="divider">
     <div class="num">06</div>
     <div class="label">// section 06 of 9</div>
     <div class="title">Connecting it <span style="color:var(--accent);">securely.</span></div>
-    <div class="sub">Remote access without opening your front door to the internet.</div>
+    <div class="sub">Remote access without forwarding ports on your home router.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>24 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="20" data-screen-label="25 Remote Access Problem">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">the-problem</span></div><div>06 · CONNECTING</div></div>
+<section data-screen-label="24 Remote Access Problem">
   <div class="content">
     <div class="eyebrow">the same services, away from home</div>
     <h1 class="slide-title">Your stack<br/><span class="g">from anywhere</span></h1>
@@ -556,12 +451,20 @@
       <li><span>Your Immich photos and Jellyfin library from your phone.</span></li>
     </ul>
     <p class="lede" style="margin-top: 44px;">Those devices need a secure way back to your home network.</p>
+    <div class="option-logos">
+      <div><img src="/decks/ato26/assets/logos/netbird.png" alt="NetBird logo"/><span>NetBird</span></div>
+      <div><img src="/decks/ato26/assets/logos/tailscale.png" alt="Tailscale logo"/><span>Tailscale</span></div>
+      <div><img src="/decks/ato26/assets/logos/twingate.png" alt="Twingate logo"/><span>Twingate</span></div>
+      <div><img src="/decks/ato26/assets/logos/wireguard.png" alt="WireGuard logo"/><span>WireGuard</span></div>
+      <div><img src="/decks/ato26/assets/logos/openvpn.png" alt="OpenVPN logo"/><span>OpenVPN</span></div>
+      <div><img src="/decks/ato26/assets/logos/zerotier.png" alt="ZeroTier logo"/><span>ZeroTier</span></div>
+      <div><img src="/decks/ato26/assets/logos/headscale.png" alt="Headscale logo"/><span>Headscale</span></div>
+    </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>25 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="45" data-screen-label="26 NetBird Overview">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">netbird</span></div><div>06 · CONNECTING</div></div>
+<section data-screen-label="25 NetBird Overview">
   <div class="content">
     <div class="eyebrow">NetBird</div>
     <h1 class="slide-title">A private connection<br/><span class="g">back home</span></h1>
@@ -571,15 +474,46 @@
         <li><span>A routing peer at home can reach services that have no NetBird client.</span></li>
         <li><span>Policies limit access. Private DNS makes service names work away from home.</span></li>
       </ul>
-      <figure><img src="/decks/ato26/assets/mesh.png" alt="NetBird devices connected through a private mesh network" /><figcaption>WireGuard connects directly when possible, with an encrypted relay fallback.</figcaption></figure>
+      <figure class="connection-map netbird-map">
+        <svg viewBox="0 0 880 520" role="img" aria-labelledby="netbird-map-title netbird-map-description">
+          <title id="netbird-map-title">Private access to services at home</title>
+          <desc id="netbird-map-description">A laptop and phone running NetBird connect to a routing peer at home over WireGuard. The routing peer reaches services on the home network that do not have a NetBird client.</desc>
+          <defs>
+            <marker id="intro-arrow-private" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--accent)"/></marker>
+            <marker id="intro-arrow-local" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 Z" fill="var(--ink-faint)"/></marker>
+          </defs>
+          <text class="line-label muted" x="145" y="36">Away from home</text>
+          <text class="line-label muted" x="710" y="36">At home</text>
+          <rect class="peer-node" x="0" y="90" width="290" height="112"/>
+          <text class="node-title" x="145" y="138">My laptop</text>
+          <text class="node-detail" x="145" y="180">NetBird client</text>
+          <rect class="peer-node" x="0" y="320" width="290" height="112"/>
+          <text class="node-title" x="145" y="368">My phone</text>
+          <text class="node-detail" x="145" y="410">NetBird client</text>
+          <path class="direct-line" d="M 306 146 H 524" marker-start="url(#intro-arrow-private)" marker-end="url(#intro-arrow-private)"/>
+          <path class="direct-line" d="M 306 376 H 410 V 146" marker-start="url(#intro-arrow-private)"/>
+          <text class="line-label direct-label" x="415" y="118">WireGuard</text>
+          <rect class="peer-node" x="540" y="90" width="340" height="112"/>
+          <text class="node-title" x="710" y="138">My home peer</text>
+          <text class="node-detail" x="710" y="180">Routing peer</text>
+          <path class="coordination-line" d="M 710 218 V 364" marker-start="url(#intro-arrow-local)" marker-end="url(#intro-arrow-local)"/>
+          <text class="line-label muted local-label" x="680" y="300">Home network</text>
+          <rect class="coordination-node" x="540" y="380" width="340" height="112"/>
+          <text class="node-title" x="710" y="428">Home services</text>
+          <text class="node-detail" x="710" y="470">No NetBird client</text>
+        </svg>
+        <div class="connection-reading">
+          <p>My laptop and phone connect over WireGuard to my home routing peer, which provides access to services without a NetBird client.</p>
+        </div>
+        <figcaption>WireGuard connects directly when possible, with an encrypted relay fallback.</figcaption>
+      </figure>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>26 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- DIAGRAM: private NetBird connection paths -->
-<section data-duration-seconds="45" data-screen-label="27 Direct and Relayed Connections">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">data-flow.svg</span></div><div>06 · CONNECTING</div></div>
+<section data-screen-label="26 Direct and Relayed Connections">
   <div class="content connection-slide">
     <div class="eyebrow">private remote access</div>
     <h1 class="slide-title">Direct when possible.<br/><span class="g">Encrypted either way.</span></h1>
@@ -619,20 +553,19 @@
       <figcaption>No router port forwarding at home. The private keys stay on the peers.</figcaption>
     </figure>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>27 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="35" data-screen-label="28 Self-Host Install">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">self-host.sh</span></div><div>06 · CONNECTING</div></div>
-  <div class="content" style="padding: 56px 80px 46px 80px;">
+<section data-screen-label="27 Self-Host Install">
+  <div class="content selfhost-slide">
     <div class="eyebrow">self-hosting</div>
     <h1 class="slide-title" style="font-size: 60px; margin-bottom: 16px;">Self-hosting<br/><span class="g">NetBird</span></h1>
 
-    <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; flex: 1; align-items: center;">
+    <div class="selfhost-copy">
       <div>
         <div class="card" style="padding: 24px 28px; gap: 10px;">
           <div class="card-sub">// getting-started.sh</div>
-          <div style="font-family: var(--mono); font-size: 22px; color: var(--ink); line-height: 1.55; word-break: break-all;">
+          <div style="font-family: var(--mono); font-size: 25px; color: var(--ink); line-height: 1.55; word-break: break-all;">
             curl -fsSL <span style="color: var(--accent);">https://github.com/netbirdio/netbird/releases/latest/download/getting-started.sh</span> | bash
           </div>
         </div>
@@ -644,36 +577,39 @@
           <li><span class="dim">Install the NetBird client separately on each device you want to connect.</span></li>
         </ul>
       </div>
-      <div><img src="/decks/ato26/assets/install-netbird.png" alt="NetBird Add new peer install panel" style="width:100%; display:block;"/><div style="font-family: var(--mono); font-size: 21px; color: var(--ink-dim); margin-top: 14px; text-align:center;">The separate client install joins a device to your network.</div></div>
     </div>
+    <figure class="selfhost-install">
+      <img src="/decks/ato26/assets/netbird-setup-key-install.png" alt="NetBird setup-key installation panel showing Linux client commands, with the setup key redacted" width="1230" height="1278"/>
+    </figure>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>28 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 
-<section data-duration-seconds="30" data-screen-label="29 NetBird Dashboard">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">dashboard</span></div><div>06 · CONNECTING</div></div>
+<section data-screen-label="28 NetBird Dashboard">
   <div class="content" style="padding: 56px 80px 46px 80px;">
     <div class="eyebrow">the dashboard</div>
     <h2 class="slide-title" style="font-size: 64px; margin-bottom: 28px;">Which devices can<br/><span class="g">reach my services?</span></h2>
 
     <div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 32px; flex: 1; align-items: center;">
-      <img src="/decks/ato26/assets/control-center-peers.png" alt="NetBird Control Center peers view" style="width:100%; display:block;"/>
+      <picture style="display:block; min-width:0;">
+        <source media="(prefers-reduced-motion: reduce), print" srcset="/decks/ato26/assets/control-center-network-poster.png"/>
+        <img src="/decks/ato26/assets/control-center-network.gif" alt="NetBird Control Center showing animated policy connections to homelab peers, groups, and network resources" width="1400" height="792" style="width:100%; height:auto; display:block;"/>
+      </picture>
       <div>
         <ul class="term-list">
           <li><span><strong style="color:var(--ink);">Peers</strong> · every device in the mesh, status at a glance.</span></li>
-          <li><span><strong style="color:var(--ink);">Groups &amp; policies</strong> · who can reach what, in plain English.</span></li>
-          <li><span><strong style="color:var(--ink);">Networks &amp; routes</strong> · gateway entire LANs without installing on every device.</span></li>
+          <li><span><strong style="color:var(--ink);">Groups &amp; policies</strong> · control which devices can reach each service.</span></li>
+          <li><span><strong style="color:var(--ink);">Networks &amp; routes</strong> · reach devices on your home network through a routing peer.</span></li>
           <li><span><strong style="color:var(--ink);">Audit events</strong> · device, account, and policy changes.</span></li>
         </ul>
       </div>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>29 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="45" data-screen-label="30 NetBird Reverse Proxy">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">06-connecting</span><span class="slash">/</span><span class="leaf">reverse-proxy</span></div><div>06 · CONNECTING</div></div>
+<section data-screen-label="29 NetBird Reverse Proxy">
   <div class="content" style="padding: 56px 80px 46px 80px;">
     <div class="eyebrow">reverse proxy</div>
     <h2 class="slide-title" style="font-size: 64px; margin-bottom: 28px;">Sharing a service <span class="g">without a client</span></h2>
@@ -687,45 +623,42 @@
         <li><span><span class="dim">This is public sharing. My private services remain on the client connection.</span></span></li>
       </ul>
       </div>
-      <img src="/decks/ato26/assets/proxy-modes.png" alt="NetBird Reverse Proxy service configuration" style="width:100%; display:block;"/>
+      <img src="/decks/ato26/assets/netbird-reverse-proxy-service.png" alt="NetBird HTTPS service editor publishing immich.hopkins.sh to an Immich server on the home network" width="1204" height="1024" style="width:100%; height:auto; max-height:680px; object-fit:contain; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>30 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
 <!-- SECTION 07 · BACKUPS                                         -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="31 Section 07 Divider">
+<section data-screen-label="30 Section 07 Divider">
   <div class="bg-grid"></div>
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">07-backups</span></div><div>SECTION · 07</div></div>
   <div class="divider">
     <div class="num">07</div>
     <div class="label">// section 07 of 9</div>
-    <div class="title">Backups are <span style="color:var(--accent);">non-negotiable.</span></div>
-    <div class="sub">Because drives fail. It's not <em style="font-style: italic; color: var(--accent);">if</em>. It's <em style="font-style: italic; color: var(--accent);">when</em>.</div>
+    <div class="title">Backing up <span style="color:var(--accent);">my services</span></div>
+    <div class="sub">What I keep locally and copy offsite.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>31 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="45" data-screen-label="32 What I Actually Back Up">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-backups</span><span class="slash">/</span><span class="leaf">priorities</span></div><div>07 · BACKUPS</div></div>
+<section data-screen-label="31 What I Actually Back Up">
   <div class="content">
     <div class="eyebrow">what matters to me</div>
     <h1 class="slide-title">What I actually<br/><span class="g">back up</span></h1>
     <ul class="term-list">
       <li><span><strong>Photos and documents.</strong><br/><span class="dim">The personal stuff I can't replace.</span></span></li>
-      <li><span><strong>App data and configurations.</strong><br/><span class="dim">The work that makes these services mine.</span></span></li>
+      <li><span><strong>App data and configurations.</strong><br/><span class="dim">The settings and app data I'd need to recover.</span></span></li>
       <li><span><strong>VMs and containers.</strong><br/><span class="dim">A way to bring the services back.</span></span></li>
     </ul>
     <p class="backup-note">My movie and TV library doesn't need the same protection.</p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>32 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- DIAGRAM: 3-2-1 rule -->
-<section data-duration-seconds="45" data-screen-label="33 3-2-1 Backup Rule">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-backups</span><span class="slash">/</span><span class="leaf">3-2-1.svg</span></div><div>07 · BACKUPS</div></div>
+<section data-screen-label="32 3-2-1 Backup Rule">
   <div class="content" style="padding: 56px 80px 50px 80px;">
     <div class="eyebrow">the rule</div>
     <h2 class="slide-title" style="font-size: 52px; margin-bottom: 36px;">The <span class="g">3-2-1</span> rule</h2>
@@ -733,32 +666,31 @@
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; flex: 1;">
       <div style="border: 1px solid var(--line-2); border-radius: 0; padding: 30px 28px; background: var(--bg-2); position: relative; display: flex; flex-direction: column;">
         <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">3</div>
-        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// COPIES</div>
+        <div style="font-family: var(--mono); font-size: 19px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// COPIES</div>
         <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">Three copies of your data.</div>
-        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Your working data plus two separate backups.</div>
-        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">live · backup · backup</div>
+        <div style="font-size: 23px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Your working data plus two separate backups.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 18px; color: var(--ink-faint);">live · backup · backup</div>
       </div>
       <div style="border: 1px solid var(--line-2); border-radius: 0; padding: 30px 28px; background: var(--bg-2); position: relative; display: flex; flex-direction: column;">
         <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">2</div>
-        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// MEDIA TYPES</div>
+        <div style="font-family: var(--mono); font-size: 19px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// MEDIA TYPES</div>
         <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">On two different media.</div>
-        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Use different storage media to reduce shared failure risks.</div>
-        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">SSD + hard drive, or disk + tape</div>
+        <div style="font-size: 23px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Use different storage media to reduce shared failure risks.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 18px; color: var(--ink-faint);">SSD + hard drive, or disk + tape</div>
       </div>
       <div style="border: 1px solid var(--line-2); border-radius: 0; padding: 30px 28px; background: var(--accent-soft); position: relative; display: flex; flex-direction: column;">
         <div style="font-family: var(--mono); font-size: 120px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -0.04em;">1</div>
-        <div style="font-family: var(--mono); font-size: 17px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// OFFSITE</div>
+        <div style="font-family: var(--mono); font-size: 19px; color: var(--accent); letter-spacing: 0.1em; margin: 10px 0 12px;">// OFFSITE</div>
         <div style="font-size: 28px; font-weight: 500; color: var(--ink); line-height: 1.3;">One copy offsite.</div>
-        <div style="font-size: 20px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Fire, theft, flood. If the building is gone, the backup in it is gone too.</div>
-        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 16px; color: var(--ink-faint);">friend's house · object storage · vps</div>
+        <div style="font-size: 23px; color: var(--ink-dim); margin-top: 8px; line-height: 1.45;">Fire, theft, flood. If the building is gone, the backup in it is gone too.</div>
+        <div style="margin-top: auto; padding-top: 16px; font-family: var(--mono); font-size: 18px; color: var(--ink-faint);">friend's house · object storage · vps</div>
       </div>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>33 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="60" data-screen-label="34 My Backup Setup">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-backups</span><span class="slash">/</span><span class="leaf">my-setup</span></div><div>07 · BACKUPS</div></div>
+<section data-screen-label="33 My Backup Setup">
   <div class="content">
     <div class="eyebrow">local recovery + an offsite copy</div>
     <h1 class="slide-title">My backup setup</h1>
@@ -769,84 +701,41 @@
     </ol>
     <p class="backup-note">The first offsite upload was still running after a couple of days.</p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>34 / 40</div></div>
-</section>
-
-<section data-duration-seconds="90" data-screen-label="35 A Restore I Actually Tested">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">07-backups</span><span class="slash">/</span><span class="leaf">adguard-restore</span></div><div>07 · BACKUPS</div></div>
-  <div class="content">
-    <div class="eyebrow">AdGuard Home</div>
-    <h2 class="slide-title" style="max-width: none;">A restore I actually tested</h2>
-    <div class="backup-restore">
-      <ol class="backup-sequence">
-        <li><div><h2>I backed it up</h2><p>A completed container backup in PBS.</p></div></li>
-        <li><div><h2>I deleted the container</h2><p>Stopped AdGuard, then removed it.</p></div></li>
-        <li><div><h2>I restored and started it</h2><p>Selected the backup and restored the original container ID.</p></div></li>
-      </ol>
-      <figure>
-        <img src="/docs-static/img/2026/06/proxmox-backup-server-complete-guide/pve-restore.jpg" alt="Proxmox VE backups view after deleting the AdGuard container, with its PBS backup selected and the Restore button available" />
-        <figcaption>The AdGuard backup, ready to restore.</figcaption>
-      </figure>
-    </div>
-    <p class="backup-note">Schedule verification and test restores.<br/>Keep a recovery copy of encryption keys outside the server.</p>
-  </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>35 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SECTION 08 · MONITORING & AUTOMATION                         -->
+<!-- SECTION 08 · MONITORING                                      -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="36 Section 08 Divider">
+<section data-screen-label="34 Section 08 Divider">
   <div class="bg-grid"></div>
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">08-monitoring</span></div><div>SECTION · 08</div></div>
   <div class="divider">
     <div class="num">08</div>
     <div class="label">// section 08 of 9</div>
-    <div class="title">Monitoring <span style="color:var(--accent);">+</span> automation.</div>
-    <div class="sub">Keeping an eye on the stack, plus an automation I used for content work.</div>
+    <div class="title"><span style="color:var(--accent);">Monitoring</span></div>
+    <div class="sub">Keeping an eye on the stack.</div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>36 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="55" data-screen-label="37 Grafana">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">08-monitoring</span><span class="slash">/</span><span class="leaf">grafana</span></div><div>08 · MONITORING</div></div>
+<section data-screen-label="35 Monitoring" class="dark-slide">
   <div class="content">
-    <div class="eyebrow"><span class="chip">Grafana</span> &nbsp; know what your stack is doing</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Dashboards<br/>you'll actually look at.</h1>
+    <div class="eyebrow"><span class="chip">Grafana</span></div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Metrics and<br/><span class="g">dashboards</span></h1>
     <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
       <ul class="term-list">
-        <li><span>One place to watch CPU, memory, storage, and network use.</span></li>
-        <li><span>Pulls data from Proxmox, your containers, and other sources.</span></li>
-        <li><span>A disk filling up gives me a reason to act before a service stops.</span></li>
-        <li><span class="dim">Dashboards help when I look at them. Alerts handle the time in between.</span></li>
+        <li><span><strong>Grafana</strong> visualizes CPU, memory, storage, and network use.</span></li>
+        <li><span><strong>Prometheus</strong> for server and app health: CPU, memory, request rates, and errors.</span></li>
+        <li><span><strong>InfluxDB</strong> for measurements over time: Proxmox stats, Docker metrics, and sensor readings.</span></li>
       </ul>
       <img src="/decks/ato26/assets/slide-46-grafana.avif" alt="Grafana node-exporter dashboard with CPU, memory, network, and disk panels" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>37 / 40</div></div>
-</section>
-
-<section data-duration-seconds="50" data-screen-label="38 n8n">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">08-monitoring</span><span class="slash">/</span><span class="leaf">n8n</span></div><div>08 · MONITORING</div></div>
-  <div class="content">
-    <div class="eyebrow"><span class="chip">n8n</span> &nbsp; a past automation example</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">An automation<br/><span class="g">I used</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
-      <ul class="term-list">
-        <li><span>I used n8n for a daily news digest and a video-to-article workflow.</span></li>
-        <li><span>Whisper transcribed the audio. Ollama helped process the text locally.</span></li>
-        <li><span>I no longer run n8n, but the workflow is documented on TechHut.</span></li>
-        <li><span><strong>Source available / fair-code.</strong> An exception to the open source apps in this talk.</span></li>
-      </ul>
-      <img src="/decks/ato26/assets/slide-47-n8n.png" alt="n8n workflow canvas with branching automation graph" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
-    </div>
-  </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>38 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- RECAP slide: my actual stack -->
-<section data-duration-seconds="50" data-screen-label="39 My Actual Stack">
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">recap</span></div><div>RECAP</div></div>
+<section data-screen-label="36 My Actual Stack">
   <div class="content recap-slide">
     <div class="eyebrow">what I run</div>
     <h1 class="slide-title">My stack, together</h1>
@@ -860,83 +749,36 @@
     </dl>
     <p class="recap-takeaway">One useful service.<br/><span>A backup you know how to restore.</span></p>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>39 / 40</div></div>
+  <div class="chrome-bottom"></div>
 </section>
 
 <!-- ============================================================ -->
-<!-- SECTION 09 · Q&A                                             -->
+<!-- SECTION 09 · THANK YOU                                       -->
 <!-- ============================================================ -->
-<section data-duration-seconds="300" data-screen-label="40 QA Big">
+<section data-screen-label="37 Thank You">
   <div class="bg-grid"></div>
-  <div class="chrome-top"><div class="dots"><span class="dot r"></span><span class="dot a"></span><span class="dot g"></span></div><div class="path"><span class="leaf">~</span><span class="slash">/</span><span class="leaf">09-qa</span></div><div>SECTION · 09</div></div>
   <div class="content" style="justify-content: center; align-items: flex-start;">
     <div class="eyebrow" style="margin-bottom: 30px;">// section 09 · thanks for listening</div>
-    <div class="qa-giant">Q<span class="g">&amp;</span>A.</div>
+    <h1 class="closing-title">Thank <span class="g">you</span></h1>
     <div style="margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; width: 100%; max-width: 1400px;">
       <div>
         <div class="kicker" style="margin-bottom: 10px;">// code + configs</div>
-        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">github.com/TechHutTV/homelab</div>
+        <div style="font-family: var(--mono); font-size: 28px; color: var(--accent);">github.com/TechHutTV/homelab</div>
       </div>
       <div>
         <div class="kicker" style="margin-bottom: 10px;">// netbird</div>
-        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">github.com/netbirdio/netbird</div>
+        <div style="font-family: var(--mono); font-size: 28px; color: var(--accent);">github.com/netbirdio/netbird</div>
       </div>
       <div>
         <div class="kicker" style="margin-bottom: 10px;">// say hi</div>
-        <div style="font-family: var(--mono); font-size: 24px; color: var(--accent);">Booth #45</div>
+        <div style="font-family: var(--mono); font-size: 28px; color: var(--accent);">Booth #45</div>
       </div>
     </div>
   </div>
-  <div class="chrome-bottom"><div class="tag">All Things Open 2026</div><div>END · THANKS</div></div>
+  <div class="chrome-bottom"><div>END · THANKS</div></div>
 </section>
 
 </deck-stage>
-
-<script type="application/json" id="speaker-notes">
-[
-  "00:00–00:15 (00:15). Introduce the session: the services you use at home, how you reach them, and how you recover them.",
-  "00:15–00:40 (00:25). Introduce TechHut, then your NetBird role. This is the setup behind your everyday services. Keep the bio brief.",
-  "00:40–01:00 (00:20). Set the scope: a tour of your home services and their upkeep. The closing n8n example is from a past setup and is source available, not open source.",
-  "01:00–01:35 (00:35). Self-hosting means managing the service yourself. A rented server also counts; this talk focuses on services at home, with public NetBird infrastructure on a VPS. Open source gives control over the installation, but projects still need maintenance and can stop being maintained.",
-  "01:35–01:40 (00:05). Transition straight into why people make the switch.",
-  "01:40–02:15 (00:35). Focus on control of access, rather than claiming cloud providers own the files. The notices are illustrative examples, not quotations from a specific incident. With self-hosting, recovery depends on your own backups and setup.",
-  "02:15–02:45 (00:30). Recurring subscriptions are one motivation. The costs move to hardware, power, backups, and time. Savings depend on the services you actually replace.",
-  "02:45–03:25 (00:40). Combine the everyday trade-offs here: updates, recovery, and being responsible when someone else needs the service. Keep hosted services where they fit your household better.",
-  "03:25–03:30 (00:05). Decide what you want to run before shopping for hardware.",
-  "03:30–04:00 (00:30). Pick one or two services you will use daily. Learn updates and recovery before adding more. The homelab repository has configurations and examples: https://github.com/TechHutTV/homelab",
-  "04:00–04:55 (00:55). Use the hardware you already have if it fits the job. Mention drive connections, power use, memory, and room to grow. A former gaming PC became another server. Transcript: 01:01:05–01:07:48.",
-  "04:55–05:25 (00:30). Choose based on the job: storage management, Docker on Linux, or virtualization. Explain that Proxmox is your choice, rather than a requirement for self-hosting. Sources: https://www.truenas.com/truenas-community-edition/ ; https://docs.docker.com/engine/install/ubuntu/ ; https://www.proxmox.com/en/products/proxmox-virtual-environment/features",
-  "05:25–06:00 (00:35). Point to the VMs and containers in the interface. A VM has its own guest kernel; an LXC container shares the host Linux kernel. Both let you separate services on one machine. The community scripts are a resource for setup, with app-specific requirements to read before running one. Sources: https://www.proxmox.com/en/products/proxmox-virtual-environment/features ; https://community-scripts.github.io/ProxmoxVE/",
-  "06:00–06:05 (00:05). Transition into the services people will use.",
-  "06:05–06:30 (00:25). Orient the audience to the jobs these apps do. Nextcloud covers general files and tasks, Immich handles photos, and Jellyfin streams your own media. These are alternatives for particular workflows, not promises of identical features to every hosted service.",
-  "06:30–08:45 (02:15). Talk through general file storage and task organization. Use a folder and task list to explain how they fit into your day. AIO packages the deployment, but updates, storage, and backups remain your responsibility. Sources: https://docs.nextcloud.com/server/latest/user_manual/en/files/desktop_mobile_sync.html ; https://github.com/nextcloud/tasks ; https://github.com/nextcloud/all-in-one",
-  "08:45–10:45 (02:00). Follow a photo from the phone into the library, then show finding it by person or place. Your Immich guide describes using the mobile app for photo backup. Background uploads depend on the phone OS, so check that uploads finish. Protect both the library files and the database. Immich first reached stable with v2.0.0 on October 1, 2025. Sources: https://techhut.tv/self-host-immich-photo-backup/ ; https://docs.immich.app/features/mobile-backup/ ; https://immich.app/blog/v2.0.0-release",
-  "10:45–12:30 (01:45). Use the library and Continue Watching view as the example. You supply the movies and shows; Jellyfin does not include a streaming catalog. Explain one practical limit: the device and format determine whether a file plays directly or the server must convert it. Avoid promising identical playback across every client. Source: https://jellyfin.org/docs/general/clients/codec-support/",
-  "12:30–13:00 (00:30). A short password-management example. Keep the broader tour moving.",
-  "13:00–13:25 (00:25). Use a local device or automation as the example. Home Assistant can run locally, but some integrations still call vendor cloud services. Home Assistant OS in a VM is one convenient Proxmox setup. Source: https://www.home-assistant.io/installation/",
-  "13:25–13:45 (00:20). Frigate records compatible camera streams and runs object detection locally. Choose a supported detector for the hardware available. Coral remains supported, but the current hardware guide generally recommends other options for new installations. Source: https://docs.frigate.video/frigate/hardware/",
-  "13:45–14:10 (00:25). Explain your local access setup: DNS points a service name at NPM, and NPM forwards to the application. Your deployment keeps NPM private. NPM can also be used publicly in other deployments. Use DNS validation for a public wildcard certificate without an inbound HTTP challenge. Source: https://nginxproxymanager.com/guide/",
-  "14:10–14:30 (00:20). Mention the range without reading every card. AdGuard Home filters DNS, so ads sharing a domain with wanted content, including YouTube ads, can remain. Source: https://adguard-dns.io/kb/adguard-home/faq/",
-  "14:30–14:35 (00:05). Transition from services at home to reaching them away from home.",
-  "14:35–14:55 (00:20). Connect directly to the app slides: the same Nextcloud files, Immich photos, and Jellyfin library when you are away. Establish the need for a private connection.",
-  "14:55–15:40 (00:45). Connect the remote laptop or phone to a home peer. A routing peer provides access to services without their own client. Policies decide what is reachable; private DNS helps resolve service names. WireGuard goes direct where possible and stays encrypted through a relay when needed. Sources: https://docs.netbird.io/use-cases/homelab ; https://docs.netbird.io/about-netbird/how-netbird-works",
-  "15:40–16:25 (00:45). Trace the grey setup paths first: Management distributes configuration, Signal exchanges connection information, and STUN helps discover reachable addresses. Then trace the green direct WireGuard path. If the networks prevent a direct connection, the blue path carries encrypted packets through the relay. Coordination services do not carry application traffic; the relay can carry ciphertext but cannot decrypt it. These VPS roles can run in the combined server. This is private peer access, separate from publishing a service through a reverse proxy. Sources: https://docs.netbird.io/selfhosted/selfhosted-quickstart ; https://docs.netbird.io/about-netbird/how-netbird-works",
-  "16:25–17:00 (00:35). The command installs the server side; the image shows the separate client installation. The current quickstart runs management, signal, relay, and STUN in the combined server, with the dashboard and a reverse proxy. The default Traefik setup needs a public domain, TCP 80/443 and UDP 3478 on the VPS. Local users work without an external IdP. Source: https://docs.netbird.io/selfhosted/selfhosted-quickstart",
-  "17:00–17:30 (00:30). Show the peer list and one access policy for a home service. Audit events record management changes. Traffic events are a separate feature available in NetBird Cloud Business and licensed self-hosted Enterprise deployments, with traffic flow enabled. Do not imply the standard self-hosted install logs every connection. Sources: https://docs.netbird.io/manage/activity ; https://docs.netbird.io/manage/activity/traffic-events-logging",
-  "17:30–18:15 (00:45). Separate this from the private client connection. For public sharing, the visitor reaches the public proxy on the VPS; the proxy reaches the home service through NetBird. Configure the appropriate service authentication and access protections. This public proxy path is separate from the private peer connections shown earlier. Source: https://docs.netbird.io/manage/reverse-proxy",
-  "18:15–18:20 (00:05). Transition into protecting the data behind these services.",
-  "18:20–19:05 (00:45). I focus on photos, documents, app data, and the services I would want back. I don't give my entire movie and TV library the same backup budget. Check that a backup includes the data you care about, especially data stored outside a VM or container's main disk. Source: Home Server Backup Guide, Timeline 3.txt, 01:01:37–01:02:33 and 01:15:40–01:16:36.",
-  "19:05–19:50 (00:45). Use personal photos as the example: the working copy, a local backup, and an offsite backup. Explain the two-media principle without promising that any combination eliminates every failure. A second folder on the same disk is not independent protection. Offsite storage covers losing the whole location. Source: Home Server Backup Guide, Timeline 3.txt, opening 3-2-1 explanation.",
-  "19:50–20:50 (01:00). My local PBS box receives Proxmox backups and selected NAS files through the backup client. I then sync the local backups to S3-compatible storage offsite. Schedule that copy after the local backups finish. The first upload was still running after a couple of days, so upload speed and recovery time matter. Source: Home Server Backup Guide, Timeline 3.txt, 01:20:02–01:28:24 and 01:35:36–01:37:14. Client documentation: https://pbs.proxmox.com/docs/backup-client.html",
-  "20:50–22:20 (01:30). In the guide, I completed an AdGuard backup, stopped and deleted the container, then selected its PBS backup in Proxmox VE. I restored the original container ID and started it again. The screenshot shows the backup selected before the restore. Use this as a recovery example. For regular testing, use an isolated restore so the live service can keep running. Schedule PBS verification jobs to check stored data, and test restores to check the recovery process. For encrypted backups, keep a recoverable copy of the keys and required passwords outside the server being protected. Source: Home Server Backup Guide, Timeline 3.txt, 01:18:30–01:20:02 and 01:26:03–01:28:24. Image: /docs-static/img/2026/06/proxmox-backup-server-complete-guide/pve-restore.jpg . Sources: https://pbs.proxmox.com/docs/maintenance.html#verification ; https://pbs.proxmox.com/docs/backup-client.html#encryption ; https://pbs.proxmox.com/docs/backup-client.html#restoring-data",
-  "22:20–22:25 (00:05). Move from recovery to noticing problems. Grafana is part of the current stack. The n8n slide is an example from a previous setup.",
-  "22:25–23:20 (00:55). Use disk space as a concrete dashboard example: a growing storage pool gives you time to investigate. Explain what an alert should ask you to do. Metrics need a configured data source; a dashboard alone does not notify you. Source: https://grafana.com/docs/grafana/latest/alerting/",
-  "23:20–24:10 (00:50). Your published guide says you no longer run n8n. Describe the daily news digest and video-to-article pipeline as past workflows. Whisper handled transcription and Ollama processed the text locally. State the license distinction: n8n is source available under its fair-code model, an exception among this talk's open source apps. Sources: https://techhut.tv/local-ai-automation-n8n-ollama-whisper/ ; https://github.com/n8n-io/n8n#license",
-  "24:10–25:00 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach questions at 25:00 elapsed, 11:40 am for the scheduled slot.",
-  "25:00–30:00 (05:00). Five minutes reserved for questions. Finish at 30:00 elapsed, 11:45 am. Point attendees to the homelab repository for configurations."
-]
-</script>
-
 
 </body>
 </html>

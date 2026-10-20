@@ -10,6 +10,9 @@
 /public/sitemap.xml
 /public/rss.xml
 
+# Local deck source media, including unredacted captures
+/.local/deck-sources/
+
 # Environment
 .env.local
 .env.development.local
