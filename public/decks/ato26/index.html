@@ -750,16 +750,15 @@
   <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="105" data-screen-label="36 Grafana">
+<section data-duration-seconds="105" data-screen-label="36 Monitoring" class="dark-slide">
   <div class="content">
-    <div class="eyebrow"><span class="chip">Grafana</span> &nbsp; know what your stack is doing</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Dashboards<br/>you'll actually look at.</h1>
+    <div class="eyebrow"><span class="chip">Grafana</span></div>
+    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Metrics and<br/><span class="g">dashboards</span></h1>
     <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
       <ul class="term-list">
-        <li><span>One place to watch CPU, memory, storage, and network use.</span></li>
-        <li><span>Pulls data from Proxmox, your containers, and other sources.</span></li>
-        <li><span>A disk filling up gives me a reason to act before a service stops.</span></li>
-        <li><span class="dim">Dashboards help when I look at them. Alerts handle the time in between.</span></li>
+        <li><span><strong>Grafana</strong> visualizes CPU, memory, storage, and network use.</span></li>
+        <li><span><strong>Prometheus</strong> for server and app health: CPU, memory, request rates, and errors.</span></li>
+        <li><span><strong>InfluxDB</strong> for measurements over time: Proxmox stats, Docker metrics, and sensor readings.</span></li>
       </ul>
       <img src="/decks/ato26/assets/slide-46-grafana.avif" alt="Grafana node-exporter dashboard with CPU, memory, network, and disk panels" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
     </div>
@@ -850,7 +849,7 @@
   "19:05–19:50 (00:45). Use personal photos as the example: the working copy, a local backup, and an offsite backup. Explain the two-media principle without promising that any combination eliminates every failure. A second folder on the same disk is not independent protection. Offsite storage covers losing the whole location. Source: Home Server Backup Guide, Timeline 3.txt, opening 3-2-1 explanation.",
   "19:50–20:50 (01:00). My local PBS box receives Proxmox backups and selected NAS files through the backup client. I then sync the local backups to S3-compatible storage offsite. Schedule that copy after the local backups finish. The first upload was still running after a couple of days, so upload speed and recovery time matter. Source: Home Server Backup Guide, Timeline 3.txt, 01:20:02–01:28:24 and 01:35:36–01:37:14. Client documentation: https://pbs.proxmox.com/docs/backup-client.html",
   "20:50–20:55 (00:05). Move from recovery to noticing problems. Grafana is part of the current stack.",
-  "20:55–22:40 (01:45). Walk through the disk-space panel: a growing storage pool gives you time to investigate. Explain what you would check when an alert fires and how you would respond. Metrics need a configured data source; a dashboard alone does not notify you. Source: https://grafana.com/docs/grafana/latest/alerting/",
+  "20:55–22:40 (01:45). Explain where the dashboard data comes from. Prometheus is a good fit for server and application health: Node Exporter exposes host metrics, while applications or other exporters expose request rates and errors. InfluxDB is useful for recording measurements over time. In the monitoring guide, Proxmox sends it metrics directly and Telegraf collects Docker metrics. Telegraf also supports sensor inputs. Both tools store time series, and their use cases overlap. Pick based on the integrations available, without needing both. Grafana queries the stored data to build dashboards. Sources: https://techhut.tv/monitor-home-server-grafana-prometheus-influxdb and https://prometheus.io/docs/introduction/overview/ and https://docs.influxdata.com/telegraf/v1/plugins/ and https://grafana.com/docs/grafana/latest/datasources/",
   "22:40–23:30 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach the thank-you close at 23:30 elapsed, 11:38:30 am for the scheduled slot.",
   "23:30–24:00 (00:30). Thank the audience. Point attendees to the homelab repository for configurations and invite them to visit Booth #45. Finish around 11:39 am, leaving six minutes of buffer in the scheduled slot."
 ]
