@@ -281,7 +281,6 @@
           title?.querySelectorAll("br").forEach((br) => br.replaceWith(" "));
           label = title?.textContent || label;
         }
-        if (label === "QA Big") label = "Q&A";
         label = label.replace(/\s+/g, " ").trim();
         slide.dataset.deckSlide = String(i);
         if (!slide.hasAttribute("data-om-validate"))

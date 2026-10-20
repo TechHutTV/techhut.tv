@@ -263,7 +263,7 @@ deck-stage > section a:focus-visible,
   deck-stage[data-mode="reading"] .cost-note p {
     font-size: 20px;
   }
-  deck-stage[data-mode="reading"] .qa-giant {
+  deck-stage[data-mode="reading"] .closing-title {
     font-size: clamp(84px, 18vw, 140px);
   }
   deck-stage[data-mode="reading"] .deck-reading-notes {

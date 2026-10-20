@@ -506,8 +506,8 @@ h2.slide-title .g { color: var(--accent); }
   letter-spacing: 0;
 }
 
-/* === QA / closer === */
-.qa-giant {
+/* === Closing slide === */
+.closing-title {
   font-family: var(--display);
   font-size: 280px;
   font-weight: 800;
@@ -515,7 +515,7 @@ h2.slide-title .g { color: var(--accent); }
   letter-spacing: -0.06em;
   color: var(--ink);
 }
-.qa-giant .g { color: var(--accent); }
+.closing-title .g { color: var(--accent); }
 
 /* === Starting a homelab: hardware options and platform comparisons === */
 .intro-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 20px; }

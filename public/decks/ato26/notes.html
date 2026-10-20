@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
   <title>Presenter notes · The Self-Hosted Stack</title>
-  <link rel="stylesheet" href="/decks/ato26/styles.css?v=5" />
+  <link rel="stylesheet" href="/decks/ato26/styles.css?v=8" />
   <style>
     html, body { overflow: auto; }
     body { max-width: 980px; margin: 0 auto; padding: 48px 28px; font-size: 18px; line-height: 1.65; }
@@ -28,9 +28,9 @@
     <nav><a href="./">Open the presentation</a></nav>
     <h1>The Self-Hosted Stack</h1>
     <p>All Things Open 2026 · Room 302A · 11:15–11:45 am</p>
-    <p><strong>Rehearsal targets:</strong> 23 minutes 30 seconds speaking, then six minutes 30 seconds for questions. Aim to reach Q&amp;A at 11:38:30 am. These are planned timings, pending a spoken rehearsal.</p>
+    <p><strong>Rehearsal target:</strong> 24 minutes, including a brief thank-you close. Aim to finish at 11:39 am, leaving six minutes of buffer in the scheduled slot. These are planned timings, pending a spoken rehearsal.</p>
     <p>The stack starts at 06:00 on slide 14. Nextcloud has 2:15, Immich has two minutes, and Jellyfin has 1:45. Use that time for concrete workflows, and keep section dividers brief.</p>
-    <p>Slides 31–34 cover backups from 18:15 to 20:50. Slides 35–36 cover monitoring from 20:50 to 22:40. The current-stack recap has 50 seconds before questions.</p>
+    <p>Slides 31–34 cover backups from 18:15 to 20:50. Slides 35–36 cover monitoring from 20:50 to 22:40. The current-stack recap has 50 seconds before the thank-you close.</p>
   </header>
   <main>
     <p id="status" role="status">Loading the running order…</p>
@@ -74,7 +74,7 @@
         item.append(title, timing, cue);
         document.getElementById('running-order').append(item);
       }
-      status.textContent = slides.length + ' slides · ' + formatTime(elapsed) + ' total, including Q&A';
+      status.textContent = slides.length + ' slides · ' + formatTime(elapsed) + ' total';
     } catch (error) {
       status.textContent = 'Could not load the notes. Open this page through the local preview server and reload.';
     }

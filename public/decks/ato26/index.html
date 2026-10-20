@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <title>The Self-Hosted Stack · Brandon Hopkins</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="stylesheet" href="/decks/ato26/styles.css?v=7" />
-<link rel="stylesheet" href="/decks/ato26/reading.css?v=3" />
-<script src="/decks/ato26/deck-stage.js?v=2" defer></script>
+<link rel="stylesheet" href="/decks/ato26/styles.css?v=8" />
+<link rel="stylesheet" href="/decks/ato26/reading.css?v=4" />
+<script src="/decks/ato26/deck-stage.js?v=3" defer></script>
 </head>
 <body data-deck-mode="reading">
 
-<!-- Rehearsal targets: 23:30 speaking + 06:30 Q&A = 30:00 total.
-     The stack starts at 06:00; Q&A starts at 23:30.
+<!-- Rehearsal targets: 24:00 presentation + 06:00 buffer = 30:00 slot.
+     The stack starts at 06:00; the thank-you close starts at 23:30.
      Each slide has data-duration-seconds; speaker-notes below follow slide order.
      Open /decks/ato26/notes.html for the timed running order and speaking cues.
      Targets are provisional until a spoken rehearsal. -->
@@ -786,13 +786,13 @@
 </section>
 
 <!-- ============================================================ -->
-<!-- SECTION 09 · Q&A                                             -->
+<!-- SECTION 09 · THANK YOU                                       -->
 <!-- ============================================================ -->
-<section data-duration-seconds="390" data-screen-label="38 QA Big">
+<section data-duration-seconds="30" data-screen-label="38 Thank You">
   <div class="bg-grid"></div>
   <div class="content" style="justify-content: center; align-items: flex-start;">
     <div class="eyebrow" style="margin-bottom: 30px;">// section 09 · thanks for listening</div>
-    <div class="qa-giant">Q<span class="g">&amp;</span>A.</div>
+    <h1 class="closing-title">Thank <span class="g">you</span></h1>
     <div style="margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; width: 100%; max-width: 1400px;">
       <div>
         <div class="kicker" style="margin-bottom: 10px;">// code + configs</div>
@@ -851,8 +851,8 @@
   "19:50–20:50 (01:00). My local PBS box receives Proxmox backups and selected NAS files through the backup client. I then sync the local backups to S3-compatible storage offsite. Schedule that copy after the local backups finish. The first upload was still running after a couple of days, so upload speed and recovery time matter. Source: Home Server Backup Guide, Timeline 3.txt, 01:20:02–01:28:24 and 01:35:36–01:37:14. Client documentation: https://pbs.proxmox.com/docs/backup-client.html",
   "20:50–20:55 (00:05). Move from recovery to noticing problems. Grafana is part of the current stack.",
   "20:55–22:40 (01:45). Walk through the disk-space panel: a growing storage pool gives you time to investigate. Explain what you would check when an alert fires and how you would respond. Metrics need a configured data source; a dashboard alone does not notify you. Source: https://grafana.com/docs/grafana/latest/alerting/",
-  "22:40–23:30 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach questions at 23:30 elapsed, 11:38:30 am for the scheduled slot.",
-  "23:30–30:00 (06:30). Six minutes and 30 seconds reserved for questions. Finish at 30:00 elapsed, 11:45 am. Point attendees to the homelab repository for configurations."
+  "22:40–23:30 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach the thank-you close at 23:30 elapsed, 11:38:30 am for the scheduled slot.",
+  "23:30–24:00 (00:30). Thank the audience. Point attendees to the homelab repository for configurations and invite them to visit Booth #45. Finish around 11:39 am, leaving six minutes of buffer in the scheduled slot."
 ]
 </script>
 
