@@ -1,7 +1,4 @@
 /* Reading view reflows the authored slides without changing presentation layout. */
-.deck-reading-notes {
-  display: none;
-}
 .deck-table {
   min-width: 0;
 }
@@ -266,26 +263,6 @@ deck-stage > section a:focus-visible,
   deck-stage[data-mode="reading"] .closing-title {
     font-size: clamp(84px, 18vw, 140px);
   }
-  deck-stage[data-mode="reading"] .deck-reading-notes {
-    display: block;
-    margin-top: 32px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line-2);
-    font-size: 17px;
-  }
-  deck-stage[data-mode="reading"] .deck-reading-notes summary {
-    cursor: pointer;
-    color: var(--accent);
-    min-height: 44px;
-  }
-  deck-stage[data-mode="reading"] .deck-reading-notes p {
-    margin-top: 8px;
-    white-space: pre-wrap;
-  }
-  deck-stage[data-mode="reading"] .deck-reading-notes a {
-    color: var(--accent);
-    overflow-wrap: anywhere;
-  }
   @media (max-width: 600px) {
     deck-stage[data-mode="reading"] > section {
       padding: 32px 24px;
@@ -308,11 +285,6 @@ deck-stage > section a:focus-visible,
   deck-stage *::after {
     animation: none !important;
     transition: none !important;
-  }
-}
-@media print {
-  .deck-reading-notes {
-    display: none !important;
   }
 }
 

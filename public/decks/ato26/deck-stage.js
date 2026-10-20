@@ -1,7 +1,7 @@
 /**
  * Presentation controls for the ATO deck.
- * Keeps the deck-stage API, numeric deep links, slidechange events, speaker
- * notes JSON, and noscale export mode. Slides stay mounted during navigation.
+ * Keeps the deck-stage API, numeric deep links, slidechange events, and noscale
+ * export mode. Slides stay mounted during navigation.
  */
 (() => {
   const stylesheet = `
@@ -22,11 +22,6 @@
     :focus-visible { outline:3px solid var(--accent,#08734f); outline-offset:3px; }
     .count { font-variant-numeric:tabular-nums; min-width:48px; text-align:center; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-    .notes { position:fixed; z-index:21; inset:auto 16px calc(var(--deck-toolbar-height) + 16px); max-height:45vh; overflow:auto; padding:24px; background:var(--bg,#fafafa); border:1px solid var(--line-2,#d4d4d4); border-radius:4px; font-size:18px; line-height:1.55; }
-    .notes-header { display:flex; justify-content:space-between; gap:20px; align-items:start; }
-    .notes h2 { font-size:20px; margin:0 0 12px; }
-    .notes p { margin:0 0 16px; white-space:pre-wrap; overflow-wrap:anywhere; }
-    .notes > a { font-size:16px; }
     dialog { width:calc(100% - 32px); max-width:580px; max-height:85vh; overflow:auto; padding:28px; background:var(--bg,#fafafa); color:var(--ink,#171717); border:1px solid var(--line-2,#d4d4d4); border-radius:4px; font:17px/1.5 var(--sans,system-ui); }
     dialog::backdrop { background:#0009; }
     dialog h2 { margin:0 0 20px; font-size:24px; }
@@ -34,7 +29,7 @@
     dialog dt { font-weight:600; margin-top:12px; }
     dialog dd { margin:4px 0 0; }
     dialog p { margin:16px 0; }
-    :host([noscale]) .toolbar, :host([noscale]) .notes { display:none !important; }
+    :host([noscale]) .toolbar { display:none !important; }
     :host([noscale]) .stage { inset:0; align-items:start; justify-content:start; }
     @media screen {
       :host([data-mode="reading"]) { position:relative; inset:auto; overflow:visible; background:var(--bg,#fafafa); }
@@ -47,7 +42,6 @@
       .toolbar .optional { display:none; }
       .toolbar select { flex:1; max-width:260px; width:0; }
       .count { min-width:42px; font-size:12px; }
-      .notes { inset-inline:8px; padding:18px; }
     }
     @media (max-width:360px) { .toolbar .count { display:none; } .toolbar button { padding-inline:9px; } }
     @media print {
@@ -56,7 +50,7 @@
       .canvas { transform:none !important; width:auto !important; height:auto !important; background:none; }
       ::slotted(section) { position:relative !important; inset:auto !important; width:var(--deck-design-w) !important; height:var(--deck-design-h) !important; opacity:1 !important; visibility:visible !important; pointer-events:auto; break-after:page; break-inside:avoid; overflow:hidden; }
       ::slotted(section:last-of-type) { break-after:auto; }
-      .toolbar, .notes, dialog, .sr-only { display:none !important; }
+      .toolbar, dialog, .sr-only { display:none !important; }
     }
   `;
 
@@ -68,7 +62,6 @@
       super();
       this._root = this.attachShadow({ mode: "open" });
       this._slides = [];
-      this._notes = [];
       this._index = 0;
       this._previousIndex = -1;
       this._scrollFrame = 0;
@@ -108,9 +101,9 @@
           signal: this._events.signal,
         });
       this._render();
-      this._loadNotes();
       on(this._slot, "slotchange", () => this._collectSlides());
       on(window, "keydown", (event) => this._onKey(event));
+      on(document, "fullscreenchange", () => this._fit());
       on(window, "resize", () => {
         const widthChanged = this._lastWidth !== innerWidth;
         this._lastWidth = innerWidth;
@@ -151,10 +144,6 @@
           this.dataset.mode === "slides" ? "reading" : "slides",
           true,
         ),
-      );
-      on(this._notesButton, "click", () => this._toggleNotes());
-      on(this._root.querySelector("#notes-close"), "click", () =>
-        this._toggleNotes(false),
       );
       on(this._root.querySelector("#fullscreen"), "click", () =>
         this._fullscreen(),
@@ -200,24 +189,19 @@
           <label for="slide-picker" class="sr-only">Choose a slide</label><select id="slide-picker"></select>
           <button id="next" aria-label="Next slide" title="Next (right arrow)">→</button>
           <button id="mode">Read</button>
-          <button id="notes-toggle" class="optional" aria-controls="notes" aria-expanded="false">Notes</button>
           <button id="fullscreen" class="optional">Fullscreen</button>
           <button id="print" class="optional">Print / PDF</button>
           <button id="help-open" aria-label="Presentation help">?</button>
         </nav>
-        <section id="notes" class="notes export-hidden" aria-labelledby="notes-heading" tabindex="0" hidden>
-          <div class="notes-header"><h2 id="notes-heading"></h2><button id="notes-close" aria-label="Close notes">×</button></div>
-          <div class="notes-content"></div><a href="./notes.html" target="_blank" rel="noopener">Full rehearsal notes ↗</a>
-        </section>
         <div class="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true"></div>
         <dialog aria-labelledby="help-heading">
           <h2 id="help-heading">Presentation controls</h2>
           <dl><dt>← / →, Page Up / Page Down</dt><dd>Previous or next slide. Space and Enter also advance.</dd>
           <dt>Home / End / R</dt><dd>First slide, last slide, or reset. Number keys 1–9 jump to those slides; 0 jumps to slide 10.</dd>
-          <dt>N / F / ?</dt><dd>Show notes, toggle fullscreen, or open this help.</dd></dl>
+          <dt>F / ?</dt><dd>Toggle fullscreen or open this help.</dd></dl>
           <p>Use the slide menu to jump anywhere. Click the left third of a slide to go back, or the rest to advance. Links and text selection work normally.</p>
-          <p><strong>Read</strong> shows every slide with expandable speaker notes. Phones open in reading view automatically. Print / PDF exports one page per slide.</p>
-          <p>Notes appear on this screen, so a mirrored projector will show them too. <a href="./notes.html" target="_blank" rel="noopener">Open the full rehearsal notes</a> on a separate device or screen.</p>
+          <p>Fullscreen hides the bottom controls. Press Escape to exit fullscreen.</p>
+          <p><strong>Read</strong> shows every slide on one scrollable page. Phones open in reading view automatically. Print / PDF exports one page per slide.</p>
           <button id="help-close" autofocus>Close</button>
         </dialog>`;
       const find = (selector) => this._root.querySelector(selector);
@@ -228,36 +212,8 @@
       this._previous = find("#previous");
       this._next = find("#next");
       this._modeButton = find("#mode");
-      this._notesButton = find("#notes-toggle");
-      this._notesPanel = find("#notes");
       this._help = find("dialog");
       this._announcement = find("#announcement");
-    }
-    _loadNotes() {
-      try {
-        const parsed = JSON.parse(
-          document.getElementById("speaker-notes")?.textContent || "[]",
-        );
-        this._notes = Array.isArray(parsed) ? parsed : [];
-      } catch {
-        this._notes = [];
-      }
-    }
-    _noteContent(index) {
-      const paragraph = document.createElement("p");
-      const note =
-        typeof this._notes[index] === "string"
-          ? this._notes[index]
-          : "No speaker notes for this slide.";
-      for (const part of note.split(/(https?:\/\/[^\s;]+)/g)) {
-        if (/^https?:\/\//.test(part)) {
-          const link = document.createElement("a");
-          link.href = part;
-          link.textContent = part;
-          paragraph.append(link);
-        } else paragraph.append(document.createTextNode(part));
-      }
-      return paragraph;
     }
     _collectSlides() {
       const slides = this._slot
@@ -288,14 +244,6 @@
             "no_overflowing_text,no_overlapping_text,slide_sized_text";
         slide.setAttribute("aria-label", `${i + 1}. ${label}`);
         this._picker.add(new Option(`${i + 1}. ${label}`, String(i)));
-        if (!slide.querySelector(".deck-reading-notes")) {
-          const details = document.createElement("details");
-          details.className = "deck-reading-notes";
-          const summary = document.createElement("summary");
-          summary.textContent = "Speaker notes";
-          details.append(summary, this._noteContent(i));
-          slide.append(details);
-        }
         slide.querySelectorAll("table").forEach((table) => {
           if (table.parentElement.classList.contains("deck-table")) return;
           const wrap = document.createElement("div");
@@ -333,11 +281,6 @@
       this._root.querySelector(".count").textContent =
         `${this._index + 1} / ${this.length}`;
       this._announcement.textContent = `Slide ${this._index + 1} of ${this.length}: ${this._labels[this._index]}`;
-      this._root.querySelector("#notes-heading").textContent =
-        `Notes: ${this._labels[this._index]}`;
-      this._root
-        .querySelector(".notes-content")
-        .replaceChildren(this._noteContent(this._index));
       const url = new URL(location.href);
       url.hash = String(this._index + 1);
       history.replaceState(null, "", url);
@@ -377,8 +320,6 @@
         "aria-label",
         mode === "slides" ? "Switch to reading view" : "Switch to slide view",
       );
-      this._notesButton.hidden = mode === "reading";
-      this._toggleNotes(false, false);
       if (persist) {
         const url = new URL(location.href);
         url.searchParams.set("view", mode);
@@ -399,14 +340,6 @@
           this._layoutChanging = false;
         });
       });
-    }
-    _toggleNotes(show = this._notesPanel.hidden, restoreFocus = true) {
-      if (show && this.dataset.mode !== "slides") return;
-      const hadFocus = this._notesPanel.contains(this._root.activeElement);
-      this._notesPanel.hidden = !show;
-      this._notesButton.setAttribute("aria-expanded", String(show));
-      if (show) this._notesPanel.focus();
-      else if (restoreFocus && hadFocus) this._notesButton.focus();
     }
     async _fullscreen() {
       try {
@@ -433,14 +366,6 @@
         target.closest("input,select,textarea,[contenteditable]")
       )
         return;
-      if (event.key === "Escape") {
-        this._toggleNotes(false);
-        return;
-      }
-      if (this._notesPanel.contains(target)) {
-        if (event.key.toLowerCase() === "n") this._toggleNotes(false);
-        return;
-      }
       if (
         target.closest("button,a,summary") &&
         [" ", "Enter"].includes(event.key)
@@ -460,7 +385,6 @@
       else if (event.key === "End") destination = this.length - 1;
       else if (/^[0-9]$/.test(event.key))
         destination = event.key === "0" ? 9 : Number(event.key) - 1;
-      else if (event.key.toLowerCase() === "n") this._toggleNotes();
       else if (event.key.toLowerCase() === "f") this._fullscreen();
       if (destination !== undefined) {
         event.preventDefault();
@@ -492,6 +416,7 @@
     }
     _fit() {
       if (!this._canvas) return;
+      this._toolbar.hidden = Boolean(document.fullscreenElement);
       const toolbarHeight = this.hasAttribute("noscale")
         ? 0
         : this._toolbar.getBoundingClientRect().height;
