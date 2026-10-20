@@ -10,8 +10,8 @@
 </head>
 <body data-deck-mode="reading">
 
-<!-- Rehearsal targets: 25:00 speaking + 05:00 Q&A = 30:00 total.
-     The stack starts at 06:00; Q&A starts at 25:00.
+<!-- Rehearsal targets: 23:30 speaking + 06:30 Q&A = 30:00 total.
+     The stack starts at 06:00; Q&A starts at 23:30.
      Each slide has data-duration-seconds; speaker-notes below follow slide order.
      Open /decks/ato26/notes.html for the timed running order and speaking cues.
      Targets are provisional until a spoken rehearsal. -->
@@ -87,7 +87,7 @@
     <div class="eyebrow">./readme.md</div>
     <h1 class="slide-title">What is this talk?</h1>
     <ul class="term-list" style="font-size: 26px; gap: 28px;">
-      <li><span>The open source services I run at home, plus an automation example.</span></li>
+      <li><span>The open source services I run at home.</span></li>
       <li><span>What I use them for, how they connect, and how I recover when something breaks.</span></li>
       <li><span>Leave here knowing what's possible, what it takes, and whether it's right for you.</span></li>
     </ul>
@@ -736,41 +736,21 @@
   <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="90" data-screen-label="35 A Restore I Actually Tested">
-  <div class="content">
-    <div class="eyebrow">AdGuard Home</div>
-    <h2 class="slide-title" style="max-width: none;">A restore I actually tested</h2>
-    <div class="backup-restore">
-      <ol class="backup-sequence">
-        <li><div><h2>I backed it up</h2><p>A completed container backup in PBS.</p></div></li>
-        <li><div><h2>I deleted the container</h2><p>Stopped AdGuard, then removed it.</p></div></li>
-        <li><div><h2>I restored and started it</h2><p>Selected the backup and restored the original container ID.</p></div></li>
-      </ol>
-      <figure>
-        <img src="/docs-static/img/2026/06/proxmox-backup-server-complete-guide/pve-restore.jpg" alt="Proxmox VE backups view after deleting the AdGuard container, with its PBS backup selected and the Restore button available" />
-        <figcaption>The AdGuard backup, ready to restore.</figcaption>
-      </figure>
-    </div>
-    <p class="backup-note">Schedule verification and test restores.<br/>Keep a recovery copy of encryption keys outside the server.</p>
-  </div>
-  <div class="chrome-bottom"></div>
-</section>
-
 <!-- ============================================================ -->
-<!-- SECTION 08 · MONITORING & AUTOMATION                         -->
+<!-- SECTION 08 · MONITORING                                      -->
 <!-- ============================================================ -->
-<section data-duration-seconds="5" data-screen-label="36 Section 08 Divider">
+<section data-duration-seconds="5" data-screen-label="35 Section 08 Divider">
   <div class="bg-grid"></div>
   <div class="divider">
     <div class="num">08</div>
     <div class="label">// section 08 of 9</div>
-    <div class="title">Monitoring <span style="color:var(--accent);">+</span> automation.</div>
-    <div class="sub">Keeping an eye on the stack, plus an automation I used for content work.</div>
+    <div class="title"><span style="color:var(--accent);">Monitoring</span></div>
+    <div class="sub">Keeping an eye on the stack.</div>
   </div>
   <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="55" data-screen-label="37 Grafana">
+<section data-duration-seconds="105" data-screen-label="36 Grafana">
   <div class="content">
     <div class="eyebrow"><span class="chip">Grafana</span> &nbsp; know what your stack is doing</div>
     <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">Dashboards<br/>you'll actually look at.</h1>
@@ -787,25 +767,8 @@
   <div class="chrome-bottom"></div>
 </section>
 
-<section data-duration-seconds="50" data-screen-label="38 n8n">
-  <div class="content">
-    <div class="eyebrow"><span class="chip">n8n</span> &nbsp; a past automation example</div>
-    <h1 class="slide-title" style="margin-top: 12px; margin-bottom: 28px;">An automation<br/><span class="g">I used</span></h1>
-    <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; align-items: start; margin-top: 12px;">
-      <ul class="term-list">
-        <li><span>I used n8n for a daily news digest and a video-to-article workflow.</span></li>
-        <li><span>Whisper transcribed the audio. Ollama helped process the text locally.</span></li>
-        <li><span>I no longer run n8n, but the workflow is documented on TechHut.</span></li>
-        <li><span><strong>Source available / fair-code.</strong> An exception to the open source apps in this talk.</span></li>
-      </ul>
-      <img src="/decks/ato26/assets/slide-47-n8n.png" alt="n8n workflow canvas with branching automation graph" style="width:100%; max-height: 540px; object-fit: contain; object-position: top; display:block;"/>
-    </div>
-  </div>
-  <div class="chrome-bottom"></div>
-</section>
-
 <!-- RECAP slide: my actual stack -->
-<section data-duration-seconds="50" data-screen-label="39 My Actual Stack">
+<section data-duration-seconds="50" data-screen-label="37 My Actual Stack">
   <div class="content recap-slide">
     <div class="eyebrow">what I run</div>
     <h1 class="slide-title">My stack, together</h1>
@@ -825,7 +788,7 @@
 <!-- ============================================================ -->
 <!-- SECTION 09 · Q&A                                             -->
 <!-- ============================================================ -->
-<section data-duration-seconds="300" data-screen-label="40 QA Big">
+<section data-duration-seconds="390" data-screen-label="38 QA Big">
   <div class="bg-grid"></div>
   <div class="content" style="justify-content: center; align-items: flex-start;">
     <div class="eyebrow" style="margin-bottom: 30px;">// section 09 · thanks for listening</div>
@@ -854,7 +817,7 @@
 [
   "00:00–00:15 (00:15). Introduce the session: the services you use at home, how you reach them, and how you recover them.",
   "00:15–00:40 (00:25). Introduce TechHut, then your NetBird role. This is the setup behind your everyday services. Keep the bio brief.",
-  "00:40–01:00 (00:20). Set the scope: a tour of your home services and their upkeep. The closing n8n example is from a past setup and is source available, not open source.",
+  "00:40–01:00 (00:20). Set the scope: a tour of your home services and their upkeep.",
   "01:00–01:35 (00:35). Self-hosting means managing the service yourself. A rented server also counts; this talk focuses on services at home, with public NetBird infrastructure on a VPS. Open source gives control over the installation, but projects still need maintenance and can stop being maintained.",
   "01:35–01:40 (00:05). Transition straight into why people make the switch.",
   "01:40–02:15 (00:35). Focus on control of access, rather than claiming cloud providers own the files. The notices are illustrative examples, not quotations from a specific incident. With self-hosting, recovery depends on your own backups and setup.",
@@ -886,12 +849,10 @@
   "18:20–19:05 (00:45). I focus on photos, documents, app data, and the services I would want back. I don't give my entire movie and TV library the same backup budget. Check that a backup includes the data you care about, especially data stored outside a VM or container's main disk. Source: Home Server Backup Guide, Timeline 3.txt, 01:01:37–01:02:33 and 01:15:40–01:16:36.",
   "19:05–19:50 (00:45). Use personal photos as the example: the working copy, a local backup, and an offsite backup. Explain the two-media principle without promising that any combination eliminates every failure. A second folder on the same disk is not independent protection. Offsite storage covers losing the whole location. Source: Home Server Backup Guide, Timeline 3.txt, opening 3-2-1 explanation.",
   "19:50–20:50 (01:00). My local PBS box receives Proxmox backups and selected NAS files through the backup client. I then sync the local backups to S3-compatible storage offsite. Schedule that copy after the local backups finish. The first upload was still running after a couple of days, so upload speed and recovery time matter. Source: Home Server Backup Guide, Timeline 3.txt, 01:20:02–01:28:24 and 01:35:36–01:37:14. Client documentation: https://pbs.proxmox.com/docs/backup-client.html",
-  "20:50–22:20 (01:30). In the guide, I completed an AdGuard backup, stopped and deleted the container, then selected its PBS backup in Proxmox VE. I restored the original container ID and started it again. The screenshot shows the backup selected before the restore. Use this as a recovery example. For regular testing, use an isolated restore so the live service can keep running. Schedule PBS verification jobs to check stored data, and test restores to check the recovery process. For encrypted backups, keep a recoverable copy of the keys and required passwords outside the server being protected. Source: Home Server Backup Guide, Timeline 3.txt, 01:18:30–01:20:02 and 01:26:03–01:28:24. Image: /docs-static/img/2026/06/proxmox-backup-server-complete-guide/pve-restore.jpg . Sources: https://pbs.proxmox.com/docs/maintenance.html#verification ; https://pbs.proxmox.com/docs/backup-client.html#encryption ; https://pbs.proxmox.com/docs/backup-client.html#restoring-data",
-  "22:20–22:25 (00:05). Move from recovery to noticing problems. Grafana is part of the current stack. The n8n slide is an example from a previous setup.",
-  "22:25–23:20 (00:55). Use disk space as a concrete dashboard example: a growing storage pool gives you time to investigate. Explain what an alert should ask you to do. Metrics need a configured data source; a dashboard alone does not notify you. Source: https://grafana.com/docs/grafana/latest/alerting/",
-  "23:20–24:10 (00:50). Your published guide says you no longer run n8n. Describe the daily news digest and video-to-article pipeline as past workflows. Whisper handled transcription and Ollama processed the text locally. State the license distinction: n8n is source available under its fair-code model, an exception among this talk's open source apps. Sources: https://techhut.tv/local-ai-automation-n8n-ollama-whisper/ ; https://github.com/n8n-io/n8n#license",
-  "24:10–25:00 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach questions at 25:00 elapsed, 11:40 am for the scheduled slot.",
-  "25:00–30:00 (05:00). Five minutes reserved for questions. Finish at 30:00 elapsed, 11:45 am. Point attendees to the homelab repository for configurations."
+  "20:50–20:55 (00:05). Move from recovery to noticing problems. Grafana is part of the current stack.",
+  "20:55–22:40 (01:45). Walk through the disk-space panel: a growing storage pool gives you time to investigate. Explain what you would check when an alert fires and how you would respond. Metrics need a configured data source; a dashboard alone does not notify you. Source: https://grafana.com/docs/grafana/latest/alerting/",
+  "22:40–23:30 (00:50). Bring the current stack together. End with a useful first service and a restore you have tested. Reach questions at 23:30 elapsed, 11:38:30 am for the scheduled slot.",
+  "23:30–30:00 (06:30). Six minutes and 30 seconds reserved for questions. Finish at 30:00 elapsed, 11:45 am. Point attendees to the homelab repository for configurations."
 ]
 </script>
 
