@@ -1362,6 +1362,7 @@
     "category": "Networking",
     "description": "Connect devices through a self-hosted private network.",
     "coverage": [
+      "/split-dns-homelab",
       "/self-host-netbird-pocketid",
       "/fedora-44-post-install-guide",
       "/fedora-server-guide-cockpit-zfs-podman"
@@ -1454,7 +1455,9 @@
     "name": "Nginx Proxy Manager",
     "category": "Networking",
     "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/split-dns-homelab"
+    ],
     "videos": [
       {
         "id": "DFUmfHqQWyg",
@@ -1580,6 +1583,7 @@
     "category": "Files & Photos",
     "description": "Host file storage, sharing, search, and document collaboration with Docker.",
     "coverage": [
+      "/split-dns-homelab",
       "/self-host-opencloud-docker-compose"
     ],
     "icon": "/app-icons/opencloud.png",

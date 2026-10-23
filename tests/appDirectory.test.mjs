@@ -112,7 +112,7 @@ test('coverage is canonical, deduplicated and newest first without discarding ol
   assert.match(resolve.coverage[1].title, /Outdated/)
   assert.ok(resolve.details.coverageNotes[resolve.coverage[1].href])
   assert.equal(getAppDetail('superfile', records, articles).coverage.length, 2)
-  assert.equal(getAppDetail('netbird', records, articles).coverage.length, 3)
+  assert.equal(getAppDetail('netbird', records, articles).coverage.length, 4)
   assert.ok(getAppDetail('portainer', records, articles).coverage.some(article => article.href === '/self-host-immich-photo-backup'))
   assert.ok(getAppDetail('sonarr', records, articles).videos.length >= 2)
 })
