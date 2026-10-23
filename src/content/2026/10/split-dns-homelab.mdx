@@ -169,6 +169,10 @@ In the existing **Home** Network, check that resources and access policies let P
 
 A resource identifies the private destination. An access policy grants permission to reach it, and a routing peer carries traffic into the LAN. Reuse existing resources if they already cover these addresses. Otherwise, add individual IP `/32` resources and grant the ports above, using separate TCP and UDP policies as needed.
 
+If `HOME_DNS_IP` or `NPM_LAN_IP` is the routing peer's own LAN address, keep a resource covering that IP so clients receive a route. Also add a separate peer-to-peer policy from **Personal Devices** to a group containing that routing peer, allowing the relevant DNS or HTTPS ports from the table. A network resource policy alone doesn't grant access to services on the routing peer itself.
+
+For that case, a userspace routing peer (Windows, macOS, or Linux netstack) also needs `NB_ENABLE_LOCAL_FORWARDING=true` in its NetBird service environment. Restart the service after setting it. See NetBird's [guidance for reaching the routing peer itself](https://docs.netbird.io/manage/networks/how-routing-peers-work#reaching-the-routing-peer-itself). Destinations on other LAN machines continue using the resources and network resource policies described above.
+
 Keep the current routing peers and the public proxy's OpenCloud backend resource intact. These personal devices need HTTPS access to NPM for this path; NPM makes the connection to port 9200. The home resolver also needs to accept queries coming from the routing peers.
 
 NetBird's [internal DNS guide](https://docs.netbird.io/manage/dns/internal-dns-servers) covers reaching a private resolver through a routing peer. Adding a nameserver entry alone doesn't make that server reachable.
