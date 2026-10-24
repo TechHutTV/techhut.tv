@@ -74,7 +74,7 @@ test('sorts by coverage date or alphabetically without mutating input', () => {
   assert.deepEqual(apps, before)
 })
 
-test('all 126 existing apps have complete detail data, coverage thumbnails, and matching routes', () => {
+test('all apps have complete detail data, coverage thumbnails, and matching routes', () => {
   const files = fs.readdirSync(new URL('../src/data/app-details/', import.meta.url)).filter(file => file.endsWith('.json'))
   assert.equal(files.length, records.length)
   for (const record of records) {
@@ -112,7 +112,7 @@ test('coverage is canonical, deduplicated and newest first without discarding ol
   assert.match(resolve.coverage[1].title, /Outdated/)
   assert.ok(resolve.details.coverageNotes[resolve.coverage[1].href])
   assert.equal(getAppDetail('superfile', records, articles).coverage.length, 2)
-  assert.equal(getAppDetail('netbird', records, articles).coverage.length, 3)
+  assert.equal(getAppDetail('netbird', records, articles).coverage.length, 4)
   assert.ok(getAppDetail('portainer', records, articles).coverage.some(article => article.href === '/self-host-immich-photo-backup'))
   assert.ok(getAppDetail('sonarr', records, articles).videos.length >= 2)
 })
