@@ -1097,6 +1097,17 @@
       "https://api.github.com/repos/sonnyp/Tangram"
     ]
   },
+  "technitium-dns-server": {
+    "repository": "technitiumsoftware/dnsserver",
+    "label": "Technitium DNS Server",
+    "link": "https://github.com/TechnitiumSoftware/DnsServer",
+    "reason": "Official DNS Server repository linked by the Technitium project site; its README identifies the covered application and the repository is not archived. Use generated initials because no standalone icon with reviewed artwork provenance has been selected.",
+    "sources": [
+      "https://technitium.com/dns/",
+      "https://github.com/TechnitiumSoftware/DnsServer#readme",
+      "https://api.github.com/repos/TechnitiumSoftware/DnsServer"
+    ]
+  },
   "tgpt": {
     "repository": "aandrew-me/tgpt",
     "label": "tgpt",

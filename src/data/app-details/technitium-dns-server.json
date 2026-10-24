@@ -1,0 +1,46 @@
+{
+  "summary": "Host local DNS zones and resolve internet names from a DNS server you manage through a web console.",
+  "overview": "Technitium DNS Server combines authoritative DNS for zones you control with recursive resolution for other domains. Local records can send homelab hostnames to private addresses while the resolver continues looking up public names. Its browser interface manages zones, filtering, forwarders, and query logs, and an HTTP API supports automation. The server also supports encrypted DNS and DNSSEC validation.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Windows",
+    "Linux",
+    "macOS",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/TechnitiumSoftware/DnsServer/blob/master/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://technitium.com/dns/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/TechnitiumSoftware/DnsServer"
+    },
+    {
+      "label": "Help",
+      "url": "https://go.technitium.com/?id=25"
+    }
+  ],
+  "features": [
+    "Authoritative and recursive DNS",
+    "Local DNS zones and overrides",
+    "DNS-over-HTTPS and DNS-over-TLS",
+    "DNSSEC validation",
+    "DNS filtering and query logs",
+    "Browser administration and HTTP API"
+  ],
+  "sources": [
+    "https://technitium.com/dns/",
+    "https://github.com/TechnitiumSoftware/DnsServer#readme",
+    "https://github.com/TechnitiumSoftware/DnsServer/blob/master/LICENSE",
+    "https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html",
+    "https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/js/zone.js",
+    "https://go.technitium.com/?id=25"
+  ]
+}

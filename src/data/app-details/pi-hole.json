@@ -29,6 +29,8 @@
   "sources": [
     "https://pi-hole.net",
     "https://github.com/pi-hole/pi-hole#readme",
-    "https://github.com/pi-hole/pi-hole/blob/master/LICENSE"
+    "https://github.com/pi-hole/pi-hole/blob/master/LICENSE",
+    "https://github.com/pi-hole/web/blob/master/scripts/lua/sidebar.lp",
+    "https://github.com/pi-hole/web/blob/master/settings-dnsrecords.lp"
   ]
 }

@@ -4,7 +4,9 @@
     "name": "AdGuard Home",
     "category": "Networking",
     "description": "Filter ads and trackers across your network with a self-hosted DNS server.",
-    "coverage": [],
+    "coverage": [
+      "/split-dns-homelab"
+    ],
     "videos": [
       {
         "id": "YqaDnnREqI8",
@@ -1597,7 +1599,9 @@
     "name": "Pi-hole",
     "category": "Networking",
     "description": "Run a network-wide DNS filter with a web administration interface.",
-    "coverage": [],
+    "coverage": [
+      "/split-dns-homelab"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
@@ -2263,6 +2267,18 @@
     "icon": "/app-icons/tangram.png",
     "details": {
       "href": "/apps/tangram"
+    }
+  },
+  {
+    "id": "technitium-dns-server",
+    "name": "Technitium DNS Server",
+    "category": "Networking",
+    "description": "Manage local DNS zones, recursive resolution, and network-wide filtering from a web console.",
+    "coverage": [
+      "/split-dns-homelab"
+    ],
+    "details": {
+      "href": "/apps/technitium-dns-server"
     }
   },
   {

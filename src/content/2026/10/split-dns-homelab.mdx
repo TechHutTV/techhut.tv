@@ -6,17 +6,21 @@ export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Linux"]
 export const cover = "/docs-static/img/2026/10/split-dns-homelab/cover.jpg" // TODO: Add the cover image before publishing.
 
-I want to use the same address for each of my homelab services whether I'm at home or away. If I'm moving files to a server on my own network, I want those transfers to stay on the LAN. Having to keep a second bookmark or change the server address in a sync client gets old pretty quickly.
+I want to use the same domain name for my homelab services whether I'm at home or away. If I'm moving files to a server on my own network, I want those transfers to stay on the LAN. Having to change the server address in a sync client gets old pretty quickly.
 
-Split DNS lets the same hostname resolve to different addresses depending on which DNS resolver answers. Your home resolver can return a private address, while public DNS keeps returning the public one. You keep typing the same URL.
+Split DNS lets the same hostname resolve to different addresses depending on which DNS resolver answers. Your home resolver can return a private address, while public DNS keeps returning the public one.
 
-I'm using OpenCloud as the example here, with NGINX Proxy Manager handling local HTTPS and NetBird providing private access while away. The DNS approach also applies to other web services behind a reverse proxy. Each application still needs its own backend address and proxy settings.
+I'm using OpenCloud as the example here, with NGINX Proxy Manager handling local HTTPS and NetBird providing private access while away. I also want public file shares to keep working while sign-in stays private. NetBird can block a login path such as `/login` on the public proxy, while my devices reach NPM over the LAN or NetBird's private route, where that block doesn't apply.
+
+The DNS approach also applies to other web services behind a reverse proxy. Each application still needs its own backend address and proxy settings, including the paths it uses for sign-in.
 
 This is the configuration I'm planning for my network, with the connection checks below still to complete. In particular, leaving NetBird connected at home needs its own routing check. Getting a private IP from DNS doesn't prove the transfer is taking the direct LAN path.
 
 ## What split DNS changes
 
 At home, the local DNS resolver returns your reverse proxy's LAN address for a service's hostname. The proxy handles HTTPS and forwards the request to the application. In this walkthrough, that local proxy is NGINX Proxy Manager, which I'll shorten to NPM.
+
+The split DNS setup also works with [Caddy](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy), [Traefik](https://doc.traefik.io/traefik/reference/routing-configuration/http/routing/rules-and-priority/), or another reverse proxy. Use your proxy's LAN address wherever I write `NPM_LAN_IP`, and configure the same hostname, a valid HTTPS certificate, and the application's backend there. Adapt the NPM steps and Nginx snippets below to your proxy's own certificate, access, and upload settings.
 
 While you're away with NetBird connected, NetBird sends queries for that hostname to the home resolver. A routing peer carries the connection into the LAN. Anyone using public DNS keeps getting the existing public address.
 
@@ -42,7 +46,7 @@ For another application, check its external URL and authentication settings befo
 
 ## Before changing anything
 
-You need a working application, NPM running on your LAN, and a domain you control. You also need a local DNS resolver that can override a hostname and that your home devices actually use. The remote steps assume you already have NetBird and a routing peer that can reach your LAN.
+You need a working application, a reverse proxy running on your LAN (NPM in this walkthrough), and a domain you control. You also need a local DNS resolver that can override a hostname and that your home devices actually use. The remote steps assume you already have NetBird and a routing peer that can reach your LAN.
 
 For this example, OpenCloud already works through a public NetBird reverse proxy. If you're starting with the application install, I've got a separate [OpenCloud Docker Compose guide](/self-host-opencloud-docker-compose). To build the private network first, start with my [self-hosted NetBird guide](/self-host-netbird-pocketid).
 
@@ -148,6 +152,12 @@ opencloud.hopkins.sh → NPM_LAN_IP
 
 Only add it to the home resolver. If you're keeping public access, leave public DNS pointing to the existing public proxy.
 
+Use whichever resolver already handles DNS for your home network:
+
+- [Pi-hole v6](https://github.com/pi-hole/web/blob/master/settings-dnsrecords.lp): open **Settings → Local DNS Records**. Under **Local DNS records**, enter `opencloud.hopkins.sh` in **Domain** and NPM's LAN IP in **IP**, then click the **+** button.
+- [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Header/Menu.tsx): open **Filters → DNS rewrites → Add DNS rewrite**. Enter `opencloud.hopkins.sh` as the domain and NPM's LAN IP as the answer, then click **Save**.
+- [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html): open **Zones → Add Zone**, enter `opencloud.hopkins.sh` as the zone, leave **Primary Zone** selected, and click **Add**. Open that zone and choose **Add Record**. Set **Name** to `@`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**. Using the full hostname as the zone keeps the other names under `hopkins.sh` resolving normally.
+
 Make sure DHCP gives your home devices this resolver. Do note that a public IPv6 answer, browser Secure DNS, or an existing NetBird DNS setting can send a client somewhere else. Check both A and AAAA answers, and make sure any IPv6 answer also follows the intended private path or is suppressed locally.
 
 Keep the override specific to the hostname you're configuring, `opencloud.hopkins.sh` here. The other names under `hopkins.sh` should continue resolving as before.
@@ -197,13 +207,29 @@ You can add `hopki.net` as another match domain if your home resolver already ha
 
 NetBird also has [Custom Zones](https://docs.netbird.io/manage/dns/custom-zones), which let it host private records directly. That's another option if you don't want to forward queries home, although you'd maintain the OpenCloud record in both NetBird and your home resolver. Use one approach for this name. A conflicting Custom Zone takes precedence over the nameserver rule.
 
+## Keep selected paths off the public proxy
+
+We can use the separate connection paths to restrict part of an application on the public proxy while keeping it available privately. For an application whose login page is `/login`, open its public HTTP service in NetBird and add a target with that path and the same backend. Under **Optional Settings → Access**, choose **Block access**. Keep the existing catch-all target for the rest of the application. NetBird returns `403` for the blocked target without contacting the backend; see [per-target access actions](https://docs.netbird.io/manage/reverse-proxy/authentication#per-target-access-actions).
+
+| Connection path | What happens to `/login` |
+| --- | --- |
+| Home → local NPM | The NetBird path block doesn't apply |
+| NetBird private route → local NPM | The NetBird path block doesn't apply |
+| Through the NetBird public proxy | The matching block returns `403` |
+
+The block belongs to the NetBird reverse proxy. It doesn't change NPM or the application's own login settings. Your private DNS answer and route need to take you to NPM for this to work. Being connected to the NetBird client, or using NetBird DNS, won't bypass the rule if the connection still goes through the public proxy.
+
+Paths are [case-sensitive literal prefixes](https://docs.netbird.io/manage/reverse-proxy#path-based-routing), so `/login` also matches `/login/callback` and `/login-extra`, but not `/Login`. The longest matching prefix wins, so check for more specific targets. Upgrade every proxy instance in the selected cluster before relying on access actions; older proxies ignore them.
+
+OpenCloud uses OIDC, so check its actual sign-in and authentication endpoints before applying the `/login` example. I want public file shares to stay available, so test a share link from an away device with NetBird off, then test a fresh login and the sync client through the private route. Confirm that the block covers the sign-in methods you intend to restrict.
+
 ## Check each connection path
 
 I do recommend testing what you actually use the application for in each mode. For OpenCloud, that's signing in, uploading a file, and downloading it again. For another service, include its desktop or mobile client if you use one; the web login page alone won't tell you whether that client works.
 
 1. At home with NetBird off, confirm the hostname resolves to NPM's LAN IP and test the application. For OpenCloud, sign in, upload a file, and download it again.
 2. Away with NetBird on, use cellular or another network. The hostname should still resolve to NPM's LAN IP, and the transfer should work through the private route.
-3. Away with NetBird off, confirm public resolution and test the existing public proxy if you're keeping public access. Give cached DNS answers time to expire after switching modes.
+3. Away with NetBird off, confirm public resolution and test the existing public proxy if you're keeping public access. If you added path blocks, check that those paths return `403` and that the pages or file shares you intend to expose still work. Give cached DNS answers time to expire after switching modes.
 4. Back at home with NetBird on, check the route to NPM as well as the DNS answer. This is the extra check that tells you whether traffic stays directly on the LAN.
 
 On a Mac, query the system resolver with:

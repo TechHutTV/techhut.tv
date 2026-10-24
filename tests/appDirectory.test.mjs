@@ -74,7 +74,7 @@ test('sorts by coverage date or alphabetically without mutating input', () => {
   assert.deepEqual(apps, before)
 })
 
-test('all 126 existing apps have complete detail data, coverage thumbnails, and matching routes', () => {
+test('all apps have complete detail data, coverage thumbnails, and matching routes', () => {
   const files = fs.readdirSync(new URL('../src/data/app-details/', import.meta.url)).filter(file => file.endsWith('.json'))
   assert.equal(files.length, records.length)
   for (const record of records) {
