@@ -162,6 +162,21 @@ Make sure DHCP gives your home devices this resolver. Do note that a public IPv6
 
 Keep the override specific to the hostname you're configuring, `opencloud.hopkins.sh` here. The other names under `hopkins.sh` should continue resolving as before.
 
+### If OpenCloud says "Not logged in"
+
+Do note that the OpenCloud server can pick up this DNS override too. In my setup, its own OIDC user-information requests started going through NPM. The login page worked, but those requests got a `502`, leaving me with a **Not logged in** message.
+
+The VM's backend firewall only allowed the NetBird routing peers. I added NPM's source IP, `10.173.10.102` in my case, to the TCP 9200 allowlist and made that rule persistent. Keep the existing routing-peer allowances too.
+
+From your OpenCloud Compose directory, check the path the container uses:
+
+```sh
+docker compose exec opencloud curl --fail --show-error \
+  https://opencloud.hopkins.sh/.well-known/openid-configuration
+```
+
+Expect OpenID configuration JSON with certificate verification enabled. A `502` here means you still need to check NPM's backend connection and the [backend firewall](https://docs.docker.com/engine/network/firewall-iptables/).
+
 ## Let NetBird devices use home DNS
 
 Now we can give personal devices the same private answer while they're away. I'm keeping the record in home DNS so there's only one override to update later.
