@@ -34,7 +34,7 @@ Do not silently skip the audit.
 - `src/data/app-details/<id>.json`: add a complete summary, overview, kind, platforms, verified license, official links, features, and authoritative sources.
 - `src/data/app-repositories.json`: select one verified official GitHub repository or use `repository: null`; explain the decision and cite evidence. A mapped `link` must exactly match one link in the detail file.
 - `public/app-icons/`: add a verified standalone icon when suitable, then record its source, license, hash, and any changes in `sources.json`. Use generated initials when provenance or contrast is uncertain.
-- `src/data/github-stars.json`: run `npm run refresh:stars` when a repository mapping is added or changed and network access is available. A first-time fetch failure may leave the count absent; never invent or transfer a count.
+- `src/data/github-stars.json`: leave star refreshes to the GitHub Actions workflow. Do not run `npm run refresh:stars` or change the cache as part of routine article or app-listing work, including new repository mappings, unless the user explicitly requests a manual refresh. A new app may have no count until the workflow runs; never invent or transfer a count.
 
 ## Repository map
 
@@ -67,6 +67,15 @@ Follow [docs/content-authoring.md](docs/content-authoring.md) for exports, categ
 - Include all required exports and use an existing author name. Covers should normally be JPG, 16:9, and stored as `cover.jpg`.
 - Keep claims supported, links working, commands reproducible, and the author's existing voice intact.
 - Run `npm run gen:articles` after article metadata or coverage changes. Use `npm run dev` for local review.
+
+### Technical article diagrams
+
+- Add a diagram when it helps a beginner or intermediate reader understand the article's architecture, request flow, or storage layout. Choose the concepts the reader needs before choosing the artwork.
+- Keep request routing, storage placement, and startup dependencies in separate labeled panels when combining them would imply a false relationship. Use arrows only for actual connections or flows, with direction and useful protocol/port labels.
+- Reuse the Seafile diagram's visual approach where appropriate: a dark navy background, high-contrast text, restrained blue/green grouping, prominent paths or service names, and generous spacing. Labels must carry the meaning independently of color.
+- Keep paths, ports, service names, and boundaries consistent with the article's configuration. Use example addresses and omit credentials. Distinguish host paths from container paths and local disks from mounted storage.
+- Create an editable SVG in the article's image directory and render a PNG with the existing Sharp dependency. A 1600×900 canvas works for a 16:9 cover; `cover.png` is suitable for text-heavy diagrams. See [the diagram workflow](docs/content-authoring.md#technical-diagrams) and the [Seafile SVG reference](public/docs-static/img/2026/09/self-host-seafile-docker-unraid/architecture.svg).
+- Inspect the rendered image at full size and a reduced reading size before handoff. Check labels, clipping, contrast, arrow endpoints, and technical meaning; keep the SVG and PNG synchronized. Provide descriptive alt text when embedding it inline.
 
 ## Validation by change type
 

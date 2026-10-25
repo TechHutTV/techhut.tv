@@ -47,7 +47,9 @@ jobs:
         run: npm run refresh:stars
 
       - name: Validate data and content dates
-        run: node --test tests/appStars.test.mjs tests/appDirectory.test.mjs
+        run: |
+          npm run gen:articles
+          node --test tests/appStars.test.mjs tests/appDirectory.test.mjs
 
       - name: Publish only a changed snapshot
         env:
