@@ -24,11 +24,7 @@ The split DNS setup also works with [Caddy](https://caddyserver.com/docs/caddyfi
 
 While you're away with NetBird connected, NetBird sends queries for that hostname to the home resolver. A routing peer carries the connection into the LAN. Anyone using public DNS keeps getting the existing public address.
 
-| Connection | DNS answer | Connection path |
-| --- | --- | --- |
-| Home, NetBird off | NPM's LAN IP | Device → NPM → application |
-| Away, NetBird on | NPM's LAN IP, from home DNS | Device → NetBird routing peer → NPM → application |
-| Away, NetBird off | Existing public address | Device → public reverse proxy → application |
+[![Split DNS for opencloud.hopkins.sh: home DNS returns NPM's LAN IP for both local and NetBird devices. At home, the device connects directly to NPM; away, it reaches NPM through a NetBird routing peer. Public DNS returns the existing public proxy IP. All three paths reach OpenCloud.](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg)](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg "Open the diagram at full size")
 
 DNS supplies an address, and your routing configuration determines how you reach it. NetBird DNS doesn't check where you are and automatically pick the fastest connection. You also still need the access policies and firewall rules that allow the connection.
 
@@ -77,6 +73,8 @@ Otherwise, go to **SSL Certificates → Add SSL Certificate → Let's Encrypt**:
 4. Accept the terms, save, and wait for issuance to finish.
 
 The nice part about [DNS-01 validation](https://letsencrypt.org/docs/challenge-types/#dns-01-challenge) is that public DNS can keep pointing at NetBird. You don't need to forward internet ports to NPM to get this certificate. NPM uses [Certbot to issue and renew it](https://nginxproxymanager.com/certbot/), so keep the DNS credentials valid for renewal too.
+
+[![DNS-01 certificate flow: NPM and Certbot request a certificate and publish a TXT challenge. Let's Encrypt checks the challenge and issues the certificate. The service record keeps pointing to the existing public proxy.](/docs-static/img/2026/10/split-dns-homelab/dns-01-certificate.svg)](/docs-static/img/2026/10/split-dns-homelab/dns-01-certificate.svg "Open the certificate diagram at full size")
 
 ## Add the local proxy host
 
@@ -183,6 +181,8 @@ Now we can give personal devices the same private answer while they're away. I'm
 
 In your NetBird dashboard, choose a group containing the personal devices that should use this rule. I'll call it **Personal Devices**. A NetBird peer is simply a device running NetBird.
 
+[![Away with NetBird: the device queries home DNS through a routing peer on UDP or TCP port 53 and receives NPM_LAN_IP in reply. It then connects through the routing peer to the local proxy over HTTPS on port 443. The proxy forwards to OpenCloud over HTTP on port 9200.](/docs-static/img/2026/10/split-dns-homelab/netbird-away-flow.svg)](/docs-static/img/2026/10/split-dns-homelab/netbird-away-flow.svg "Open the NetBird diagram at full size")
+
 ### Allow access to the resolver and NPM
 
 In the existing **Home** Network, check that resources and access policies let Personal Devices reach these destinations:
@@ -226,11 +226,7 @@ NetBird also has [Custom Zones](https://docs.netbird.io/manage/dns/custom-zones)
 
 We can use the separate connection paths to restrict part of an application on the public proxy while keeping it available privately. For an application whose login page is `/login`, open its public HTTP service in NetBird and add a target with that path and the same backend. Under **Optional Settings → Access**, choose **Block access**. Keep the existing catch-all target for the rest of the application. NetBird returns `403` for the blocked target without contacting the backend; see [per-target access actions](https://docs.netbird.io/manage/reverse-proxy/authentication#per-target-access-actions).
 
-| Connection path | What happens to `/login` |
-| --- | --- |
-| Home → local NPM | The NetBird path block doesn't apply |
-| NetBird private route → local NPM | The NetBird path block doesn't apply |
-| Through the NetBird public proxy | The matching block returns `403` |
+[![Example /login path rule: private connections reach the local proxy and application sign-in. The public NetBird proxy returns 403 for the blocked login target; other paths continue to the application under its own access rules. Check your application's actual login paths.](/docs-static/img/2026/10/split-dns-homelab/public-private-access.svg)](/docs-static/img/2026/10/split-dns-homelab/public-private-access.svg "Open the access diagram at full size")
 
 The block belongs to the NetBird reverse proxy. It doesn't change NPM or the application's own login settings. Your private DNS answer and route need to take you to NPM for this to work. Being connected to the NetBird client, or using NetBird DNS, won't bypass the rule if the connection still goes through the public proxy.
 
