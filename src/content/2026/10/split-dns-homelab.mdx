@@ -158,11 +158,25 @@ Use whichever resolver already handles DNS for your home network:
 
 - [Pi-hole v6](https://github.com/pi-hole/web/blob/master/settings-dnsrecords.lp): open **Settings → Local DNS Records**. Under **Local DNS records**, enter `opencloud.hopkins.sh` in **Domain** and NPM's LAN IP in **IP**, then click the **+** button.
 - [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Header/Menu.tsx): open **Filters → DNS rewrites → Add DNS rewrite**. Enter `opencloud.hopkins.sh` as the domain and NPM's LAN IP as the answer, then click **Save**.
-- [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html): open **Zones → Add Zone**, enter `opencloud.hopkins.sh` as the zone, leave **Primary Zone** selected, and click **Add**. Open that zone and choose **Add Record**. Set **Name** to `@`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**. Using the full hostname as the zone keeps the other names under `hopkins.sh` resolving normally.
+- [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html): create or reuse a zone for `hopkins.sh`, then add an `opencloud` A record inside it. The steps below use one zone for the domain so you can keep adding services there.
 
 Make sure DHCP gives your home devices this resolver. Do note that a public IPv6 answer, browser Secure DNS, or an existing NetBird DNS setting can send a client somewhere else. Check both A and AAAA answers, and make sure any IPv6 answer also follows the intended private path or is suppressed locally.
 
-Keep the override specific to the hostname you're configuring, `opencloud.hopkins.sh` here. The other names under `hopkins.sh` should continue resolving as before.
+### Use one domain zone in Technitium
+
+For Technitium, I recommend keeping your service records together in a zone for the main domain. Here, that's `hopkins.sh`, with an A record named `opencloud` pointing to NPM. Each additional service gets its own record in that same zone.
+
+Do note that a [primary zone](https://technitium.com/dns/help.html) makes your local server authoritative for that domain. Missing names won't automatically fall back to public DNS. Before using this zone, copy over any public records your local devices still need, especially the NetBird management hostname and any website or mail records under `hopkins.sh`. Keep those records updated when their public values change.
+
+1. Open **Zones**. If you already manage a local primary zone for `hopkins.sh`, open it. Otherwise, choose **Add Zone**, enter `hopkins.sh`, select **Primary Zone**, and click **Add**.
+2. Inside that zone, choose **Add Record**. Set **Name** to `opencloud`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**.
+3. Add the other records your local devices need. Only point services at NPM when you've also configured their proxy hosts there.
+
+The zone name and record name combine to give you `opencloud.hopkins.sh`. Using `@` as the record name here would address `hopkins.sh` itself. For the next service, add another named record inside `hopkins.sh`; services behind the same NPM instance can share its LAN IP.
+
+If you followed the earlier version of this guide, add equivalent service records in `hopkins.sh` before disabling the separate `opencloud.hopkins.sh` zone. Its `@` A record becomes `opencloud` in the parent zone. An active, more specific zone takes precedence over the parent zone's records.
+
+If you want to override a few records while resolving the rest from public DNS automatically, Technitium also supports local records in a **Conditional Forwarder** zone. That is a separate option from the primary-zone setup above; see its [zone documentation](https://technitium.com/dns/help.html).
 
 ### If OpenCloud says "Not logged in"
 
@@ -220,7 +234,7 @@ Open **DNS → Nameservers → Add Nameserver**. Use the service's full hostname
 
 A [match domain](https://docs.netbird.io/manage/dns) sends queries for that name and its subdomains to the selected resolver. Leave your existing primary DNS settings in place for everything else, and keep NetBird DNS management enabled on these devices. We'll use the full hostname, so there's no need for a search domain.
 
-Match `opencloud.hopkins.sh` specifically. Sending all of `hopkins.sh` home would also change resolution for names such as the NetBird management hostname.
+Keep the NetBird match domain at `opencloud.hopkins.sh` for this example, even when the home DNS zone is `hopkins.sh`. The zone holds your records; the match domain controls which queries NetBird sends home. Sending all of `hopkins.sh` home would also change resolution for names such as the NetBird management hostname.
 
 You can add `hopki.net` as another match domain if your home resolver already handles the other private services. Each service still needs a permitted route and the appropriate ports.
 
@@ -246,6 +260,8 @@ I do recommend testing what you actually use the application for in each mode. F
 2. Away with NetBird on, use cellular or another network. The hostname should still resolve to NPM's LAN IP, and the transfer should work through the private route.
 3. Away with NetBird off, confirm public resolution and test the existing public proxy if you're keeping public access. If you added path blocks, check that those paths return `403` and that the pages or file shares you intend to expose still work. Give cached DNS answers time to expire after switching modes.
 4. Back at home with NetBird on, check the route to NPM as well as the DNS answer. This is the extra check that tells you whether traffic stays directly on the LAN.
+
+If you created a local `hopkins.sh` primary zone, also check that the NetBird management hostname and the other public names you copied into it still resolve correctly from home.
 
 On a Mac, query the system resolver with:
 
@@ -277,11 +293,11 @@ Also, this isn't automatic failover. While the private rule applies, losing home
 
 To back out the NetBird change, disable or remove the new nameserver configuration for Personal Devices. If you used a Custom Zone instead, remove the corresponding private record. Clear cached answers and confirm public resolution from an away device with NetBird off.
 
-To undo the home override too, remove it from your local resolver and clear the affected devices' DNS caches or reconnect them. Keep the public proxy and its routing resources running throughout, so the existing public path remains available.
+To undo a Pi-hole local record or AdGuard Home rewrite, remove it from your local resolver. In a Technitium primary zone, restore the service's public DNS record locally; deleting only its A record won't make queries fall back to public DNS. Disable or remove the whole local zone only if you no longer need any of its local records. Clear the affected devices' DNS caches or reconnect them, and confirm public resolution. Keep the public proxy and its routing resources running throughout, so the existing public path remains available.
 
 ## Use this for another service
 
-For the next application, add its hostname to NPM, select a certificate that covers it, and point the proxy host at that application's backend. Add a matching override in home DNS and, for private remote access, include that hostname in the NetBird nameserver's match domains. If it uses the same NPM address, the existing route and port 443 policy can cover it too.
+For the next application, add its hostname to NPM, select a certificate that covers it, and point the proxy host at that application's backend. Add a matching override in home DNS, reusing the existing domain zone if you're using Technitium. For private remote access, include that hostname in the NetBird nameserver's match domains. If it uses the same NPM address, the existing route and port 443 policy can cover it too.
 
 Keep the application-specific settings with that application. OpenCloud's port 9200, `OC_DOMAIN`, OpenID test endpoint, and upload directives belong to this example. Another service can use the same DNS and routing setup with its own proxy requirements.
 
