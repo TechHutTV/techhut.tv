@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720" role="img" aria-labelledby="title desc">
+  <title id="title">Split DNS: one hostname, three connection paths</title>
+  <desc id="desc">Every device opens opencloud.hopkins.sh. At home with NetBird off, home DNS returns NPM_LAN_IP and the device connects to NGINX Proxy Manager, then OpenCloud. Away with NetBird on, home DNS returns the same private IP and the connection goes through a NetBird routing peer to NPM, then OpenCloud. Away with NetBird off, public DNS returns the existing public proxy IP and the connection uses the NetBird public proxy to reach OpenCloud. DNS answers and application connections are shown separately.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #F5F5F5; }
+      .heading { font-size: 28px; font-weight: 700; }
+      .label { font-size: 26px; font-weight: 700; text-anchor: middle; }
+      .detail { font-size: 20px; fill: #A3A3A3; text-anchor: middle; }
+      .muted { font-size: 18px; fill: #A3A3A3; }
+      .dns { font-size: 22px; fill: #59E0FF; }
+      .answer { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; font-size: 22px; fill: #59E0FF; }
+      .node { fill: #121212; stroke: #404040; }
+      .icon { fill: none; stroke: #D4D4D4; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+      .connection { fill: none; stroke: #4FE3A3; stroke-width: 2; marker-end: url(#mint-arrow); }
+      .lookup { fill: none; stroke: #59E0FF; stroke-width: 1.5; stroke-dasharray: 5 5; marker-end: url(#ice-arrow); }
+    </style>
+    <marker id="mint-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#4FE3A3" stroke-width="1.4"/>
+    </marker>
+    <marker id="ice-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#59E0FF" stroke-width="1.4"/>
+    </marker>
+    <g id="device" class="icon">
+      <rect x="-12" y="-10" width="24" height="17" rx="1"/>
+      <path d="M-16 11h32M-12 7l-4 4m28-4 4 4"/>
+    </g>
+    <g id="proxy" class="icon">
+      <rect x="-13" y="-11" width="26" height="9" rx="1"/>
+      <rect x="-13" y="2" width="26" height="9" rx="1"/>
+      <path d="M-8-6h1m-1 13h1M1-6h7M1 7h7"/>
+    </g>
+    <g id="app" class="icon">
+      <path d="M-14 9V-9h11l4 4h13V9Z"/>
+      <path d="M-14-1h28"/>
+    </g>
+    <g id="peer" class="icon">
+      <rect x="-5" y="-12" width="10" height="9" rx="1"/>
+      <rect x="-14" y="5" width="10" height="8" rx="1"/>
+      <rect x="4" y="5" width="10" height="8" rx="1"/>
+      <path d="M0-3v4m-9 4V1H9v4"/>
+    </g>
+    <g id="globe" class="icon">
+      <circle r="13"/>
+      <ellipse rx="6" ry="13"/>
+      <path d="M-13 0h26"/>
+    </g>
+  </defs>
+
+  <path fill="#080808" stroke="#404040" d="M.5.5h959v719H.5z"/>
+
+  <g transform="translate(0 16)">
+    <text x="32" y="34" class="heading">At home</text>
+    <text x="928" y="34" class="muted" text-anchor="end">NetBird off</text>
+    <text x="32" y="66" class="muted">DNS</text>
+    <text x="90" y="66" class="dns">Home DNS</text>
+    <path d="M220 59H676" class="lookup"/>
+    <text x="700" y="66" class="answer">NPM_LAN_IP</text>
+
+    <rect x="32" y="98" width="272" height="120" class="node"/>
+    <use href="#device" transform="translate(168 130)"/>
+    <text x="168" y="170" class="label">Your device</text>
+    <text x="168" y="194" class="detail">Direct LAN connection</text>
+    <path d="M306 158h36" class="connection"/>
+    <rect x="344" y="98" width="272" height="120" class="node"/>
+    <use href="#proxy" transform="translate(480 130)"/>
+    <text x="480" y="170" class="label">Local Proxy</text>
+    <text x="480" y="194" class="detail">HTTPS · port 443</text>
+    <path d="M618 158h36" class="connection"/>
+    <rect x="656" y="98" width="272" height="120" class="node"/>
+    <use href="#app" transform="translate(792 130)"/>
+    <text x="792" y="170" class="label">OpenCloud</text>
+    <text x="792" y="194" class="detail">App backend</text>
+  </g>
+
+  <g transform="translate(0 248)">
+    <text x="32" y="34" class="heading">Away with NetBird</text>
+    <text x="928" y="34" class="muted" text-anchor="end">NetBird on</text>
+    <text x="32" y="66" class="muted">DNS</text>
+    <text x="90" y="66" class="dns">Home DNS via NetBird</text>
+    <path d="M328 59H676" class="lookup"/>
+    <text x="700" y="66" class="answer">NPM_LAN_IP</text>
+
+    <rect x="32" y="98" width="200" height="120" class="node"/>
+    <use href="#device" transform="translate(132 130)"/>
+    <text x="132" y="170" class="label">Your device</text>
+    <text x="132" y="194" class="detail">NetBird client</text>
+    <path d="M234 158h28" class="connection"/>
+    <rect x="264" y="98" width="200" height="120" class="node"/>
+    <use href="#peer" transform="translate(364 130)"/>
+    <text x="364" y="170" class="label">NetBird</text>
+    <text x="364" y="194" class="detail">Routing peer</text>
+    <path d="M466 158h28" class="connection"/>
+    <rect x="496" y="98" width="200" height="120" class="node"/>
+    <use href="#proxy" transform="translate(596 130)"/>
+    <text x="596" y="170" class="label">Local Proxy</text>
+    <text x="596" y="194" class="detail">HTTPS · 443</text>
+    <path d="M698 158h28" class="connection"/>
+    <rect x="728" y="98" width="200" height="120" class="node"/>
+    <use href="#app" transform="translate(828 130)"/>
+    <text x="828" y="170" class="label">OpenCloud</text>
+    <text x="828" y="194" class="detail">App backend</text>
+  </g>
+
+  <g transform="translate(0 480)">
+    <text x="32" y="34" class="heading">Away using public DNS</text>
+    <text x="928" y="34" class="muted" text-anchor="end">NetBird off</text>
+    <text x="32" y="66" class="muted">DNS</text>
+    <text x="90" y="66" class="dns">Public DNS</text>
+    <path d="M220 59H676" class="lookup"/>
+    <text x="700" y="66" class="answer">Public proxy IP</text>
+
+    <rect x="32" y="98" width="272" height="120" class="node"/>
+    <use href="#device" transform="translate(168 130)"/>
+    <text x="168" y="170" class="label">Your device</text>
+    <text x="168" y="194" class="detail">Public connection</text>
+    <path d="M306 158h36" class="connection"/>
+    <rect x="344" y="98" width="272" height="120" class="node"/>
+    <use href="#globe" transform="translate(480 130)"/>
+    <text x="480" y="170" class="label">Public proxy</text>
+    <text x="480" y="194" class="detail">NetBird · HTTPS 443</text>
+    <path d="M618 158h36" class="connection"/>
+    <rect x="656" y="98" width="272" height="120" class="node"/>
+    <use href="#app" transform="translate(792 130)"/>
+    <text x="792" y="170" class="label">OpenCloud</text>
+    <text x="792" y="194" class="detail">App backend</text>
+  </g>
+
+</svg>

@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Private access and public path blocking, using /login as an example</title>
+  <desc id="desc">Private connections reach the local proxy and the application handles sign-in. On the public connection, NetBird returns 403 for the blocked /login target without contacting the backend. Other paths reach the application subject to its access rules. The login path is an example; check the application's actual authentication endpoints.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #F5F5F5; }
+      .heading { font-size: 34px; font-weight: 700; }
+      .subtitle { font-size: 26px; fill: #A3A3A3; }
+      .label { font-size: 32px; font-weight: 700; text-anchor: middle; }
+      .detail { font-size: 24px; fill: #A3A3A3; text-anchor: middle; }
+      .path-label { font-size: 22px; fill: #D4D4D4; text-anchor: middle; }
+      .denied { fill: #FF7A70; }
+      .node { fill: #121212; stroke: #404040; }
+      .icon { fill: none; stroke: #D4D4D4; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+      .connection { fill: none; stroke: #4FE3A3; stroke-width: 2; marker-end: url(#mint-arrow); }
+      .blocked-path { fill: none; stroke: #FF7A70; stroke-width: 2; marker-end: url(#blocked-arrow); }
+    </style>
+    <marker id="mint-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#4FE3A3" stroke-width="1.4"/>
+    </marker>
+    <marker id="blocked-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#FF7A70" stroke-width="1.4"/>
+    </marker>
+    <g id="device" class="icon">
+      <rect x="-12" y="-10" width="24" height="17" rx="1"/>
+      <path d="M-16 11h32M-12 7l-4 4m28-4 4 4"/>
+    </g>
+    <g id="proxy" class="icon">
+      <rect x="-13" y="-11" width="26" height="9" rx="1"/>
+      <rect x="-13" y="2" width="26" height="9" rx="1"/>
+      <path d="M-8-6h1m-1 13h1M1-6h7M1 7h7"/>
+    </g>
+    <g id="app" class="icon">
+      <path d="M-14 9V-9h11l4 4h13V9Z"/>
+      <path d="M-14-1h28"/>
+    </g>
+    <g id="globe" class="icon">
+      <circle r="13"/>
+      <ellipse rx="6" ry="13"/>
+      <path d="M-13 0h26"/>
+    </g>
+  </defs>
+
+  <path fill="#080808" stroke="#404040" d="M.5.5h1279v719H.5z"/>
+
+  <text x="32" y="52" class="heading">Private connection</text>
+  <text x="32" y="90" class="subtitle">Example login path: /login</text>
+
+  <rect x="32" y="134" width="280" height="160" class="node"/>
+  <use href="#device" transform="translate(172 176) scale(1.2)"/>
+  <text x="172" y="222" class="label">Your device</text>
+  <text x="172" y="254" class="detail">Home or NetBird</text>
+  <path d="M314 214H498" class="connection"/>
+
+  <rect x="500" y="134" width="280" height="160" class="node"/>
+  <use href="#proxy" transform="translate(640 176) scale(1.2)"/>
+  <text x="640" y="222" class="label">Local Proxy</text>
+  <text x="640" y="254" class="detail">HTTPS · 443</text>
+  <path d="M782 214H966" class="connection"/>
+
+  <rect x="968" y="134" width="280" height="160" class="node"/>
+  <use href="#app" transform="translate(1108 176) scale(1.2)"/>
+  <text x="1108" y="222" class="label">Application</text>
+  <text x="1108" y="254" class="detail">Handles sign-in</text>
+
+  <text x="32" y="376" class="heading">Public connection</text>
+  <text x="32" y="414" class="subtitle">Path rules apply at the public proxy</text>
+
+  <rect x="32" y="484" width="280" height="160" class="node"/>
+  <use href="#device" transform="translate(172 526) scale(1.2)"/>
+  <text x="172" y="572" class="label">Your device</text>
+  <text x="172" y="604" class="detail">Public DNS</text>
+  <path d="M314 564H498" class="connection"/>
+
+  <rect x="500" y="484" width="280" height="160" class="node"/>
+  <use href="#globe" transform="translate(640 526) scale(1.2)"/>
+  <text x="640" y="572" class="label">Public proxy</text>
+  <text x="640" y="604" class="detail">NetBird · HTTPS 443</text>
+
+  <path d="M782 564H864V498H966" class="blocked-path"/>
+  <text x="874" y="474" class="path-label denied">Matches /login</text>
+  <rect x="968" y="438" width="280" height="120" class="node"/>
+  <text x="1108" y="484" class="label denied">403 · Blocked</text>
+  <text x="1108" y="524" class="detail">Block access target</text>
+
+  <path d="M782 564H864V638H966" class="connection"/>
+  <text x="874" y="674" class="path-label">Other paths</text>
+  <rect x="968" y="578" width="280" height="120" class="node"/>
+  <text x="1108" y="624" class="label">Application</text>
+  <text x="1108" y="664" class="detail">App rules still apply</text>
+</svg>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">DNS-01 certificate issuance using a separate TXT record</title>
+  <desc id="desc">Nginx Proxy Manager uses Certbot to request a certificate and publish a DNS TXT challenge. Let's Encrypt checks that record and issues the certificate. The service's existing public DNS record continues pointing at the public proxy.</desc>
+  <defs>
+    <style>
+      text { font-family: Arial, Helvetica, sans-serif; fill: #F5F5F5; }
+      .heading { font-size: 28px; font-weight: 700; }
+      .label { font-size: 32px; font-weight: 700; text-anchor: middle; }
+      .detail { font-size: 24px; fill: #A3A3A3; text-anchor: middle; }
+      .step { font-size: 24px; fill: #D4D4D4; text-anchor: middle; }
+      .record { font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace; font-size: 22px; fill: #59E0FF; }
+      .challenge { font-size: 20px; }
+      .record-value { font-size: 24px; fill: #D4D4D4; }
+      .node { fill: #121212; stroke: #404040; }
+      .icon { fill: none; stroke: #D4D4D4; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+      .connection { fill: none; stroke: #4FE3A3; stroke-width: 2; marker-end: url(#mint-arrow); }
+      .dns { fill: none; stroke: #59E0FF; stroke-width: 1.5; stroke-dasharray: 5 5; marker-end: url(#ice-arrow); }
+    </style>
+    <marker id="mint-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#4FE3A3" stroke-width="1.4"/>
+    </marker>
+    <marker id="ice-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="m1 1 5 3-5 3" fill="none" stroke="#59E0FF" stroke-width="1.4"/>
+    </marker>
+    <g id="proxy" class="icon">
+      <rect x="-13" y="-11" width="26" height="9" rx="1"/>
+      <rect x="-13" y="2" width="26" height="9" rx="1"/>
+      <path d="M-8-6h1m-1 13h1M1-6h7M1 7h7"/>
+    </g>
+    <g id="globe" class="icon">
+      <circle r="13"/>
+      <ellipse rx="6" ry="13"/>
+      <path d="M-13 0h26"/>
+    </g>
+    <g id="certificate" class="icon">
+      <path d="M-10-13H6l5 5v21H-10Z"/>
+      <path d="M6-13v5h5M-5-2H5M-5 3H5M-5 8h6"/>
+    </g>
+  </defs>
+
+  <path fill="#080808" stroke="#404040" d="M.5.5h1279v719H.5z"/>
+
+  <rect x="500" y="70" width="280" height="160" class="node"/>
+  <use href="#globe" transform="translate(640 112) scale(1.2)"/>
+  <text x="640" y="158" class="label">Public DNS</text>
+  <text x="640" y="190" class="detail">TXT challenge record</text>
+
+  <path d="M172 288V150H498" class="dns"/>
+  <text x="336" y="128" class="step">2. Publish TXT record</text>
+  <path d="M1108 288V150H782" class="dns"/>
+  <text x="944" y="128" class="step">3. Check TXT record</text>
+
+  <rect x="32" y="290" width="280" height="160" class="node"/>
+  <use href="#proxy" transform="translate(172 332) scale(1.2)"/>
+  <text x="172" y="378" class="label">Local Proxy</text>
+  <text x="172" y="410" class="detail">NPM + Certbot</text>
+
+  <path d="M314 346H966" class="connection"/>
+  <text x="640" y="324" class="step">1. Request certificate</text>
+  <path d="M966 402H314" class="connection"/>
+  <text x="640" y="436" class="step">4. Issue certificate</text>
+
+  <rect x="968" y="290" width="280" height="160" class="node"/>
+  <use href="#certificate" transform="translate(1108 332) scale(1.2)"/>
+  <text x="1108" y="378" class="label">Let's Encrypt</text>
+  <text x="1108" y="410" class="detail">Certificate authority</text>
+
+  <text x="32" y="534" class="heading">Separate records in public DNS</text>
+  <text x="32" y="580" class="record">opencloud.hopkins.sh</text>
+  <path d="M716 572H792" class="dns"/>
+  <text x="820" y="580" class="record-value">Public proxy (unchanged)</text>
+
+  <text x="32" y="638" class="record challenge">_acme-challenge.opencloud.hopkins.sh</text>
+  <path d="M716 630H792" class="dns"/>
+  <text x="820" y="638" class="record-value">TXT validation proof</text>
+</svg>

@@ -31,6 +31,8 @@
   "sources": [
     "https://adguard.com/adguard-home/overview.html",
     "https://github.com/AdguardTeam/AdGuardHome#readme",
-    "https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt"
+    "https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt",
+    "https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Header/Menu.tsx",
+    "https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Filters/Rewrites/Form.tsx"
   ]
 }
