@@ -6,7 +6,11 @@ export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Linux"]
 export const cover = "/docs-static/img/2026/10/split-dns-homelab/cover.jpg"
 
+import {YouTube} from "@/components/YouTube"
+
 I want to use the same domain name for my homelab services whether I'm at home or away. If I'm moving files to a server on my own network, I want those transfers to stay on the LAN. Having to change the server address in a sync client gets old pretty quickly.
+
+<YouTube videoId="Zzyxlyj3MO4" />
 
 Split DNS lets the same hostname resolve to different addresses depending on which DNS resolver answers. Your home resolver can return a private address, while public DNS keeps returning the public one.
 
