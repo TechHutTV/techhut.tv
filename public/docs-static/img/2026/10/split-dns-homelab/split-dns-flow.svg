@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="720" viewBox="0 0 960 720" role="img" aria-labelledby="title desc">
   <title id="title">Split DNS: one hostname, three connection paths</title>
-  <desc id="desc">Every device opens opencloud.hopkins.sh. At home with NetBird off, home DNS returns NPM_LAN_IP and the device connects to NGINX Proxy Manager, then OpenCloud. Away with NetBird on, home DNS returns the same private IP and the connection goes through a NetBird routing peer to NPM, then OpenCloud. Away with NetBird off, public DNS returns the existing public proxy IP and the connection uses the NetBird public proxy to reach OpenCloud. DNS answers and application connections are shown separately.</desc>
+  <desc id="desc">Every device opens opencloud.example.com. At home with NetBird off, home DNS returns NPM_LAN_IP and the device connects to NGINX Proxy Manager, then OpenCloud. Away with NetBird on, home DNS returns the same private IP and the connection goes through a NetBird routing peer to NPM, then OpenCloud. Away with NetBird off, public DNS returns the existing public proxy IP and the connection uses the NetBird public proxy to reach OpenCloud. DNS answers and application connections are shown separately.</desc>
   <defs>
     <style>
       text { font-family: Arial, Helvetica, sans-serif; fill: #F5F5F5; }

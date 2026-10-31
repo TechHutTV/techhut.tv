@@ -28,7 +28,7 @@ The split DNS setup also works with [Caddy](https://caddyserver.com/docs/caddyfi
 
 While you're away with NetBird connected, NetBird sends queries for that hostname to the home resolver. A routing peer carries the connection into the LAN. Anyone using public DNS keeps getting the existing public address.
 
-[![Split DNS for opencloud.hopkins.sh: home DNS returns NPM's LAN IP for both local and NetBird devices. At home, the device connects directly to NPM; away, it reaches NPM through a NetBird routing peer. Public DNS returns the existing public proxy IP. All three paths reach OpenCloud.](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg)](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg "Open the diagram at full size")
+[![Split DNS for opencloud.example.com: home DNS returns NPM's LAN IP for both local and NetBird devices. At home, the device connects directly to NPM; away, it reaches NPM through a NetBird routing peer. Public DNS returns the existing public proxy IP. All three paths reach OpenCloud.](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg)](/docs-static/img/2026/10/split-dns-homelab/split-dns-flow.svg "Open the diagram at full size")
 
 DNS supplies an address, and your routing configuration determines how you reach it. NetBird DNS doesn't check where you are and automatically pick the fastest connection. You also still need the access policies and firewall rules that allow the connection.
 
@@ -40,7 +40,7 @@ Using the same hostname means your bookmarks and application clients can keep on
 
 OpenCloud is a useful example of that. I use `hopki.net` for other local services, so adding `opencloud.hopki.net` would fit that naming scheme. But OpenCloud's [web API configuration](https://docs.opencloud.eu/docs/next/dev/server/services/web/environment-variables/) uses `OC_URL`, and the built-in identity provider's [login callbacks and browser origins](https://docs.opencloud.eu/docs/dev/server/services/idp/yaml-config/) also reference it.
 
-A DNS alias and another proxy host won't update those settings. You can end up opening the local name and having API or login traffic head back to `opencloud.hopkins.sh` anyway. Keeping the same hostname lets us change the connection address while keeping the existing OpenCloud URL configuration.
+A DNS alias and another proxy host won't update those settings. You can end up opening the local name and having API or login traffic head back to the configured public hostname anyway. Keeping the same hostname lets us change the connection address while keeping the existing OpenCloud URL configuration.
 
 For another application, check its external URL and authentication settings before adding an alias. We'll keep the existing URL and change its DNS answer here.
 
@@ -50,11 +50,11 @@ You need a working application, a reverse proxy running on your LAN (NPM in this
 
 For this example, OpenCloud already works through a public NetBird reverse proxy. If you're starting with the application install, I've got a separate [OpenCloud Docker Compose guide](/self-host-opencloud-docker-compose). To build the private network first, start with my [self-hosted NetBird guide](/self-host-netbird-pocketid).
 
-I'm using these addresses for the OpenCloud example:
+For the examples below, replace the full `opencloud.example.com` with your existing OpenCloud hostname in every setting and command, including `OC_DOMAIN`. Use your own domain for `example.com` and the matching DNS record name for `opencloud`.
 
 | Setting | Value |
 | --- | --- |
-| OpenCloud URL | `https://opencloud.hopkins.sh` |
+| OpenCloud URL | `https://opencloud.example.com` |
 | OpenCloud backend | `http://10.173.10.32:9200` |
 | Local HTTPS proxy | Existing NGINX Proxy Manager instance |
 | Public HTTPS proxy | Existing NetBird reverse proxy |
@@ -63,15 +63,15 @@ Use your own hostname and backend address throughout. `NPM_LAN_IP` means the LAN
 
 The private DNS answer needs to point at NPM, where the browser connects on port 443. NPM then sends the request to the application's backend. DNS doesn't specify that backend port.
 
-For OpenCloud, keep `OC_DOMAIN=opencloud.hopkins.sh`, the public DNS record, and the public NetBird proxy service in place. Its backend on port 9200 is where NPM forwards the request afterward.
+For OpenCloud, keep `OC_DOMAIN=opencloud.example.com`, the public DNS record, and the public NetBird proxy service in place. Its backend on port 9200 is where NPM forwards the request afterward.
 
 ## Get the certificate ready in NPM
 
-If you already have a valid certificate for `opencloud.hopkins.sh` or `*.hopkins.sh` in NPM, you can reuse it. Your `*.hopki.net` certificate won't cover this hostname.
+If you already have a valid certificate for `opencloud.example.com` or `*.example.com` in NPM, you can reuse it. A certificate for a different domain won't cover this hostname.
 
 Otherwise, go to **SSL Certificates → Add SSL Certificate → Let's Encrypt**:
 
-1. Enter `opencloud.hopkins.sh` as the domain.
+1. Enter `opencloud.example.com` as the domain.
 2. Enable **Use a DNS Challenge**.
 3. Select your DNS provider and enter the API credentials it requires. Limit those credentials to the necessary zone or records where your provider supports it.
 4. Accept the terms, save, and wait for issuance to finish.
@@ -88,7 +88,7 @@ For the OpenCloud example, enter:
 
 | Setting | Value |
 | --- | --- |
-| Domain Names | `opencloud.hopkins.sh` |
+| Domain Names | `opencloud.example.com` |
 | Scheme | `http` |
 | Forward Hostname / IP | `10.173.10.32` |
 | Forward Port | `9200` |
@@ -133,9 +133,9 @@ There's one more connection to account for: NPM has to reach the OpenCloud backe
 From a device on your LAN, replace `NPM_LAN_IP` with NPM's actual address and run:
 
 ```sh
-curl --resolve opencloud.hopkins.sh:443:NPM_LAN_IP \
+curl --resolve opencloud.example.com:443:NPM_LAN_IP \
   --fail --show-error \
-  https://opencloud.hopkins.sh/.well-known/openid-configuration
+  https://opencloud.example.com/.well-known/openid-configuration
 ```
 
 `--resolve` sends this request to NPM while keeping the real hostname for HTTPS. For OpenCloud, you should get the OpenID configuration response without a certificate error. For another app, replace the hostname and use its normal page or a documented test endpoint. The `/.well-known/openid-configuration` path is the OpenCloud check in this example.
@@ -149,20 +149,36 @@ A `502` points toward the backend connection or firewall. A `403` can come from 
 On the resolver your home devices use, add an override for the service's hostname pointing to NPM's LAN address. For this example:
 
 ```text
-opencloud.hopkins.sh → NPM_LAN_IP
+opencloud.example.com → NPM_LAN_IP
 ```
 
 Only add it to the home resolver. If you're keeping public access, leave public DNS pointing to the existing public proxy.
 
 Use whichever resolver already handles DNS for your home network:
 
-- [Pi-hole v6](https://github.com/pi-hole/web/blob/master/settings-dnsrecords.lp): open **Settings → Local DNS Records**. Under **Local DNS records**, enter `opencloud.hopkins.sh` in **Domain** and NPM's LAN IP in **IP**, then click the **+** button.
-- [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Header/Menu.tsx): open **Filters → DNS rewrites → Add DNS rewrite**. Enter `opencloud.hopkins.sh` as the domain and NPM's LAN IP as the answer, then click **Save**.
-- [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html): open **Zones → Add Zone**, enter `opencloud.hopkins.sh` as the zone, leave **Primary Zone** selected, and click **Add**. Open that zone and choose **Add Record**. Set **Name** to `@`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**. Using the full hostname as the zone keeps the other names under `hopkins.sh` resolving normally.
+- [Pi-hole v6](https://github.com/pi-hole/web/blob/master/settings-dnsrecords.lp): open **Settings → Local DNS Records**. Under **Local DNS records**, enter `opencloud.example.com` in **Domain** and NPM's LAN IP in **IP**, then click the **+** button.
+- [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome/blob/master/client/src/components/Header/Menu.tsx): open **Filters → DNS rewrites → Add DNS rewrite**. Enter `opencloud.example.com` as the domain and NPM's LAN IP as the answer, then click **Save**.
+- [Technitium DNS Server](https://github.com/TechnitiumSoftware/DnsServer/blob/master/DnsServerCore/www/index.html): create or reuse a zone for `example.com`, then add an `opencloud` A record inside it. The steps below use one zone for the domain so you can keep adding services there.
 
 Make sure DHCP gives your home devices this resolver. Do note that a public IPv6 answer, browser Secure DNS, or an existing NetBird DNS setting can send a client somewhere else. Check both A and AAAA answers, and make sure any IPv6 answer also follows the intended private path or is suppressed locally.
 
-Keep the override specific to the hostname you're configuring, `opencloud.hopkins.sh` here. The other names under `hopkins.sh` should continue resolving as before.
+### Use one domain zone in Technitium
+
+For Technitium, I recommend keeping your service records together in a zone for the main domain. Here, that's `example.com`, with an A record named `opencloud` pointing to NPM. Each additional service gets its own record in that same zone.
+
+Do note that a [primary zone](https://technitium.com/dns/help.html) makes your local server authoritative for that domain. Missing names won't automatically fall back to public DNS. Before using this zone, copy over any public records your local devices still need, especially the NetBird management hostname and any website or mail records under `example.com`. Keep those records updated when their public values change.
+
+1. Before creating the `example.com` zone, save the public DNS records your local devices still need, including the NetBird management hostname and website or mail records. Get their names, types, and values from your DNS provider or by querying a public resolver directly.
+2. Open **Zones**. If you already manage a local primary zone for `example.com`, open it and keep its existing records. Otherwise, choose **Add Zone**, enter `example.com`, select **Primary Zone**, and click **Add**. For a newly created zone, immediately click **Disable Zone** and confirm, keeping it disabled while you add records.
+3. Inside that local zone, remove any existing `opencloud` A or AAAA records that point to public addresses. Then choose **Add Record**. Set **Name** to `opencloud`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**.
+4. Copy the saved public records into the zone alongside the other local service records. Preserve their names, types, and values for services that should keep their public answers. Skip `opencloud` and any other names you're overriding to NPM so their public answers aren't restored. Only point services at NPM when you've also configured their proxy hosts there.
+5. Once all required public and local records are in place, click **Enable Zone** for the newly created zone.
+
+The zone name and record name combine to give you `opencloud.example.com`. Using `@` as the record name here would address `example.com` itself. For the next service, add another named record inside `example.com`; services behind the same NPM instance can share its LAN IP.
+
+If you followed the earlier version of this guide, add equivalent service records in `example.com` before disabling the separate `opencloud.example.com` zone. Its `@` A record becomes `opencloud` in the parent zone. An active, more specific zone takes precedence over the parent zone's records.
+
+If you want to override a few records while resolving the rest from public DNS automatically, Technitium also supports local records in a **Conditional Forwarder** zone. That is a separate option from the primary-zone setup above; see its [zone documentation](https://technitium.com/dns/help.html).
 
 ### If OpenCloud says "Not logged in"
 
@@ -174,7 +190,7 @@ From your OpenCloud Compose directory, check the path the container uses:
 
 ```sh
 docker compose exec opencloud curl --fail --show-error \
-  https://opencloud.hopkins.sh/.well-known/openid-configuration
+  https://opencloud.example.com/.well-known/openid-configuration
 ```
 
 Expect OpenID configuration JSON with certificate verification enabled. A `502` here means you still need to check NPM's backend connection and the [backend firewall](https://docs.docker.com/engine/network/firewall-iptables/).
@@ -215,14 +231,14 @@ Open **DNS → Nameservers → Add Nameserver**. Use the service's full hostname
 | Provider | Custom DNS |
 | Nameserver address | `HOME_DNS_IP`, port `53` |
 | Distribution Groups | Personal Devices |
-| Match Domain | `opencloud.hopkins.sh` |
+| Match Domain | `opencloud.example.com` |
 | Search domain | Off |
 
 A [match domain](https://docs.netbird.io/manage/dns) sends queries for that name and its subdomains to the selected resolver. Leave your existing primary DNS settings in place for everything else, and keep NetBird DNS management enabled on these devices. We'll use the full hostname, so there's no need for a search domain.
 
-Match `opencloud.hopkins.sh` specifically. Sending all of `hopkins.sh` home would also change resolution for names such as the NetBird management hostname.
+Keep the NetBird match domain at `opencloud.example.com` for this example, even when the home DNS zone is `example.com`. The zone holds your records; the match domain controls which queries NetBird sends home. Sending all of `example.com` home would also change resolution for names such as the NetBird management hostname.
 
-You can add `hopki.net` as another match domain if your home resolver already handles the other private services. Each service still needs a permitted route and the appropriate ports.
+You can add another private domain as a match domain if your home resolver already handles those services. Each service still needs a permitted route and the appropriate ports.
 
 NetBird also has [Custom Zones](https://docs.netbird.io/manage/dns/custom-zones), which let it host private records directly. That's another option if you don't want to forward queries home, although you'd maintain the OpenCloud record in both NetBird and your home resolver. Use one approach for this name. A conflicting Custom Zone takes precedence over the nameserver rule.
 
@@ -247,16 +263,18 @@ I do recommend testing what you actually use the application for in each mode. F
 3. Away with NetBird off, confirm public resolution and test the existing public proxy if you're keeping public access. If you added path blocks, check that those paths return `403` and that the pages or file shares you intend to expose still work. Give cached DNS answers time to expire after switching modes.
 4. Back at home with NetBird on, check the route to NPM as well as the DNS answer. This is the extra check that tells you whether traffic stays directly on the LAN.
 
+If you created a local `example.com` primary zone, also check that the NetBird management hostname and the other public names you copied into it still resolve correctly from home.
+
 On a Mac, query the system resolver with:
 
 ```sh
-dscacheutil -q host -a name opencloud.hopkins.sh
+dscacheutil -q host -a name opencloud.example.com
 ```
 
 On Windows, use:
 
 ```powershell
-Resolve-DnsName opencloud.hopkins.sh
+Resolve-DnsName opencloud.example.com
 ```
 
 NetBird can register a domain-specific resolver on macOS. Tools such as `dig` and `nslookup` can query a different resolver, so they may disagree with the browser. Use the system lookup and check the browser's actual connection address when you verify the result. NetBird explains this in its [DNS troubleshooting guide](https://docs.netbird.io/manage/dns/troubleshooting).
@@ -277,11 +295,11 @@ Also, this isn't automatic failover. While the private rule applies, losing home
 
 To back out the NetBird change, disable or remove the new nameserver configuration for Personal Devices. If you used a Custom Zone instead, remove the corresponding private record. Clear cached answers and confirm public resolution from an away device with NetBird off.
 
-To undo the home override too, remove it from your local resolver and clear the affected devices' DNS caches or reconnect them. Keep the public proxy and its routing resources running throughout, so the existing public path remains available.
+To undo a Pi-hole local record or AdGuard Home rewrite, remove it from your local resolver. In a Technitium primary zone, restore the service's public DNS record locally; deleting only its A record won't make queries fall back to public DNS. Disable or remove the whole local zone only if you no longer need any of its local records. Clear the affected devices' DNS caches or reconnect them, and confirm public resolution. Keep the public proxy and its routing resources running throughout, so the existing public path remains available.
 
 ## Use this for another service
 
-For the next application, add its hostname to NPM, select a certificate that covers it, and point the proxy host at that application's backend. Add a matching override in home DNS and, for private remote access, include that hostname in the NetBird nameserver's match domains. If it uses the same NPM address, the existing route and port 443 policy can cover it too.
+For the next application, add its hostname to NPM, select a certificate that covers it, and point the proxy host at that application's backend. Add a matching override in home DNS, reusing the existing domain zone if you're using Technitium. For private remote access, include that hostname in the NetBird nameserver's match domains. If it uses the same NPM address, the existing route and port 443 policy can cover it too.
 
 Keep the application-specific settings with that application. OpenCloud's port 9200, `OC_DOMAIN`, OpenID test endpoint, and upload directives belong to this example. Another service can use the same DNS and routing setup with its own proxy requirements.
 
