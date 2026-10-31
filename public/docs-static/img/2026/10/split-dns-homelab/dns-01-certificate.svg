@@ -66,11 +66,11 @@
   <text x="1108" y="410" class="detail">Certificate authority</text>
 
   <text x="32" y="534" class="heading">Separate records in public DNS</text>
-  <text x="32" y="580" class="record">opencloud.hopkins.sh</text>
+  <text x="32" y="580" class="record">opencloud.example.com</text>
   <path d="M716 572H792" class="dns"/>
   <text x="820" y="580" class="record-value">Public proxy (unchanged)</text>
 
-  <text x="32" y="638" class="record challenge">_acme-challenge.opencloud.hopkins.sh</text>
+  <text x="32" y="638" class="record challenge">_acme-challenge.opencloud.example.com</text>
   <path d="M716 630H792" class="dns"/>
   <text x="820" y="638" class="record-value">TXT validation proof</text>
 </svg>

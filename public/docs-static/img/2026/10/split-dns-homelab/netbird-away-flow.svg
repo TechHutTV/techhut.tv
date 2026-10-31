@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
   <title id="title">Away with NetBird: DNS lookup and private HTTPS connection</title>
-  <desc id="desc">NetBird matches opencloud.hopkins.sh to home DNS. The device sends its DNS query through a NetBird routing peer to HOME_DNS_IP on UDP or TCP port 53. Home DNS returns NPM_LAN_IP over the same private route. The device then connects through the routing peer to the local proxy over HTTPS on TCP port 443. The local proxy forwards the request to OpenCloud over HTTP on port 9200. Both the DNS server and local proxy need permitted private routes.</desc>
+  <desc id="desc">NetBird matches opencloud.example.com to home DNS. The device sends its DNS query through a NetBird routing peer to HOME_DNS_IP on UDP or TCP port 53. Home DNS returns NPM_LAN_IP over the same private route. The device then connects through the routing peer to the local proxy over HTTPS on TCP port 443. The local proxy forwards the request to OpenCloud over HTTP on port 9200. Both the DNS server and local proxy need permitted private routes.</desc>
   <defs>
     <style>
       text { font-family: Arial, Helvetica, sans-serif; fill: #F5F5F5; }
@@ -47,7 +47,7 @@
   <path fill="#080808" stroke="#404040" d="M.5.5h1279v719H.5z"/>
 
   <text x="32" y="52" class="heading">DNS lookup</text>
-  <text x="32" y="90" class="dns">Match domain: opencloud.hopkins.sh</text>
+  <text x="32" y="90" class="dns">Match domain: opencloud.example.com</text>
 
   <rect x="32" y="130" width="280" height="160" class="node"/>
   <use href="#device" transform="translate(172 172) scale(1.2)"/>
