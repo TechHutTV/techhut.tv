@@ -50,7 +50,7 @@ You need a working application, a reverse proxy running on your LAN (NPM in this
 
 For this example, OpenCloud already works through a public NetBird reverse proxy. If you're starting with the application install, I've got a separate [OpenCloud Docker Compose guide](/self-host-opencloud-docker-compose). To build the private network first, start with my [self-hosted NetBird guide](/self-host-netbird-pocketid).
 
-For the examples below, `opencloud.example.com` stands in for your existing OpenCloud hostname. Replace `example.com` with a domain you control in every setting and command.
+For the examples below, replace the full `opencloud.example.com` with your existing OpenCloud hostname in every setting and command, including `OC_DOMAIN`. Use your own domain for `example.com` and the matching DNS record name for `opencloud`.
 
 | Setting | Value |
 | --- | --- |
@@ -170,8 +170,8 @@ Do note that a [primary zone](https://technitium.com/dns/help.html) makes your l
 
 1. Before creating the `example.com` zone, save the public DNS records your local devices still need, including the NetBird management hostname and website or mail records. Get their names, types, and values from your DNS provider or by querying a public resolver directly.
 2. Open **Zones**. If you already manage a local primary zone for `example.com`, open it and keep its existing records. Otherwise, choose **Add Zone**, enter `example.com`, select **Primary Zone**, and click **Add**. For a newly created zone, immediately click **Disable Zone** and confirm, keeping it disabled while you add records.
-3. Inside that zone, choose **Add Record**. Set **Name** to `opencloud`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**.
-4. Copy the saved public records into the zone alongside the other local service records. Preserve their names, types, and values for services that should keep their public answers. Only point services at NPM when you've also configured their proxy hosts there.
+3. Inside that local zone, remove any existing `opencloud` A or AAAA records that point to public addresses. Then choose **Add Record**. Set **Name** to `opencloud`, **Type** to `A`, and **IPv4 Address** to NPM's LAN IP, then click **Add**.
+4. Copy the saved public records into the zone alongside the other local service records. Preserve their names, types, and values for services that should keep their public answers. Skip `opencloud` and any other names you're overriding to NPM so their public answers aren't restored. Only point services at NPM when you've also configured their proxy hosts there.
 5. Once all required public and local records are in place, click **Enable Zone** for the newly created zone.
 
 The zone name and record name combine to give you `opencloud.example.com`. Using `@` as the record name here would address `example.com` itself. For the next service, add another named record inside `example.com`; services behind the same NPM instance can share its LAN IP.
