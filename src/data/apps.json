@@ -2485,7 +2485,9 @@
     "name": "Yacht",
     "category": "Server Management",
     "description": "Deploy Docker applications using templates and a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/yacht-docker-management"
+    ],
     "videos": [
       {
         "id": "__38-ehaYYs",
