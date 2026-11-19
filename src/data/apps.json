@@ -1836,7 +1836,8 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/truenas-proxmox-hdd-passthrough"
     ],
     "videos": [
       {
@@ -1853,6 +1854,11 @@
         "id": "LuCXHHc2u18",
         "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
         "published": "2021-12-01"
+      },
+      {
+        "id": "MkK-9_-2oko",
+        "title": "How to Install TrueNAS in Proxmox with HDD Passthrough!",
+        "published": "2023-02-23"
       }
     ],
     "icon": "/app-icons/proxmox-ve.png",
@@ -2298,6 +2304,31 @@
     ],
     "details": {
       "href": "/apps/tgpt"
+    }
+  },
+  {
+    "id": "truenas",
+    "name": "TrueNAS",
+    "category": "Server Management",
+    "description": "Build ZFS network storage with pools, datasets, and shares, including as a Proxmox virtual machine.",
+    "coverage": [
+      "/truenas-proxmox-hdd-passthrough"
+    ],
+    "videos": [
+      {
+        "id": "MkK-9_-2oko",
+        "title": "How to Install TrueNAS in Proxmox with HDD Passthrough!",
+        "published": "2023-02-23"
+      },
+      {
+        "id": "0oL43iK5bK4",
+        "title": "This NAS Build is JANKY - The FrankenNAS!",
+        "published": "2022-12-08"
+      }
+    ],
+    "icon": "/app-icons/truenas.png",
+    "details": {
+      "href": "/apps/truenas"
     }
   },
   {

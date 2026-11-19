@@ -1,0 +1,271 @@
+export const title = "How to Install TrueNAS in Proxmox with Hard Drive Passthrough"
+export const description = "Run TrueNAS Community Edition as a Proxmox VM: create the VM, pass physical hard drives through by ID with their serial numbers, install TrueNAS, and build a ZFS pool, plus why passing through the whole controller is better."
+export const date = "2026-10-15"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Homelab", "Self-Host", "Virtualization", "Linux"]
+export const cover = "/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="MkK-9_-2oko" title="TechHut's TrueNAS in Proxmox with HDD passthrough walkthrough" />
+
+[TrueNAS](https://www.truenas.com/truenas-community-edition/) turns a machine into a network attached storage box: ZFS pools, shares, snapshots, apps, all managed from a web UI. [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview) is the opposite kind of tool. It splits one machine into many virtual machines and containers. So why not put the NAS inside the hypervisor?
+
+That's exactly what I did with my homelab at the time, which was my old desktop with three 4 TB hard drives added. I could have installed TrueNAS on the whole machine and gotten a lot of the same features. But I like keeping things separated: I already had a container running Portainer and another VM running a suite of apps, and I wanted my main NAS to be its own thing next to them. The trick is getting the drives into the VM properly, including their serial numbers, because TrueNAS is not a fan of disks it can't tell apart.
+
+<Note>
+**What's been updated.** I recorded the video in February 2023 with **TrueNAS CORE 13.0-U3.1** on **Proxmox VE 7.3**. TrueNAS has changed a lot since then. CORE is no longer under active development, and the free edition is now **TrueNAS Community Edition**, which is Linux-based. The written steps target [TrueNAS 25.10.7](https://www.truenas.com/software-status/), released September 2, 2026 (the version TrueNAS recommends for general use), and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap). The disk passthrough commands have been checked against the current Proxmox wiki. My hands-on impressions and the screenshots come from the original recording, and I've labeled the ones that show the old CORE interface.
+</Note>
+
+## CORE, SCALE, and Community Edition
+
+If you watched the video, you saw me download TrueNAS CORE. Here's what happened to the lineup since:
+
+| Name | Base | Status today |
+|---|---|---|
+| TrueNAS CORE (13.x) | FreeBSD | [No longer under active development](https://www.truenas.com/software-status/). Its final listed releases are 13.0-U6.8 and 13.3-U1.2. |
+| TrueNAS SCALE | Debian Linux | Renamed. With 25.04 in April 2025, [SCALE became TrueNAS Community Edition](https://www.truenas.com/blog/truenas-community-edition-release-2504/). Nothing changed but the name. |
+| TrueNAS Community Edition 25.10 | Debian Linux | Current stable branch. 25.10.7 is the General recommendation. |
+| TrueNAS 27 | Debian Linux | Release candidate. The release that was tested as "TrueNAS 26" was [renamed 27](https://www.truenas.com/blog/truenas-27-is-here/) at RC.1 on October 6, 2026, with 27.0 planned for early December 2026. |
+
+So for a new install you want **Community Edition 25.10**. Don't be thrown off by the file name: the ISO is still called `TrueNAS-SCALE-25.10.7.iso`. Stay off the 27 release candidate unless you're specifically testing it.
+
+There's one practical difference from the video worth knowing up front. CORE was FreeBSD, which is why I said in the video that it's "technically FreeBSD, but Linux is going to be fine" when picking the guest OS type. Community Edition actually is Linux now, so that choice is simply correct.
+
+If you followed the original video and still have a CORE VM running, TrueNAS has a [migration guide](https://www.truenas.com/docs/scale/gettingstarted/migrate/migrate-community/). Moving from CORE to the Linux-based versions is a one-way operation, so read it and back up your config first.
+
+## Before You Start: Disks vs. the Whole Controller
+
+I want to be upfront about this, because it's the most important decision in this guide.
+
+There are two ways to give a TrueNAS VM real drives:
+
+1. **Pass through individual disks** (what I did in the video and what this guide walks through). Proxmox attaches each physical drive to the VM as a virtual SCSI disk with `qm set`. It's easy and works on almost any hardware.
+2. **Pass through the whole storage controller** (an HBA card, or the motherboard's SATA controller) with PCI(e) passthrough. TrueNAS then talks to the drives directly, with nothing in between.
+
+Option 2 is generally the better setup. With individual disk passthrough, TrueNAS sees each drive as a `QEMU HARDDISK`, not the actual drive. It doesn't get real SMART data, temperatures, or direct control of the disks, and the serial numbers only show up because we set them by hand. With the controller passed through, TrueNAS sees the real drives and their health data, which is a big part of why people run TrueNAS in the first place.
+
+The catch with controller passthrough is that your hardware has to support it. You need working IOMMU, the controller has to sit in its own IOMMU group, and Proxmox's own boot drive can't be on that controller. I cover the outline at the end of this guide.
+
+TrueNAS itself is blunt about virtualization in general. Its [hardware guide](https://www.truenas.com/docs/scale/gettingstarted/tnhardwareguide/) says you *can* run it in a VM, but calls that unsafe for regular deployment with production or critical data. If you do virtualize it, TrueNAS says to pass hardware disks or the entire storage controller to the VM. So both methods here follow their advice, but if this is the only copy of data you care about, think about that, and have a backup either way.
+
+There's also a third path: skip TrueNAS and let Proxmox handle ZFS itself. That's how I build my server in [Ultimate Home Server Part 1: Proxmox, ZFS, and Samba](/ultimate-home-server-part-1-proxmox-zfs-samba). The pools live on the host, with no passthrough at all, and a lightweight container shares them over Samba. You lose the TrueNAS web UI but avoid everything in this section.
+
+## What You Need
+
+TrueNAS lists these [minimums](https://www.truenas.com/docs/scale/gettingstarted/tnhardwareguide/) for the current release:
+
+| Resource | TrueNAS minimum | What I gave the VM |
+|---|---|---|
+| CPU | Any x86_64 Intel or AMD processor | 4 cores |
+| RAM | 8 GB | 8 GB |
+| Boot device | 20 GB | 64 GB virtual disk |
+| Data drives | Two identically sized drives for a pool | Three 4 TB hard drives |
+
+Those numbers have moved since the video. Back then the CORE site listed a 16 GB boot drive and a two-core CPU. The memory guidance in the hardware guide is 8 GB for basic use with up to eight drives, plus roughly 1 GB per drive after that, and more if you run apps or VMs inside TrueNAS. ZFS loves RAM, so give it more if you can spare it.
+
+The data drives must not be in use on the Proxmox host. No ZFS pool, LVM, or directory storage on them. Once they're passed through, TrueNAS owns them.
+
+## Get the ISO onto Proxmox
+
+In the video I downloaded the ISO on my desktop and uploaded it to the `local` storage under **ISO Images > Upload**. That still works. The quicker way is to let Proxmox fetch it directly:
+
+1. Go to the [TrueNAS download page](https://www.truenas.com/download/) and find the current Community Edition release (25.10.7 at the time of writing). You can skip the newsletter sign-up.
+2. In Proxmox, select your `local` storage, then **ISO Images > Download from URL**.
+3. Paste the ISO link and click **Query URL**:
+
+```text
+https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.7/TrueNAS-SCALE-25.10.7.iso
+```
+
+4. Expand **Advanced**, choose **SHA-256**, and paste the checksum published on the download page for 25.10.7:
+
+```text
+54ce9441ce66966a392e28f63604ca3c2c083d0bec4db7bb5af2f74f7a007c8e
+```
+
+Proxmox verifies the file after downloading it. If a newer maintenance release is out when you read this, grab its link and checksum from the download page instead.
+
+## Create the Virtual Machine
+
+Click **Create VM**. TrueNAS doesn't publish Proxmox-specific settings, so this table combines its install guide's minimums with the [Proxmox VM documentation](https://pve.proxmox.com/pve-docs/chapter-qm.html):
+
+| Tab | Setting | Value |
+|---|---|---|
+| General | Name, VM ID | `truenas`, any free ID. Mine was `100`. |
+| General | Start at boot | Checked, so your NAS comes back after a host reboot |
+| OS | ISO image | The TrueNAS ISO you downloaded |
+| OS | Guest OS | Linux, 6.x - 2.6 Kernel |
+| System | Machine | `q35` |
+| System | BIOS | OVMF (UEFI), add an EFI disk, untick **Pre-Enroll keys** |
+| System | SCSI Controller | VirtIO SCSI single (the default) |
+| Disks | Boot disk | SCSI, 32 GB or more, IO thread on. Tick Discard if your storage is thin-provisioned. |
+| CPU | Cores / Type | 2 or more cores, type `host` |
+| Memory | Memory | 8192 MiB or more |
+| Network | Bridge / Model | `vmbr0` (or whichever bridge is on your LAN), VirtIO |
+
+A few notes on those choices:
+
+- **Machine and BIOS.** In the video I clicked straight through the System tab with the defaults (`i440fx` and SeaBIOS), and that's fine for individual disk passthrough. I'd pick `q35` and OVMF for a new build anyway. Proxmox's docs note that PCIe passthrough is only available on `q35`, and recommend OVMF when you plan to use PCIe passthrough, so this leaves the door open for passing through a controller later. I untick Pre-Enroll keys so Secure Boot stays off. TrueNAS's install guide doesn't cover Secure Boot, and that's one less thing to troubleshoot.
+- **Boot disk size.** I gave mine 64 GB. TrueNAS's minimum is 20 GB, and a bigger disk leaves room for more boot environments, which TrueNAS keeps around after updates.
+- **CPU type.** Proxmox's docs say `host` gives the best performance if you don't need live migration. You can't live-migrate this VM anyway, since its drives are physically attached to this node. I gave it four cores because I planned to run Nextcloud and a couple of other services on it.
+- **Don't start it yet.** On the Confirm tab, make sure **Start after created** is unchecked. The drives have to be attached first.
+
+![The Proxmox Create Virtual Machine Disks tab showing a SCSI boot disk on the VirtIO SCSI single controller with IO thread enabled](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/proxmox-create-vm-disks-tab.jpg)
+
+This disk is only the TrueNAS boot drive. You can't pass physical drives through from this wizard. That happens next, in the shell.
+
+## Pass Through the Hard Drives
+
+This follows the Proxmox wiki page [Passthrough Physical Disk to Virtual Machine (VM)](https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM)). It looks a little intimidating, but it's a pretty straightforward process. Open **your node > Shell** in the Proxmox web UI.
+
+### Find each drive's serial number and ID
+
+`lshw` isn't installed on Proxmox by default, so install it and list your disks:
+
+```bash
+apt install lshw
+lshw -class disk -class storage
+```
+
+For each drive you're passing through, note the `logical name` (like `/dev/sda`) and the `serial`. My three were Seagate IronWolf 4 TB drives at `/dev/sda`, `/dev/sdb`, and `/dev/sdc`. I opened a text editor on my desktop and pasted each one's name and serial as I went. Do that. It saves a lot of scrolling.
+
+`lsblk` is already installed and gives a quicker summary:
+
+```bash
+lsblk -o +MODEL,SERIAL,WWN
+```
+
+Next, find the stable ID path for each drive:
+
+```bash
+ls -l /dev/disk/by-id/ | grep -v part
+```
+
+You'll usually see two IDs pointing at each disk, for example:
+
+```text
+ata-ST4000VN008-2DR166_ZDHADG4D -> ../../sda
+wwn-0x5000c500...               -> ../../sda
+```
+
+Both work. The difference is formatting: the `ata-` one includes the model and serial number, and the `wwn-` one doesn't. Everything I've seen recommends the `ata-` style, and it makes the config much easier to read. Whichever you use, **don't use `/dev/sdX` directly**. As the wiki points out, those names can change between reboots, and you don't want the wrong disk showing up in your NAS.
+
+### Attach each drive to the VM
+
+The VM's boot disk is already `scsi0`, so the first drive goes on `scsi1`, the next on `scsi2`, and so on. Change `100` to your VM ID and swap in your own IDs and serials:
+
+```bash
+qm set 100 -scsi1 /dev/disk/by-id/ata-ST4000VN008-2DR166_ZDHADG4D,serial=ZDHADG4D,backup=0
+qm set 100 -scsi2 /dev/disk/by-id/ata-ST4000VN008-2DR166_ZDHAG8CD,serial=ZDHAG8CD,backup=0
+qm set 100 -scsi3 /dev/disk/by-id/ata-ST4000VN008-2DR166_ZDHAG8GG,serial=ZDHAG8GG,backup=0
+```
+
+Each one should answer with `update VM 100: -scsi1 ...`. The two options on the end matter:
+
+- **`serial=`** sets the serial number the VM sees. A disk passed through like this doesn't carry its real serial into the guest. Without it, the disks show up in TrueNAS with blank serials, and TrueNAS's pool wizard [warns about disks with non-unique serial numbers](https://www.truenas.com/docs/scale/25.10/scaleuireference/storage/poolcreatewizardscreens/). Using the drive's real serial also makes it obvious which physical drive to pull when one dies. Proxmox [limits the value to 20 bytes](https://pve.proxmox.com/pve-docs/qm.1.html), which covers typical hard drive serials.
+- **`backup=0`** excludes the drive from Proxmox backup jobs. Without it, a backup of the TrueNAS VM would try to copy the whole raw 4 TB drive. Back up your TrueNAS data from inside TrueNAS instead.
+
+In the video I did this in two passes: I ran `qm set` without a serial, then backed up the VM config and edited it with `nano` to add `,serial=...` to the end of each line. Putting it in the `qm set` command does the same thing in one step. If you already attached drives without a serial, just rerun the same `qm set` line with the options added. It replaces that disk's entry.
+
+Check the config file to confirm everything landed:
+
+```bash
+grep scsi /etc/pve/qemu-server/100.conf
+```
+
+Each passthrough line should show the by-id path, a `size=` Proxmox filled in, and your serial. You'll see the same thing in the VM's **Hardware** tab:
+
+![The Proxmox Hardware tab for the TrueNAS VM in the video, listing three passed-through Seagate drives on scsi1 to scsi3 with their serial numbers set](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/proxmox-passthrough-disks-serials.jpg)
+
+That screenshot is from the video, so it shows the `i440fx` and SeaBIOS defaults I used back then, and no `backup=0`.
+
+If you ever need to detach a drive, the wiki's command is:
+
+```bash
+qm unlink 100 --idlist scsi1
+```
+
+<Warning>
+Once TrueNAS builds a ZFS pool on these drives, the Proxmox host can see that pool too, because the drives are still attached to the host. Never run `zpool import` for it on Proxmox, and don't add it as Proxmox storage. Two systems importing the same pool at the same time is a great way to corrupt it.
+</Warning>
+
+## Install TrueNAS
+
+Start the VM and open its **Console**. The installer boots into the console setup menu.
+
+1. Choose **Install/Upgrade**.
+2. Select the boot disk with the spacebar. It's the small one, 32 GB or whatever size you created. Your passed-through drives show up here too, which is a nice confirmation that the passthrough worked. Don't pick them.
+3. Confirm the warning that the selected disk will be erased.
+4. For the web UI authentication method, choose **Administrative user (truenas_admin)** and set a strong password. Current releases log in to the web UI as `truenas_admin` instead of `root`.
+5. If you kept SeaBIOS instead of OVMF, you'll get one more question, **Legacy Boot**, asking whether to allow EFI boot. With OVMF the installer skips it.
+6. When it reports that the installation succeeded, select **OK**. Then, in Proxmox, remove the ISO from the CD/DVD drive (or set **Do not use any media**) and reboot.
+
+![The TrueNAS CORE installer from the video listing the 64 GiB boot disk and three 3.6 TiB passed-through drives, all reported as QEMU HARDDISK](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/truenas-installer-qemu-disks.jpg)
+
+That's the old CORE installer from the video, but look at the drive names: every disk is a `QEMU QEMU HARDDISK`. That's the virtual-disk layer I mentioned earlier, and it's why TrueNAS can't read real SMART data from drives passed through this way.
+
+The old CORE installer also asked for a root password and offered a 16 GB swap partition. I said no to swap and figured I'd give it more RAM later if needed. Neither question exists in the current installer.
+
+The first boot takes a while. When it's done, the console shows the address of the web interface. Mine was `192.168.0.110`. Open that IP in a browser and log in as `truenas_admin` with the password you set during install.
+
+## Create a Pool
+
+The dashboard gives you a quick overview of your system information, CPU, memory, and network interface. What we care about is storage.
+
+First, check that TrueNAS sees the drives with their serials. Open **Storage** and go to the disks list. Each passed-through drive should show the serial you set in Proxmox.
+
+![TrueNAS CORE's Disks page from the video, listing the boot disk and three 3.64 TiB drives with serials ZDHADG4D, ZDHAG8CD, and ZDHAG8GG](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/truenas-disks-serials.jpg)
+
+That's the CORE interface from the video. The serials matched the Proxmox config, which is exactly what you want. On Community Edition, the screen looks different but shows the same information.
+
+Then click **Create Pool** to open the [Pool Creation Wizard](https://www.truenas.com/docs/scale/storage/pools/creatingpools/):
+
+1. **General Info:** give the pool a name. I went with the super unique name of `cool`. Lowercase is best, and you can't rename it later. Leave encryption at **None** for the pool itself. TrueNAS's docs recommend encrypting individual datasets instead if you need encryption.
+2. **Data:** pick a layout, the disk size, a width of `3`, and `1` VDEV.
+3. Skip the optional Log, Spare, Cache, Metadata, and Dedup steps, review, and create the pool.
+
+With three drives, your options are stripe, mirror, or RAIDZ1. Stripe has no redundancy at all. A three-way mirror survives two failed drives but only gives you one drive's worth of space. I went with good old RAIDZ1, which survives one failed drive and gave me about 7.14 TiB usable out of roughly 12 TB raw.
+
+From here you'd create users, set up datasets, and add SMB shares for your Windows and Mac machines. That part is the same as on bare metal, so I'll leave it to the TrueNAS docs.
+
+## Going Further: Pass Through the Whole Controller
+
+If your hardware supports it, here's the outline for the better setup. The details are in the Proxmox [PCI(e) passthrough](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_pci_passthrough) documentation, and I covered the host-side IOMMU checks in [Part 1 of my home server series](/ultimate-home-server-part-1-proxmox-zfs-samba).
+
+1. Put the data drives on a controller Proxmox doesn't boot from. A dedicated SAS HBA in IT mode is the classic choice. TrueNAS's [hardware guide](https://www.truenas.com/docs/scale/gettingstarted/tnhardwareguide/) notes that the most widely used controllers are Broadcom (formerly LSI) SAS HBAs, and warns that hardware RAID cards can hide serial numbers and SMART data.
+2. Enable IOMMU (VT-d or AMD-Vi) in your firmware. On current Proxmox releases it's on by default for AMD, and for Intel with kernel 6.8 or newer.
+3. Make sure the controller is in its own IOMMU group:
+
+```bash
+pvesh get /nodes/$(hostname)/hardware/pci --pci-class-blacklist ""
+```
+
+4. Use the `q35` machine type, then add the controller in the VM's **Hardware > Add > PCI Device > Raw Device** and tick **PCI-Express**.
+5. Don't also pass those drives through individually. The whole controller now belongs to the VM, and Proxmox can't use it.
+
+TrueNAS then sees the real drives, with real serials and SMART data, and you can skip the `serial=` workaround completely.
+
+## My Take
+
+Getting TrueNAS running inside Proxmox is a fairly straightforward process. Most of the work is the drive passthrough, and once you know to use the by-id paths and set the serial numbers, it's a handful of commands. After that, TrueNAS installs just like it would on bare metal, and from there a RAIDZ pool is a few clicks away. I really like having my NAS in its own VM, separate from my containers and app VMs, while still sharing the same hardware.
+
+Knowing what I know now, I'd go with controller passthrough if your hardware supports it, or ZFS directly on the Proxmox host if you don't need the TrueNAS interface. Individual disk passthrough works, and it's a great way to try TrueNAS without dedicating a whole machine to it. Just know that TrueNAS can't see the real drive health, and keep an eye on SMART from the Proxmox side (**your node > Disks** shows SMART status).
+
+With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/)
+- [TrueNAS downloads](https://www.truenas.com/download/)
+- [TrueNAS software status and recommended versions](https://www.truenas.com/software-status/)
+- [TrueNAS: installing TrueNAS (including on a VM)](https://www.truenas.com/docs/scale/gettingstarted/install/installingscale/)
+- [TrueNAS hardware guide (minimums and virtualization)](https://www.truenas.com/docs/scale/gettingstarted/tnhardwareguide/)
+- [TrueNAS: creating pools](https://www.truenas.com/docs/scale/storage/pools/creatingpools/)
+- [TrueNAS: migrating from CORE](https://www.truenas.com/docs/scale/gettingstarted/migrate/migrate-community/)
+- [TrueNAS blog: SCALE is now Community Edition](https://www.truenas.com/blog/truenas-community-edition-release-2504/)
+- [Proxmox wiki: Passthrough Physical Disk to Virtual Machine (VM)](https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM))
+- [Proxmox VE QEMU/KVM virtual machines (settings and PCI(e) passthrough)](https://pve.proxmox.com/pve-docs/chapter-qm.html)
+- [Proxmox VE `qm` manual (disk options such as `serial` and `backup`)](https://pve.proxmox.com/pve-docs/qm.1.html)
+- [Proxmox wiki: PCI passthrough](https://pve.proxmox.com/wiki/PCI_Passthrough)
