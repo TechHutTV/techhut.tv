@@ -1836,7 +1836,8 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/proxmox-gpu-passthrough-windows-11"
     ],
     "videos": [
       {

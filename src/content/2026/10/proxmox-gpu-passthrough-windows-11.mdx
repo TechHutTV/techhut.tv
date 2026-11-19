@@ -1,0 +1,361 @@
+export const title = "AMD and NVIDIA GPU Passthrough to a Windows 11 VM on Proxmox"
+export const description = "Pass a dedicated AMD or NVIDIA graphics card through to a Windows 11 virtual machine on Proxmox VE, from IOMMU and VFIO on the host to VirtIO drivers, Remote Desktop, and GPU drivers in the guest."
+export const date = "2026-10-15"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Virtualization", "Windows", "Homelab"]
+export const cover = "/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="S6jQx4AJlFw" title="TechHut's Proxmox GPU passthrough to Windows 11 walkthrough" />
+
+My desktop tower had been sitting unused for a couple of months. My laptop handles most of my Linux work now, and I do a lot of my DaVinci Resolve editing on an M1 MacBook Air, so the tower had turned into a waste of space. The fix was one of my favorite applications: Proxmox. The plan was to install Proxmox on it, create a Windows 11 virtual machine, and hand the dedicated graphics card straight to that VM. With a real GPU, the VM should run DaVinci Resolve properly, and maybe Steam streaming later on.
+
+Despite how long this guide is, it's not a hard thing to do. I followed [The Ultimate Beginner's Guide to GPU Passthrough](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/) on r/homelab, which calls itself an idiot-friendly tutorial, so it was perfect for me. It was already three years old when I recorded, so I made a few tweaks, mostly in the VM creation and Windows 11 setup. It still took some trial and error and three takes of recording before my Windows VM would accept the AMD card.
+
+<Note>
+**What's been updated:** I recorded the video in July 2022 on Proxmox VE 7.2 with a 5.15 kernel. The written steps follow the current [Proxmox VE PCI(e) passthrough documentation](https://pve.proxmox.com/wiki/PCI(e)_Passthrough) and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (released May 21, 2026, on a 7.0 kernel) instead of the old Reddit guide. Several host steps from the video are no longer needed, or have moved, and I flag each one below. Everything I describe doing, and all of the screenshots, come from the original recording, so the Proxmox and Windows screens will look a bit different today.
+</Note>
+
+## What Changed Since the Video
+
+If you followed the video or the original guide, this is the short version:
+
+| Step | What I did in 2022 | Current advice |
+|---|---|---|
+| IOMMU kernel parameter | Added `amd_iommu=on` in `/etc/default/grub` | Not needed. IOMMU is on by default for AMD, and for Intel on kernel 6.8 and newer. `iommu=pt` is optional. |
+| Where kernel parameters go | `/etc/default/grub` and `update-grub` | Depends on the bootloader. GRUB uses `/etc/default/grub`; systemd-boot uses `/etc/kernel/cmdline` and `proxmox-boot-tool refresh`. |
+| VFIO modules | Four modules in `/etc/modules`, including `vfio_virqfd` | Three modules in `/etc/modules-load.d/vfio.conf`. `vfio_virqfd` was folded into `vfio` in kernel 6.2. |
+| Unsafe interrupts and `ignore_msrs` | Set both | Last-resort options. Leave them out unless you need them. |
+| Blacklisting | Blacklisted `radeon`, `nouveau`, and `nvidia` | Bind the card to `vfio-pci` by ID. Blacklist only the driver your card actually uses. |
+| VirtIO drivers | Swapped ISOs in a single CD drive | The VM wizard can add a second drive for the VirtIO ISO. |
+| VM config file | Added `cpu: host,hidden=1` and a long `args:` line | Usually unnecessary. Those lines worked around NVIDIA's old driver check. |
+
+## My Hardware
+
+The machine is a pretty ordinary desktop:
+
+- **CPU:** AMD Ryzen 7 3700X (8 cores)
+- **Motherboard:** ASRock B550M
+- **RAM:** G.Skill Trident Z Neo
+- **GPU:** AMD Radeon RX 580
+- **Case:** DeepCool MATREXX 40
+
+The steps should work for both AMD and NVIDIA dedicated graphics cards. I used AMD, and that's where I ran into problems, which I cover in the BIOS section and in troubleshooting. Once a card is passed through, the Proxmox host and every other VM lose access to it.
+
+## BIOS Settings
+
+Do this before you install anything.
+
+**IOMMU has to be enabled, no matter your hardware.** On my ASRock board, it's under **Advanced → AMD CBS → NBIO Common Options → IOMMU**. On Intel boards, look for **VT-d**. The name and location vary, so check your motherboard manual. While you're there, make sure CPU virtualization (SVM on AMD, VT-x on Intel) is on as well.
+
+![The ASRock UEFI NBIO Common Options page with IOMMU set to Enabled, as shown in the video](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/bios-iommu-enabled.jpg)
+
+The second change was specific to me and my RX 580: **I had to disable CSM** (Compatibility Support Module) under the **Boot** tab. Before I did that, I kept getting Error 43 for the card in Windows Device Manager, even after the driver installed. Radeon cards can be finicky with passthrough. If you're on AMD and hit the same thing, try disabling CSM first.
+
+## Install Proxmox VE
+
+Download the ISO from the [Proxmox downloads page](https://www.proxmox.com/en/downloads) and write it to a USB drive. Proxmox's [installation media guide](https://pve.proxmox.com/wiki/Prepare_Installation_Media) recommends [Etcher](https://etcher.balena.io/), [Rufus](https://rufus.ie/) in DD mode, or `dd`. In the video, I mentioned GNOME Disks for restoring the image on Linux.
+
+Boot from the USB and run the graphical installer: accept the EULA, pick the target disk, set your country and time zone, give root a strong password and a real email address, then pick the management network card, hostname, and IP address. That IP is how you'll reach the web interface. When it reboots, unplug the monitor and head over to `https://YOUR-SERVER-IP:8006` in your browser. Log in as `root` with the password you just set.
+
+If you'd like ZFS storage and a full home server foundation, my [Proxmox, ZFS, and Samba guide](/ultimate-home-server-part-1-proxmox-zfs-samba) covers the install in more depth. For this video, I used a completely fresh install with the default storage.
+
+## Prepare the Host for Passthrough
+
+All of these commands run as root in the node's **Shell** in the Proxmox web interface.
+
+### 1. Kernel Command Line (Probably Nothing)
+
+In the video, I opened `/etc/default/grub` and changed the default line to `quiet amd_iommu=on`, then ran `update-grub`. That was the standard advice in 2022, but you can skip it today.
+
+The [passthrough docs](https://pve.proxmox.com/wiki/PCI(e)_Passthrough) say IOMMU is enabled by default on AMD CPUs, and on Intel CPUs with kernel 6.8 or newer. Proxmox VE 9.2 ships a 7.0 kernel. The kernel's [parameter documentation](https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt) doesn't even list `on` as a value for `amd_iommu`. My card worked because AMD's IOMMU was already on.
+
+There are two cases where you'd still edit the command line:
+
+- You want IOMMU passthrough mode, `iommu=pt`, which Proxmox says might improve performance.
+- You're on an Intel system with a kernel older than 6.8. Then you need `intel_iommu=on`.
+
+Where it goes depends on the bootloader. The [Host Bootloader](https://pve.proxmox.com/wiki/Host_Bootloader) page explains that UEFI installs with ZFS on root use systemd-boot unless Secure Boot is enabled. Everything else uses GRUB. Run `proxmox-boot-tool status` or `efibootmgr -v` if you're not sure.
+
+For **GRUB**, edit `/etc/default/grub`:
+
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="quiet iommu=pt"
+```
+
+Then apply it:
+
+```bash
+update-grub
+```
+
+For **systemd-boot**, add the parameter to the end of the single line in `/etc/kernel/cmdline`, then run:
+
+```bash
+proxmox-boot-tool refresh
+```
+
+### 2. Load the VFIO Modules
+
+VFIO (Virtual Function I/O) is what Proxmox uses to hand the card to the VM. In the video, I added four modules to `/etc/modules`: `vfio`, `vfio_iommu_type1`, `vfio_pci`, and `vfio_virqfd`. Proxmox [dropped `vfio_virqfd` from its docs](https://lists.proxmox.com/pipermail/pve-devel/2024-October/065698.html) because it's been part of the `vfio` module since kernel 6.2 (Proxmox VE 8). The current docs also use a file under `/etc/modules-load.d/`:
+
+```bash
+cat > /etc/modules-load.d/vfio.conf <<'EOF'
+vfio
+vfio_iommu_type1
+vfio_pci
+EOF
+```
+
+### 3. Find Your GPU's IDs
+
+List PCI devices with their vendor and device IDs:
+
+```bash
+lspci -nn | grep -iE "vga|audio"
+```
+
+In the video, I used `lspci -v` to find the card, then `lspci -n -s 05:00` to get its IDs. Either works. Pay close attention here: the card has more than one function. Mine showed up at `05:00.0` as a VGA compatible controller (the RX 580), and right under it at `05:00.1` was an audio device for HDMI audio. You want the IDs for both. On my card, they were `1002:67df` for the GPU and `1002:aaf0` for the audio.
+
+While you're there, check which driver the host is using:
+
+```bash
+lspci -k | grep -A 3 "VGA"
+```
+
+This matters for the next step. In the video, the RX 580 showed `Kernel driver in use: amdgpu`.
+
+### 4. Keep the Host Away from the Card
+
+Proxmox tries to free the device for passthrough automatically. If that doesn't work, the docs give two options. I used the first one, binding the card to `vfio-pci` by its IDs, and still recommend it. Replace the IDs with your own:
+
+```bash
+echo "options vfio-pci ids=1002:67df,1002:aaf0 disable_vga=1" > /etc/modprobe.d/vfio.conf
+```
+
+`disable_vga=1` turns off VGA arbitration, which the docs say reduces the legacy code that runs at boot when the VM uses OVMF (UEFI), as ours will.
+
+The second option is blacklisting the driver. In the video, I blacklisted `radeon`, then also `nouveau` and `nvidia` because I might put an NVIDIA card in that machine eventually:
+
+```bash
+echo "blacklist radeon" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
+echo "blacklist nvidia" >> /etc/modprobe.d/blacklist.conf
+```
+
+Looking back at my own `lspci` output, the `radeon` line didn't affect my card, since the RX 580 uses `amdgpu`. The ID binding was doing the real work. If you blacklist something, use the driver from `lspci -k`, and don't blacklist a driver the host still needs for another GPU. If the host still grabs the card, the docs suggest a soft dependency so `vfio-pci` loads first. For an AMD card:
+
+```bash
+echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/amdgpu.conf
+```
+
+For NVIDIA, use `nouveau` or `nvidia` in place of `amdgpu`, depending on what `lspci -k` reports.
+
+If this is the only GPU in the machine, the host's local console goes dark after this. That's fine, since you manage Proxmox through the web interface anyway.
+
+### 5. Optional Workarounds from the Guide
+
+The Reddit guide also has you run these two commands, and I did:
+
+```bash
+echo "options vfio_iommu_type1 allow_unsafe_interrupts=1" > /etc/modprobe.d/iommu_unsafe_interrupts.conf
+echo "options kvm ignore_msrs=1" > /etc/modprobe.d/kvm.conf
+```
+
+I'd leave both out on a fresh build. Proxmox's docs list unsafe interrupts as something "some platforms" need and warn that it can make your system unstable. Only reach for it if your hardware lacks interrupt remapping. `ignore_msrs` isn't in the Proxmox docs at all. According to the [kernel documentation](https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt), it makes KVM ignore guest access to unhandled model-specific registers (MSRs) instead of injecting an error into the guest. Keep it in your back pocket for a guest that crashes on that kind of access.
+
+### 6. Rebuild the initramfs and Reboot
+
+```bash
+update-initramfs -u -k all
+reboot
+```
+
+In the video, I ran `update-initramfs -u`, which took 10 to 15 seconds, and then typed `reset`. Do note that `reset` only clears the terminal. It doesn't restart anything, and the module and driver changes need a full reboot.
+
+After the reboot, verify:
+
+```bash
+# IOMMU, Directed I/O, or Interrupt Remapping should be reported as enabled
+dmesg | grep -e DMAR -e IOMMU -e AMD-Vi
+
+# The three vfio modules should be loaded
+lsmod | grep vfio
+
+# Your GPU and its audio function should show "Kernel driver in use: vfio-pci"
+lspci -nnk
+```
+
+Then check the IOMMU groups, replacing `YOUR-NODE` with your node's name:
+
+```bash
+pvesh get /nodes/YOUR-NODE/hardware/pci --pci-class-blacklist ""
+```
+
+The GPU should be in its own group. Sharing it with its own audio function, root port, or PCIe bridge is fine. If it's grouped with unrelated devices, the docs suggest trying another PCIe slot.
+
+## Upload the ISOs
+
+You need two ISOs on your Proxmox ISO storage (usually **local → ISO Images**):
+
+- **Windows 11** from Microsoft's [Windows 11 download page](https://www.microsoft.com/en-us/software-download/windows11). Pick the disk image (ISO) for x64. Mine was about 5.5 GB, which is crazy to me.
+- **VirtIO drivers for Windows.** The VM uses a VirtIO disk controller and network card, and Windows doesn't include drivers for them.
+
+In the video, I used virtio-win 0.1.217. Proxmox's [Windows VirtIO Drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers) page now lists versions 0.1.215 through 0.1.262 under known issues for disk resets and blocked I/O, so don't reuse that one. As of September 2026, Proxmox says 0.1.271 has no known issues, and it's still testing 0.1.302, which is what the [stable link](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso) currently points to. Older and newer releases are in the [virtio-win archive](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/).
+
+## Create the Windows 11 VM
+
+Click **Create VM** and enable **Advanced** at the bottom of the wizard. These are the settings I used, with current notes:
+
+| Tab | Setting | Notes |
+|---|---|---|
+| General | Name: `Win11`, VM ID `100` | Any name works |
+| OS | Windows 11 ISO, type **Microsoft Windows**, version **11/2022/2025** | Tick **Add additional drive for VirtIO drivers** and pick the VirtIO ISO |
+| System | Machine **q35**, BIOS **OVMF (UEFI)**, **Add TPM** with version **v2.0**, EFI and TPM storage on `local-lvm` | Choosing Windows 11 selects q35, OVMF, and a TPM for you. Keep **Pre-Enroll keys** ticked. Graphic card stays at **Default** for now. |
+| System | SCSI controller **VirtIO SCSI single** | Already the default. Proxmox's Windows 11 guide also recommends ticking **Qemu Agent**. |
+| Disks | Bus **SCSI**, 256 GB | I gave it plenty because I'll use this VM a lot. **Discard** and **IO thread** are worth ticking. |
+| CPU | 4 cores (of my 8) | Set **Type** to `host`. More on that below. |
+| Memory | 16384 MiB | 16 GB |
+| Network | Model **VirtIO (paravirtualized)** | Everything else at default |
+
+![The Proxmox Create Virtual Machine wizard System tab in the video with q35, OVMF (UEFI), VirtIO SCSI single, and a v2.0 TPM on local-lvm](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/create-vm-system-tab.jpg)
+
+The **Add additional drive for VirtIO drivers** box is newer than the video. It adds a second CD drive with the driver ISO and switches the disk bus to SCSI and the network card to VirtIO for you. In the video, I only had one CD drive and changed the bus and network model by hand.
+
+After you click **Finish**, check **Options → Boot Order**. In the video, I moved the Windows ISO to the first spot so the VM would boot the installer. When you add the VirtIO drive, the current wizard puts the empty disk first and the Windows ISO second, so it falls through to the installer, but it's worth a quick look.
+
+According to Proxmox's [CPU type documentation](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_cpu), `host` gives the best performance when you don't need live migration. A VM holding a whole passed-through GPU on a single node isn't going anywhere anyway. On Intel hosts, Proxmox VE 9.2 had a known issue where Windows VMs using the `host` CPU type with VBS enabled could freeze briefly. The [release notes](https://pve.proxmox.com/wiki/Roadmap) say `qemu-server` 9.2.0 fixes it for new VMs, so update the host first.
+
+### The Config File Tweaks I Skipped Today
+
+In the video, I opened the VM's config file and pasted in the lines from the guide:
+
+```text
+cpu: host,hidden=1,flags=+pcid
+args: -cpu 'host,+kvm_pv_unhalt,+kvm_pv_eoi,hv_vendor_id=NV43FIX,kvm=off'
+```
+
+The guide also has a `machine: q35` line. I removed that one because the wizard had already set the machine to `pc-q35-6.2`, a Windows 11 configuration that didn't exist when the guide was written.
+
+For a new build, I'd skip both lines. `hidden=1`, `kvm=off`, and the fake `hv_vendor_id` hide the hypervisor from the guest. That was a workaround for NVIDIA GeForce drivers that threw Error 43 inside VMs. NVIDIA [added official GeForce passthrough support](https://nvidia.custhelp.com/app/answers/detail/a_id/5173) in its R465 drivers, back in 2021. A raw `args:` line also passes options straight to QEMU, outside what Proxmox manages. Set the CPU type to `host` in the GUI instead. If an older NVIDIA card still gives you Error 43, that's when to try these lines.
+
+## Add the GPU to the VM
+
+Select the VM, go to **Hardware → Add → PCI Device**, and:
+
+1. Choose **Raw Device**. The Raw and Mapped Device choice arrived in Proxmox VE 8.0. Mapped devices are set up at the datacenter level, which helps with clusters and non-root users, and you don't need them here.
+2. Pick your GPU. Mine was `0000:05:00.0`, the Radeon RX 580. That number should look familiar from `lspci`.
+3. Tick **All Functions** so the HDMI audio function comes along.
+4. Leave **Primary GPU** unchecked for now.
+5. Under **Advanced**, keep **ROM-Bar** ticked and tick **PCI-Express**. PCI-Express is only available on q35.
+
+![The Add: PCI Device dialog in Proxmox VE 7.2 from the video, with 0000:05:00.0 selected, All Functions, ROM-Bar, and PCI-Express checked, and Primary GPU unchecked](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/add-pci-device-rx580.jpg)
+
+If something isn't set up properly, you might get a message here saying IOMMU isn't detected. Go back and check the BIOS and the `dmesg` output from earlier.
+
+The CLI equivalent, with your own VM ID and address, looks like this:
+
+```bash
+qm set 100 -hostpci0 0000:05:00,pcie=1
+```
+
+Leaving off the function number (`.0`) passes all functions, which is the same as ticking **All Functions**.
+
+## Install Windows 11 with the VirtIO Drivers
+
+Start the VM, open **Console**, and press a key when it says to boot from CD. I popped the noVNC console out into its own window so it was easier to see.
+
+Run through the installer as usual. I chose **Windows 11 Pro**. That edition matters later, because Microsoft's [Remote Desktop documentation](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c) says the PC you connect to must run Windows Pro. Choose **Custom** install, and you'll notice there are no drives to install to. Windows can't see the VirtIO SCSI disk yet.
+
+1. Click **Load driver**, then **Browse**.
+2. Open the VirtIO CD and go to `vioscsi\w11\amd64`.
+3. Select **Red Hat VirtIO SCSI pass-through controller** and click **Next**.
+
+![The Windows 11 Setup Select the driver to install screen in the video, with the Red Hat VirtIO SCSI pass-through controller from vioscsi\w11\amd64 selected](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/windows-setup-virtio-scsi-driver.jpg)
+
+The disk shows up, and you can continue. Proxmox's [Windows 11 guest guide](https://pve.proxmox.com/wiki/Windows_11_guest_best_practices) suggests loading two more drivers the same way while you're there: `NetKVM\w11\amd64` for the network and `Balloon\w11\amd64` for memory ballooning. With the network driver loaded, setup has internet access.
+
+In the video, I had a single CD drive, so I swapped the VirtIO ISO into it under **Hardware → CD/DVD Drive → Edit**, loaded the driver, and then swapped the Windows ISO back so setup could continue. With the second drive from the wizard, none of that is needed. I also didn't load the network driver, so I had no internet and continued with the limited setup.
+
+The VM reboots a couple of times during install. If it boots back into the installer, eject the Windows ISO and reboot the VM.
+
+## Network Drivers and Remote Desktop
+
+You'll land on the Windows desktop through noVNC. **Enable Remote Desktop first**, because once the display switches to the real GPU, noVNC stops being useful. The Proxmox docs are clear that the web console can't show a passed-through GPU's output.
+
+1. Open **Settings → System → Remote Desktop**, turn it on, and confirm. Note the PC name.
+2. Under **Remote Desktop users**, confirm your account has access. Administrators already do.
+
+To connect, you need the VM's IP, which means you need networking. I didn't have any yet. I put the VirtIO ISO back in the CD drive, opened **Device Manager**, right-clicked the Ethernet controller, and chose **Update driver → Browse my computer**. Then I picked `NetKVM\w11\amd64` on the CD. The Red Hat VirtIO Ethernet adapter installed, and I was online.
+
+An easier route now is to run `virtio-win-gt-x64.msi` from the root of the VirtIO CD. It installs all the VirtIO drivers in one go. If you ticked **Qemu Agent**, also install the guest agent from `guest-agent\qemu-ga-x86_64.msi` on the same CD so Proxmox can see the VM's IP and shut it down cleanly.
+
+Open Windows Terminal and run:
+
+```powershell
+ipconfig
+```
+
+Note the IPv4 address. Then close noVNC and connect with an RDP client. On Linux, I use [Remmina](https://remmina.org/), which came installed on my Ubuntu machine. On Windows, the built-in Remote Desktop client works.
+
+## Switch the Display to the GPU
+
+With Remote Desktop working, stay logged in and go back to Proxmox:
+
+1. Open the VM's **Hardware → Display → Edit**.
+2. Set **Graphic card** to **none**. Believe it or not, that's what we want. Instead of the emulated display, Windows uses the RX 580 directly.
+3. **Stop** the VM, then **Start** it again. A reboot from inside Windows doesn't apply hardware changes.
+
+![The VM's Hardware tab in Proxmox VE 7.2 from the video with Display set to none and the RX 580 attached as PCI device 0000:05:00 with pcie=1](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/vm-hardware-display-none.jpg)
+
+Reconnect over RDP. I turned on dynamic resolution updates in Remmina so the window could be resized. Then I opened **Task Manager → Performance**, and the Radeon RX 580 was listed. That's a very good sign.
+
+The other way to get a picture is to tick **Primary GPU** on the PCI device and plug a monitor into the card. Per the Proxmox docs, that marks the card as the VM's primary GPU, and the virtual display setting is ignored. My [Proxmox gaming server guide](/proxmox-gaming-game-streaming-servers) passes this same RX 580 to a Linux VM and streams it with Sunshine and Moonlight instead.
+
+## Install GPU Drivers and Test with DaVinci Resolve
+
+Now install the normal drivers for your card inside Windows: AMD's from [AMD's driver page](https://www.amd.com/en/support/download/drivers.html), or NVIDIA's from [NVIDIA's driver page](https://www.nvidia.com/en-us/drivers/). I went with AMD's PRO drivers since I'd be using DaVinci Resolve. The moment of truth: the installer detected the RX 580, installed, and restarted the VM. When I reconnected, the AMD software showed the card and its performance stats without any problems.
+
+For the ultimate test, I installed DaVinci Resolve. Out of any application out there, Resolve will tell you if your GPU is garbage. On first launch, the quick setup checked my operating system and graphics, and both came back good. A few clicks later, I was sitting in Resolve on a Windows VM with a real GPU.
+
+![DaVinci Resolve 18's Quick System Check inside the Windows VM in the video, with green checks for both the operating system and the graphics card](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/davinci-resolve-system-check.jpg)
+
+## Troubleshooting
+
+**Error 43 on an AMD card.** This was my big one. Disabling CSM in the BIOS fixed it for me. In the [Proxmox forum thread](https://forum.proxmox.com/threads/pci-passthrough-error-code-43.56462/post-302985) I linked in the video, other suggestions include disabling legacy boot or CSM and checking whether the card's ROM supports UEFI. The passthrough docs say OVMF needs a UEFI-capable ROM; otherwise, use SeaBIOS. The [PCI Passthrough examples](https://pve.proxmox.com/wiki/PCI_Passthrough) wiki explains how to check whether your card's ROM is UEFI compatible.
+
+**Error 43 on an NVIDIA card.** Update to a current driver first. Older cards and drivers may still need the `hidden=1` and `args:` lines from earlier.
+
+**The VM only works once per host boot.** Many AMD Polaris, Vega, and Navi cards, including the RX 580, have a reset bug. The card works on the first VM start but fails or hangs after the VM restarts. [Nick Sherlock's write-up](https://www.nicksherlock.com/2020/11/working-around-the-amd-gpu-reset-bug-on-proxmox/), which I linked in the video, covers the `vendor-reset` module workaround. He notes it didn't fully fix his own RX 580.
+
+**The host still uses the card.** Run `lspci -nnk`. If the driver in use isn't `vfio-pci`, add the `softdep` line, rebuild the initramfs, and reboot.
+
+## Final Thoughts
+
+After all the trial and error, the actual process was pretty easy: turn on IOMMU, keep the host off the card, give the VM q35 and UEFI, load the VirtIO drivers, and get Remote Desktop working before you switch the display to the GPU. That last bit is the step most likely to leave you staring at a blank console.
+
+The good news is that it's easier now than when I recorded. Current Proxmox doesn't need the GRUB edit or the `vfio_virqfd` module, the wizard handles the VirtIO driver drive and Windows 11 defaults, and current NVIDIA drivers usually don't need the card hidden from them.
+
+This box was going to become my homelab, replacing the little mini PC that ran things like my Jellyfin server and a Transmission client. If you're heading that way, my [Jellyfin VM guide](/ultimate-home-server-part-2-jellyfin) uses the same PCI passthrough to give a VM Intel Quick Sync for hardware transcoding. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Proxmox VE PCI(e) passthrough](https://pve.proxmox.com/wiki/PCI(e)_Passthrough)
+- [Proxmox VE PCI passthrough examples](https://pve.proxmox.com/wiki/PCI_Passthrough)
+- [Proxmox VE host bootloader](https://pve.proxmox.com/wiki/Host_Bootloader)
+- [Proxmox VE QEMU/KVM virtual machines](https://pve.proxmox.com/pve-docs/chapter-qm.html)
+- [Proxmox VE Windows 11 guest best practices](https://pve.proxmox.com/wiki/Windows_11_guest_best_practices)
+- [Proxmox VE Windows VirtIO drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers)
+- [Proxmox VE roadmap and release notes](https://pve.proxmox.com/wiki/Roadmap)
+- [Proxmox VE installation](https://pve.proxmox.com/pve-docs/chapter-pve-installation.html)
+- [Prepare installation media](https://pve.proxmox.com/wiki/Prepare_Installation_Media)
+- [Proxmox downloads](https://www.proxmox.com/en/downloads)
+- [Proxmox patch dropping vfio_virqfd](https://lists.proxmox.com/pipermail/pve-devel/2024-October/065698.html)
+- [Linux kernel parameters](https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt)
+- [virtio-win stable ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
+- [Windows 11 download](https://www.microsoft.com/en-us/software-download/windows11)
+- [Microsoft: How to use Remote Desktop](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c)
+- [NVIDIA GeForce GPU passthrough support](https://nvidia.custhelp.com/app/answers/detail/a_id/5173)
+- [The Ultimate Beginner's Guide to GPU Passthrough (r/homelab)](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/)
