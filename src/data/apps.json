@@ -1477,7 +1477,9 @@
     "name": "OctoPrint",
     "category": "Automation",
     "description": "Monitor and control a 3D printer through a self-hosted web interface.",
-    "coverage": [],
+    "coverage": [
+      "/octoprint-3d-printer-setup"
+    ],
     "videos": [
       {
         "id": "4PpKiZGYswE",

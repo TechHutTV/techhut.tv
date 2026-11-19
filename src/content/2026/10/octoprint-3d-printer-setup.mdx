@@ -1,0 +1,289 @@
+export const title = "OctoPrint on a Raspberry Pi: Make Your Dumb 3D Printer Smart"
+export const description = "Flash OctoPi with Raspberry Pi Imager, run through OctoPrint's setup wizard, add a USB webcam for timelapses, and control a 3D printer from your browser without exposing it to the internet."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["RaspberryPi", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/octoprint-3d-printer-setup/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="4PpKiZGYswE" title="TechHut's OctoPrint walkthrough" />
+
+My 3D printer doesn't sit anywhere near my server, so it has its own little Raspberry Pi plugged straight into it running [OctoPrint](https://octoprint.org/). OctoPrint gives a plain USB printer a web interface: upload G-code, watch temperatures, jog the axes, view the webcam, record timelapses, and start prints from any browser on your network. That's how a dumb printer becomes a smart one.
+
+I've been running OctoPrint for a while, but I'd also been printing just about everything I could for my homelab lately. So, of course, the Pi running my 3D printer needed a 3D printed server rack. In this guide I'll cover that tiny rack, flashing OctoPi with Raspberry Pi Imager, the first-run wizard, and a tour of what you can actually do once it's connected.
+
+Brilliant sponsored the video this article is based on.
+
+<Note>
+The written installation has been updated for the current stable OctoPi image, OctoPi 1.1.0 with [OctoPrint 1.11.8](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8), released June 23, 2026. That OctoPrint release includes security fixes, so update older installs. When I recorded the video, Raspberry Pi 5 wasn't supported yet; [OctoPi 1.1.0](https://github.com/guysoft/OctoPi/releases/tag/1.1.0) added Pi 5 support a few days after the video went up. Raspberry Pi Imager has also moved to a new 2.x interface since then. My hands-on impressions come from the recorded walkthrough on a Raspberry Pi 4.
+</Note>
+
+## The 5-inch Micro Rack
+
+There are plenty of nice 10-inch racks around, but I wanted something even smaller. I came across this one on the homelab subreddit: the [5 inch Micro Server Rack by moshobo](https://makerworld.com/en/models/995409-5-inch-micro-server-rack) on MakerWorld. It has four 3U side arms and two lids, plus optional rack units for a tray, a small TP-Link switch, and a Raspberry Pi 4B case.
+
+I printed everything with a raft, roughly 20% infill, and supports. My printer isn't perfect, and the parts aren't perfect either, but the Pi 4 module slides in, has some airflow underneath, and fits well enough once it's screwed down. The designer also left the SD card slot reachable from the back, which is a thoughtful touch. The top piece has cutouts over the GPIO header, so I can add a fan later. Mine is running without one for now.
+
+![The 3D printed 5-inch micro rack on a desk with the Raspberry Pi 4 module in the top slot, its USB and Ethernet ports facing out, as the screws go in](/docs-static/img/2026/10/octoprint-3d-printer-setup/5-inch-micro-rack.jpg)
+
+One piece of advice: don't 3D print the screws. I wanted this to be fully printed, so I did it anyway, and they were too long, didn't fit my tools well, and made some unhappy noises going in. The model page lists the proper hardware: #10-32 x 3/4 in machine screws and bolts for the rack, plus smaller cap screws for the Pi case. Just buy those.
+
+## Why a Raspberry Pi 4 Is Plenty
+
+OctoPrint is a Python web app talking to your printer over a serial connection. It doesn't need a lot of power, but the host does need to stay responsive while it streams G-code, or prints can suffer. A Pi 4 is more than enough for what I'm running.
+
+The [official download page](https://octoprint.org/download/) currently recommends a **Raspberry Pi 3B, 3B+, 4B, or Zero 2**. It specifically warns against the original **Zero and Zero W**, because heavy Wi-Fi traffic, like a webcam stream, caused severe performance issues that hurt print quality. The bundled Pi Support plugin will also flag those models as not recommended.
+
+The current OctoPi image is compatible with the **Pi 5**, and Raspberry Pi Imager lists it for that board, but the Pi 5 isn't in OctoPrint's recommended-hardware list. If you have a Pi 4 or 3B+ sitting in a drawer, it's the safer pick.
+
+You don't strictly need a Pi, either. The download page also lists:
+
+| Option | Good for |
+|---|---|
+| OctoPi via Raspberry Pi Imager | The default for a Raspberry Pi. What I used. |
+| Official Docker image (`octoprint/octoprint`) | A Linux machine or server that's already near the printer |
+| Obico's Orange Pi image | Orange Pi Zero 2 and Orange Pi 3, supported by Obico |
+| `octoprint_deploy` | A guided install on most Linux systems, including multiple printers |
+| Windows installer | A Windows PC next to the printer |
+| Manual install | Anything that runs Python 3, using a virtual environment and pip |
+
+## What You Need
+
+- A recommended Raspberry Pi, a decent power supply, and a microSD card
+- The USB cable for your printer
+- Optionally, a USB webcam or Raspberry Pi camera. I use a Logitech 1080p USB webcam.
+- Your printer's specs: build volume, bed shape, heated bed, and nozzle diameter
+
+## Flash OctoPi with Raspberry Pi Imager
+
+[OctoPi](https://github.com/guysoft/OctoPi) is a Raspberry Pi OS-based image with OctoPrint and everything it needs already installed. Grab [Raspberry Pi Imager](https://www.raspberrypi.com/software/) for Windows, macOS, or Linux, or install it on Raspberry Pi OS with `sudo apt install rpi-imager`.
+
+1. **Device:** pick your Pi model. Mine is a Raspberry Pi 4.
+2. **OS:** go to **Other specific-purpose OS** > **3D printing** > **OctoPi**. You'll see two builds:
+   - **OctoPi (stable)**
+   - **OctoPi (new experimental camera stack)**
+3. **Storage:** pick the SD card. Leave **Exclude system drives** enabled so you don't accidentally wipe your computer's own disk.
+4. **Customisation:** set a hostname, your time zone, a username and password, and your Wi-Fi network and country. Turn on SSH in the remote access step if you want shell access later.
+5. Write the card.
+
+In the video I downloaded the image from the OctoPrint site and loaded it with **Use custom**. That works too, but picking OctoPi from Imager's list is simpler.
+
+A couple of things to know here. The username and password you set in Imager are for the Linux system account you'd use over SSH. They are not your OctoPrint login; you'll create that in the browser in a minute. Also, if your computer pops up asking to format the card after flashing, **don't**. That breaks the install.
+
+### Stable or the New Camera Stack?
+
+Last time I set this up I used the stable image. This time I went with the new camera stack because I wanted my webcam working for timelapses.
+
+The new camera stack replaces the older MJPG-Streamer setup with [camera-streamer](https://github.com/OctoPrint/camera-streamer-stack). It's still labeled experimental in Imager, but the OctoPi 1.1.0 release notes point Raspberry Pi Camera v2 owners toward it, since that camera doesn't work on the stable branch. For a typical USB webcam, either build should work. Mine was detected automatically with no extra configuration.
+
+If you do need to change camera settings on the new stack, the config files live on the SD card's boot partition in a `camera-streamer` folder (`/boot/firmware/camera-streamer/` on the running Pi). `usb-default.conf` handles USB cameras and `libcamera.conf` handles the Pi camera. The USB defaults look like this:
+
+```ini
+PORT=8080
+DEVICE=/dev/v4l/by-id/usb-*-video-index0
+FORMAT=YUYV
+WIDTH=1280
+HEIGHT=720
+FRAMERATE=15
+```
+
+### If You Skip Imager's Customisation
+
+If you flash the image some other way, OctoPi 1.1.0 moved headless Wi-Fi setup to a `wifi.nmconnection` file on the boot partition, according to the [OctoPi README](https://github.com/guysoft/OctoPi). Some older guides, including part of OctoPrint's download page, still mention `octopi-wpa-supplicant.txt`, which OctoPi 1.1.0 dropped. In that case, the system login falls back to the old `pi` / `raspberry` default, so SSH in and change it with `sudo raspi-config` right away. OctoPrint's Pi Support plugin will nag you about a default password too. Honestly, just use Imager's customisation.
+
+## Plug It In and Find It
+
+Put the card in the Pi and connect power, the printer's USB cable, and the webcam. I'm using a CanaKit inline power switch for the Pi, which is handy when it lives in a rack.
+
+Give it a few minutes on first boot, then open:
+
+```text
+http://octopi.local
+```
+
+If you set a different hostname, use `http://your-hostname.local` instead. If `.local` names don't resolve on your network, use the Pi's IP address. You can find it in your router's DHCP client list, or by connecting a display and keyboard to the Pi and running:
+
+```bash
+ip a
+```
+
+OctoPi also serves the interface over HTTPS with a self-signed certificate, so your browser will warn about it.
+
+## The First-Run Wizard
+
+The setup wizard walks through a handful of screens. You don't have to configure much to get printing, but there are a ton of options if you want to dig in later.
+
+1. **Restore backup.** If you've used the [Backup plugin](https://docs.octoprint.org/en/main/bundledplugins/backup.html) before, you can restore settings, data, and plugins here. This was a clean install, so I skipped it.
+2. **Access control.** Create the first administrator account. Access control has been [mandatory since OctoPrint 1.5.0](https://docs.octoprint.org/en/main/features/accesscontrol.html), so pick a strong password.
+3. **Online connectivity check.** I enabled this. By default, OctoPrint checks every 15 minutes by connecting to Google's DNS server at `8.8.8.8:53`, and it uses OctoPrint's domain for a name resolution check. You can point both at something else.
+4. **Anonymous usage tracking.** This one is up to you. I enable it because it gives the open-source project useful statistics.
+5. **Plugin blacklist.** Enable it. OctoPrint fetches a central list from the [plugin repository](https://plugins.octoprint.org/blocklist/) and disables third-party plugin versions with known severe issues before they cause trouble.
+6. **Classic Webcam.** On OctoPi, the stream and snapshot URLs are already set up. I left everything as is, and my USB webcam just worked.
+7. **Printer profile.** This is where you'll need your printer's spec sheet.
+8. **Finish.** You'll acknowledge three things: never leave a printer running unattended, never expose OctoPrint to the public internet, and that the project depends on [community funding](https://octoprint.org/support-octoprint/).
+
+### Printer Profile
+
+My printer is an Anycubic Kobra Max, so I named the profile with the manufacturer and model. Then I set:
+
+- **Form factor:** rectangular
+- **Origin:** lower left
+- **Heated bed:** yes
+- **Heated chamber:** no
+- **Print volume:** 400 x 400 x 450 mm
+- **Axes and nozzle diameter:** the defaults were already right for my printer.
+
+These values vary a lot between printers, so look up your model's specs instead of copying mine.
+
+![The OctoPrint setup wizard's printer profile step with a lower-left origin, heated bed enabled, and a 400 x 400 x 450 mm print volume](/docs-static/img/2026/10/octoprint-3d-printer-setup/wizard-printer-profile.jpg)
+
+Take that safety screen seriously. I'll come back to remote access below.
+
+## Connect to the Printer
+
+After the wizard, OctoPrint reloads into the main interface. The **Connection** panel lets you pick the serial port and baud rate. Mine was the only USB serial device, so leaving both on **AUTO** found the right port and rate, and the state changed to **Operational**.
+
+Right after connecting, I got a notice about my firmware. That comes from the bundled [Firmware Check plugin](https://github.com/OctoPrint/OctoPrint-FirmwareCheck), which looks for firmware with known safety problems, such as disabled thermal runaway protection, or with broken serial communication. It can also show a heads-up for development builds. If you see one of these warnings, read it and look into a firmware update for your printer.
+
+![The OctoPrint main interface after connecting, showing the firmware development build notice, the serial port and baud rate, and the Operational state](/docs-static/img/2026/10/octoprint-3d-printer-setup/connected-operational.jpg)
+
+## Files and Folders
+
+The **Files** panel shows your uploads and how much free space is left. You can upload G-code, create folders, and for each file you can download, move or rename, delete, load, or print. There's also an option to upload to the printer's own SD card.
+
+I made a folder for my 10-inch rack parts, uploaded the G-code for a set of rack gussets I wanted to print, and used **Move** to put it in that folder and give it a nicer name. Creating that folder unlocked an achievement called "The Organizer." That's from the bundled Achievements plugin, which is a fun little touch you can disable if you don't want it.
+
+OctoPrint 1.11 also bundles an Upload Manager for bulk file operations, which is handy once the file list starts getting long.
+
+## Temperature, Control, and the Webcam
+
+### Temperature
+
+The **Temperature** tab graphs your hotend and bed temperatures and lets you set targets manually. I like using this to preheat the bed before I'm ready to print, since beds take a while to warm up. Set it back to **Off** when you're done. You can also set custom targets.
+
+Presets live under **Settings** > **Printer** > **Temperatures**. My printer does best with PLA at 195°C, so that's what I set there.
+
+### Control
+
+The **Control** tab is where the webcam shows up, along with jog controls for X, Y, and Z, extrude and retract buttons, and homing. With the camera feed, you can watch the axes move as you click. I may have clicked Z up a few too many times in the video, so watch your step size.
+
+![The OctoPrint Control tab with the live webcam view of the printer bed above the X/Y, Z, and extruder jog controls](/docs-static/img/2026/10/octoprint-3d-printer-setup/control-tab.jpg)
+
+### Timelapses
+
+Since we have a camera, timelapses are basically free. In the **Timelapse** tab, I set the mode to **On Z Change** so it grabs a snapshot every time the print moves up a layer. I also set the frame rate to 5 fps and saved it as the default.
+
+Do note that **On Z Change** doesn't work when printing from the printer's own SD card. Use **Timed** mode for those prints.
+
+## Preview with the G-code Viewer
+
+Click **Load** on a file instead of **Print**, and the sidebar fills in the file name, timelapse setting, filament use, and estimated print time. The printer stays operational without starting anything.
+
+The **G-code Viewer** tab then renders the toolpaths. You can zoom in, step through each layer, and see exactly what the printer is going to do. It's a nice sanity check before committing to a long print.
+
+![The OctoPrint G-code Viewer rendering the toolpaths for four rack gusset parts, with the loaded file's details in the sidebar](/docs-static/img/2026/10/octoprint-3d-printer-setup/gcode-viewer.jpg)
+
+There's also a **Terminal** tab if you want to send G-code commands directly and read the printer's responses.
+
+## Settings and Plugins
+
+The settings dialog goes much deeper than the wizard. Besides connection and printer profiles, there's a **Features** section and a **Webcam & Timelapse** section. The **Classic Webcam** plugin settings let you set custom stream and snapshot URLs, so you can use a camera that isn't connected to the Pi, as long as it serves a compatible stream.
+
+OctoPrint already includes several bundled plugins, including Achievements, File Check, Firmware Check, Virtual Printer, and the new [Custom Control Manager](https://docs.octoprint.org/en/main/bundledplugins/customcontrolmanager.html), which lets you configure custom control buttons from the UI.
+
+The [Plugin Manager](https://docs.octoprint.org/en/main/bundledplugins/pluginmanager.html) lists everything installed. You can disable plugins you don't want. Click **Get More** to browse the [official plugin repository](https://plugins.octoprint.org/). OctoPrint asks for your password again and shows a one-time warning about third-party plugins. Read it: they aren't part of OctoPrint's core and can break things, hurt performance, or cause security issues. If one ever breaks the UI, the `/recovery/` page can restart OctoPrint in safe mode. A few I pointed out in the video:
+
+- [Octolapse](https://plugins.octoprint.org/plugins/octolapse/) creates stabilized timelapses by moving the print head and bed out of the way before each snapshot.
+- [DisplayLayerProgress](https://plugins.octoprint.org/plugins/DisplayLayerProgress/) shows the current layer, height, and progress in the navbar, browser tab, and printer display. It depends on your slicer adding layer comments to the G-code.
+- [Cancelobject](https://plugins.octoprint.org/plugins/cancelobject/) cancels one object in a multi-object print and lets the rest keep going.
+- Theme plugins, if the default look isn't your thing.
+
+Each listing has **Details** and **Homepage** links. Check the compatibility information and last release date before installing anything.
+
+![The Install new Plugins dialog in OctoPrint's Plugin Manager listing Octolapse, DisplayLayerProgress, and OctoPrint-Cancelobject, each with an Install button](/docs-static/img/2026/10/octoprint-3d-printer-setup/plugin-repository.jpg)
+
+## Running a Print
+
+To print, click **Print** on a file. My file's start G-code heated the bed first, then kicked on the hotend once the bed was close to temperature, and you can watch both lines climb on the temperature graph.
+
+The gusset print took about 50 minutes. When it finished, the sidebar showed a summary with the print time and file details. The file list also marks it as a successful print, which is handy when you're trying to remember which version of a file actually worked.
+
+![The OctoPrint sidebar after the gusset print finished, showing a print time of 50:20 and the progress bar at 100%](/docs-static/img/2026/10/octoprint-3d-printer-setup/print-finished.jpg)
+
+Then, in the **Timelapse** tab, the rendered video shows up under the finished timelapses. A set of little gussets isn't the most exciting timelapse in the world, but you can watch it grow, and it works. Print something bigger and cooler, and your timelapse will be bigger and cooler too.
+
+## Remote Access Without the Risk
+
+<Warning>
+Do not port forward OctoPrint or put it directly on the public internet. A connected printer has heaters and motors, so the risk is more than a leaked password. OctoPrint's access control docs also note that OctoPrint does not control the webcam stream; it only embeds it, so anyone who can reach and guess the stream URL may be able to view it. Unless you're on a VPN, don't grant permissions to the Guest group or enable autologin.
+</Warning>
+
+I keep OctoPrint on my home network, and for remote access, a VPN is the way to go. I use NetBird, and my [NetBird with Pocket ID guide](/self-host-netbird-pocketid) walks through self-hosting it. Install the client on the Pi or route your LAN through a NetBird peer, and you can reach OctoPrint from anywhere without opening any ports.
+
+If you'd rather not run a VPN, OctoPrint maintains a list of [remote access plugins](https://plugins.octoprint.org/topics/remote_access/). Those are third-party services, so read what each one requires before installing it. Either way, even remote access doesn't change the rule about never leaving a running printer unattended.
+
+## Keeping It Updated
+
+OctoPrint's Software Update plugin tells you when a new version is available, and it's worth applying those promptly. As an example, 1.11.8 fixed an XSS issue that could be triggered by a specially crafted print file, along with a file exfiltration issue. Take a backup from **Settings** > **Backup & Restore** before major updates.
+
+OctoPrint 2.0 is in release candidate testing as I write this. Imager's stable OctoPi build still ships 1.11.8, and that's the one I'd use on a printer you depend on.
+
+## Running OctoPrint in Docker Instead
+
+If you already have a Linux box near the printer, the official [`octoprint/octoprint`](https://github.com/OctoPrint/octoprint-docker) image works on `amd64`, `arm64`, and `arm/v7`. Here's a Compose file based on upstream's example, pinned to the current stable release:
+
+```yaml
+services:
+  octoprint:
+    image: octoprint/octoprint:1.11.8
+    container_name: octoprint
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0   # your printer's serial device
+      - /dev/video0:/dev/video0     # optional USB webcam
+    environment:
+      - ENABLE_MJPG_STREAMER=true
+    volumes:
+      - octoprint:/octoprint
+
+volumes:
+  octoprint:
+```
+
+Some printers show up as `/dev/ttyUSB0` instead, so check with `ls /dev/ttyACM* /dev/ttyUSB*` after plugging the printer in. Without a webcam, drop the video device and the environment variable. If port 80 is taken on the host, change the left side of the mapping, such as `"8081:80"`.
+
+```bash
+docker compose up -d
+```
+
+For the webcam, the image README tells you to set the FFMPEG path to `/usr/bin/ffmpeg` in **Webcam & Timelapse**. In the Classic Webcam settings, use `/webcam/?action=stream` for the stream URL and `http://localhost:8080/?action=snapshot` for the snapshot URL. The same rules about not exposing it to the internet apply.
+
+## Final Thoughts
+
+OctoPrint is one of those tools that made me use my 3D printer more. Being able to upload a file from my desk, preheat the bed, check the camera, and come back to a timelapse is a really nice upgrade for an older printer with no network features. A Pi 4 handles it easily, and the wizard gets you to a working setup quickly.
+
+The plugin ecosystem is where you can sink a lot of time, so get a few successful prints first and add plugins one at a time. As for the rack, it isn't perfect, but a 3D printed server for my 3D printer makes me happier than it probably should. Just buy real screws.
+
+If you've found some great 5-inch or 10-inch rack models, I'd love to check them out. With all that, I do hope you found this useful. Have a great one.
+
+## Official References
+
+- [OctoPrint](https://octoprint.org/)
+- [OctoPrint download and install options](https://octoprint.org/download/)
+- [OctoPrint on GitHub](https://github.com/OctoPrint/OctoPrint)
+- [OctoPrint 1.11.8 release](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8)
+- [OctoPi on GitHub](https://github.com/guysoft/OctoPi)
+- [OctoPi 1.1.0 release](https://github.com/guysoft/OctoPi/releases/tag/1.1.0)
+- [OctoPi-UpToDate builds](https://github.com/OctoPrint/OctoPi-UpToDate/releases)
+- [camera-streamer stack](https://github.com/OctoPrint/camera-streamer-stack)
+- [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+- [Access control](https://docs.octoprint.org/en/main/features/accesscontrol.html)
+- [Bundled plugins](https://docs.octoprint.org/en/main/bundledplugins/index.html)
+- [OctoPrint plugin repository](https://plugins.octoprint.org/)
+- [Remote access plugins](https://plugins.octoprint.org/topics/remote_access/)
+- [Official Docker image](https://github.com/OctoPrint/octoprint-docker)
+- [5 inch Micro Server Rack on MakerWorld](https://makerworld.com/en/models/995409-5-inch-micro-server-rack)
