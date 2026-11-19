@@ -1,0 +1,222 @@
+export const title = "CasaOS: A Simple Web Dashboard for Your Home Server"
+export const description = "What CasaOS is, how to install it on Debian, Ubuntu, or Raspberry Pi OS with the official script (and what that script does), a tour of the dashboard and app store, and where the project stands now that IceWhale is focused on ZimaOS."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/casaos-home-server-overview/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="lyNVPxHiVyE" title="TechHut's CasaOS overview" />
+
+When I got my hands on the [ZimaBoard](https://www.zimaspace.com/products/single-board-server), the part I ended up spending the most time with wasn't the hardware. It was the software it ships with: [CasaOS](https://casaos.zimaspace.com/). My first impressions of it were supposed to be part of the full ZimaBoard review, but that section ran long, so it turned into its own video.
+
+CasaOS is an open source "home cloud" from IceWhale, the company behind the ZimaBoard. It's a really pretty web dashboard for running Docker apps on a home server, and you don't need a ZimaBoard to use it. A single script puts it on top of Debian, Ubuntu, or Raspberry Pi OS.
+
+Linode (part of Akamai) sponsored the original CasaOS video, and GEEKOM sponsored the 2023 follow-up covered below and sent over the mini PC used in it.
+
+The original video was published in May 2022. The written installation has been updated for [CasaOS v0.4.15](https://github.com/IceWhaleTech/CasaOS/releases/tag/v0.4.15), released December 19, 2024, which is still the latest stable release as of October 2026, and for the current official install script. I've also added a section on the project's status, because IceWhale's focus has moved to ZimaOS. The hands-on footage and impressions come from the original recording and from a 2023 homelab video where I set CasaOS up on Ubuntu Server. The UI has changed in places since then.
+
+## Where CasaOS Stands in 2026
+
+Before you build anything on it, here's the honest picture:
+
+- **It isn't archived or discontinued.** The [GitHub repository](https://github.com/IceWhaleTech/CasaOS) is still public and Apache-2.0 licensed, the install script still works, and IceWhale hasn't published an end-of-life notice.
+- **The core is quiet.** v0.4.15 from December 2024 is the newest stable release. The only release since is [v0.4.17-alpha1](https://github.com/IceWhaleTech/CasaOS/releases/tag/v0.4.17-alpha1), a pre-release from April 2025 that adds initial RISC-V support. Recent commits to the main repo are mostly README updates.
+- **The app store is active.** The [CasaOS App Store](https://github.com/IceWhaleTech/CasaOS-AppStore) repository was still getting new apps and version bumps in October 2026. Its README now says it hosts the definitions for the ZimaOS app store too.
+- **IceWhale's new product is ZimaOS.** The [CasaOS site](https://casaos.zimaspace.com/) now says "We have upgraded CasaOS to ZimaOS." [ZimaOS](https://www.zimaspace.com/zimaos) "evolved from CasaOS," but it's a different kind of thing. It's a full NAS operating system for x86-64 machines that you flash from an installer image, it wipes the target disk, and it has a [free tier and a $29 lifetime license](https://www.zimaspace.com/zimaos) that removes the free tier's 4-disk and 3-user limits. IceWhale's own [community write-up](https://shop.zimaspace.com/pages/is-casaos-abandoned-development-status) describes moving from CasaOS to ZimaOS as an OS migration, not an in-place upgrade.
+
+So CasaOS is still a reasonable way to put a friendly dashboard on a Linux box you already have, including ARM boards like a Raspberry Pi, which ZimaOS doesn't target. Just don't expect a steady stream of new core features.
+
+## What CasaOS Actually Is
+
+Despite the name, CasaOS isn't really an operating system. It's a set of system services plus a web UI that sits on top of a normal Linux install. Under the hood:
+
+- Every app is a Docker container. The app store is a catalog of preconfigured containers, and installing one pulls the image and starts it with sensible ports and folders.
+- Files live under `/DATA` by default. App data goes in `/DATA/AppData/<app>`, and folders like `/DATA/Media` and `/DATA/Gallery` are where store apps like Jellyfin and PhotoPrism look for your media and photos.
+- It handles drives and shares too: mounting external disks, merging drives into one pool, and sharing folders over Samba.
+- It runs on amd64, arm64, and armv7.
+
+On the ZimaBoard I had, CasaOS sat on top of what was basically vanilla Debian with GNOME 3.38 as a desktop. There were almost no customizations. A bunch of GNOME extensions (user themes, the application menu, and so on) were installed but disabled by default, and GNOME Tweaks was there if you wanted to play with it. Settings showed about 8 GB of RAM, 31.3 GB of storage, and an Intel Celeron N3450 with four threads. The desktop really isn't the point, though. You manage CasaOS from a web browser on another machine.
+
+## Install CasaOS
+
+### Pick a Base System
+
+The [README](https://github.com/IceWhaleTech/CasaOS#readme) lists Debian 12 (tested and recommended), Ubuntu Server 20.04 (tested), and Raspberry Pi OS (tested) as officially supported. Elementary 6.1 and Armbian 22.04 are listed as community tested. Newer releases like Debian 13 or current Ubuntu LTS versions aren't on the tested list, so a Debian 12 install is the safest bet if you're starting fresh.
+
+The README also lists Alpine, OpenWrt, and Arch as "not fully tested," but the current script refuses to run on Alpine and OpenWrt at all. Anything outside the Debian family gets a warning that it may fail. For an x86-64 box, the CasaOS site lists the ZimaBoard and Intel NUCs as officially supported, and in practice an old laptop or mini PC works too.
+
+The script checks for at least 400 MB of RAM and asks before continuing if there's less than 5 GB of free disk space. That's the bare minimum. Your apps and media are what actually decide how much you need.
+
+### Prepare the Server
+
+In the 2023 follow-up, I put Ubuntu Server on a cheap mini PC. I didn't do a full step-by-step of the Ubuntu installer, but these are the parts that matter:
+
+1. Flash the ISO to a USB stick with a tool like [balenaEtcher](https://etcher.balena.io/). This wipes the stick.
+2. Boot from it using your machine's boot menu. If you get a weird UEFI error, you may need to disable Secure Boot.
+3. Pick the right disk (the install wipes it), and let it search for third-party drivers.
+4. **Use Ethernet.** Setting up Wi-Fi on a server is a pain, and wired is more reliable anyway.
+5. **Install the OpenSSH server** when the installer offers it. You don't need any of the snaps it suggests.
+6. Write down the IP address it shows you. If you forget, run `ip a` after logging in.
+
+Then SSH in from your main computer and bring everything up to date:
+
+```bash
+ssh your-username@SERVER_IP
+sudo apt update && sudo apt upgrade -y
+```
+
+### Run the Install Script
+
+The official one-liner from the [README](https://github.com/IceWhaleTech/CasaOS#quick-setup-casaos) is:
+
+```bash
+curl -fsSL https://get.casaos.io | sudo bash
+```
+
+There's also a `wget -qO- https://get.casaos.io | sudo bash` version if you don't have curl. Since this runs as root, it's worth downloading it and looking it over first:
+
+```bash
+curl -fsSL https://get.casaos.io -o casaos-install.sh
+less casaos-install.sh
+sudo bash casaos-install.sh
+```
+
+Both times I ran it, in the original video on a fresh Debian server and later on Ubuntu Server, it was basically paste, hit enter, and wait. It prints everything it's grabbing as it goes, and at one point it even tells you to ignore an error.
+
+### What the Script Actually Does
+
+The current installer script served at `get.casaos.io` (it identifies itself as installer v0.4.16) does the following, in order, so you know what you're agreeing to:
+
+1. **Looks up your country** with a request to `ipconfig.io` (or `ifconfig.io` as a fallback). Servers in China download from an Alibaba Cloud mirror. Everyone else downloads from GitHub.
+2. **Checks the system**: architecture (amd64, arm64, or armv7), Linux, distribution, memory, and free disk space.
+3. **Installs dependencies** with your package manager: `wget`, `curl`, `smartmontools`, `parted`, `ntfs-3g`, `net-tools`, `udevil`, `samba`, `cifs-utils`, `mergerfs`, and `unzip`.
+4. **Installs Docker** with Docker's official convenience script from `get.docker.com` if it isn't already installed. If it finds a Docker version older than 20, it stops and asks you to remove it first.
+5. **Changes Docker's settings for the whole system.** It writes `/etc/systemd/system/docker.service.d/override.conf` with `DOCKER_MIN_API_VERSION=1.24`, then restarts Docker. [Docker Engine 29](https://docs.docker.com/engine/release-notes/29/) raised the oldest API version the daemon accepts, which broke CasaOS's app management. The override lowers that floor to 1.24 for every client on the machine, not just CasaOS.
+6. **Sets up auto-mounting** for USB drives with udevil and a `devmon` service user.
+7. **Downloads and installs the CasaOS services** from IceWhale's GitHub releases: the gateway, message bus, user service, local storage, app management, CLI, the v0.4.15 core, the web UI, and the app store bundle. Several of those components are pinned to alpha builds.
+8. **Installs rclone v1.61.1** for cloud storage mounts, using rclone's own install script with the download host swapped to IceWhale's mirror. If you already have a different rclone version, the script removes it and installs this one. That version is from December 2022, so keep that in mind if you use rclone for anything else on the same box.
+9. **Installs `casaos-uninstall`** in `/usr/bin`, starts all the services, and prints the address of the web UI.
+
+None of that is shady, but it's a lot for a one-liner. That's one more reason to give CasaOS its own machine or VM instead of installing it on a server that's already doing other things.
+
+### First Login
+
+When it finishes, the script prints something like `CasaOS v0.4.15 is running at:` followed by a URL for each network interface. The web UI takes the first free port from 80 to 89, then 8080 to 8089, so on a clean machine it's usually just `http://SERVER_IP`.
+
+Open that in a browser, click **Go**, and create your account with a username and password. That's it, you're at the dashboard.
+
+<Warning>
+Create your account right after the install finishes, because the first person to open the page is the one who sets it up. Don't put CasaOS on a server with a public IP unless a firewall blocks port 80. For access from outside your home, use a VPN like the setup in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid) instead of forwarding ports.
+</Warning>
+
+### Updating and Uninstalling
+
+You can update from the UI (**Settings**, then **Update**) or over SSH:
+
+```bash
+curl -fsSL https://get.casaos.io/update | sudo bash
+```
+
+The README says to run terminal updates over SSH or on a keyboard plugged into the machine, not from the terminal built into the CasaOS web UI. To remove CasaOS (v0.3.3 or newer):
+
+```bash
+casaos-uninstall
+```
+
+## The Dashboard
+
+The dashboard is what sold me on it. It's clean, the widgets make sense, and it's the kind of page you could set as the home page for every browser in your house.
+
+![The CasaOS dashboard on the ZimaBoard with CPU, RAM, and storage widgets and the preinstalled File Browser, Jellyfin, and PhotoPrism apps, from the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-dashboard.jpg)
+
+Down the left side are live widgets. You get CPU usage by core, RAM out of the 8 GB in the ZimaBoard, network traffic, and storage. I'd had the board running for a couple of days at that point and it was barely doing anything. In the 2023 version, the dashboard also showed power usage and temperature, and the storage section had grown a **merge storages** option for combining drives. My 1 TB drive didn't show its full capacity at first, so that took a little tweaking.
+
+Across the top you'll find:
+
+- **Account** settings.
+- **Settings**, including which search engine the big search bar uses. Mine sent searches to DuckDuckGo, and your browser might ask you to allow pop-ups the first time.
+- A **terminal and logs** button. The terminal drops you into a shell on the host right in the browser, so once it's installed you don't even need SSH for quick tasks.
+
+The rest of the page is your apps, and you can drag the icons around however you like. The **+** button can add an external link as well as an app, so the page can double as a homelab start page, similar to Homer or Heimdall. That's handy for things you deployed outside of CasaOS that won't show up on their own.
+
+## Apps and the App Store
+
+### What Came Preinstalled
+
+The ZimaBoard came with File Browser, Jellyfin, and PhotoPrism already on the dashboard. When I installed CasaOS with the script in 2023, the only default app was the built-in **Files** app, and everything else came from the store.
+
+As a quick test, I opened Jellyfin, which already had Big Buck Bunny loaded. That played completely fine, with no lag. That's because it didn't need any transcoding. Then I played an episode of Deadwood that I knew wasn't in a format the browser could play directly. The CPU shot up right away since there was no hardware transcoding set up, but even under that load the playback didn't stutter. For what the ZimaBoard is, that's pretty good. If you want Jellyfin set up properly with hardware acceleration, my [Jellyfin guide](/ultimate-home-server-part-2-jellyfin) covers that.
+
+### Browsing and Installing
+
+The app store is a list of Docker apps that are already configured to work with CasaOS. In 2022 it had Pi-hole, qBittorrent, Nextcloud, Emby, Transmission, and a handful of others. Sorting by name made it obvious there weren't that many yet. The Cloud category, for example, was basically Nextcloud, File Browser, and Duplicati. By 2023 it had grown to include things like Home Assistant, AdGuard Home, Calibre-Web, Portainer, and the \*arr apps. The [official store repository](https://github.com/IceWhaleTech/CasaOS-AppStore) is well past a hundred apps now, from Immich and Navidrome to newer things like Project NOMAD.
+
+![The CasaOS app store listing Syncthing, AdGuard Home, Nextcloud, Pi-hole, qBittorrent, Jellyfin, Vaultwarden, and Plex with Install buttons, from the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-app-store.jpg)
+
+Installing one is a single click. When I installed Nextcloud, CasaOS pulled the image and showed the progress, with an option to keep it going in the background. As soon as it said "installed" I clicked on it, and it opened right into the Nextcloud setup page. I didn't finish the setup in the video, but it was a really quick way to get a Nextcloud container running. The current store entry runs the official `nextcloud` image on port `10081`. If you want the full-featured version with Office, Talk, and backups, I'd use [Nextcloud AIO](/nextcloud-aio-self-hosted-cloud) instead.
+
+### Custom Installs
+
+If an app isn't in the store, there's a **custom install** option. You give it the Docker image, an app name, ports, the folders you want mapped, environment variables, and so on. The CasaOS site says you can also import an existing `docker run` command instead of typing it all in. If you're not sure what any of those fields mean, my [Docker basics guide](/7-docker-basics-for-beginners) covers them.
+
+![The Install a new App manually dialog in CasaOS with fields for the Docker image, app name, icon URL, web UI port, network, ports, and volumes, as shown in the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-custom-install.jpg)
+
+You can also add third-party app stores. IceWhale's store repository links a guide for that and a list of community stores.
+
+## Setting It Up on a Cheap Mini PC
+
+<YouTube videoId="_qNWpdFqLIU" title="TechHut's cheap homelab server with CasaOS" />
+
+In August 2023 I did a whole video on how cheap a homelab can be. The hardware was a GEEKOM Mini Air 11, a $120 mini PC with an Intel Celeron N5095 (four cores, four threads), one 8 GB stick of DDR4, and a 256 GB NVMe SSD that I swapped for a 1 TB drive. I put Ubuntu Server on it, installed CasaOS with the same script, and it reported version 0.4-point-something at the time.
+
+I still prefer a mini PC like that over a ZimaBoard for a first homelab, mostly because you can upgrade the RAM and SSD. The ZimaBoard can't do that, although its PCIe slot is really cool. For storage, I'd want at least 1 TB, if not 2. Little Intel chips like this are also a good deal for media servers, since their hardware transcoding is solid.
+
+Here's what I set up after logging in.
+
+### Network Shares with the Files App
+
+The built-in **Files** app gives you a nice view of the system's files. I went into **Media**, made a new folder called `TechHut`, and marked it as shared. Under **Shared** in the sidebar, the menu on that folder has **Get network path**, which gives you the SMB address. It didn't show up on its own in my computer's network list, but pasting the path into my file manager connected right away. Then I copied a past project into it. It was slow, but that was because my laptop was on Wi-Fi a room away, not because of CasaOS.
+
+### Photo Backup with PhotoPrism
+
+One of my favorite reasons to have a homelab at all is a self-hosted Google Photos alternative, so I installed PhotoPrism from the store. The install dialog shows the default login, which is `admin` with the password `casaos`. The current store entry keeps your originals in `/DATA/Gallery` and serves the web UI on port `2342`.
+
+<Warning>
+The store's PhotoPrism entry sets the admin password to `casaos` in the compose file. Change it right after the install, especially before you open it to anyone else on your network.
+</Warning>
+
+On my phone I used [PhotoSync](https://www.photosync-app.com/), which is the app [PhotoPrism recommends](https://docs.photoprism.app/user-guide/sync/mobile-devices/) for mobile uploads. In its settings I added PhotoPrism as a destination with the server's local IP and the admin login, and it connected on the first try. Then I sent all my photos to the root folder. Back in PhotoPrism, I ran a rescan from **Library**, and it started indexing the Google Pixel 6 camera folder and filling in photos, videos, places, and labels. A picture I'd just taken showed up on the home page a moment later.
+
+That was a quick, rough install. For real use I'd go back and configure it properly and add SSL. If you want something more like Google Photos, check out my [Immich guide](/self-host-immich-photo-backup).
+
+### Portainer for Hands-On Docker
+
+CasaOS hides a lot of the Docker details, which is the point. If you want more control, you can install [Portainer](https://www.portainer.io/) from the same store. I created the admin user (use a strong password here), connected to the local environment, and under **Containers** there was the PhotoPrism container CasaOS had just made. The two work together just fine. Portainer can see and manage everything CasaOS deploys, because the store entry gives it the host's Docker socket. That also means anyone who can log into Portainer controls Docker on that machine.
+
+If you'd rather try a newer Docker manager, I've also written about [Dockhand](/dockhand-docker-manager).
+
+## My Take
+
+CasaOS is one of the easiest ways I've found to go from a bare Linux install to a working home server. The install is a single command, the dashboard is genuinely beautiful and functional, and the store gets you Jellyfin, Nextcloud, or a photo backup in a couple of clicks. After that, you have the foundation to start trying out Docker containers and figuring out what a homelab can do for you. And it runs on cheap hardware. The mini PC I used came in under $200, and a ZimaBoard with CasaOS preinstalled was about the same price.
+
+The catch now is the project's pace. The core hasn't had a stable release since December 2024, and IceWhale's energy is clearly going into ZimaOS. The app store still gets updates, so for a learning box or a simple home server it's still a pleasant way to get started. Read the install script, give it its own machine, keep it off the open internet, and change the default passwords on store apps. If CasaOS ever stops working for you, everything it runs is just Docker containers with data in `/DATA`, so moving to Portainer, Dockhand, or plain Compose files isn't a dead end.
+
+## Official References
+
+- [CasaOS website](https://casaos.zimaspace.com/)
+- [CasaOS GitHub repository](https://github.com/IceWhaleTech/CasaOS)
+- [CasaOS README: install, update, and uninstall](https://github.com/IceWhaleTech/CasaOS#readme)
+- [CasaOS releases](https://github.com/IceWhaleTech/CasaOS/releases)
+- [v0.4.15 release notes](https://github.com/IceWhaleTech/CasaOS/releases/tag/v0.4.15)
+- [v0.4.17-alpha1 pre-release](https://github.com/IceWhaleTech/CasaOS/releases/tag/v0.4.17-alpha1)
+- [CasaOS install script](https://get.casaos.io)
+- [CasaOS App Store repository](https://github.com/IceWhaleTech/CasaOS-AppStore)
+- [CasaOS license (Apache-2.0)](https://github.com/IceWhaleTech/CasaOS/blob/main/LICENSE)
+- [ZimaOS](https://www.zimaspace.com/zimaos)
+- [ZimaOS GitHub repository](https://github.com/IceWhaleTech/ZimaOS)
+- [IceWhale community write-up on CasaOS development status](https://shop.zimaspace.com/pages/is-casaos-abandoned-development-status)
+- [ZimaBoard](https://www.zimaspace.com/products/single-board-server)
+- [PhotoPrism: syncing with mobile devices](https://docs.photoprism.app/user-guide/sync/mobile-devices/)

@@ -235,12 +235,19 @@
     "name": "CasaOS",
     "category": "Server Management",
     "description": "Manage home server applications and Docker containers through a web dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/casaos-home-server-overview"
+    ],
     "videos": [
       {
         "id": "lyNVPxHiVyE",
         "title": "What is CasaOS??",
         "published": "2022-05-27"
+      },
+      {
+        "id": "_qNWpdFqLIU",
+        "title": "Setting up a CHEAP and EASY Homelab Linux Server",
+        "published": "2023-08-22"
       }
     ],
     "icon": "/app-icons/casaos.png",
