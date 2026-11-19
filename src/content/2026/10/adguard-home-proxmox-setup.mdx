@@ -1,0 +1,295 @@
+export const title = "AdGuard Home on Proxmox: Network-Wide Ad Blocking in an LXC"
+export const description = "Set up AdGuard Home in a Proxmox LXC with the community helper script, the official installer, or Docker, then point your devices and router at it for network-wide DNS ad blocking."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Self-Host", "Homelab", "Docker"]
+export const cover = "/docs-static/img/2026/10/adguard-home-proxmox-setup/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="YqaDnnREqI8" title="TechHut's AdGuard Home on Proxmox walkthrough" />
+
+Nobody likes ads, and I'm not talking about a browser extension here. In the video I actually had my browser ad blocker paused, because the blocking was already happening one level down. [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome) is a DNS server you run yourself. Devices on your network ask it to look up domain names, and when a domain is associated with ads or tracking, it simply doesn't give back a real answer.
+
+The other big name here is [Pi-hole](https://pi-hole.net/), and I've done a [separate Proxmox video on that one](https://www.youtube.com/watch?v=xtMFcVx3cHU) too. They're both great, they both work well, and they're both open source. For this one, though, we're setting up AdGuard Home in a Proxmox LXC container, and with a helper script that part takes just a few minutes.
+
+To give you an idea of how much traffic this sees: I'd set up my instance the day before recording, and it had already handled about 34,000 DNS queries, roughly 2,800 of which it blocked. That's every device on my home network, not just my computer.
+
+<Note>
+I recorded the video in May 2024 using tteck's Proxmox VE Helper Scripts, which created a Debian 12 container. Those scripts are now maintained as the [community-scripts project](https://github.com/community-scripts/ProxmoxVE), and the written steps below have been updated for the current script (Debian 13 or Alpine) and for [AdGuard Home v0.107.79](https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.107.79), released August 18, 2026. I've also added the official installer and Docker so you aren't dependent on a third-party script. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## What DNS Blocking Can and Can't Do
+
+Every time a device loads a page, it does DNS lookups for the site itself and for everything the page pulls in, including ad networks and analytics. Point your devices at AdGuard Home and it checks each requested domain against its blocklists before answering. Blocked domains don't resolve, so those requests fail before they ever leave your network.
+
+Because this happens at the network level, it covers things you can't install an ad blocker on: smart TVs, phones, game consoles, and that one IoT plug you forgot you owned.
+
+It does have a limit, and the AdGuard team is upfront about it in the [README](https://github.com/AdguardTeam/AdGuardHome#comparison-limitations). A DNS blocker can't remove ads that come from the same domain as the content, so YouTube and Twitch ads, and sponsored posts on the big social networks, get through. "Block all the ads" is a great thumbnail, but keep that in mind.
+
+## AdGuard Home vs Pi-hole
+
+Both are solid choices, and I'm not going to tell you one is wrong. Here's where they differ today:
+
+| | AdGuard Home | Pi-hole |
+|---|---|---|
+| License | [GPL-3.0](https://github.com/AdguardTeam/AdGuardHome/blob/master/LICENSE.txt) | [EUPL-1.2 (core)](https://github.com/pi-hole/pi-hole/blob/master/LICENSE) |
+| How it ships | A single Go binary for Linux, macOS, Windows, FreeBSD, and more, plus Docker and Snap | Installer for supported Linux distros, plus Docker |
+| Encrypted upstream DNS (DoH/DoT) | Built in, just paste the URL | Needs an extra component such as [dnscrypt-proxy](https://docs.pi-hole.net/guides/dns/dnscrypt-proxy/). The older cloudflared method is [deprecated](https://docs.pi-hole.net/guides/dns/cloudflared/) |
+| Serving DoH/DoT/DoQ to your clients | Built in | Not built in |
+| Safe search, parental control, browsing security | Built-in toggles | Not built-in toggles; blocklists or manual DNS config |
+| Web UI over HTTPS | Built in | Built in since [Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) |
+| Per-client settings | Yes | Yes (groups) |
+
+AdGuard publishes its own [comparison table](https://github.com/AdguardTeam/AdGuardHome#comparison-pi-hole), but parts of it predate Pi-hole v6. That release, in February 2025, moved Pi-hole's web server and REST API into its FTL engine and added native HTTPS, so lighttpd and PHP are no longer needed.
+
+The practical difference is that AdGuard Home has more of these features built in. Encrypted upstreams, safe search, and a client setup guide are all right there in the UI.
+
+## The Ports You Need to Know
+
+These are AdGuard Home's defaults, confirmed against the [current source](https://github.com/AdguardTeam/AdGuardHome) and the [Docker documentation](https://adguard-dns.io/kb/adguard-home/docker/):
+
+| Port | Protocol | Used for |
+|---|---|---|
+| `3000` | TCP | The first-run setup wizard |
+| `80` | TCP | The admin dashboard after setup (the wizard's default) |
+| `53` | TCP/UDP | Plain DNS, the port your devices actually use |
+| `443` | TCP/UDP | HTTPS dashboard and DNS-over-HTTPS, once encryption is configured |
+| `853` | TCP | DNS-over-TLS |
+| `853` | UDP | DNS-over-QUIC |
+| `67`, `68` | UDP | Only if you use AdGuard Home as your DHCP server |
+
+The one that trips people up is `3000`. It's only for the setup wizard. Once you finish setup, the dashboard moves to whatever port you picked in the wizard, which is `80` by default.
+
+## Option 1: The Proxmox Helper Script (What I Used)
+
+If you don't have Proxmox yet, my [Proxmox install video](https://www.youtube.com/watch?v=LuCXHHc2u18) covers it, and installing it is about as involved as installing any other Linux distribution. If you're still deciding on a server in the first place, [here's why I think everyone should have one](/5-reasons-build-home-server).
+
+The [Proxmox VE Helper Scripts](https://community-scripts.org/) make spinning up services on Proxmox really easy. I already used them for Home Assistant OS, Plex, and Emby on my own server. They're organized by category, and AdGuard Home is under **Adblock & DNS**, next to Pi-hole and a few others.
+
+When I made the video, these were tteck's scripts. The project has since become [community-scripts/ProxmoxVE](https://github.com/community-scripts/ProxmoxVE), an MIT-licensed community project built on tteck's original work. It's not maintained by AdGuard, so the same advice I gave in the video applies: any time you run an automated script as root, know what it's going to do. Every script is on GitHub, and it's worth a quick look before you paste anything.
+
+### What the Script Actually Installs
+
+I read through the current [`ct/adguard.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/ct/adguard.sh) and [`install/adguard-install.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/install/adguard-install.sh). Here's what they do:
+
+- Creates an **unprivileged LXC** with your choice of **Debian 13** or **Alpine 3.24**. The video used Debian 12, which was current at the time.
+- Updates the container's packages.
+- Downloads the official prebuilt `AdGuardHome_linux_<arch>.tar.gz` from AdGuard's GitHub releases into `/opt/AdGuardHome`.
+- On Debian, writes an `AdGuardHome` systemd service, with logs in `/var/log/AdGuardHome.out` and `/var/log/AdGuardHome.err`. On Alpine, it creates an OpenRC service instead.
+- Does the usual helper-script container setup: message of the day, SSH configuration, and passwordless console auto-login if you leave the root password blank.
+
+That's it. It doesn't bundle any extra services, and the AdGuard Home binary is the official upstream release. The config file ends up at `/opt/AdGuardHome/AdGuardHome.yaml`.
+
+The first time you run any of these scripts, it also asks whether to send install diagnostics to the project. The prompt says that covers details like RAM, CPU, and container name, not user data. You can say no.
+
+### Run It
+
+Open the **Shell** for the Proxmox node you want the container on (the host shell, not a container's), and paste the command from the [AdGuard Home script page](https://community-scripts.org/scripts/adguard):
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/adguard.sh)"
+```
+
+It asks you to pick Debian 13 or Alpine first. To skip that question, the script page also lists a variant that sets the OS ahead of time with `var_os='debian'`. The README lists Proxmox VE 8.4 and 9.0 through 9.2 as supported.
+
+Next you choose **Default Install** or **Advanced Install**. The defaults are perfect for most people. On Debian you get 1 CPU core, 512 MB of RAM, and a 2 GB disk. On Alpine it's 1 core, 256 MB, and 1 GB.
+
+### My Advanced Settings
+
+I went with Advanced in the video, mostly to give it a little more headroom. The prompts have grown since then, with new options like FUSE, TUN, GPU passthrough, and a timezone, but the ones I touched are still there:
+
+| Setting | What I chose | Why |
+|---|---|---|
+| Container type | Unprivileged | The safer default |
+| Root password | Set one | Only needed for root SSH |
+| Container ID | `104` | Anything that isn't already taken |
+| Hostname | `adguard-new` | It was a second, temporary instance |
+| Disk | 4 GB | So I never have to think about it |
+| CPU cores | 2 | One is completely fine |
+| RAM | 512 MB | You could probably go lower |
+| Bridge | Default | Unless you have multiple networks |
+| IPv4 | DHCP | See the note below |
+| IPv6 | Left at default | I don't use IPv6 yet, but didn't disable it in case that changes |
+| MTU, DNS, MAC, VLAN | Defaults | |
+| Root SSH | Disabled | I can get to it from Proxmox directly |
+| Verbose mode | Off | |
+
+The disk sizing deserves a quick explanation. On my main instance, 90 days of statistics took about 2 MB, and 7 days of query logs took about 53 MB. The 2 GB default is plenty; I just had room and went with 4.
+
+As for resources, my existing AdGuard container was using about 35 MB of RAM and basically no CPU when I checked. There weren't many clients on it at that moment, but even so, it barely uses anything.
+
+One thing I'd do differently for a long-lived install: give it an address that won't change. Every device on your network is going to point at this IP, so either pick a **static** IPv4 address and gateway in the advanced prompts, or create a DHCP reservation for the container in your router. I left DHCP on because this was a temporary instance.
+
+Confirm the summary and the script creates the container, installs dependencies, and starts AdGuard Home. At the end, it prints a URL like `http://CONTAINER_IP:3000`. That's the setup wizard.
+
+### Updating the Helper-Script Install
+
+On the Debian version, the script won't update AdGuard Home for you. If you run its update routine inside the container, it just tells you that AdGuard Home can only be updated from its own web interface, which shows an **Update now** prompt when a new release is out. Keep the container's Debian packages updated with `apt` as usual. On Alpine, the script's update routine upgrades the Alpine packages and then calls AdGuard Home's built-in updater.
+
+## Option 2: The Official Installer in Your Own Container
+
+If you'd rather not use a community script at all, create a regular Debian container yourself from the Proxmox UI. Download a current Debian template under your storage's **CT Templates**, then use **Create CT**, give it a static IP, and start it. From the container's console:
+
+```bash
+apt update && apt install -y curl
+curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+```
+
+That's the [official automated install](https://github.com/AdguardTeam/AdGuardHome#automated-install-linux-and-mac). It downloads the latest stable release into `/opt/AdGuardHome` and registers it as a service with `AdGuardHome -s install`. You can manage it afterward with the built-in service commands:
+
+```bash
+/opt/AdGuardHome/AdGuardHome -s status
+/opt/AdGuardHome/AdGuardHome -s restart
+```
+
+The script also takes `-u` to uninstall and `-r` to reinstall. The [getting started guide](https://adguard-dns.io/kb/adguard-home/getting-started/) covers manual installs from the release archives, plus running without root using `setcap`, if you want to go that route.
+
+## Option 3: Docker
+
+If you already have a Docker host, the official image is `adguard/adguardhome`. Here's a Compose file pinned to the current release:
+
+```yaml
+services:
+  adguardhome:
+    image: adguard/adguardhome:v0.107.79
+    container_name: adguardhome
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./work:/opt/adguardhome/work
+      - ./conf:/opt/adguardhome/conf
+```
+
+```bash
+docker compose up -d
+```
+
+I'm using `network_mode: host` because the [Docker documentation](https://adguard-dns.io/kb/adguard-home/docker/) notes that, without it, AdGuard Home sees every client as Docker's bridge address (something like `172.17.0.1`). That makes the per-client stats a lot less useful. This assumes Docker Engine on Linux. Docker Desktop only gained a limited version of host networking in 4.34, and it won't work for the DHCP server, which needs real host networking. If you'd rather publish ports, the same page lists the full set of `-p` mappings.
+
+A couple of Docker-specific notes:
+
+- On distros running `systemd-resolved`, such as Ubuntu, port 53 is already taken by its stub listener. The Docker page has the exact `resolved.conf.d` change to free it up.
+- The image runs with update checks disabled. To update, change the tag to the new release and run `docker compose pull && docker compose up -d`.
+
+## The First-Run Setup Wizard
+
+Open `http://YOUR_SERVER_IP:3000`. The first thing I did was switch the page to dark mode, obviously. Then:
+
+1. **Listen interfaces.** It asks where to run the admin web interface and the DNS server. The defaults are **All interfaces** with port `80` for the dashboard and `53` for DNS. Leave them unless you have a specific reason not to.
+2. **Admin account.** Create a username and a strong password. This is the only thing standing between your network's DNS and anyone else on your LAN.
+3. **Configure your devices.** A quick guide to pointing devices at the server. If you want network-wide coverage, the router section is the one you want. You can come back to this guide at any time from **Setup Guide** in the top menu.
+4. **Open Dashboard** and sign in.
+
+![The AdGuard Home setup wizard with the admin web interface on all interfaces at port 80 and the DNS server on all interfaces at port 53](/docs-static/img/2026/10/adguard-home-proxmox-setup/setup-wizard-listen-interfaces.jpg)
+
+After that, the dashboard lives at `http://YOUR_SERVER_IP/`, or whatever port you chose, not on `3000`.
+
+## A Tour of the Dashboard
+
+The dashboard gives you a lot of information at a glance:
+
+- **General statistics:** total queries, how many were blocked by filters, and blocked malware/phishing and adult sites if you turn those services on.
+- **Top clients:** which IP addresses on your network are making the most requests. On a network-wide setup, there are a lot of them.
+- **Top queried domains** and **Top blocked domains**, with information about what each blocked domain is and what it does.
+- **Top upstreams** and **Average upstream response time**, which is what convinced me to change upstreams. More on that next.
+
+![The AdGuard Home dashboard on my main instance with 34,495 DNS queries, 2,809 blocked by filters, general statistics, and top clients](/docs-static/img/2026/10/adguard-home-proxmox-setup/adguard-dashboard.jpg)
+
+The **Query Log** gives you every individual request, which client made it, and whether it was blocked. It's great for figuring out why something is or isn't working.
+
+## Change Your Upstream DNS
+
+AdGuard Home doesn't answer everything itself. Anything it doesn't block gets forwarded to an upstream resolver. By default, that's Quad9's unfiltered DNS-over-HTTPS server.
+
+![Top queried and blocked domains plus upstream stats on my main instance, where Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1](/docs-static/img/2026/10/adguard-home-proxmox-setup/top-domains-and-upstreams.jpg)
+
+On my main instance, the default upstream's average response time was significantly higher than Cloudflare's, so in the video I switched to Cloudflare. Go to **Settings > DNS settings > Upstream DNS servers** and add the servers you want, one per line. You can use whatever provider you prefer. The [known DNS providers list](https://adguard-dns.io/kb/general/dns-providers/) has the exact addresses. These are the encrypted versions for Cloudflare:
+
+```text
+https://cloudflare-dns.com/dns-query
+tls://one.one.one.one
+```
+
+Lines starting with `https://` are DNS-over-HTTPS and `tls://` is DNS-over-TLS, so your lookups to the upstream are encrypted. Plain IPs like `1.1.1.1` work too, but they're sent unencrypted.
+
+Further down is **Fallback DNS servers**, which AdGuard Home uses when the upstreams aren't answering. I used Google's there:
+
+```text
+https://dns.google/dns-query
+```
+
+Hit **Test upstreams** to make sure they respond, then **Apply**. The same page also lets you change how multiple upstreams are used (load-balancing, parallel requests, or fastest IP address), and has the rate limit and **Access settings**, which come up again in the security section.
+
+## The Rest of the Settings
+
+There's a lot here, and I'd recommend clicking through it and reading the [configuration docs](https://adguard-dns.io/kb/adguard-home/configuration/). The highlights:
+
+- **General settings:** toggles for AdGuard's browsing security web service, its parental control web service, and **Use Safe Search**, plus how long to keep statistics and query logs.
+- **Filters:** your DNS blocklists and allowlists, **Blocked services** for one-click blocking of specific platforms, **DNS rewrites** for local names, and **Custom filtering rules**.
+- **Client settings:** name your devices and give individual clients their own rules. For example, safe search can apply to one kid's tablet and not your desktop.
+- **Encryption settings:** run AdGuard Home itself as an HTTPS, DNS-over-HTTPS, DNS-over-TLS, or DNS-over-QUIC server. This needs a domain name and a valid certificate, and the [encryption guide](https://adguard-dns.io/kb/adguard-home/encryption/) walks through it. You don't need any of this for basic LAN ad blocking.
+- **DHCP settings:** AdGuard Home can replace your router's DHCP server. That's useful if your router won't let you set a custom DNS server, but leave it off otherwise.
+
+## Test It on One Device First
+
+Before changing the whole network, point a single computer at AdGuard Home to make sure it works. In the wizard's setup guide, there are instructions for Windows, macOS, Android, iOS, and DNS privacy, plus the router. Linux isn't listed, but it works the same way.
+
+On my Linux machine, I opened the network settings, went to my Wi-Fi connection's **IPv4** tab, turned off automatic DNS, pasted in the AdGuard container's IP address, and applied it. The exact menu depends on your OS and whether you're on Wi-Fi or a cable, but you're always looking for the DNS server setting on that connection.
+
+Then I went to a site that's absolutely covered in ads, CNN.com. Sure enough, a bunch of the ad slots failed to load, which is a very good sign.
+
+Back in the new instance, I hit **Refresh statistics**. My computer showed up as the only client with 10 queries, and nothing blocked. That surprised me for a second, until I remembered my router was already sending everything through my main AdGuard Home server, which was catching those requests first. Sure enough, the main instance's **Query Log** had a whole bunch of recently blocked requests from my recording computer's IP. That was the CNN stuff.
+
+![The Query Log on my main AdGuard Home instance with blocked ad and tracking requests from my recording computer highlighted in red](/docs-static/img/2026/10/adguard-home-proxmox-setup/query-log-blocked.jpg)
+
+## Go Network-Wide Through Your Router
+
+Setting DNS on each device only protects that device. To cover everything, change the DNS server your router hands out to clients. This looks completely different on every router, so search for your router's brand and model plus "custom DNS."
+
+I use a TP-Link Omada setup. In the Omada controller, it's under **Settings > Wired Networks > LAN**. Edit the LAN network, change **DNS Server** from Auto to Manual, and enter your AdGuard Home server's IP. That's all it took for my main instance to start filtering the whole network.
+
+![The LAN network settings in the TP-Link Omada controller with DNS Server set to Manual and pointed at the AdGuard Home server](/docs-static/img/2026/10/adguard-home-proxmox-setup/omada-lan-dns-server.jpg)
+
+A few things that can make it look like it isn't working:
+
+- **Don't add a public resolver as the secondary DNS.** Devices may use the secondary whenever they feel like it, and those lookups skip AdGuard Home entirely. If you want redundancy, run a second AdGuard Home instance and use that as the secondary.
+- **Set it on the LAN/DHCP side, not only the router's WAN DNS.** If the router does the lookups on everyone's behalf, AdGuard Home just sees the router as one giant client.
+- **IPv6 can hand out its own DNS server.** If clients get an IPv6 DNS address from your router or ISP, they may use it instead. Either give AdGuard Home an IPv6 address and advertise that, or check your router's IPv6 DNS settings.
+- **Clients cache DNS.** Reconnect or renew the lease on a device after making the change.
+
+## Don't Expose Port 53 to the Internet
+
+<Warning>
+Do not port forward `53` from your router to AdGuard Home. A DNS server that answers anyone on the internet is an open resolver. It will get found, abused for DNS amplification attacks against other people, and drag down your connection in the process. Keep the dashboard ports (`80`, `443`, `3000`) off the internet as well.
+</Warning>
+
+For a home network, AdGuard Home should only be reachable from your LAN. If you want ad blocking on your phone away from home, the simplest option is to connect back through a VPN and use your home DNS from there. My [NetBird with Pocket ID guide](/self-host-netbird-pocketid) is one way to set that up.
+
+If you deliberately run a public instance for your own devices, AdGuard's [security guide](https://adguard-dns.io/kb/adguard-home/running-securely/) recommends using encrypted DNS. It also recommends turning on allowlist mode in **Access settings**, so only your **Allowed clients**, ideally identified by ClientIDs, can use it. That goes beyond the scope of this guide. The same page also has good advice on binding only to the interfaces you need and locking down file permissions on the binary.
+
+## Final Thoughts
+
+AdGuard Home barely uses any resources. My container sat at around 35 MB of RAM, so on Proxmox it fits perfectly in a tiny unprivileged container. And once it's set on the router, every device on the network gets filtered without installing anything on them, with a dashboard that shows exactly what's being blocked and who's asking for it.
+
+The helper script made the install painfully easy, and I'd still recommend those scripts if you run Proxmox. They save a lot of time on manual installs. Just give the script a quick read first, like any script you run as root, and know that the official installer or Docker image gets you the exact same AdGuard Home if you'd rather skip it.
+
+If you're already happy on Pi-hole, there's no urgent reason to switch; both are great. If you're starting fresh, or you want encrypted upstreams and per-client controls without adding more pieces, AdGuard Home is a really nice place to start. With all that, I do hope you found this useful. Have a great one.
+
+## Official References
+
+- [AdGuard Home on GitHub](https://github.com/AdguardTeam/AdGuardHome)
+- [AdGuard Home v0.107.79 release](https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.107.79)
+- [AdGuard Home overview](https://adguard.com/en/adguard-home/overview.html)
+- [Getting started](https://adguard-dns.io/kb/adguard-home/getting-started/)
+- [Docker](https://adguard-dns.io/kb/adguard-home/docker/)
+- [Configuration](https://adguard-dns.io/kb/adguard-home/configuration/)
+- [Encryption](https://adguard-dns.io/kb/adguard-home/encryption/)
+- [Running AdGuard Home securely](https://adguard-dns.io/kb/adguard-home/running-securely/)
+- [Known DNS providers](https://adguard-dns.io/kb/general/dns-providers/)
+- [AdGuard Home FAQ](https://adguard-dns.io/kb/adguard-home/faq/)
+- [Proxmox VE Helper Scripts: AdGuard Home](https://community-scripts.org/scripts/adguard)
+- [community-scripts/ProxmoxVE on GitHub](https://github.com/community-scripts/ProxmoxVE)
+- [Proxmox VE Linux Containers](https://pve.proxmox.com/wiki/Linux_Container)
+- [Pi-hole](https://pi-hole.net/) and [Pi-hole documentation](https://docs.pi-hole.net/)

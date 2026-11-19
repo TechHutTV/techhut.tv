@@ -5,7 +5,8 @@
     "category": "Networking",
     "description": "Filter ads and trackers across your network with a self-hosted DNS server.",
     "coverage": [
-      "/split-dns-homelab"
+      "/split-dns-homelab",
+      "/adguard-home-proxmox-setup"
     ],
     "videos": [
       {
