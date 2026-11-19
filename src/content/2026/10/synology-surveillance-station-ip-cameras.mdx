@@ -1,0 +1,238 @@
+export const title = "Synology Surveillance Station: Ditching Wyze for IP Cameras on My NAS"
+export const description = "How I replaced cloud-dependent Wyze cameras with Amcrest IP cameras recording to Synology Surveillance Station, including licenses, adding cameras, recording settings, Monitor Center and DS cam."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab"]
+export const cover = "/docs-static/img/2026/10/synology-surveillance-station-ip-cameras/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="cw1TQpeHBIc" title="TechHut's Synology Surveillance Station walkthrough" />
+
+Until recently, my home cameras were Wyze cameras. The hardware is great. The software, not so much. To keep any footage, you either rely on the SD card inside the camera or pay for Wyze's cloud subscription. At the time it was $2 a month, which isn't a bad price, but that's $2 a month for as long as you own the cameras. My bigger problem was that there wasn't a currently supported way to use them as regular IP cameras with other software.
+
+So the Wyze cameras are getting tossed, and I switched to Amcrest IP cameras that record to [Synology Surveillance Station](https://www.synology.com/en-global/surveillance) on the Synology NAS I already had. I didn't even know this app was sitting in my Synology until I started clicking around, and it turned out to be really good.
+
+In this article I'll cover the cameras, how licensing works, how to add a camera, the recording settings I'd change, and a tour of the features I found most useful.
+
+The video was published in February 2023, when Surveillance Station 9.0 was current. The written steps have been checked against [Surveillance Station 9.3.0-12143](https://www.synology.com/en-global/releaseNote/SurveillanceStation), released September 22, 2026, and current Synology Help. The biggest changes since recording: Synology's C2 cloud recording service no longer accepts new subscriptions and has been replaced by Surveillance365, events and bookmarks moved into a new Event Center app, and new installs now rotate recordings by default. My hands-on footage and impressions come from the original recording.
+
+## The Cameras: Amcrest IP4M-1041B
+
+The cameras I picked are Amcrest's indoor pan/tilt Wi-Fi camera, the IP4M-1041B. They basically work the same way as the rotating Wyze camera, with one key difference: you can connect them over Wi-Fi or Ethernet.
+
+On the back there's the Ethernet port, a power port, a reset button, a speaker and microphone for two-way audio (kind of important for my use case), and a microSD card slot. The box includes an Ethernet cable and a mounting bracket. Overall the hardware is good and they're relatively affordable. They do 4 MP at up to 30 frames per second.
+
+That said, the camera isn't the important part here. There are tons of IP cameras on the market. What matters is the software you connect them to, which stores the footage and handles motion detection and everything else. The Wyze app gave me some of that. Surveillance Station gives me all of it and a lot more.
+
+<Note>
+Before buying cameras, check Synology's [IP camera support list](https://www.synology.com/en-global/compatibility/camera). Amcrest is a supported brand, and Surveillance Station can also add ONVIF cameras and plain RTSP streams that aren't on the list, with fewer features.
+</Note>
+
+## What Surveillance Station Is
+
+Surveillance Station is Synology's video management software. It's a package you install on a Synology NAS (Synology also sells dedicated NVR and Deep Learning NVR boxes that run it). It opens into its own desktop-style interface in the browser with apps for managing cameras, watching live views, and digging through recordings.
+
+I already use my Synology for a lot: file storage, Virtual Machine Manager for a VM I connect to remotely, and Docker for a few containers and services. If you don't already own a Synology NAS, this won't be an option for you. To me, the NAS has been worth it for everything else anyway.
+
+It's important to know up front that this is **not** free and open source software. It's commercial software that businesses use, with features for offsite cameras, multi-site management, access control, and more. You do get what you pay for, though.
+
+## Licensing
+
+Every camera you add uses a device license. Synology NAS and NVR hardware comes with a few default licenses, and you buy more for additional cameras.
+
+The number of default licenses depends on the hardware, so check your specific model's spec sheet. My NAS came with two. Here's what Synology's [license pack page](https://www.synology.com/en-global/products/Device_License_Pack) currently lists:
+
+| Hardware | Default device licenses |
+|---|---|
+| Synology NAS | 2 (Synology notes this may differ by model) |
+| Network Video Recorder (NVR) | 4 |
+| Deep Learning NVR (DVA) | 8 |
+| Virtual DSM | None |
+
+A few things worth knowing:
+
+- **It's not a subscription.** Licenses are perpetual. You buy a key once and it stays valid. When I bought mine, it worked out to roughly $50 per camera. Check current pricing yourself, since it varies by region and retailer.
+- **Packs come in 1, 4, or 8 licenses.** Each pack is a single key.
+- **Purchased licenses can be migrated** to another Synology device. Default licenses can't be deleted or moved.
+- **Some devices need more than one license**, and Synology LiveCam (turning a phone into a camera) needs a license per phone.
+- **Adding or removing licenses needs an internet connection** to Synology for validation. If your NAS is offline, you can do it through DS cam or Surveillance Station Client instead. Synology also recommends adding your NAS to your Synology Account and keeping your keys and receipt somewhere safe, since lost keys aren't replaced.
+
+## Install Surveillance Station
+
+Surveillance Station is in Package Center on DSM 7. Synology's release notes list DSM 7.0 (build 41890) or later for 9.3.0, and the steps here were checked against current DSM 7.2 and newer releases.
+
+1. Open **Package Center** in DSM, search for **Surveillance Station**, and click **Install**.
+2. Once it's installed, open it from the DSM main menu.
+3. Recordings go into a shared folder that Surveillance Station creates. Mine is the `surveillance` folder on volume 1. Only folders created by Surveillance Station can be used as recording storage, and external drives aren't supported.
+
+## Connect the Camera to Your Network
+
+Before Surveillance Station can find a camera, it needs to be on your network. For the Amcrest cameras, I used Amcrest's phone app to get each one onto Wi-Fi. In the video I was adding my third camera, for the living room, next to the two already set up for the patio and the kids' room.
+
+1. In the app, add a new device and choose the Wi-Fi setup.
+2. Allow camera access so the app can scan the QR code with the serial number.
+3. The camera plays a sound while it tries to connect. Give it a name and enter your Wi-Fi password.
+4. Once it connects, the app asks you to change the camera's password.
+
+That last step matters. These cameras ship with `admin`/`admin` as the login, which isn't exactly secure. Set a strong, unique password and save it, because Surveillance Station needs it in a minute. One tip from my earlier setups: don't try to change the credentials before the camera has connected to Wi-Fi. That gave me issues.
+
+If you're using Ethernet instead, plug it in and still change the default password before adding it.
+
+## Add the Camera in Surveillance Station
+
+Actually adding cameras is pretty easy.
+
+1. Open the **IP Camera** app and click **Add**. Surveillance Station searches your local network automatically. It's pretty good about finding cameras. If yours doesn't show up, click **Add Manually** and enter its IP address, or use **Scan IP Range**.
+2. Tick the camera you want and click **Next**.
+3. **Brand and model:** For a supported camera, pick its exact brand and model for the best integration. For one that isn't on the list, Synology's Help suggests **[ONVIF]** with **All functions** (or **Streaming only** if streaming is unreliable), and **[User Define]** only as a last resort for a plain RTSP, RTSPS, HTTP, or RTMP stream.
+4. **Camera information:** Give it a name (I used "Living Room") and pick the recording storage.
+5. **Authentication:** Surveillance Station first tries the default credentials. If that fails, which it should since you changed them, click **Authenticate** and enter the camera's username and password. You're looking for a green check. If the camera supports HTTPS, you can select it from the **Port** drop-down.
+6. **Setup mode:** Pick **Quick Setup**, **Complete Setup**, or **Copy settings** from an existing camera.
+7. Review the summary and click **Done**.
+
+![The Add Camera Wizard's camera information step with the Amcrest camera named Living Room, the surveillance storage selected, and a green authentication check, from the video with the camera's snapshot thumbnail pixelated](/docs-static/img/2026/10/synology-surveillance-station-ip-cameras/add-camera-wizard-camera-information.jpg)
+
+The camera may show as disconnected for a moment while it's configured. Give it a second and it will connect.
+
+### When You Run Out of Licenses
+
+On my third camera, the wizard stopped and said I didn't have enough licenses. Here's how to add one:
+
+1. Open the **License** app. You'll see your default licenses listed.
+2. Click **Add**, read the terms, tick the box to agree, and click **Next**.
+3. Enter the license key from your license card and click **Add**. Don't share that key with anyone.
+4. Surveillance Station activates it and shows a summary. Mine showed up as a lifetime license.
+
+Then go back to the Add Camera wizard. With the new license in place, it lets you continue.
+
+<Note>
+In the US, Canada, the UK, Switzerland, and EU countries, the License app now has a **Purchase** button that links to the Synology Store. Elsewhere, Synology points you to authorized resellers.
+</Note>
+
+## Recording Settings Worth Changing
+
+I recommend **Complete Setup** over Quick Setup, because it lets you set the frame rate, resolution, retention, and schedule while you're adding the camera. You can change everything later through **IP Camera** > select the camera > **Edit**.
+
+In my case, I didn't change everything I should have during setup. These cameras support up to 30 frames per second at 4 MP, so I went back later and changed the video settings to match.
+
+The two recording settings I care about most:
+
+- **Keep the files within (days):** Recordings older than this are deleted automatically. Thirty days of continuous footage from several cameras would be way too much for the roughly 12 TB I have in my NAS alongside everything else. I'm keeping somewhere around 3 or 4 days, which is enough to go back and grab something from yesterday.
+- **Limit the archive folder up to (GB):** A size cap for each camera's recordings. If you set both, files rotate as soon as either limit is reached.
+
+![The Recording step of the Add Camera Wizard in the video, with Keep the files within (days) checked and still at 30](/docs-static/img/2026/10/synology-surveillance-station-ip-cameras/add-camera-wizard-recording-settings.jpg)
+
+There's also an **Estimate Required Space** button on the Recording tab. It estimates how much storage the camera needs for continuous recording with its current settings, which is very handy before you commit to a retention period.
+
+<Warning>
+Since Surveillance Station 9.3, new installs turn on recording rotation by default. The threshold is a percentage of total storage, with a minimum of 10%. You can change it under **Recording** > **Archive Settings** > **Recording History**. Check it so Surveillance Station doesn't eat more of your NAS than you planned.
+</Warning>
+
+### Recording Schedule
+
+On the **Schedule** tab you paint a weekly timetable with a recording mode. I just set mine to **Continuous**. If you only want to record at night, or only on motion, this is where you set that up. The available modes include:
+
+- **Continuous**
+- **Motion Detection**, which records only when motion is detected (it has to be enabled on the camera's Event Detection page)
+- **Customize 1 / Customize 2**, for other triggers like audio detection, tampering, digital inputs, or PIR motion, depending on what your camera supports
+
+![The Schedule Settings step of the Add Camera Wizard with the whole week painted for Continuous recording, as shown in the video](/docs-static/img/2026/10/synology-surveillance-station-ip-cameras/add-camera-wizard-schedule.jpg)
+
+## Touring Surveillance Station
+
+With the camera set up, here's a look at the parts I actually used.
+
+### IP Camera
+
+This is where you add, edit, delete, enable, and disable cameras. You can filter by status, so it's easy to spot which cameras are disconnected. In the video, my living room camera was offline because it was a bit too far from my Wi-Fi. I had a powerline adapter ready to try, which runs a network connection through the power outlets.
+
+Open a camera and you get its live view, with:
+
+- Volume and **hold to talk** for two-way audio
+- A **PTZ panel** to pan and tilt the camera with a click
+- **Snapshots** and **manual recording**
+- **Drag to zoom** on a part of the frame
+- A timeline under the video to skip back through recordings
+
+I scrubbed back through my kids' room camera and found myself from earlier, grabbing something I'd left next to the camera. It works.
+
+### Monitor Center
+
+Monitor Center is where you watch many cameras at once. This would be really cool if you have a room with a screen where you want all your cameras up all the time. Since it runs in a web browser, you could probably even leave it open on something like a Raspberry Pi.
+
+Double-click a camera in the list to put it in a pane. Hovering over a pane gives you the same controls as the individual live view. Under the layout settings, you can build custom layouts with up to 100 channels.
+
+The part I really like is the timeline along the bottom. Everything records at the same time, so you get one track per camera. Drag the playhead back and you see what every camera saw at that moment. Hit **Live** to jump back to now.
+
+### Recording and Event Center
+
+The **Recording** app has every recorded file, and in the video it was also where I found the events it captured. In 9.3, Synology moved events, bookmarks, and counting reports into a separate **Event Center** app. Recordings are still in Recording, which is also where the storage settings live (that's where I saw my `surveillance` folder on volume 1).
+
+### C2 Cloud Backup (Now Surveillance365)
+
+In the video I pointed out C2 Surveillance, Synology's cloud option. I wasn't going to use it, but for a business that wants both local and offsite copies, it seemed like a decent option. That service has changed a lot:
+
+- It was renamed **C2 Backup for Surveillance** in 9.2.1.
+- As of **September 21, 2026**, it no longer accepts new subscriptions or plan changes. Automatic renewals stop starting December 22, 2026, every plan expires by December 22, 2027, and the service shuts down entirely in March 2028 ([Synology's EOL article](https://kb.synology.com/en-global/C2/tutorial/EOL_C2_Backup_for_Surveillance)).
+- Its replacement is **cloud backup to Surveillance365**. It needs a [C2 OneStorage](https://c2.synology.com/en-global/pricing/onestorage) subscription, and your NAS has to be signed in to Cloud Management through the CMS app. Then you turn it on per camera under **IP Camera** > **Edit** > **Cloud Backup**, with a cloud retention period of 45 to 3,650 days. It only backs up recordings made after you enable it.
+
+I haven't tried Surveillance365, so I can't tell you how well it works. If you only need an offsite copy for a home setup, it's worth comparing against your other backup options.
+
+### Maps
+
+This one's pretty cool. You can upload an image map, like a floor plan, and drop your cameras on it. I placed my living room camera on mine and adjusted the direction and field of view so it matched the room. For a business, or a really big house, you can open the map, find the exact camera covering a spot, and see what's going on there. There's also support for map services like OpenStreetMap or Google Maps if you run Surveillance Station across multiple locations.
+
+### Application Center
+
+Application Center is where the extra features live. You enable the ones you want and leave the rest off. The only one I was running was **Smart Time Lapse**, which condenses long recordings into short videos. A few others caught my eye:
+
+- **Edge recording:** This showed up under device integration, and it's one I plan to set up. If a camera loses its connection to the NAS, it records to its own SD card, and Surveillance Station can pull that footage back afterward to fill in the gap. In current versions it's configured per camera under **IP Camera** > **Edit** > **Edge Recording**, for supported third-party cameras.
+- **IP Speaker:** For broadcasting audio through networked speakers. I'm pretty sure this is the kind of thing stores use to play music or make announcements.
+- **Transactions:** Integrates with a point-of-sale system so you can see transactions on screen and search footage by transaction. I'm never going to use it, but it's a cool feature.
+- **Live Broadcast:** Streams a camera live to YouTube. It needs your YouTube RTMP path and stream key, and it only supports H.264.
+
+![Application Center's Device Integration category in the video, listing Edge Recording, I/O module, Joystick, and Transactions](/docs-static/img/2026/10/synology-surveillance-station-ip-cameras/application-center-device-integration.jpg)
+
+There's a lot more: access control, video analytics, large-scale deployment (CMS, which is now built in rather than an Application Center item), archiving, and downloads for the PC and mobile apps.
+
+### DS cam and Surveillance Station Client
+
+On my phone I use **DS cam** ([iOS](https://apps.apple.com/us/app/ds-cam/id349087111), [Android](https://play.google.com/store/apps/details?id=com.synology.DScam)). It has basically everything I need: live view, moving the cameras around, two-way audio, snapshots, and so on. Synology also has **LiveCam**, which turns a phone into a camera for Surveillance Station. I hadn't tried it yet when I recorded.
+
+DS cam signs in with your NAS address or a QuickConnect ID, and it supports HTTPS. You can also set a lower-quality stream profile for mobile viewing so it doesn't buffer on cellular. If you want a desktop app instead of the browser, there's **Synology Surveillance Station Client** for Windows 10 and macOS 11 or later.
+
+<Warning>
+Don't port-forward Surveillance Station or your cameras to the internet. Use QuickConnect with HTTPS, or better, a VPN. I've got guides for [self-hosting NetBird with Pocket ID](/self-host-netbird-pocketid) and [Twingate](/twingate-remote-access-home-server) if you want remote access done properly. Also give the cameras' own logins strong passwords, since they're devices on your network too.
+</Warning>
+
+## My Take
+
+For something that's built right into my Synology NAS, the amount of functionality here is really impressive. Camera controls, two-way audio, PTZ, a synced multi-camera timeline, maps, and a solid mobile app. And it's a one-time license fee rather than another monthly subscription, which was the whole reason I left Wyze.
+
+The downsides are obvious: you need a Synology, it isn't open source, and once you go past your free licenses, every camera costs money.
+
+I know some of you are going to bring up free and open source options. I have a Proxmox container set up and I'd love to test some alternatives, so let me know what you use for your home security system. Also, one nice thing about real IP cameras like these Amcrest ones: they aren't locked to Synology. If you ever move away from Surveillance Station, you can connect them to whatever IP camera software you want.
+
+With all that, I do hope you found this helpful. Have a great one.
+
+## Official References
+
+- [Surveillance Station overview](https://www.synology.com/en-global/surveillance)
+- [Surveillance Station release notes](https://www.synology.com/en-global/releaseNote/SurveillanceStation)
+- [Surveillance Station technical specifications](https://www.synology.com/en-global/dsm/software_spec/surveillance_station)
+- [Surveillance Device License Pack](https://www.synology.com/en-global/products/Device_License_Pack)
+- [Help: License](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/license?version=9)
+- [Help: IP Camera](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/ip_camera?version=9)
+- [Help: Add Third-Party Camera](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/add_3rd_camera?version=9)
+- [How do I add an unsupported IP camera to Surveillance Station?](https://kb.synology.com/en-global/Surveillance/tutorial/How_to_make_an_attempt_to_install_an_unsupported_IP_camera_in_Surveillance_Station)
+- [Help: Recording settings](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/recording_settings_recording?version=9)
+- [Help: Recording schedule](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/recording_settings_sche?version=9)
+- [Help: Monitor Center](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/monitor_center?version=9)
+- [Help: Edge Recording](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/edge_storage?version=9)
+- [Help: Cloud Backup (Surveillance365)](https://kb.synology.com/en-global/SurveillanceStation/help/SurveillanceStation/cloud_backup?version=9)
+- [What happens after C2 Backup for Surveillance reaches end of life](https://kb.synology.com/en-global/C2/tutorial/EOL_C2_Backup_for_Surveillance)
+- [Help: DS cam for iOS](https://kb.synology.com/en-global/SurveillanceStation/help/DScam/iPhone?version=9)
+- [Synology mobile surveillance apps](https://www.synology.com/en-global/surveillance/feature/mobile)
+- [IP camera support list](https://www.synology.com/en-global/compatibility/camera)

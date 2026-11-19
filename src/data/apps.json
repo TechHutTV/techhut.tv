@@ -2185,7 +2185,9 @@
     "name": "Synology Surveillance Station",
     "category": "Automation",
     "description": "Manage IP cameras, recordings and surveillance events on a Synology NAS.",
-    "coverage": [],
+    "coverage": [
+      "/synology-surveillance-station-ip-cameras"
+    ],
     "videos": [
       {
         "id": "cw1TQpeHBIc",
