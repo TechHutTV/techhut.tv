@@ -1,0 +1,437 @@
+export const title = "Ultimate Home Server Part 2: A Jellyfin Media Server VM on Proxmox"
+export const description = "Create an Ubuntu Server VM on Proxmox, pass through Intel Quick Sync, mount the Samba data share, and run Jellyfin with Docker Compose and hardware transcoding."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Homelab", "Self-Host", "Docker", "Linux", "Virtualization"]
+export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="Vwtx_dfYrtA" title="TechHut's Jellyfin media server VM walkthrough" />
+
+<Note>
+**The Ultimate Home Server series**
+
+1. [Part 1: Proxmox, ZFS, and Samba shares](/ultimate-home-server-part-1-proxmox-zfs-samba)
+2. **Part 2: Jellyfin media server VM**
+3. [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack)
+4. [Part 4: SSL certificates on everything](/ultimate-home-server-part-4-ssl-certificates)
+</Note>
+
+In [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) we built the foundation: a Proxmox node, ZFS storage, and a container sharing a `data` folder over Samba. Now it's time to put something fun on top of it. In this part we create a dedicated virtual machine, get Ubuntu Server and Docker running, pass through Intel Quick Sync, mount the data share, and spin up Jellyfin with working hardware transcoding.
+
+The last time I did this series, the media server was Plex. With the direction Plex has been heading, I can't recommend it as enthusiastically as I used to, so this time it's Jellyfin. If you still prefer Plex, I keep a [Plex folder](https://github.com/TechHutTV/homelab/tree/main/media/plex) in my homelab repo, and the process is almost identical.
+
+Skillshare sponsored the video this article is based on.
+
+The written steps have been updated for [Jellyfin 12.2](https://github.com/jellyfin/jellyfin/releases/tag/v12.2), released October 5, 2026, and [Ubuntu Server 26.04.1 LTS](https://ubuntu.com/download/server). They also follow the current version of my [Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin), which now use a credentials file for the share mount. I recorded the video in May 2025, so a few screens may look different, and I've marked where current advice differs from what I did on camera.
+
+## What We're Building
+
+Here's how the pieces fit together by the end of this part:
+
+| Piece | Where it lives | What it does |
+|---|---|---|
+| Media container (`100` from Part 1) | Proxmox LXC | Holds the ZFS-backed `data` folder and shares it over Samba |
+| `servarr` VM | Proxmox VM running Ubuntu Server | Runs Docker, Jellyfin now, and the \*arr stack in Part 3 |
+| `/data` | Samba share mounted in the VM | Movies, shows, music, and later downloads |
+| `/docker` | The VM's local disk | Compose files and app configuration |
+| Intel iGPU | Passed through to the VM | Quick Sync hardware transcoding for Jellyfin |
+
+I called the VM **servarr** because it's going to hold all the \*arr applications as well as the media server.
+
+## Why a VM This Time
+
+I'll be honest: my main Proxmox server doesn't follow best practices. I run Jellyfin, Plex, and a pile of Docker containers in an unprivileged LXC. It works for me, but it isn't the approach Proxmox recommends. Their [container documentation](https://pve.proxmox.com/pve-docs/chapter-pct.html) still says that nesting containers inside a QEMU VM is the recommended practice when you need maximum isolation or live migration.
+
+I ran a poll on YouTube asking how you all do it. The results were pretty split, but the general consensus was that a guide should follow best practices. So that's what we're doing: Docker runs in a VM, and the VM mounts the share from Part 1.
+
+If you'd rather keep everything in the LXC from Part 1, you can skip the VM sections and start at the Jellyfin installation. You'll need some extra steps to get Quick Sync working in an unprivileged container. Those are in [my Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin) and the [Proxmox LXC section of Jellyfin's Intel guide](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/intel). Either way, I recommend Docker over a direct system installation of Jellyfin because you run into fewer permission issues, though my notes cover both.
+
+## Create the Virtual Machine
+
+### Download Ubuntu Server to Proxmox
+
+Use whatever server distribution you're most comfortable with. Mine is Ubuntu Server. On the [Ubuntu Server download page](https://ubuntu.com/download/server), right-click the download button and copy the link address. In Proxmox, select the storage that holds ISO images (usually `local`), open **ISO Images**, click **Download from URL**, paste the link, and download it straight to the server. Depending on your internet speed, you'll have time for a water break. Out of everything in this guide, hydration is the most important step.
+
+### VM Settings
+
+Click **Create VM** in the top-right corner and use these settings:
+
+| Tab | What I chose | Notes |
+|---|---|---|
+| General | Name: `servarr` | Name it whatever you like |
+| OS | The Ubuntu Server ISO | |
+| System | Defaults | See the passthrough note below |
+| Disks | 64 GB | Docker images and app config live here; the media stays on the share |
+| CPU | 6 cores | Four is roughly what I'd recommend for everything in this series |
+| Memory | 8192 MiB | About 8 GB |
+| Network | Default bridge (`vmbr0`) | |
+
+Confirm and click **Finish**. Don't start the VM yet.
+
+### Pass Through Intel Quick Sync
+
+Before booting the VM, give it the Intel graphics built into the CPU. That's what Jellyfin will use for hardware transcoding, and in Jellyfin it's completely free.
+
+1. Select the VM and open **Hardware**.
+2. Click **Add > PCI Device**.
+3. Choose **Raw Device** and select the Intel graphics device. On my machine it showed up as the Intel Alder Lake graphics controller. Yours may have a different name or number, but it usually mentions graphics.
+4. Check **All Functions** and click **Add**.
+
+![The Proxmox Add: PCI Device dialog with Raw Device selected and the Intel Alder Lake-UP3 GT2 Iris Xe graphics at the top of the device list](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/proxmox-add-pci-device-intel-graphics.jpg)
+
+A few things to know before you rely on this:
+
+- **IOMMU has to work on the host.** Enable VT-d in your BIOS. According to the [Proxmox passthrough documentation](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_pci_passthrough), Intel IOMMU is enabled by default on kernels 6.8 and newer, and older kernels need `intel_iommu=on`. My [storage notes](https://github.com/TechHutTV/homelab/tree/main/storage) include the `dmesg` checks.
+- **The device belongs to the VM now.** Once it's passed through, the Proxmox host and other guests, including the Part 1 container, can't use it.
+- **Machine type.** I kept the default system settings in the video, and passthrough worked. Proxmox's documentation says that PCIe passthrough, as opposed to PCI, requires the `q35` machine type and that GPUs get the best compatibility with q35 and OVMF. If the device doesn't show up in the guest, check that section.
+- **No live migration.** VMs with passed-through devices can't be live-migrated. That's not a concern on a single-node homelab.
+
+If your CPU doesn't support Quick Sync, an Intel Arc GPU is what I recommend. I'm only covering Intel here. Jellyfin's [AMD](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/amd) and [NVIDIA](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/nvidia) guides cover those cards.
+
+## Install Ubuntu Server
+
+Start the VM, open **Console**, and choose the option to install Ubuntu Server. The installer is pretty straightforward:
+
+1. Pick your language and keyboard layout. I also enabled the search for third-party drivers, which usually isn't needed.
+2. **Network:** my router assigned the VM an address ending in `.120` over DHCP. I usually like matching IPs to Proxmox IDs, but that address was taken, so I kept the one it gave me. A DHCP reservation in your router or a static IP keeps it from changing later.
+3. Skip the proxy and let it test the mirror.
+4. **Storage:** this is the one place I change something. It's just a VM, so I uncheck the option to set up the disk as an LVM group. I want the whole disk on the root mount without extra partitioning.
+5. **Profile:** set your name, a hostname (I matched it to `servarr`), a username, and a decent password.
+6. Skip Ubuntu Pro.
+7. **SSH:** select the option to install OpenSSH server. Logging in from a terminal makes copying and pasting commands much easier.
+8. Skip the featured server snaps. They're tempting, but most of them are snap packages, and we're using Docker.
+
+When **Reboot Now** appears, remove the ISO from the VM's **Hardware** tab and continue the reboot. If the installer is still stuck on the ISO, reboot the VM from Proxmox.
+
+## First Boot
+
+Log in once through the console to confirm the network is working, then switch to SSH from your own machine:
+
+```bash
+ssh your-user@10.0.0.120
+```
+
+Replace the username and IP with your own. The first thing you do on any Linux installation is update it:
+
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
+When I first logged in, I got a warning that bash couldn't change the locale. If you see something like `setlocale: LC_ALL: cannot change locale`, generate the locale it's complaining about:
+
+```bash
+sudo apt install locales
+sudo locale-gen en_US.UTF-8
+```
+
+Swap `en_US.UTF-8` for the locale named in your warning. After a round of updates, reboot once with `sudo reboot` and SSH back in.
+
+## Install Docker
+
+If Docker is new to you, my [Docker basics guide](/7-docker-basics-for-beginners) covers installation, non-root usage, and the essential commands. In short, Docker makes it easy to spin up applications without installing them directly on the host and managing their services by hand.
+
+I use Docker's convenience script. Running random scripts on your Linux machine generally isn't a good idea, so it's worth seeing what it will do before you run it. This one comes directly from Docker:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh --dry-run
+sudo sh ./get-docker.sh
+```
+
+Docker's [Ubuntu install guide](https://docs.docker.com/engine/install/ubuntu/) says the convenience script isn't recommended for production, and it isn't meant for upgrading an existing installation. If you prefer the apt-repository method, follow that page instead. Both end with the same Docker Engine and Compose plugin, and Docker currently supports Ubuntu 26.04, 24.04, and 22.04.
+
+So you don't need `sudo` for every Docker command, add your user to the `docker` group and refresh your session:
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+Do note that [Docker's post-install docs](https://docs.docker.com/engine/install/linux-postinstall/) warn that the `docker` group grants root-level privileges. Only add users you trust with root.
+
+## Check Quick Sync Inside the VM
+
+Make sure the passed-through GPU actually showed up:
+
+```bash
+ls -l /dev/dri
+```
+
+I see `card0`, `card1`, and `renderD128`. That render device is going to be our best friend because it's how Jellyfin uses Quick Sync. Your numbers may differ if you have more than one GPU.
+
+In the video I also added my user to the `render` group:
+
+```bash
+sudo usermod -aG render $USER
+```
+
+That isn't strictly required for the container we're using. LinuxServer.io's [Jellyfin image documentation](https://docs.linuxserver.io/images/docker-jellyfin/) says it automatically gives the container's user access to a mounted `/dev/dri` device. Jellyfin's [official image](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/intel) instead uses `group_add` with the host's render group ID.
+
+Now install Intel's GPU tools on the VM and check that the GPU responds:
+
+```bash
+sudo apt install intel-gpu-tools
+sudo intel_gpu_top
+```
+
+Mine showed the Intel Alder Lake graphics on `card1`. Press `Ctrl+C` to exit. We'll use this tool again when we test transcoding.
+
+## Mount the Data Share
+
+### Keep Docker Configuration Off the Share
+
+Previously I put virtual drives into LXCs. With a VM, the cleanest approach is to mount the network share from Part 1 directly.
+
+After some trial and error, I learned an important lesson: Jellyfin and some other containers don't like it when their configuration lives on a network share. It's mostly an SQLite problem. Jellyfin's [storage documentation](https://jellyfin.org/docs/general/administration/storage/) agrees: the database should be stored locally, and network storage should be mounted directly by the operating system.
+
+So the plan is:
+
+- `/data` is the Samba share with all the media.
+- `/docker` is a regular folder on the VM's own disk for compose files and configuration.
+
+Part 1 also created a `docker` share. We're not using it for container config in this VM.
+
+### Create the Folders and Set Permissions
+
+I like to keep everything in a root-level data folder, with movies, music, shows, and later downloads inside it. Using the same `/data` path on the host and in every container helps avoid path problems with download clients in Part 3. Putting Docker files in `/docker` is 100% my preference. A folder in your home directory works fine too.
+
+Check your user and group IDs. On most systems, the first user is `1000`:
+
+```bash
+id
+```
+
+Create both folders and give your user ownership. Do this before mounting the share. Once the share is mounted, ownership comes from the mount options instead of `chown`.
+
+```bash
+sudo mkdir -p /data /docker
+sudo chown -R 1000:1000 /data /docker
+```
+
+### Mount the Share with fstab
+
+Install the CIFS tools:
+
+```bash
+sudo apt install cifs-utils
+```
+
+In the video I typed the Samba username and password directly into `/etc/fstab` and mentioned that a credentials file was the better option. My notes now use the credentials file, so do that. The [mount.cifs manual](https://manpages.ubuntu.com/manpages/resolute/en/man8/mount.cifs.8.html) recommends it over keeping passwords in plain text in a shared file like `/etc/fstab`.
+
+```bash
+sudo mkdir -p /etc/samba
+sudo nano /etc/samba/credentials
+```
+
+Use the Samba user and password from Part 1:
+
+```ini
+username=your-samba-user
+password=your-samba-password
+```
+
+Lock it down so only root can read it:
+
+```bash
+sudo chmod 600 /etc/samba/credentials
+```
+
+Next, find the IP of the Part 1 container. Running `ip a` in its console works. Mine was a different address from the one in my notes, so check yours instead of copying mine. Then open `fstab`, the file that controls all the mounts on your system:
+
+```bash
+sudo nano /etc/fstab
+```
+
+Add the share at the bottom, replacing `10.0.0.100` with your container's IP:
+
+```text
+# Remote shares
+//10.0.0.100/data /data cifs x-systemd.automount,uid=1000,gid=1000,credentials=/etc/samba/credentials,iocharset=utf8 0 0
+```
+
+`uid` and `gid` make files on the share appear as owned by your user, which matches the IDs Jellyfin will run as. `x-systemd.automount` mounts the share on first access instead of during early boot. My notes added it because it prevents `mount error(111): Connection refused` when the network isn't ready yet.
+
+Reload systemd and mount everything in `fstab`:
+
+```bash
+sudo systemctl daemon-reload
+sudo mount -a
+ls /data
+```
+
+Before mounting, `/data` was just an empty folder. My share already had media on it, so now I can see `movies` and `shows`, with some pretty good stuff: some Charlie Brown, A Bug's Life, Cast Away, and Catch Me If You Can.
+
+If you're starting from the empty share in Part 1, create the folders the rest of the series uses, then copy your media into them over the network share:
+
+```bash
+mkdir -p /data/{movies,shows,music}
+```
+
+<Warning>
+The VM depends on the Part 1 container for its media. If Jellyfin shows empty libraries after a host reboot, the VM probably came up before the share. Set a **Start/Shutdown order** under each guest's **Options** in Proxmox so the media container starts first. The [startup order documentation](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_startup_and_shutdown) explains the settings. Then check `ls /data` and restart the container with `docker compose restart`.
+</Warning>
+
+## Run Jellyfin with Docker Compose
+
+Create a folder for Jellyfin inside `/docker`. This is where the compose file and its configuration will live:
+
+```bash
+mkdir -p /docker/jellyfin
+cd /docker/jellyfin
+nano compose.yaml
+```
+
+The [compose file in my repo](https://github.com/TechHutTV/homelab/blob/main/media/jellyfin/compose.yaml) also includes Jellystat. I'm skipping it here and just using the Jellyfin service. If you want Jellystat later, I have a [separate Jellystat guide](/jellystat-jellyfin-statistics).
+
+```yaml
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+      - JELLYFIN_PublishedServerUrl=http://10.0.0.120:8096 # optional
+    volumes:
+      - ./config:/config
+      - /data:/data
+    devices:
+      - /dev/dri:/dev/dri # Intel Quick Sync
+    ports:
+      - 8096:8096
+      - 7359:7359/udp # optional: client discovery
+      - 1900:1900/udp # optional: DLNA service discovery
+    restart: unless-stopped
+```
+
+Here's what to pay attention to:
+
+- **`PUID` and `PGID`:** the user and group the container runs as. I run everything as my default user, `1000:1000`, to keep permissions consistent across the server.
+- **`TZ`:** change this to your own time zone name, such as `America/New_York`.
+- **`JELLYFIN_PublishedServerUrl`:** optional. It's the address Jellyfin gives clients that find it through discovery, so use your VM's IP. I've included `:8096` because that's the port Jellyfin listens on.
+- **`./config:/config`:** creates a `config` folder next to the compose file, so mine ends up at `/docker/jellyfin/config` on the VM's local disk. LinuxServer.io notes that this folder can grow to 50 GB or more for large collections.
+- **`/data:/data`:** the mounted share appears inside the container at the same path. Every container in this series uses that same scheme.
+- **`/dev/dri`:** the GPU devices we checked earlier.
+- **Ports:** `8096` is the web interface. The two UDP ports are optional, and I usually keep them in.
+
+The ports are a little different from when I recorded the video. Jellyfin's [official container guide](https://jellyfin.org/docs/general/installation/container) only publishes `8096/tcp` and `7359/udp`. DLNA [moved to a plugin](https://jellyfin.org/docs/general/post-install/networking/dlna) in 10.9, and its discovery on port 1900 needs host networking under Docker, so publishing 1900 by itself doesn't do much. My notes say the same about client autodiscovery: Docker's port forwarding doesn't handle UDP broadcasts well. If apps don't find your server automatically, connect to `http://SERVER-IP:8096` manually or switch to `network_mode: host`.
+
+Save with `Ctrl+O` and exit with `Ctrl+X`. For the very first run, I like to start it in the foreground so any errors show up right away:
+
+```bash
+docker compose up
+```
+
+Give it a minute. Once it settles down without errors, browse to `http://10.0.0.120:8096` with your VM's IP to make sure it loads. Then press `Ctrl+C`, which stops the container, and start it again in the background:
+
+```bash
+docker compose up -d
+```
+
+Refresh the page, give it a minute, and you should see the Jellyfin welcome screen.
+
+<Note>
+Jellyfin's [networking documentation](https://jellyfin.org/docs/general/post-install/networking/) says opening a port directly to the internet is insecure and recommends a reverse proxy or VPN. Keep this LAN-only for now. Docker's install guide also warns that published container ports bypass `ufw` and `firewalld` rules. Remote access and HTTPS come later in the series.
+</Note>
+
+## The Setup Wizard
+
+The [setup wizard](https://jellyfin.org/docs/general/post-install/setup-wizard) only takes a couple of minutes:
+
+1. Pick your language.
+2. Create the administrator account with a strong password.
+3. Add your libraries. Because we mounted the data folder, the folder picker shows `/config` and `/data`. I added a **Movies** library pointing to `/data/movies` and a **Shows** library pointing to `/data/shows`. The defaults are generally a good starting point.
+4. Set your preferred metadata language and country.
+5. **Remote access.** I enabled automatic port mapping in the video. Jellyfin's current setup guide recommends keeping it disabled unless you specifically need it because it relies on UPnP, which has security concerns. I'd leave it off.
+6. Click **Finish** and sign in.
+
+![The Jellyfin setup wizard library step with a Movies library pointing to /data/movies, as shown in the video](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-wizard-media-libraries.jpg)
+
+Once it dropped me into the dashboard, my movies and shows were there, and it looks absolutely beautiful.
+
+![The Jellyfin home screen in the video with Next Up shows and recently added movies pulled from the mounted share](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-home-libraries.jpg)
+
+## Test Permissions and Hardware Transcoding
+
+I like to check the two things most likely to break before calling it done.
+
+### Write Permissions
+
+Jellyfin only needs to read your media to stream it. Write access is what lets deletes from the interface work, along with features that save files next to your media. If you want a playback-only server, mount the share read-only with `/data:/data:ro` instead. I kept write access. In the video, I deleted a movie from its menu with **Delete media**, and it was removed without any errors.
+
+That deletes the actual file on the share, not just the library entry. Test it with a throwaway file you're happy to lose, not something from your real collection. If the delete fails, recheck the `uid` and `gid` in `fstab`, the `PUID` and `PGID` in the compose file, and the Samba permissions from Part 1.
+
+### Hardware Transcoding
+
+In Jellyfin, open the **Dashboard** and go to **Playback > Transcoding**:
+
+1. Set **Hardware acceleration** to **Intel QuickSync (QSV)**.
+2. Set the QSV device to the render node, `/dev/dri/renderD128`.
+3. Leave the rest at the defaults for now and click **Save**.
+
+![Jellyfin Transcoding settings in the video with Intel QuickSync (QSV) selected and the QSV device set to /dev/dri/renderD128](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-transcoding-intel-qsv.jpg)
+
+There are a lot more settings on that page. Jellyfin's [Intel guide](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/intel) recommends unchecking codecs your GPU can't decode, and it explains low-power encoding. That mode is on by default on Linux for 12th-generation (Alder Lake) and newer GPUs, while some older generations need extra firmware setup.
+
+To test it, play something and force a transcode by picking a lower quality from the player's settings. I played some John Adams, skipped ahead, and opened **Playback Info**, which showed the stream was transcoding. Then, on the VM:
+
+```bash
+sudo intel_gpu_top
+```
+
+The video engine should be busy. If it is, Quick Sync is doing the work instead of your CPU.
+
+If you want to check the drivers from inside the container, Jellyfin documents this command for the official image. The LinuxServer.io image installs the same `jellyfin-ffmpeg` package:
+
+```bash
+docker exec -it jellyfin /usr/lib/jellyfin-ffmpeg/vainfo
+```
+
+## Already Running Jellyfin from the 2025 Video?
+
+The `latest` tag follows new releases, and Jellyfin 12.0 is a much bigger jump than the version number in the old compose file suggests.
+
+<Warning>
+According to the [Jellyfin 12.0 announcement](https://jellyfin.org/posts/jellyfin-release-12.0), you must be on 10.10.7 or any 10.11.x release to upgrade. Stop Jellyfin and back up your config folder first, because a backup is the only way back. Remove third-party plugins built for 10.11 because they won't load. Don't stop the server while the first-boot migrations are running. Usernames are now case-insensitive, so two accounts that differ only by capitalization will fail the migration. Expect a slow full library scan afterward.
+</Warning>
+
+For this setup, back up `/docker/jellyfin/config` after `docker compose down`, then run `docker compose pull && docker compose up -d`. LinuxServer.io also publishes version tags if you'd rather pin a release and upgrade deliberately. Back up the configuration before every major update.
+
+## Final Thoughts
+
+My own server still runs everything in one LXC, but for a guide, this is the cleaner way to build it. The VM keeps Docker away from the Proxmox host, the media stays on the ZFS pool from Part 1, and the configuration lives on a local disk where SQLite is happy. The one thing I'd really stress is that last part: keep your container configuration off the network share. That one cost me some trial and error.
+
+Hardware transcoding came down to a handful of steps: add the PCI device, check `/dev/dri`, map it into the container, select QSV in Jellyfin, and watch `intel_gpu_top` get busy.
+
+The video was getting long, so I split the \*arr applications into their own part. All the documentation lives in my [homelab repo](https://github.com/TechHutTV/homelab), and a lot of it has improved thanks to people who submitted issues and contributions. If you find a better method or a better app, it's all open for suggestions.
+
+## Next Up
+
+In [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack), we use this same VM to run the download clients and \*arr applications. They'll share the `/data` scheme we set up here, so new media lands in the same folders Jellyfin's libraries already watch. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+
+## Official References
+
+- [My Jellyfin homelab notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin)
+- [My media server notes](https://github.com/TechHutTV/homelab/tree/main/media)
+- [My storage notes](https://github.com/TechHutTV/homelab/tree/main/storage)
+- [Jellyfin container installation](https://jellyfin.org/docs/general/installation/container)
+- [Jellyfin hardware acceleration](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/)
+- [Jellyfin Intel QSV and VA-API guide](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/intel)
+- [Jellyfin setup wizard](https://jellyfin.org/docs/general/post-install/setup-wizard)
+- [Jellyfin networking](https://jellyfin.org/docs/general/post-install/networking/)
+- [Jellyfin storage](https://jellyfin.org/docs/general/administration/storage/)
+- [Jellyfin 12.0 release announcement](https://jellyfin.org/posts/jellyfin-release-12.0)
+- [Jellyfin 12.2 release](https://github.com/jellyfin/jellyfin/releases/tag/v12.2)
+- [LinuxServer.io Jellyfin image](https://docs.linuxserver.io/images/docker-jellyfin/)
+- [Proxmox VE PCI(e) passthrough](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_pci_passthrough)
+- [Proxmox VE PCI passthrough wiki](https://pve.proxmox.com/wiki/PCI_Passthrough)
+- [Proxmox VE containers](https://pve.proxmox.com/pve-docs/chapter-pct.html)
+- [Ubuntu Server download](https://ubuntu.com/download/server)
+- [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+- [Docker post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/)
+- [mount.cifs manual](https://manpages.ubuntu.com/manpages/resolute/en/man8/mount.cifs.8.html)
