@@ -1234,7 +1234,9 @@
     "name": "MicroCloud",
     "category": "Backup & Virtualization",
     "description": "Manage containers and virtual machines across a server cluster.",
-    "coverage": [],
+    "coverage": [
+      "/microcloud-proxmox-alternative"
+    ],
     "videos": [
       {
         "id": "tSJqjZjLrig",
