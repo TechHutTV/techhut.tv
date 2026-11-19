@@ -2092,7 +2092,9 @@
     "name": "StartAllBack",
     "category": "Desktop",
     "description": "Customize the Windows Start menu, taskbar and Explorer interface.",
-    "coverage": [],
+    "coverage": [
+      "/startallback-windows-11-start-menu-taskbar"
+    ],
     "videos": [
       {
         "id": "hh5CP9sDMw4",

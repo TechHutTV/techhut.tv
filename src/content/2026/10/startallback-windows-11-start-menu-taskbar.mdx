@@ -1,0 +1,207 @@
+export const title = "StartAllBack: Fix the Windows 11 Start Menu, Taskbar, and Explorer"
+export const description = "StartAllBack brings back a classic Start menu, a more flexible taskbar, and Windows 10 or 7 style File Explorer on Windows 11. Here's how to install it, what the settings do, and what the license costs."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Windows", "Customization"]
+export const cover = "/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="hh5CP9sDMw4" title="TechHut's StartAllBack walkthrough" />
+
+So you were on Windows 10, you checked for updates, and Windows 11 was sitting there. You installed it, and now you have the new centered taskbar and the new Start menu, and maybe you're not a fan. Windows 11 does have a few options of its own. You can move the taskbar icons back to the left under **Settings > Personalization > Taskbar > Taskbar behaviors > Taskbar alignment**. Past that, there isn't much to change.
+
+That's where [StartAllBack](https://www.startallback.com/) comes in. It's a third-party tweak tool that replaces or restyles the Windows 11 Start menu, taskbar, File Explorer, and context menus, and you can mix and match the pieces you want.
+
+Skillshare sponsored the video this article is based on.
+
+StartAllBack is proprietary, paid software with a free trial. It is not open source. The video was published in November 2021, and I recorded it with StartAllBack 3.0.2. The written install steps, pricing, trial, and compatibility notes have been updated for [StartAllBack 3.9.28](https://www.startallback.com/), released October 12, 2026. The trial is longer now, the winget command has an official package ID, and a lot of options have been added since. The screenshots and hands-on impressions are from the original recording, and I've noted where things have changed.
+
+## What StartAllBack Changes
+
+StartAllBack comes from the developer behind StartIsBack, which did the same job for Windows 8 and Windows 10. The developer's site lists separate versions for each Windows release: StartIsBack for Windows 8, StartIsBack+ for 8.1, StartIsBack++ for Windows 10, and StartAllBack for Windows 11. On Windows 10, the developer points you to StartIsBack++ instead.
+
+Here's what it covers, based on the vendor's current feature list:
+
+| Area | What it does |
+|---|---|
+| Start menu | A classic two-column Start menu with one-click links to apps and system places, dropdown menus, and its own search |
+| Taskbar | Labels on task buttons, icon size and margins, top, left, or right screen edges, drag and drop onto the taskbar, centered icons with Start kept on the left, segments, dynamic translucency, auto-hide |
+| System tray | Windows 7 or 10 style corner icons |
+| File Explorer | Windows 10 Ribbon or Windows 7 Command Bar, details pane on the bottom, the classic search box, dark mode for more dialogs |
+| Context menus | Restyled classic menus that are faster on the taskbar |
+| Styling | Windows 7, Windows 8, and third-party styles, plus recoloring the blue bits of Win32 apps with your accent color |
+
+## Install StartAllBack
+
+There are two ways to get it.
+
+### Option 1: winget
+
+In the video I used winget, which is the easiest route. Windows 11 ships winget as part of the App Installer, so open Terminal or PowerShell and run:
+
+```powershell
+winget install StartIsBack.StartAllBack
+```
+
+In the video I typed `winget install startallback`. That still works because `startallback` is the package's moniker, but the full ID above is the exact match. The vendor's download section now suggests installing for all users on the PC:
+
+```powershell
+winget install StartIsBack.StartAllBack --scope machine
+```
+
+winget will ask you to agree to the source agreements the first time. The screen will probably flicker for a moment. When it settles, the taskbar icons are on the left and the Start menu is the StartAllBack one.
+
+<Note>
+The winget package can trail the website by a few releases. On October 17, 2026, the winget repository had 3.9.24, while startallback.com offered 3.9.28. StartAllBack has its own automatic updates (added in 3.6.4), so it should pick up the newer build after installing. If you want the newest version right away, use the download from the site.
+</Note>
+
+### Option 2: The installer from the website
+
+If you don't have winget, grab the installer from the **Download** button on [startallback.com](https://www.startallback.com/). The developer's site says the program is digitally signed by Stanislav Zinukhov and warns against downloading it from untrusted websites.
+
+To open the settings, right-click the Start button and choose **Properties**.
+
+## The Welcome Page and Presets
+
+The configuration window has six pages: **Welcome**, **Start Menu**, **Taskbar**, **Explorer**, **Advanced**, and **About**. Welcome gives you three presets that bundle a Start menu, taskbar, and Explorer style together:
+
+- **Proper 11**: round Start menu and taskbar elements, Windows 11 flyouts from the corner icons, and the Windows 11 Command Bar in Explorer.
+- **Kinda 10**: square Start menu and taskbar elements, Windows 10 flyouts, and the Ribbon UI in Explorer.
+- **Remastered 7**: Aero Start menu and taskbar style, Windows 7 flyouts, and a simple Explorer with the details pane on the bottom.
+
+![The StartAllBack Welcome page from the video with the Proper 11, Kinda 10, and Remastered 7 presets](/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/startallback-welcome-presets.jpg)
+
+Proper 11 gives you a Start menu that follows the traditional layout: your apps on the left, and folders, Recent Items, This PC, and settings on the right. Kinda 10 changes how the taskbar highlights running apps, swapping the Windows 11 underline for the Windows 10 square. Its Start menu is darker, with less transparency and squarer corners. It's a very clean look.
+
+Remastered 7 is the fun one. You get that glassy, classic Windows 7 look on the taskbar and the old-school orb as the Start button, and hovering over it behaves just like it did in Windows 7. I went back to Proper 11 for the rest of the video.
+
+The presets are just a starting point. Every piece can be changed on its own page.
+
+## Start Menu Settings
+
+The Start Menu page is where you customize what the menu looks like and what's in it. **Visual style** is where the mix and match comes in. For example, you can keep the Windows 11 look everywhere else but use only the Windows 7 Start menu. I left it on **Default**, which follows whatever preset you picked.
+
+Next to it are **Icon size** and **Icon count**, and below that are general options like highlighting newly installed programs, using large icons, showing items as a flyout menu, and overriding the sort order.
+
+Scroll down and you get the list of everything that can appear on the right side of the menu. Each entry can be set to **Don't display**, **Link**, or **Menu**. I know I'm never going to open the old Control Panel from there, so I set it to Don't display and freed up the space. Then I set Videos to Link so I had a shortcut to my videos folder.
+
+![The StartAllBack Start Menu page from the video with Visual style, Icon size, and Icon count, plus Don't display, Link, and Menu options for each item](/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/startallback-start-menu-items.jpg)
+
+At the bottom, **Power button default action** sets what the power button does when you click it.
+
+Since the video, the changelog has added a few Start menu options, including centering the Start menu when you use the classic taskbar (3.1) and large icons for search results and flyouts (3.8.13).
+
+## Taskbar Settings
+
+This page has some of my favorite settings. You get the same **Visual style** picker, plus **Icon size** and **Icon margins**. Icon size goes from small up to extra large, so set it based on your screen resolution. Margins let you space the icons out or pack them in tight. I stuck with medium.
+
+You can also pick the Start button icon from a row of choices, and the plus button lets you add your own. One of them is a mix of the Windows 7 orb and the Windows 11 logo. I liked the default.
+
+![The StartAllBack Taskbar page from the video with Start button choices, Combine taskbar buttons, and the Centered task icons, Dynamic transparency, and Segments options](/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/startallback-taskbar-settings.jpg)
+
+Under **Tweak behavior and superpowers** are the good ones:
+
+- **Combine taskbar buttons** controls grouping and labels.
+- **Centered task icons** is my favorite. It centers your app icons like default Windows 11 but leaves Start, Search, Widgets, and Task View on the left. I still throw my mouse into the bottom-left corner and expect the Start menu to open. On Linux, where I spend most of my time, I usually have my icons centered in a dock or a KDE Plasma panel, so this feels right.
+- **Dynamic transparency** makes the taskbar background transparent, then changes the opacity as windows get close to it.
+- **Segments** splits the taskbar into separate pieces so the middle looks more like a dock. You'll either love it or hate it. It's something I'd do in KDE Plasma on Linux, but I turned it off for the video so it wasn't distracting.
+
+### What's new on the taskbar since the video
+
+The taskbar has changed the most. Version 3.8 (July 2024) was a fully rewritten taskbar, and the [changelog](https://www.startallback.com/) since 3.0.2 adds, among other things:
+
+- **Screen edge**: the taskbar can go on the top, left, or right edge (3.2). Windows 11 itself still has no setting for this.
+- **Central segment only**: a dock-like perk that keeps only the middle segment (3.1).
+- **Grouping**: a "Never, hide labels" combine option (3.8) and an option to turn off task grouping completely, XP style (3.8.10).
+- **Auto-hide**: a "Shy" autohide perk (3.8) and a **Win+Alt+T** hotkey to toggle autohide (3.8.11).
+- **Size and floating styles**: a "Plump" taskbar option with the Windows 11 design and an Aura or Dynamic aura floating taskbar perk (3.9).
+- **System tray**: a new corner icon implementation (3.7), widgets on the right side (3.8.7), an emoji panel tray icon, and audio output selection from the tray menu (3.9.6).
+- **Thumbnails**: reorder task thumbnails by drag and drop (3.8).
+
+I haven't re-recorded with the current build, so exact labels and where each option sits may differ from my screenshots.
+
+## Explorer Settings
+
+Next up is File Explorer. By default, Windows 11 uses its new Command Bar. On the Explorer page you can switch between **Win11 Command Bar**, **Win10 Ribbon UI**, and **Win7 Command Bar**. The page says settings apply to new windows, so close Explorer and open it again after switching.
+
+With the Windows 10 Ribbon, you get the Home, Share, and View tabs back, which is probably the layout you're used to.
+
+![File Explorer with the Windows 10 Ribbon UI and Share tab after switching styles in StartAllBack, as shown in the video](/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/startallback-explorer-win10-ribbon.jpg)
+
+The Windows 7 Command Bar has a much more minimal look. Below the style picker there are a few effects: **Mica effect on top**, **Classic search box**, and **Details pane on bottom**. Under **Make it top notch** there's **Classic context menus** and **Colorize everything with accent color**. I switched back to the Windows 11 Command Bar at the end.
+
+Since the video, StartAllBack has restyled the Ribbon and Command Bar (3.4), added tabs to the classic Explorer styles (3.5), and added an option to group drives in This PC the Windows 7 way (3.9).
+
+## Accent Colors and UI Fixes
+
+**Colorize everything with accent color** is one of the coolest options. To show it, I went to **Settings > Personalization > Colors** and switched my accent color to red. I don't usually go with red, but it makes the point.
+
+Without the option, a lot of things don't follow your accent. Right-click menus were still blue, and so were the menus in Notepad. Once I turned on Colorize everything, the context menus went red, and in Notepad the highlights, check marks, and checkboxes were red too. Other apps follow along, and even the little accent lines at the bottom of the window turned red.
+
+There are also a bunch of UI fixes I can't cover one by one. One of my main complaints about Windows 11 is that parts of it look unfinished. Without StartAllBack, some menus have a really ugly, tight border around them. StartAllBack fixes that and makes them look much better.
+
+## Advanced Settings and Turning Pieces Off
+
+The **Advanced** page lets you customize appearance with custom colors, tweak some window settings, and disable StartAllBack completely for the current user. That takes effect after you sign out and back in.
+
+You don't have to use all of it. If you like the Windows 11 Start menu but want the accent colors and the centered icons with Start on the left, go to the Start Menu page and switch **Use enhanced classic start menu** off. Now clicking Start opens the stock Windows 11 menu, and everything else stays. The Taskbar page has the same kind of switch for the classic taskbar.
+
+## Windows 11 Updates and Compatibility
+
+StartAllBack hooks deep into the Windows shell, so big Windows updates can break it. The vendor doesn't publish a formal support matrix, but the changelog shows how closely it tracks Windows releases:
+
+| Version | Date | Compatibility note from the changelog |
+|---|---|---|
+| 3.7.9 | May 1, 2024 | Disabled the classic taskbar on 24H2 by default "for now" |
+| 3.8 | July 31, 2024 | Support for the latest 23H2 and 24H2 builds, marked as required for the August Windows updates |
+| 3.9.9 | May 20, 2025 | Compatibility fix for the May and later Windows updates |
+| 3.9.15 | September 4, 2025 | Support for 25H2 |
+| 3.9.20 | December 9, 2025 | Fix for an old 24H2 incompatibility |
+| 3.9.26 | September 21, 2026 | Formal support for 26H2 |
+| 3.9.27 | September 24, 2026 | Fix for dark mode broken by 26H2 features |
+
+So keep StartAllBack updated, especially before or right after a Windows feature update, and expect older versions to have problems on newer Windows builds. Insider builds get fixes regularly too, but they're a moving target.
+
+<Warning>
+If a Windows update leaves you with a broken shell, the FAQ says to hold the **Escape** key while signing in. That disables all of StartAllBack's functionality for that session so you can update or uninstall it. To uninstall, use **Control Panel > Programs and Features** (or **Settings > Apps**), or run `winget uninstall StartIsBack.StartAllBack`.
+</Warning>
+
+## Price, Trial, and License
+
+In the video I opened the About page, which showed version 3.0.2 and a 30-day trial. I guessed the license was about five bucks, and that's still the case.
+
+![The StartAllBack About page from the video showing version 3.0.2, 30 trial days left, and the license key field](/docs-static/img/2026/10/startallback-windows-11-start-menu-taskbar/startallback-about-trial.jpg)
+
+Here's what the vendor lists today (checked October 17, 2026):
+
+- **Personal license:** $4.99 for 1 PC, $8.99 for 2 PCs, or $11.99 for 3 PCs. The **Purchase license key** link on startallback.com goes to the [buy page on startisback.com](https://www.startisback.com/#buy-tab), and keys are emailed after payment.
+- **Business license:** required for business use. It's sold in packs, starting at $50 for 10 PCs.
+- **Trial:** the trial is longer than it was in the video. The StartAllBack changelog says it went from 30 to 100 days in version 3.3.3 (March 2022). The FAQ on startisback.com, which covers both products, still says 30 days, so check the About page for your actual count.
+- **After the trial:** in the video I said I was pretty sure it just stops working. According to the FAQ, it keeps running in a limited mode instead. The Start menu goes blank, and you get a reminder every boot that the evaluation is over.
+
+A few license terms are worth knowing before you buy:
+
+- The [personal license agreement](https://www.startisback.com/license.txt) covers both StartIsBack and StartAllBack. It's for personal use on computers you own or are responsible for. It doesn't cover multi-user Remote Desktop servers or public machines like kiosks, and you can't share or resell the key.
+- Activation is online and ties the license to your PC's motherboard and system disk serial numbers, sent as hashes. Replace both and it counts as a new PC.
+- The FAQ says licenses never expire, but new versions for a new Windows release or upgrades may require a paid license upgrade.
+- According to the FAQ, StartAllBack only contacts the activation service when you activate, plus its update check.
+
+## Final Thoughts
+
+StartAllBack is a really cool utility. It goes way beyond swapping the Start menu. You get a better taskbar, your choice of Explorer, accent colors that apply to the whole system, and fixes for a lot of rough edges in Windows 11. And you can turn off whatever you don't need.
+
+My only real complaint is that there's no free tier. It would be nice if the basics were free and the more advanced options were locked behind the license. Still, about five bucks isn't bad at all, and I said I'd probably buy it if I kept using it. This Windows install was on a separate drive because I needed it for ArcGIS Pro, so I didn't plan to live in it full time.
+
+If Windows 11's interface is what's keeping you from enjoying it, try the trial and see if it fixes things for you.
+
+## Official References
+
+- [StartAllBack home, download, and changelog](https://www.startallback.com/)
+- [StartIsBack and StartAllBack FAQ, licensing, and purchase](https://www.startisback.com/)
+- [Buy a license](https://www.startisback.com/#buy-tab)
+- [Personal Edition license agreement](https://www.startisback.com/license.txt)
+- [StartAllBack winget manifests](https://github.com/microsoft/winget-pkgs/tree/master/manifests/s/StartIsBack/StartAllBack)
+- [Use WinGet to install and manage applications (Microsoft Learn)](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
+- [Customize the taskbar in Windows (Microsoft Support)](https://support.microsoft.com/en-us/windows/customize-the-taskbar-in-windows-0657a50f-0cc7-dbfd-ae6b-05020b195b07)
