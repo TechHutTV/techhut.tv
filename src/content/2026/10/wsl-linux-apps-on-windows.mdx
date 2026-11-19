@@ -1,0 +1,301 @@
+export const title = "WSL Setup Guide: Run Linux Apps on Windows"
+export const description = "Install the Windows Subsystem for Linux with one command, add Ubuntu and Debian, run Linux GUI apps like GIMP and Kate from the Start menu, and learn the WSL commands worth knowing."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Windows", "Linux", "Terminal"]
+export const cover = "/docs-static/img/2026/10/wsl-linux-apps-on-windows/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="loDOloG8doY" title="TechHut's WSL setup walkthrough" />
+
+Today we're installing real Linux applications inside Windows. Not a full virtual machine you have to babysit, not a dual boot, just Linux command-line tools and graphical apps running side by side with your Windows programs. The thing that makes this work is the Windows Subsystem for Linux, or WSL. (While I recorded the intro, my lizard Henry was freaking out and messing up the audio. Hi, Henry.)
+
+Linode sponsored the video this article is based on.
+
+I recorded the video in early 2022 on Windows 11, back when WSLg, the part of WSL that runs Linux GUI apps, was still pretty new. The written steps have been updated against Microsoft's current documentation and [WSL 3.0.3](https://github.com/microsoft/WSL/releases), the latest release as of October 2026. A few things have changed: `wsl --install` now gives you a much newer Ubuntu, GUI apps work on Windows 10 too, systemd is on by default in Ubuntu, one of the commands I showed has been removed, and WSL itself is now open source. My hands-on impressions all come from the original recording, and I've called out the spots where things look different now.
+
+## What WSL Is
+
+WSL is a compatibility layer built into Windows that lets you install a Linux distribution (Ubuntu, Debian, Fedora, Arch, openSUSE, Kali, and others) and run its tools and apps unmodified. With WSL 2, which is the default, each distro runs on a real Linux kernel inside a lightweight utility VM that Windows manages for you. You don't create the VM or configure it. You just open Ubuntu like any other app.
+
+Here is what you get:
+
+| Feature | What it means for you |
+|---|---|
+| Real Linux userland | `apt`, `dnf`, `pacman`, Bash, and whatever else the distro ships |
+| WSLg | Linux GUI apps (X11 and Wayland) open in normal Windows windows, show up in the Start menu, and work with Alt+Tab and copy and paste |
+| Audio | WSLg runs a PulseAudio server, so Linux apps can use your speakers and microphone |
+| File interop | Your Windows drives are mounted at `/mnt/c`, `/mnt/d`, and so on, and Linux files are reachable from File Explorer |
+| Command interop | Run Linux commands from PowerShell with `wsl <command>`, and Windows programs from Linux with `<program>.exe` |
+
+### WSL is open source now
+
+This is a big one that happened after the video. In May 2025, Microsoft [open sourced WSL](https://blogs.windows.com/windowsdeveloper/2025/05/19/the-windows-subsystem-for-linux-is-now-open-source/) and published the code in the [microsoft/WSL](https://github.com/microsoft/WSL) repository under the MIT license. That covers `wsl.exe`, `wslconfig.exe`, `wslg.exe`, the WSL service, and the Linux-side init and networking daemons. [WSLg](https://github.com/microsoft/wslg) and the [WSL2 kernel](https://github.com/microsoft/WSL2-Linux-Kernel) were already open. A few pieces are still closed: `lxcore.sys` (the WSL 1 driver) and the components behind the `\\wsl.localhost` file redirection.
+
+## Requirements
+
+- **Windows 11, or Windows 10 version 2004 (build 19041) or newer** for the one-command install. Older builds need the [manual install steps](https://learn.microsoft.com/en-us/windows/wsl/install-manual).
+- **Windows 10 build 19044+ or Windows 11** for Linux GUI apps.
+- **Virtualization enabled in your BIOS/UEFI.** WSL 2 is VM-based, and the CPU needs Second Level Address Translation (SLAT). Microsoft notes that very old chips like the Core 2 Duo can't run WSL 2. If the install fails with `0x80370102`, virtualization is usually turned off in the firmware.
+- **Current GPU drivers** from Intel, AMD, or NVIDIA, so GUI apps get hardware-accelerated OpenGL through the virtual GPU. Microsoft's [GUI apps guide](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps) links each vendor's download page.
+
+## Install WSL
+
+Open the Start menu, search for **Terminal** (or PowerShell), right-click it, and choose **Run as administrator**. Then run:
+
+```powershell
+wsl --install
+```
+
+In the video I typed `wsl.exe --install`, which is the same thing. According to [Microsoft's setup guide](https://learn.microsoft.com/en-us/windows/wsl/setup/environment), this one command:
+
+- Enables the WSL and Virtual Machine Platform components
+- Downloads and installs the latest WSL Linux kernel
+- Sets WSL 2 as the default
+- Downloads and installs Ubuntu
+
+In the video, it worked through the Virtual Machine Platform and the WSL kernel, then said the changes wouldn't take effect until a reboot. Close the terminal and restart.
+
+<Note>
+`wsl --install` with no options only does the full setup when WSL isn't installed yet. If you get the help text instead, WSL is already there. Run `wsl --list --online` and install a distro by name with `wsl --install -d <DistroName>`. If a download hangs at 0.0%, add `--web-download`.
+</Note>
+
+### Create your Linux user
+
+After the reboot, an Ubuntu console window opens and asks you to create a Unix username and password. I went with `brandon`. This account is separate from your Windows login, it gets `sudo` rights, and each distro you install has its own. Nothing shows up on screen while you type the password, which is normal. Pick something strong.
+
+When I made the video, this gave me Ubuntu 20.04 LTS on a 5.10 kernel. Today the default `Ubuntu` entry installs **Ubuntu 26.04 LTS**, and WSL 3.0.3 ships a 6.18 kernel.
+
+### Open it from the Start menu or Windows Terminal
+
+Once the setup is done you can close that window. Ubuntu shows up as its own app in the Start menu, so search for it and you're right back in.
+
+I prefer Windows Terminal. Click the down arrow next to the tabs and Ubuntu is in the list of profiles. Every distro you install gets its own profile automatically, which makes jumping between PowerShell and Linux really easy.
+
+![The Windows Terminal new-tab dropdown with an Ubuntu profile listed under Azure Cloud Shell, as shown in the video](/docs-static/img/2026/10/wsl-linux-apps-on-windows/windows-terminal-ubuntu-profile.jpg)
+
+## First Steps Inside Ubuntu
+
+The most important thing with any fresh Ubuntu install is to refresh the package lists before you do anything else. I forgot and went straight for an install in the video, so learn from me:
+
+```bash
+sudo apt update && sudo apt upgrade
+```
+
+Windows won't update your Linux packages for you, so run that every so often.
+
+In the video I installed neofetch to show the system info. Neofetch is no longer maintained and isn't in Ubuntu 26.04, so use fastfetch instead:
+
+```bash
+sudo apt install fastfetch
+fastfetch
+```
+
+In the video, Neofetch picked up all my hardware correctly. One thing I noticed: by default WSL gave Ubuntu half of my system RAM. That's still the default (50% of your Windows memory), and you can change it, which I'll get to below.
+
+`top` works too, and it shows just what's running inside this Linux environment.
+
+## Windows and Linux, Talking to Each Other
+
+This is where WSL gets fun. From PowerShell, run `pwd` and you get your Windows path, something like `C:\Users\<you>`. Now put `wsl` in front of it:
+
+```powershell
+pwd
+wsl pwd
+```
+
+The second one runs the Linux `pwd` in the same folder and prints `/mnt/c/Users/<you>`. Your Windows drive is mounted inside Linux like a separate partition, so it's easy to reach Windows files from Linux and the other way around.
+
+A few more examples from Microsoft's [file systems guide](https://learn.microsoft.com/en-us/windows/wsl/filesystems):
+
+```powershell
+# Linux ls, filtered by the Windows findstr
+wsl ls -la | findstr "git"
+
+# Windows dir, filtered by Linux grep
+dir | wsl grep git
+```
+
+And from inside Linux:
+
+```bash
+# Open the current Linux folder in File Explorer
+explorer.exe .
+
+# Run a Windows program (wslpath converts the Linux path to one Windows understands)
+notepad.exe "$(wslpath -w ~/.bashrc)"
+```
+
+You can also type `\\wsl$` in the File Explorer address bar to browse every distro's file system.
+
+<Note>
+Cross-OS file access is convenient but slow. If you're working with Linux tools, keep your projects in your Linux home folder (`/home/<you>`), not under `/mnt/c`. If you're working with Windows tools, keep them on the Windows side.
+</Note>
+
+## Installing More Distros
+
+`wsl --install` gives you Ubuntu, but there's a whole list to choose from:
+
+```powershell
+wsl --list --online
+```
+
+That's `wsl -l -o` for short. As of this writing the list includes several Ubuntu LTS releases, Debian, Arch Linux, Fedora, openSUSE Tumbleweed and Leap, Kali, AlmaLinux, and a few enterprise distros.
+
+In the video I added Debian alongside Ubuntu:
+
+```powershell
+wsl --install -d Debian
+```
+
+It downloads, sets itself up, and opens a new window asking for a username and password, just like Ubuntu did. To get the new profile in Windows Terminal I had to close the terminal completely and reopen it. After that the dropdown showed both Ubuntu and Debian.
+
+To see what you have installed and which WSL version each one uses:
+
+```powershell
+wsl --list --verbose
+```
+
+## Running Linux GUI Apps
+
+Now for the fun part. Back in Ubuntu, I installed gedit:
+
+```bash
+sudo apt install gedit
+gedit
+```
+
+It opened as a normal window on my Windows desktop. Tabs, typing, all of it works like it would on a Linux desktop. The save dialog shows both worlds: `/mnt/c/Users/Brandon Hopkins` for my Windows files and `/home/brandon` for my actual Linux home folder.
+
+![The gedit save dialog in the video browsing the Windows user folder through the mnt, c, Users path](/docs-static/img/2026/10/wsl-linux-apps-on-windows/gedit-save-dialog-windows-files.jpg)
+
+gedit is still in the Ubuntu 26.04 archive, but it's no longer GNOME's default editor. Microsoft's [GUI apps guide](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps) now uses GNOME Text Editor:
+
+```bash
+sudo apt install gnome-text-editor
+gnome-text-editor ~/.bashrc
+```
+
+### GIMP
+
+Next I tried something heavier:
+
+```bash
+sudo apt install gimp
+gimp
+```
+
+Since I launched it from the terminal, I saw a pile of GTK warnings scroll by. Ignore them. GIMP opened fully and ran well. I tried **Filters > Render > Lava**, which is one of the more demanding filters, and it finished without any trouble. Performance was genuinely good.
+
+![GIMP running through WSLg in the video with the Lava render filter applied to a 1920x1080 canvas](/docs-static/img/2026/10/wsl-linux-apps-on-windows/gimp-lava-filter.jpg)
+
+The best part is that WSL adds Start menu entries for the Linux apps you install. After installing GIMP, **GNU Image Manipulation Program** showed up in my Start menu, and I could launch it straight from Windows without opening a terminal. I also installed Kate, and it showed up the same way. That's the screen on the thumbnail: Ubuntu, Debian, Text Editor, Kate, and GIMP pinned next to each other.
+
+![The Windows 11 Start menu in the video showing GNU Image Manipulation Program and Ubuntu entries like Text Editor under Recommended](/docs-static/img/2026/10/wsl-linux-apps-on-windows/start-menu-linux-apps.jpg)
+
+```bash
+sudo apt install kate
+```
+
+### What works and what doesn't
+
+WSLg uses a Weston compositor with XWayland behind the scenes and passes windows to Windows over RDP, so both X11 and Wayland apps work. Audio works through a PulseAudio server, so a media player can use your speakers and an app can use your microphone.
+
+It is not a full Linux desktop, though. Microsoft says desktop-focused tools may not work, because everything runs on the Windows desktop. In the video I said the only time you're likely to hit problems is with something unsupported, and GIMP's GTK warnings were about as rough as it got for me.
+
+GUI apps only work on WSL 2 distros. If you have an old WSL 1 install, convert it with `wsl --set-version <Distro> 2`.
+
+## WSL Commands Worth Knowing
+
+These run from PowerShell or Command Prompt. From inside Linux, use `wsl.exe` instead of `wsl`. The full reference is on Microsoft's [basic commands page](https://learn.microsoft.com/en-us/windows/wsl/basic-commands).
+
+| Command | What it does |
+|---|---|
+| `wsl --update` | Update WSL to the latest version |
+| `wsl --update --pre-release` | Grab a preview build if one is available |
+| `wsl --version` | Show WSL, kernel, and WSLg versions |
+| `wsl --status` | Show your default distro and settings |
+| `wsl --shutdown` | Stop every running distro and the WSL 2 VM |
+| `wsl --terminate <Distro>` | Stop one distro |
+| `wsl --set-default <Distro>` | Change which distro plain `wsl` opens (for example `wsl --set-default Debian`) |
+| `wsl -d <Distro>` | Run a specific distro without changing the default |
+| `wsl ~` | Start in your Linux home folder |
+| `wsl --export <Distro> <file.tar>` | Back up a distro to a file |
+| `wsl --import <Name> <InstallFolder> <file.tar>` | Restore or clone a distro from a file |
+| `wsl --unregister <Distro>` | Delete a distro and all its data |
+| `wsl --mount <Disk>` | Attach a physical disk to WSL 2 (admin required) |
+
+A few notes:
+
+- **`--rollback` is gone.** In the video I showed `wsl --update --rollback` for undoing a bad update. Current WSL comes from the Microsoft Store package, and `--rollback` isn't in the help text anymore. The only `--update` option it lists now is `--pre-release` (Microsoft's docs also mention `--web-download`).
+- **`--unregister` is permanent.** Everything in that distro is deleted. Export it first if you care about anything in there.
+- **`--mount` isn't for USB sticks.** It attaches whole internal disks, mostly so you can read ext4 drives that Windows can't, and doesn't currently support USB or SD card readers. See the [mount guide](https://learn.microsoft.com/en-us/windows/wsl/wsl2-mount-disk) before you try it.
+
+Lots of Windows apps can also talk to WSL directly. VS Code is the obvious one: with the [WSL extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) installed, run `code .` in a Linux folder and VS Code opens it with the Linux tools.
+
+## Changes Since the Video
+
+### systemd works
+
+In 2022, WSL didn't run systemd, which meant snaps and anything that wanted `systemctl` didn't work. Now it's supported, and it's the default for the current Ubuntu that `wsl --install` gives you. For other distros, like the Debian install above, you turn it on in `/etc/wsl.conf`:
+
+```bash
+sudo nano /etc/wsl.conf
+```
+
+Add:
+
+```ini
+[boot]
+systemd=true
+```
+
+Then restart WSL from PowerShell:
+
+```powershell
+wsl --shutdown
+```
+
+Open the distro again and check with `systemctl status`. On Debian, Microsoft's [systemd guide](https://learn.microsoft.com/en-us/windows/wsl/systemd) also says to make sure the `systemd` and `systemd-sysv` packages are installed.
+
+### Tuning memory and CPU
+
+WSL now has a **WSL Settings** app in the Start menu, and Microsoft recommends using it rather than editing config files by hand. If you prefer the file, global settings live in `%UserProfile%\.wslconfig`:
+
+```ini
+[wsl2]
+memory=8GB
+processors=4
+```
+
+Pick values that fit your machine. Run `wsl --shutdown` afterward, and per Microsoft's [config docs](https://learn.microsoft.com/en-us/windows/wsl/wsl-config), give it about eight seconds to fully stop before you relaunch.
+
+### WSL containers
+
+Recent versions of WSL include `wslc.exe`, a built-in CLI for running Linux containers on Windows. It needs WSL 2.9.3 or newer, and the 3.0.1 release marked it generally available. If you're curious, Microsoft's [WSL container page](https://learn.microsoft.com/en-us/windows/wsl/wsl-container) has the details.
+
+## My Take
+
+Setting this up really is one command and a reboot. You get a real Ubuntu terminal inside Windows Terminal, Linux commands from PowerShell, and GUI apps like GIMP and Kate sitting in the Start menu next to your Windows apps. That last part is super cool to me. GIMP performed well, and the only rough edge I hit was some noisy GTK warnings in the terminal.
+
+There's a lot more you can do than what I showed, especially once you start pointing tools like VS Code at your Linux environment. The command reference and the GUI apps guide linked below are the best places to keep going. If you're already on Linux and want the same trick for other distros, check out my [Distrobox guide](/distrobox-linux-containers-guide). It's basically a Linux subsystem for other Linux distributions.
+
+## Official References
+
+- [Install WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
+- [Manual install steps for older Windows versions](https://learn.microsoft.com/en-us/windows/wsl/install-manual)
+- [Set up a WSL development environment](https://learn.microsoft.com/en-us/windows/wsl/setup/environment)
+- [Basic commands for WSL](https://learn.microsoft.com/en-us/windows/wsl/basic-commands)
+- [Run Linux GUI apps with WSL](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
+- [Working across file systems](https://learn.microsoft.com/en-us/windows/wsl/filesystems)
+- [Use systemd with WSL](https://learn.microsoft.com/en-us/windows/wsl/systemd)
+- [Advanced settings configuration (wsl.conf and .wslconfig)](https://learn.microsoft.com/en-us/windows/wsl/wsl-config)
+- [Mount a Linux disk in WSL 2](https://learn.microsoft.com/en-us/windows/wsl/wsl2-mount-disk)
+- [WSL container](https://learn.microsoft.com/en-us/windows/wsl/wsl-container)
+- [Troubleshooting WSL](https://learn.microsoft.com/en-us/windows/wsl/troubleshooting)
+- [The Windows Subsystem for Linux is now open source](https://blogs.windows.com/windowsdeveloper/2025/05/19/the-windows-subsystem-for-linux-is-now-open-source/)
+- [microsoft/WSL on GitHub](https://github.com/microsoft/WSL)
+- [WSL releases](https://github.com/microsoft/WSL/releases)
+- [microsoft/wslg on GitHub](https://github.com/microsoft/wslg)
