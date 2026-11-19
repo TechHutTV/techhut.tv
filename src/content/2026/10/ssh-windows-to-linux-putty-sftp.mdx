@@ -1,0 +1,312 @@
+export const title = "SSH from Windows to Linux: OpenSSH, PuTTY, and SFTP File Transfers"
+export const description = "Control a Linux server from Windows with the built-in OpenSSH client or PuTTY, move files with FileZilla or the sftp command, and set up SSH keys so you can stop typing passwords."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Windows", "Terminal", "Homelab"]
+export const cover = "/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="SNYnOYWoeAw" title="TechHut's SSH from Windows to Linux walkthrough" />
+
+I know a lot of you have to run Windows for one reason or another. Maybe you built a media server out of an old laptop running Linux, and now you want to control it and move files to it from your Windows PC. That's what this guide covers.
+
+There are four ways to do it here, and you don't need all of them:
+
+- **The built-in OpenSSH client** for a terminal session from PowerShell, Command Prompt, or Windows Terminal.
+- **FileZilla** for drag-and-drop file transfers over SFTP. This is the one I actually use for files.
+- **PuTTY**, a free and open source SSH client that makes saving connections easy.
+- **The `sftp` command** if you'd rather move files from the command line.
+
+The video was published in March 2021, with an Ubuntu 20.04 server on the Linux side. The written steps have been updated for what's current in October 2026: [PuTTY 0.85](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) (released August 16, 2026), [FileZilla Client 3.71.1](https://filezilla-project.org/) (released August 26, 2026), and the OpenSSH client in current Windows 10 and 11. I've also added a section on SSH keys, which the video didn't cover. The hands-on walkthrough and opinions come from the original recording.
+
+## What You Need
+
+| Piece | Where it runs | What it's for |
+|---|---|---|
+| OpenSSH server (`sshd`) | Linux machine | Accepts SSH and SFTP connections |
+| OpenSSH client (`ssh`, `sftp`, `ssh-keygen`) | Windows | Terminal sessions and command-line transfers |
+| [FileZilla Client](https://filezilla-project.org/) | Windows | Graphical SFTP transfers |
+| [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/) | Windows | Graphical SSH client with saved sessions |
+
+You also need the Linux machine's username and password, plus its local IP address. Everything here assumes both machines are on the same home network.
+
+## Prepare the Linux Machine
+
+The Linux side needs an SSH server. A lot of server installs already have one. The Ubuntu Server installer offers to install OpenSSH during setup, for example. Typing `ssh` in the terminal only tells you the client is there. To check for the server, ask systemd about its service. If the unit isn't found, it isn't installed:
+
+```bash
+systemctl status ssh     # Ubuntu and Debian
+systemctl status sshd    # Fedora and RHEL-based distros
+```
+
+If it isn't installed, on Ubuntu or Debian [install it with apt](https://ubuntu.com/server/docs/how-to/security/openssh-server/):
+
+```bash
+sudo apt install openssh-server
+```
+
+On Fedora, install it and enable the service:
+
+```bash
+sudo dnf install openssh-server
+sudo systemctl enable --now sshd
+```
+
+Next, get the machine's local IP address:
+
+```bash
+ip a
+```
+
+Look for the `inet` line on your main network interface, something like `192.168.1.50/24`. Throughout this guide I'll use `your-username` and `192.168.1.50` as placeholders. Swap in your own.
+
+<Note>
+In the video I connected using a local IP address. You can also connect to a hostname or domain name, but everything here stays on your home network. Don't forward port 22 on your router to reach this from outside. Use a VPN instead, like the setup in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid).
+</Note>
+
+## Method 1: The Built-in OpenSSH Client
+
+Windows has its own OpenSSH client, and it's the quickest way to get a terminal on your server.
+
+### Check that it's installed
+
+In the video I already had it. You can check under **Optional features** in Settings. On most Windows 10 and 11 PCs, **OpenSSH Client** will already be in the installed list. Microsoft's [documentation](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse) still treats it as an optional feature on desktop Windows, though, so it might be missing on yours.
+
+![The Windows 10 Optional features page in the video with OpenSSH Client already installed](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/windows-optional-features-openssh-client.jpg)
+
+The quickest test is to open PowerShell, Command Prompt, or Windows Terminal and type:
+
+```powershell
+ssh
+```
+
+If you get a usage message back, you're set. If Windows says it doesn't recognize the command, open **Settings**, search for **Optional features**, and add **OpenSSH Client**. You can also do it from an elevated PowerShell window:
+
+```powershell
+Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH.Client*'
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+```
+
+You only need the client. The OpenSSH Server feature is for when you want to SSH *into* Windows, which isn't what we're doing here.
+
+### Connect
+
+The command is `ssh`, then your Linux username, an `@`, and the server's address:
+
+```powershell
+ssh your-username@192.168.1.50
+```
+
+When I first ran this in the video, it timed out. The laptop had gone to sleep, so make sure the machine is awake and on the network before you start troubleshooting anything else.
+
+The first time you connect, SSH shows the server's key fingerprint and asks if you want to continue. Before you type `yes`, compare that fingerprint with the real one. On the server itself (at its keyboard, or anywhere you're already logged in), run:
+
+```bash
+ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub
+```
+
+If the `SHA256:` string matches what Windows is showing, type `yes`. If it doesn't, don't connect. That saves the server to your known hosts file, and you won't be asked again unless the key changes. If you get that warning for a server you've connected to before, stop and find out why before you continue.
+
+Then enter your Linux user's password, the same one you use for `sudo`. Nothing shows up while you type, and that's normal. Press Enter and you're in. In the video I got the Ubuntu 20.04 welcome banner, and from there the Windows window was a full terminal on my media server. `ls`, `cd media`, and even `htop` all worked like I was sitting at the machine.
+
+![htop running on the Ubuntu media server inside a Windows Command Prompt SSH session](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/htop-over-ssh-command-prompt.jpg)
+
+Type `exit` when you're done.
+
+## Method 2: Transfer Files with FileZilla
+
+For moving files, I really prefer a graphical interface, and FileZilla is what I'd use. I've used it forever for moving files to and from web hosting servers, and it handles SFTP, so it works with the same SSH server you just set up. No extra software is needed on the Linux side.
+
+### Download it carefully
+
+Get FileZilla from the [official site](https://filezilla-project.org/), and choose **FileZilla Client**, not FileZilla Server. The free client is all you need.
+
+<Warning>
+The big download button for Windows currently gives you an installer the site labels "This installer may include bundled offers" (the file name has `sponsored` in it). In the video, the installer offered extra software, and I declined it. That's one of the reasons I don't use Windows. To skip that entirely, click **Show additional download options** or go straight to the [full download list](https://filezilla-project.org/download.php?show_all=1). It has the plain `FileZilla_3.71.1_win64-setup.exe` installer, a portable `.zip`, and SHA-512 hashes for each file. Don't download FileZilla from third-party sites.
+</Warning>
+
+Run the installer, accept the license, and the defaults are fine. If you end up with a bundled installer anyway, read every screen and decline any offers.
+
+### Connect with Quickconnect
+
+FileZilla's **Quickconnect** bar runs across the top of the window. Fill it in like this:
+
+| Field | Value |
+|---|---|
+| Host | `sftp://192.168.1.50` |
+| Username | `your-username` |
+| Password | your Linux password |
+| Port | leave blank (SFTP defaults to 22) |
+
+The `sftp://` prefix is important. Without it, FileZilla tries plain FTP. Click **Quickconnect**.
+
+FileZilla asks if you want to remember passwords. I chose to save them in the video. If anyone else uses your PC, pick the option that protects saved passwords with a master password. Then you'll see an **Unknown host key** warning. This is the same fingerprint check SSH did in the terminal. Compare the fingerprint FileZilla shows with the output of `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on the server. Once it matches, check **Always trust this host** and click **OK**.
+
+Your local files show up on the left and your server's home folder on the right. Hidden files show up too, so expect a bunch of dotfiles. To upload, drag a file from the left side, or straight from File Explorer, onto the right. To download, drag the other way. In the video I made a quick `test.txt` and dropped it on the server, and it uploaded right away.
+
+![FileZilla connected over SFTP with the Quickconnect bar filled in, local Windows files on the left and the server's home folder on the right](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/filezilla-sftp-connected.jpg)
+
+### Save it in the Site Manager
+
+If you connect often, go to **File > Site Manager**, create a new site, set **Protocol** to **SFTP - SSH File Transfer Protocol**, and fill in the host and user. You won't have to retype it next time. Once you set up keys (covered below), you can set **Logon Type** to **Key file** here as well.
+
+## Method 3: SSH with PuTTY
+
+PuTTY is one of the most popular SSH clients on Windows, and it's free and open source under the [MIT licence](https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html). The built-in client does the same job, but PuTTY makes it easier to save connection details and juggle several servers. It has a lot more features than we'll get into here.
+
+### Get it from the real site
+
+The video description linked to `putty.org`. Don't use that. The [PuTTY FAQ](https://www.chiark.greenend.org.uk/~sgtatham/putty/faq.html#faq-putty-org) says plainly that the PuTTY team doesn't own or control `putty.org` and never has. It was set up by someone selling a competing commercial client, and in July 2025 it switched to unrelated content. The official site has always been on chiark:
+
+- [chiark.greenend.org.uk/~sgtatham/putty](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+- `putty.software`, a short domain the PuTTY team registered in August 2025 that redirects to the main site.
+
+Open the [latest release page](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) and grab the MSI for your PC. For most people that's `putty-64bit-0.85-installer.msi` (there's also an Arm64 build, plus a 32-bit build for very old systems). The PuTTY team also publishes it free in the Microsoft Store. PuTTY 0.85 fixes several security issues, so if you installed PuTTY years ago, update it.
+
+The installer is a normal Windows installer. Click through it, no README required. It installs PuTTY plus the companion tools, including PuTTYgen, Pageant, PSCP, and PSFTP.
+
+### Connect
+
+Open PuTTY. On the **Session** screen:
+
+1. Enter the server's IP in **Host Name (or IP address)**.
+2. Leave **Port** at `22` and **Connection type** on **SSH**.
+3. Click **Open**.
+
+![The PuTTY Configuration Session screen with a local IP in Host Name, port 22, and SSH selected](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/putty-configuration-session.jpg)
+
+On the first connection, PuTTY shows a security alert because it doesn't know the host key yet. Compare the fingerprint it shows with the server's, the same way as above, then click **Accept** to trust it and cache the key. Then log in at the `login as:` prompt with your username and password, the same as in the terminal.
+
+In the video, PuTTY gave me the same full Linux terminal I had in Command Prompt. `htop` ran fine, and `ls` gave away a sneak peek of a text document I'd been working on and moving around on the server.
+
+### Save the session
+
+This is the main reason to use PuTTY. Before clicking **Open**, type a name in the **Saved Sessions** box and click **Save**. Next time, double-click the name. To skip typing your username, set it under **Connection > Data > Auto-login username** before you save.
+
+## Method 4: Transfer Files with the sftp Command
+
+If you're comfortable in a terminal, you don't need FileZilla. Windows' OpenSSH client includes `sftp`, and it connects just like `ssh`:
+
+```powershell
+sftp your-username@192.168.1.50
+```
+
+Enter your password, and you get an `sftp>` prompt. Basic commands like `ls`, `cd`, and `pwd` work on the server. A few more are worth knowing:
+
+| Command | What it does |
+|---|---|
+| `get remote-file [local-path]` | Download from the server |
+| `put local-file [remote-path]` | Upload to the server |
+| `get -R` / `put -R` | Copy a whole folder |
+| `lcd path` / `lls` / `lpwd` | Change, list, or show the folder on your Windows side |
+| `mkdir path` | Make a folder on the server |
+| `exit` | Leave the session |
+
+In the video, I downloaded a movie from the server to a folder on my Windows machine. Then I uploaded an OBS recording (`.mkv`) back into my home folder on the server. The thing that tripped me up both times was spaces in file names. Put quotes around any path with spaces in it:
+
+```text
+sftp> get "media/Movies/Some Movie (2014).mp4" "C:/Users/your-windows-user/Videos/"
+sftp> put "C:/Users/your-windows-user/Videos/my recording.mkv" /home/your-username/
+```
+
+Forward slashes work fine for Windows paths here. You can also `lcd` into the Windows folder first and use plain file names. A handy trick from the video is copying the folder path out of File Explorer's address bar and pasting it in. `sftp` prints a `Fetching` line while a download runs. When an upload finishes, `ls` in the destination folder shows the new file.
+
+## Bonus: Log In with SSH Keys
+
+This part is new since the video. Passwords work, but SSH keys are more secure, and you don't have to type anything once they're set up. Everything here uses the OpenSSH tools Windows already has.
+
+### 1. Generate a key on Windows
+
+```powershell
+ssh-keygen -t ed25519
+```
+
+Press Enter to accept the default location (`C:\Users\your-windows-user\.ssh\id_ed25519`), then set a passphrase. Use one. The passphrase protects the private key if someone copies it off your PC. You get two files:
+
+- `id_ed25519` is your **private** key. It never leaves your PC. Treat it like a password.
+- `id_ed25519.pub` is your **public** key. This is the one you copy to servers.
+
+### 2. Copy the public key to the server
+
+Windows doesn't include `ssh-copy-id`, so pipe the key over SSH instead. From PowerShell:
+
+```powershell
+type $env:USERPROFILE\.ssh\id_ed25519.pub | ssh your-username@192.168.1.50 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+```
+
+This asks for your password one last time and adds the key to `~/.ssh/authorized_keys` on the server. Now `ssh your-username@192.168.1.50` asks for your key's passphrase instead of your account password. `sftp` uses the same key automatically.
+
+### 3. Optional: let ssh-agent remember the passphrase
+
+The Windows `ssh-agent` service is disabled by default. To use it, open PowerShell as administrator once:
+
+```powershell
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+```
+
+Then, as your normal user:
+
+```powershell
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+```
+
+You type the passphrase once, and the agent handles it for future connections. Microsoft covers this in its [key-based authentication docs](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement).
+
+### 4. Use the same key in PuTTY and FileZilla
+
+- **PuTTY** uses its own `.ppk` key format. Open **PuTTYgen**, choose **Conversions > Import key**, select `id_ed25519`, and click **Save private key** to write a `.ppk` file. In PuTTY, load it under **Connection > SSH > Auth > Credentials** in the **Private key file for authentication** field, then save your session.
+- **FileZilla**: in the Site Manager, set **Logon Type** to **Key file** and point it at your private key. The [FileZilla wiki](https://wiki.filezilla-project.org/Howto) says it accepts PuTTY `.ppk` and OpenSSH-format keys.
+
+### 5. Optional: turn off password logins
+
+Once keys work, you can stop the server from accepting passwords at all. **Keep your current SSH session open** while you do this, and test from a second window before you log out.
+
+```bash
+printf 'PasswordAuthentication no\nKbdInteractiveAuthentication no\n' | sudo tee /etc/ssh/sshd_config.d/01-no-passwords.conf
+sudo sshd -t
+sudo systemctl restart ssh     # use sshd on Fedora
+```
+
+`KbdInteractiveAuthentication` matters too. It's a separate login method that, according to `man sshd_config`, defaults to `yes`, and it can still prompt for a password even with `PasswordAuthentication no`. `sshd -t` checks the config for errors before you restart.
+
+OpenSSH uses the first value it finds for a setting, and the drop-in files in `/etc/ssh/sshd_config.d/` are read in name order. On Ubuntu, files like `50-cloud-init.conf` can turn passwords back on, and the `01-` prefix makes this file win over them. To confirm what the server is actually using, check the effective config:
+
+```bash
+sudo sshd -T | grep -Ei 'passwordauthentication|kbdinteractive'
+```
+
+Both should say `no`. Keep your original session open, then try a fresh login from a second window before you close it.
+
+<Warning>
+If your key doesn't work and password logins are off, you'll be locked out over SSH and need a keyboard and monitor on the server to fix it. Test first.
+</Warning>
+
+## A Note for Linux Desktops
+
+If your other computer runs Linux, all of this is easier. `ssh` and `sftp` work the same way in the terminal. For files, most file managers, like Dolphin on KDE or Thunar, let you type an `sftp://your-username@192.168.1.50` address into the location bar and browse the server like any other folder. No separate app needed.
+
+## Final Thoughts
+
+For a Windows PC and a Linux server, this is how I'd do it: the built-in SSH client for quick terminal work and FileZilla for moving files. If I were forced to use Windows, FileZilla is how I'd send files to and pull them from my media server. If you manage a few machines and want saved logins, PuTTY is still a great free option. Just get it from the real site. And if you live in a terminal anyway, `sftp` with `get` and `put` does the job without installing anything.
+
+Whichever you pick, take a few minutes to set up SSH keys. It's the biggest upgrade over what I showed in the video. If you still need a server to connect to, my [old PC or laptop media server guide](/old-pc-laptop-media-server) is a good starting point.
+
+## Official References
+
+- [PuTTY home](https://www.chiark.greenend.org.uk/~sgtatham/putty/)
+- [PuTTY latest release (0.85)](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+- [PuTTY FAQ: Is putty.org your website?](https://www.chiark.greenend.org.uk/~sgtatham/putty/faq.html#faq-putty-org)
+- [PuTTY licence](https://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html)
+- [FileZilla home](https://filezilla-project.org/)
+- [FileZilla Client full download list](https://filezilla-project.org/download.php?show_all=1)
+- [FileZilla wiki: Using FileZilla](https://wiki.filezilla-project.org/Using)
+- [FileZilla wiki: Site Manager](https://wiki.filezilla-project.org/Site_Manager)
+- [FileZilla wiki: SFTP key-based authentication](https://wiki.filezilla-project.org/Howto)
+- [Microsoft: OpenSSH for Windows overview](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh-overview)
+- [Microsoft: Get started with OpenSSH for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)
+- [Microsoft: Key-based authentication in OpenSSH for Windows](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement)
+- [Ubuntu Server: OpenSSH server](https://ubuntu.com/server/docs/how-to/security/openssh-server/)
+- [OpenBSD sftp manual](https://man.openbsd.org/sftp)

@@ -612,7 +612,8 @@
     "category": "Files & Photos",
     "description": "Transfer files between a desktop and remote servers using SFTP.",
     "coverage": [
-      "/ultimate-retropie-setup-guide"
+      "/ultimate-retropie-setup-guide",
+      "/ssh-windows-to-linux-putty-sftp"
     ],
     "videos": [
       {
@@ -1877,7 +1878,9 @@
     "name": "PuTTY",
     "category": "Terminal",
     "description": "Connect to remote Linux systems with an SSH client on Windows.",
-    "coverage": [],
+    "coverage": [
+      "/ssh-windows-to-linux-putty-sftp"
+    ],
     "videos": [
       {
         "id": "SNYnOYWoeAw",
