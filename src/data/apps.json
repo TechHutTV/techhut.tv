@@ -728,7 +728,9 @@
     "name": "GNOME Boxes",
     "category": "Backup & Virtualization",
     "description": "Create and run virtual machines from a desktop interface.",
-    "coverage": [],
+    "coverage": [
+      "/gnome-boxes-connections-guide"
+    ],
     "videos": [
       {
         "id": "ZU-W3XCRuPI",
@@ -746,7 +748,9 @@
     "name": "GNOME Connections",
     "category": "Desktop",
     "description": "Connect to remote desktops using VNC or RDP.",
-    "coverage": [],
+    "coverage": [
+      "/gnome-boxes-connections-guide"
+    ],
     "videos": [
       {
         "id": "ZU-W3XCRuPI",
