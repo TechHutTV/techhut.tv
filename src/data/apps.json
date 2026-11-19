@@ -1328,7 +1328,9 @@
     "name": "Nala",
     "category": "Terminal",
     "description": "Manage Debian and Ubuntu packages with a terminal frontend for APT.",
-    "coverage": [],
+    "coverage": [
+      "/nala-apt-frontend"
+    ],
     "videos": [
       {
         "id": "skbE6U5uE3A",
