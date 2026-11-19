@@ -521,7 +521,9 @@
     "name": "Duplicati",
     "category": "Backup & Virtualization",
     "description": "Schedule encrypted backups and restore files through a graphical interface.",
-    "coverage": [],
+    "coverage": [
+      "/duplicati-encrypted-backups"
+    ],
     "videos": [
       {
         "id": "eD7ULX7AK6M",
