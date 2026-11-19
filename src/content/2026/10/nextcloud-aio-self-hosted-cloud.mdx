@@ -1,0 +1,376 @@
+export const title = "Nextcloud AIO: Self-Host Your Own Cloud on a Real Domain"
+export const description = "Set up Nextcloud All-in-One with Docker Compose and Nginx Proxy Manager on your own domain with trusted HTTPS, tour the apps worth enabling, and upgrade to the latest Nextcloud Hub release."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="DFUmfHqQWyg" title="TechHut's Nextcloud AIO walkthrough" />
+
+I've been running [Nextcloud](https://nextcloud.com/) for years, and it's still the thing I point people to when they ask how to get off Google Workspace or Microsoft 365. At its simplest it's a Dropbox replacement: put your files on it, open them, edit them, share them. But it keeps going. Collaborative editing for documents, spreadsheets, and presentations, calendar and contacts, a mail client, Talk for video calls, Deck for kanban boards (I use that one a lot), and an app store full of extras. All of it is modular, so you can turn off whatever you don't want.
+
+The easiest way to run all of that is Nextcloud All-in-One (AIO). We're doing the full setup here: Docker Compose, Nginx Proxy Manager, a real domain with a wildcard certificate, a tour of the apps worth turning on, and how to upgrade to the latest Hub release.
+
+The written install has been updated for [AIO v14.2.0](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0), released September 21, 2026. That release ships Nextcloud 34 (Hub 26 Spring), and new instances can install [Nextcloud Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/) (Nextcloud 35) directly. A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
+
+Both videos had sponsor segments (Brilliant in the setup guide, Brevo in the Hub 26 video). Neither company is involved with Nextcloud, and I've left those segments out.
+
+## How AIO Works
+
+Nextcloud wants a database, Redis, a web server, push notifications, and optionally an office server, a Talk backend, search, and antivirus. Wiring that up by hand is a project. With AIO you run a single **mastercontainer**, which uses the Docker socket to create, update, and back up everything else, and you manage it from a web interface on port `8080`. Per the [AIO README](https://github.com/nextcloud/all-in-one), the stack includes:
+
+| Part | What it does |
+|---|---|
+| Mastercontainer | AIO interface, container management, updates, Borg backups |
+| Apache | Front door for Nextcloud (port `11000` in our reverse proxy setup) |
+| Nextcloud, PostgreSQL, Redis | The app itself, its database, and its cache |
+| Notify Push | Client push, so sync clients get changes right away |
+| Optional containers | Nextcloud Office, Talk and Talk Recording, Full-text search, Imaginary, ClamAV, Whiteboard |
+| Community containers | Community-maintained extras like Memories hardware transcoding and Local AI |
+
+Nextcloud server and AIO are both licensed under AGPL-3.0.
+
+## What You Need
+
+- A Linux machine with Docker. I'm using an Ubuntu VM on Proxmox that only runs Nextcloud. A mini PC, a bare-metal box, Unraid, or TrueNAS can work too. AIO has platform notes for each, but a VM is a pretty safe bet.
+- Docker Engine and the Compose plugin. Snap-based Docker on Ubuntu is not supported by AIO, so use Docker's own packages.
+- A domain name you control. I bought one specifically for local-only services, and its DNS is on Cloudflare.
+- Enough storage for your files, either local disk or a network share.
+
+If you're new to Docker, my [7 Docker basics for beginners](/7-docker-basics-for-beginners) guide covers installation, networking, and storage.
+
+Update the machine first:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+If Docker isn't installed yet, Docker's [convenience script](https://docs.docker.com/engine/install/ubuntu/) is the quick route on a fresh test machine. Docker doesn't recommend it for production, and the same page documents the apt repository method if you'd rather use that:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo usermod -aG docker $USER
+```
+
+Log out and back in so the group change applies. In the video I called this running Docker "rootless", but that's not quite right. Being in the `docker` group lets you skip `sudo`, which is a different thing from Docker's actual rootless mode. It's also effectively root access to the host, so only add users you trust.
+
+## Create the Working and Data Directories
+
+Since this VM is dedicated to Nextcloud, I put everything in a `/nextcloud` directory at the root of the filesystem. Your home directory works just as well.
+
+```bash
+sudo mkdir -p /nextcloud/ncdata
+sudo chown -R "$(id -u):$(id -g)" /nextcloud
+cd /nextcloud
+```
+
+`/nextcloud` holds the Compose file and the Nginx Proxy Manager data. `/nextcloud/ncdata` is where Nextcloud stores your files. Don't worry if `ncdata` changes owner after the first start. The Nextcloud container sets it to its own `www-data` user (UID 33) with `750` permissions if it can't write there.
+
+<Warning>
+Decide on the data directory before the first start. AIO's docs are clear that `NEXTCLOUD_DATADIR` must not be set or changed after the initial installation.
+</Warning>
+
+### Optional: Put the Data on a Network Share
+
+If the VM doesn't have much storage, mount a share from your NAS (Synology, Unraid, whatever you use) and point Nextcloud's data directory at it. The [AIO docs](https://github.com/nextcloud/all-in-one#can-i-use-a-cifssmb-share-as-nextclouds-datadir) give an `/etc/fstab` line for CIFS/SMB that sets the ownership the Nextcloud container expects:
+
+```bash
+sudo apt install -y cifs-utils
+sudo nano /etc/fstab
+```
+
+```text
+//your-nas-ip/nextcloud /nextcloud/ncdata cifs rw,mfsymlinks,seal,credentials=/etc/nextcloud-smb-credentials,uid=33,gid=0,file_mode=0770,dir_mode=0770 0 0
+```
+
+Put the share login in a root-only credentials file instead of writing the password into `fstab`:
+
+```bash
+sudo nano /etc/nextcloud-smb-credentials
+sudo chmod 600 /etc/nextcloud-smb-credentials
+```
+
+```text
+username=your-smb-user
+password=your-smb-password
+```
+
+Then `sudo mount -a` and check it with `findmnt /nextcloud/ncdata` before you start AIO.
+
+## The Compose File
+
+This is based on the `compose.yaml` in my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/cloud) that I used in the video, updated for current AIO. It runs two services: Nginx Proxy Manager for domains and certificates, and the AIO mastercontainer. If you already have Nginx Proxy Manager running somewhere else, delete the `nginx-proxy-manager` service.
+
+```bash
+nano compose.yaml
+```
+
+```yaml
+name: nextcloud-aio # Matches the project AIO puts its sibling containers in
+
+services:
+  # Remove this service if Nginx Proxy Manager already runs elsewhere
+  nginx-proxy-manager:
+    image: docker.io/jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      DISABLE_IPV6: "true" # Remove this line if your host uses IPv6
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+
+  nextcloud-aio-mastercontainer:
+    image: ghcr.io/nextcloud-releases/all-in-one:latest
+    init: true
+    restart: always
+    container_name: nextcloud-aio-mastercontainer # Do not change
+    network_mode: bridge
+    volumes:
+      - nextcloud_aio_mastercontainer:/mnt/docker-aio-config # Do not change
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "8080:8080" # AIO interface (self-signed HTTPS)
+    # devices: ["/dev/dri"] # Hardware acceleration, only if /dev/dri exists on the host
+    environment:
+      APACHE_PORT: 11000 # Nginx Proxy Manager forwards to this port
+      APACHE_IP_BINDING: 127.0.0.1 # Use 0.0.0.0 if the proxy runs on another machine
+      FULLTEXTSEARCH_JAVA_OPTIONS: "-Xms1024M -Xmx1024M"
+      NEXTCLOUD_DATADIR: /nextcloud/ncdata # Do not change after the first install
+      # NEXTCLOUD_MOUNT: /mnt/ # Lets Nextcloud use host folders as local external storage
+      NEXTCLOUD_UPLOAD_LIMIT: 1024G
+      NEXTCLOUD_MAX_TIME: 7200
+      NEXTCLOUD_MEMORY_LIMIT: 1024M
+      SKIP_DOMAIN_VALIDATION: false
+      TALK_PORT: 3478
+
+volumes:
+  nextcloud_aio_mastercontainer:
+    name: nextcloud_aio_mastercontainer # Do not change
+```
+
+The official [AIO compose.yaml](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml) is worth reading even if you copy mine. Every variable there links to documentation explaining what it does. Here's what I'm setting and why:
+
+- **Nginx Proxy Manager on host networking.** This makes proxying both local containers and services on other machines easy. It takes ports 80, 81, and 443 on the host directly, so no `ports:` mappings are needed.
+- **Port 8080 only.** The official file also publishes 80 and 8443, which you can drop behind a reverse proxy.
+- **`APACHE_PORT: 11000`.** This puts AIO in reverse proxy mode, so Apache listens on 11000 instead of 443 and Nginx Proxy Manager handles HTTPS.
+- **`APACHE_IP_BINDING: 127.0.0.1`.** With NPM on the same host and on host networking, it can reach Apache at `127.0.0.1:11000`, so nothing else on the network can get to 11000 directly. In the video I left this at the default and pointed NPM at the server's LAN IP. The AIO docs recommend localhost for this layout, and if you connect by IP you need to add a trusted proxy (covered below).
+- **Upload limit, max time, memory.** I bumped the upload limit way up, doubled the max execution time from the default 3600 seconds, and doubled the PHP memory limit from the default 512M.
+- **`FULLTEXTSEARCH_JAVA_OPTIONS`.** Full-text search lets you find a phrase inside documents. Raise this if search feels sluggish.
+- **`TALK_PORT: 3478`.** The Talk TURN server. Open `3478/TCP` and `3478/UDP` in your firewall if you use Talk.
+
+### Changes Since the Video
+
+My compose file in the video had a few settings AIO has since changed, so I've updated them here:
+
+- **`AIO_COMMUNITY_CONTAINERS` was removed.** In the video I added the Local AI and Memories community containers with this variable. They're now managed from a section at the bottom of the AIO interface, and the mastercontainer warns you if the old variable is still set.
+- **`NEXTCLOUD_ENABLE_DRI_DEVICE` is deprecated.** For Intel Quick Sync and other `/dev/dri` hardware acceleration, uncomment `devices: ["/dev/dri"]` instead, and AIO enables it automatically. Only do this if `/dev/dri` actually exists on the host, or the mastercontainer won't start.
+- **`NC_TRUSTED_PROXIES` isn't an AIO setting.** I had it commented out in my file. If you need a trusted proxy, use the `occ` command below.
+
+Start it up:
+
+```bash
+docker compose up -d
+```
+
+## Get the AIO Passphrase
+
+Open the AIO interface **by IP address**: `https://your-server-ip:8080`. It uses a self-signed certificate, so accept the browser warning. The AIO docs specifically say to use an IP here and not a domain, because HSTS can lock you out of the domain version of port 8080 later.
+
+The first page shows your AIO passphrase. Save it in a password manager, then use **Open Nextcloud AIO login** and sign in with it. If you ever lose it, it's in the mastercontainer's config. This prints secrets to your terminal, so keep the output private:
+
+```bash
+sudo docker exec nextcloud-aio-mastercontainer grep password /mnt/docker-aio-config/data/configuration.json
+```
+
+Don't enter a domain yet. We need the proxy and DNS ready first.
+
+## Set Up Nginx Proxy Manager
+
+Open `http://your-server-ip:81`. In the video, NPM still used the old default login (`admin@example.com` / `changeme`) and asked you to change it right away. Current releases (v2.16.0 at the time of writing) show a setup screen on first visit instead, where you create the admin account. If you do still see a login page from an older install, change those defaults immediately.
+
+### Point the Domain at Your Server
+
+I'm using this as a **local-only** domain. The DNS records are public, but they point to a private LAN IP, so the names only work inside my network. You could make it public later. In Cloudflare (or your DNS provider):
+
+| Type | Name | Content | Proxy status |
+|---|---|---|---|
+| A | `your-domain.com` | LAN IP of the machine running NPM | DNS only |
+| CNAME | `*` | `your-domain.com` | DNS only |
+
+The wildcard means any subdomain resolves to that same box, and NPM sorts out which service it goes to. Don't turn on Cloudflare's proxy (the orange cloud) for local-only records. It can't reach a private IP anyway, and the AIO docs list a whole set of Cloudflare proxy caveats for Nextcloud.
+
+![Cloudflare DNS records for hopki.net with an A record pointing to the LAN IP 10.0.0.210 and a wildcard CNAME, both set to DNS only](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/cloudflare-dns-records.jpg)
+
+### Get a Wildcard Certificate with a DNS Challenge
+
+Since nothing is exposed to the internet, Let's Encrypt can't reach the server. A DNS challenge solves this, because it proves you own the domain by creating a DNS record.
+
+1. In Cloudflare, go to **My Profile > API Tokens > Create Token** and use the **Edit zone DNS** template. I set Zone Resources to all zones in the video. Limiting it to just this domain is tighter, and the [Cloudflare docs](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) show how. Copy the token, because it's only shown once.
+2. In NPM, go to **SSL Certificates > Add SSL Certificate > Let's Encrypt**.
+3. Add both `your-domain.com` and `*.your-domain.com`.
+4. Turn on the DNS challenge option, choose Cloudflare as the provider, paste the token where NPM asks for the API token, agree to the terms, and save.
+
+NPM supports plenty of other DNS providers too, like DuckDNS and GoDaddy, so pick yours from the list. Issuing the certificate can take a minute. It shows as inactive until a host uses it.
+
+### Add the Proxy Hosts
+
+I created three. The first is optional and only confirms DNS and the certificate work before you get to Nextcloud.
+
+| Domain | Scheme | Forward host | Port | Notes |
+|---|---|---|---|---|
+| `proxy.your-domain.com` | `http` | `127.0.0.1` | `81` | NPM's own admin UI (optional) |
+| `aio.your-domain.com` | `https` | `127.0.0.1` | `8080` | AIO interface with a trusted cert (optional) |
+| `nc.your-domain.com` | `http` | `127.0.0.1` | `11000` | Nextcloud itself |
+
+![The Nginx Proxy Manager Proxy Hosts list from the video with the AIO, Nextcloud, and NPM hosts forwarding to the server's LAN IP on ports 8080, 11000, and 81](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/npm-proxy-hosts-list.jpg)
+
+For each one, enable **Block Common Exploits** and **Websockets Support**. Then on the SSL tab, select the wildcard certificate and enable **Force SSL** and **HTTP/2 Support**. Note that the AIO host uses `https` as its scheme, because port 8080 only speaks HTTPS. I forgot that the first time and had to go back and switch it.
+
+![The SSL tab of an Nginx Proxy Manager proxy host with the hopki.net wildcard certificate selected and Force SSL and HTTP/2 Support turned on](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/npm-proxy-host-ssl-tab.jpg)
+
+The Nextcloud host also needs a few lines under **Advanced** (gear icon). This comes from the [NPM section of the AIO reverse proxy docs](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md):
+
+```nginx
+proxy_read_timeout 7210s;
+client_max_body_size 0;
+```
+
+`client_max_body_size 0` removes NPM's upload size cap. The AIO docs set the read timeout 10 seconds above `NEXTCLOUD_MAX_TIME`, so that Nextcloud times out before the proxy does. Their example uses `3610s` for the default 3600. We set 7200, so it's `7210s` here.
+
+If NPM runs on a **different machine**, use the AIO server's LAN IP as the forward host, set `APACHE_IP_BINDING` to `0.0.0.0` in the compose file, and once Nextcloud is installed, add the proxy's IP as a trusted proxy:
+
+```bash
+sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ config:system:set trusted_proxies 2 --value=your-proxy-ip
+```
+
+## Install Nextcloud from the AIO Interface
+
+Back in the AIO interface, enter `nc.your-domain.com` and click **Submit domain**. AIO checks that the domain reaches this server through your proxy. A private IP would fail this check if Apache were on 443, but in reverse proxy mode AIO only logs a note about it. If validation fails, the [debug checklist](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md#7-how-to-debug-things) in the reverse proxy docs is the place to start. Only skip validation if you're sure everything else is right.
+
+Next comes **Optional containers**. In the video I enabled Full-text search and left the antivirus off for now. Whiteboard and the Talk recording server are also in this list. At the top there's an **Office Suite** picker, which I like because it makes switching suites easy. It now offers Nextcloud Office powered by Euro-Office or by Collabora Online, and ONLYOFFICE is marked deprecated. Click **Save changes** before you continue.
+
+![The Optional containers list in AIO v10.15.0 as shown in the video, with ClamAV off and Collabora, Fulltextsearch, Imaginary, Talk, and Whiteboard checked](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/aio-optional-containers.jpg)
+
+Above the start button is a checkbox to install the newest major version. In the video it said Hub 10. On v14.2.0 it reads **Install Nextcloud Hub 26 Summer**, and if you leave it unchecked you get Hub 26 Spring. Then click **Download and start containers**.
+
+This takes a while. You can watch the containers get created with `docker ps`, and clicking a container's status in the AIO interface shows its logs. Most of them will say they're waiting for Nextcloud, which is normal. Keep reloading the page until everything is green.
+
+When it's done, AIO shows the initial Nextcloud username (`admin`) and password. Copy the password and click **Open your Nextcloud**. You should land on `https://nc.your-domain.com` with a valid certificate. My first login attempt failed, and a refresh fixed it.
+
+## First Steps in Nextcloud
+
+### Fix Up the Admin Account
+
+Go to **Accounts**, edit the `admin` account, and give it a better display name, a new strong password, and your email. I logged out and back in with the email to confirm it worked.
+
+Then open **Administration settings**. The overview runs a scan for setup warnings. I only had one log error, nothing critical. Look through Theming, Groupware, Office, Whiteboard, and Full-text search while you're there. With AIO, most of it is configured already.
+
+To check that Office works, open **Files > Documents** and click the welcome `.docx`. It should open in the collaborative editor right in the browser.
+
+### Make It Yours with Apps
+
+The **Apps** page is where Nextcloud gets interesting. Under **Your apps** you can disable nearly anything built in, even Deleted files. Federation is in there too. It lets separate Nextcloud servers share with each other, kind of like Mastodon instances talking across the fediverse. That really only matters once a server is public.
+
+**Featured apps** has a lot of good stuff: Announcement center, Collectives, External sites, External storage support, File access control, Forms (a real Google Forms replacement), Mail, Maps, Music, and News. As an example, I enabled **News**, which is a full RSS reader. I subscribed to 9to5Linux's feed, and the latest posts showed up right away.
+
+![The Featured apps list in Nextcloud with Download and enable buttons for Forms, Mail, and Music, and an Allow untested app button for Maps](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/nextcloud-featured-apps.jpg)
+
+There's also a games category, customization apps like Breeze Dark, custom CSS and app ordering, and options like Rocket.Chat or Roundcube under social and communication. There's honestly too much to cover in one go.
+
+### Connect Your Existing File Shares
+
+This is one of my favorite tricks. Enable **External storage support**, then go to **Administration settings > External storage** and click **Add storage**. You can connect SMB, FTP, WebDAV, other Nextcloud servers, and more.
+
+I added an SMB share from my main storage server by entering the host, the share name, and my credentials, then made it available to all users. After the green check mark showed up, the share appeared in Files. I could open my movie folder and play a file in the browser (A Goofy Movie, before Disney comes after me). I could also copy a file from the share into Nextcloud's own storage. This works much more smoothly than when I first tried it years ago.
+
+![An SMB/CIFS external storage entry in Nextcloud with the host, share, and login filled in and made available to all people](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/external-storage-smb.jpg)
+
+Two notes from the AIO docs:
+
+- External storage isn't covered by AIO's built-in backup. Back up those shares separately.
+- If you'd rather use folders on the Docker host than an SMB share, uncomment `NEXTCLOUD_MOUNT` in the compose file and add them as **Local** external storage. The [AIO docs](https://github.com/nextcloud/all-in-one#how-to-allow-the-nextcloud-container-to-access-directories-on-the-host) cover the permissions.
+
+If you ever copy files directly into `ncdata` instead of uploading them, fix the permissions and rescan so Nextcloud sees them:
+
+```bash
+sudo docker exec nextcloud-aio-nextcloud chown -R 33:0 /mnt/ncdata/
+sudo docker exec nextcloud-aio-nextcloud chmod -R 750 /mnt/ncdata/
+sudo docker exec --user www-data -it nextcloud-aio-nextcloud php occ files:scan --all
+```
+
+### Install the Desktop and Mobile Apps
+
+The [Nextcloud desktop client](https://nextcloud.com/install/) gives you a folder on your computer that syncs automatically, the same idea as Google Drive or Dropbox. Mobile apps are on the same page.
+
+## What's New in Hub 26 and How to Upgrade
+
+<YouTube videoId="6wMeL9xlzag" title="TechHut's Nextcloud Hub 26 overview and upgrade guide" />
+
+In March 2026, I made a follow-up video on [Nextcloud Hub 26 Winter](https://nextcloud.com/blog/nextcloud-hub26-winter/) (Nextcloud 33). Since then, Nextcloud has shipped Hub 26 Spring (Nextcloud 34) and Hub 26 Summer (Nextcloud 35, September 2026). I'll cover the current upgrade path first, then the Hub 26 Winter changes that stood out to me.
+
+### Upgrading with AIO Today
+
+In the video, I upgraded from Nextcloud 32 (Hub 25 Autumn) to 33 before AIO's stable channel had it. I opened a shell in the container, temporarily switched Nextcloud's update channel to beta, and ran the updater. Then I switched back to stable so it wouldn't keep pulling betas, checked the status, and restarted the containers. It worked, but that was the impatient route, and you don't need it now.
+
+On current AIO, it looks like this:
+
+1. **Back up first.** In the AIO interface, set a backup location under **Backup and restore** (ideally a separate drive like `/mnt/backup`) and click **Create backup**. Save the backup encryption key it shows you, because you can't restore without it. I skipped this in the video because I like living on the edge. Please don't copy me on this one.
+2. **Update the containers.** If updates are listed, click **Stop containers**, then **Start and update containers**. If there's a mastercontainer update, the interface shows a button for it first. Updating the containers moves Nextcloud to whatever version AIO currently bundles.
+3. **Jump to the newest Hub.** Once everything is up to date and running, the interface shows a **Note about Nextcloud Hub 26 Summer** section with an **Upgrade to Nextcloud Hub 26 Summer** button. It warns that a failed upgrade can leave the instance broken, which is why step 1 matters.
+
+AIO waits for at least the first patch release of a new major version, and for important apps to support it, before switching. The [beta channel](https://github.com/nextcloud/all-in-one#how-to-switch-the-channel) is there if you want to help test.
+
+<Note>
+While Nextcloud is running, AIO blocks direct passphrase login to its interface. To get in, log into Nextcloud as an admin, go to **Administration settings > Overview**, and click the button at the top to open AIO with login unlocked for that browser session.
+</Note>
+
+### Hub 26 Winter: The Changes That Stood Out
+
+These are from my Hub 26 Winter video and [Nextcloud's release post](https://nextcloud.com/blog/nextcloud-hub26-winter/). Hub 26 Spring and Summer come after it, so a current install includes these and more.
+
+**The ADA engine.** The headliner for me. ADA (Accelerated Direct Access, and a nod to Ada Lovelace) rewrites Nextcloud's file access layer in PHP, Rust, and Go, working out permissions ahead of time. Nextcloud says photo previews take 40 to 90 percent fewer resources, and big S3-backed instances can serve files and previews directly instead of through PHP.
+
+**Federation for Deck, Calendar, and Teams.** Deck boards, calendars, and Teams can now include people on other Nextcloud servers, and federated file shares support file locking. Servers aren't connected automatically. You add them under **Administration settings > Sharing > Trusted servers**.
+
+![The Trusted servers section of Nextcloud's sharing settings with the Add trusted server field](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/trusted-servers-federation.jpg)
+
+**Data migration.** Export and import now cover Mail, Contacts, Calendar, Tables, and Deck. I've seen plenty of forum complaints from people who couldn't get their data out of a hosted instance, so this is a welcome fix.
+
+**Talk.** Pinned and scheduled messages, optional split message bubbles, live transcription with translation, opt-in audio processing, and hardware-accelerated background blur. I don't use Talk much, since everyone I work with is on Google Meet or Slack, but it's a solid batch.
+
+**Mail.** I use this one a lot. Attachments show in the thread list, meeting invites can become tentative calendar events automatically, and there are pinned favorite threads, a compact mode, and quick filters.
+
+**Office and Whiteboard.** Document comparison landed in Nextcloud Office, which is great for contracts and policies. Whiteboard got timers, voting, comments, reactions, tables, and version history.
+
+**AI Assistant.** Memories you can configure or delete, labeling for AI-generated content (which Nextcloud ties to the EU AI Act), and faster local AI, with Nextcloud quoting 5 to 8 times faster local transcription. It's all optional, so if you hate AI, leave it off.
+
+For what came after, see Nextcloud's [Hub 26 Summer announcement](https://nextcloud.com/blog/nextcloud-hub26-summer/). It covers team workspaces, the Euro-Office desktop client, redesigned Photos, unified sharing, and more Assistant features.
+
+## Final Thoughts
+
+Nextcloud is a big application, and it runs better on better hardware. But AIO removes most of the pain of setting it up, and the recent performance work has made it much nicer to use. Once the domain and proxy are working, you have files, office, calendar, contacts, mail, Talk, and Deck on hardware you own. Nobody else is analyzing your data or training models on it, and you know exactly where your files are. A lot of us already have hard drives sitting around, so why pay Google every month for storage?
+
+There's a lot I didn't get to here: the AI features, the Memories and Local AI community containers I want to test properly, and more host mounts. If you want something lighter that's focused on files, I also compared [OpenCloud against Nextcloud](/self-host-opencloud-docker-compose). For the full groupware suite, though, Nextcloud is still what I run. With all that, I do hope you found this helpful. Have a great one.
+
+## Official References
+
+- [Nextcloud All-in-One README](https://github.com/nextcloud/all-in-one)
+- [AIO compose.yaml](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml)
+- [AIO reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
+- [AIO local instance documentation](https://github.com/nextcloud/all-in-one/blob/main/local-instance.md)
+- [AIO community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
+- [AIO v14.2.0 release](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0)
+- [Nextcloud Hub 26 Winter release post](https://nextcloud.com/blog/nextcloud-hub26-winter/)
+- [Nextcloud Hub 26 Summer release post](https://nextcloud.com/blog/nextcloud-hub26-summer/)
+- [External storage configuration](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage_configuration_gui.html)
+- [occ command reference](https://docs.nextcloud.com/server/latest/admin_manual/occ_command.html)
+- [Nextcloud desktop and mobile clients](https://nextcloud.com/install/)
+- [Nginx Proxy Manager setup](https://nginxproxymanager.com/setup/)
+- [Cloudflare: create an API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)
+- [My Nextcloud notes in the TechHut homelab repo](https://github.com/TechHutTV/homelab/tree/main/cloud)
