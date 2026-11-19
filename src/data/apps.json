@@ -2305,7 +2305,9 @@
     "name": "Twingate",
     "category": "Networking",
     "description": "Access private network resources using connectors and desktop clients.",
-    "coverage": [],
+    "coverage": [
+      "/twingate-remote-access-home-server"
+    ],
     "videos": [
       {
         "id": "yaw2A3DG664",

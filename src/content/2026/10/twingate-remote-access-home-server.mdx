@@ -1,0 +1,281 @@
+export const title = "Twingate: Reach Your Home Server from Anywhere Without a VPN"
+export const description = "Set up Twingate to reach a home server from anywhere without opening ports: create a Remote Network, deploy Connectors with Docker, Linux or Unraid, define Resources with port restrictions, and connect from the Client."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab", "Docker", "Linux"]
+export const cover = "/docs-static/img/2026/10/twingate-remote-access-home-server/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="yaw2A3DG664" title="TechHut's Twingate walkthrough" />
+
+A few months before I made this video, [Twingate](https://www.twingate.com/) reached out and asked me to try their software. After that, I stopped needing a VPN to get into my home network. I also didn't need a reverse proxy or any ports open to the internet just to reach my own services.
+
+Twingate sponsored the video this article is based on. Twingate is a proprietary, hosted service. It has a free plan and paid plans, which I cover below.
+
+What I liked was how much control you get over who can reach what. I can give myself access to just about everything. I can give my wife access to our Synology for the security system and photo backups. And if a video editor or employee only needs one company share, I can give them that one device on that one port and nothing else.
+
+I had also just moved, so I was rebuilding my network anyway. In the video I wiped my Twingate setup and started over from scratch, and that's the order this guide follows.
+
+The video was published in January 2024. I've updated the written steps against Twingate's current documentation and pricing (checked October 2026): the Docker Compose deployment, the Linux service and client, the official Unraid Community Apps template that now exists, and the current free plan limits. The hands-on walkthrough and my impressions come from the original recording. Since then I've moved my own remote access over to NetBird, which I mention near the end.
+
+## How Twingate Works
+
+Twingate's [architecture page](https://www.twingate.com/docs/how-twingate-works) has a nice diagram, but there are only two pieces you really have to deal with:
+
+- **Connectors** run on your network (a home server, a NAS, a VM, even a cloud instance). They only make outbound connections, so you never forward a port to them.
+- **Clients** run on the devices you connect from: Windows, macOS, Linux, ChromeOS, iOS, and Android.
+
+Twingate runs the rest. The **Controller** stores your configuration, hands sign-in off to an identity provider (like Sign in with Google), and gives Clients and Connectors signed lists of what they're allowed to reach. Twingate says the Controller never touches your traffic. **Relays** help the Client and Connector find each other.
+
+Once you're authenticated, Twingate tries to set up a direct, encrypted peer-to-peer connection between your Client and the Connector. If it can't, traffic falls back to going through a Relay, still encrypted. That's different from a typical commercial VPN where everything goes through the provider's server, and when the direct path works, latency stays low.
+
+![Twingate's architecture diagram showing the Client, Controller, Relay, and Connectors with a peer-to-peer connection to the Connector](/docs-static/img/2026/10/twingate-remote-access-home-server/twingate-architecture-diagram.jpg)
+
+The dashboard keeps connection history and other metadata. According to Twingate's [customer data page](https://www.twingate.com/docs/twingate-customer-data), it doesn't store or inspect the contents of the traffic itself. I like that for privacy.
+
+| Twingate term | What it is in a homelab |
+|---|---|
+| Remote Network | A logical group for one physical network, like your house |
+| Connector | The small service running on that network that forwards allowed traffic |
+| Resource | One address (IP, hostname, wildcard, or CIDR range), optionally limited to certain ports |
+| Group | The users allowed to reach a set of Resources |
+| Resource Policy | The sign-in and device rules for reaching a Resource |
+
+## Plans and Limits
+
+Twingate's free plan is called **Starter**. As of October 2026, the [pricing page](https://www.twingate.com/pricing) lists these limits for it:
+
+- 5 users, 1 of them an admin
+- 5 devices per user
+- 10 Remote Networks
+- 50 Resources
+
+That's plenty for a household. There's also a paid **Home** plan for non-commercial use with more users and extras such as device posture checks, plus business tiers. Plan features change, so look at the comparison table before you rely on a specific one, especially the device security options I go through later.
+
+## Step 1: Create Your Network and a Remote Network
+
+When you sign up, you pick a name for your network, and your admin console lives at `https://<name>.twingate.com`. You sign in with a social login (Google, Microsoft, GitHub, or LinkedIn) or a configured identity provider. I used Google.
+
+A new account shows a welcome screen that links to the [Quick Start](https://www.twingate.com/docs/quick-start). The order is: define a Remote Network, deploy a Connector, add Resources, then install the Client.
+
+To add the Remote Network:
+
+1. Open **Network** in the admin console.
+2. Click **Add** next to **Remote Networks**.
+3. Pick the location. There are options for AWS, Azure, and Google Cloud, but for a home server choose **On Premise**.
+4. Name it whatever you want and add it.
+
+![The Add Remote Network dialog in the Twingate admin console with On Premise selected as the location](/docs-static/img/2026/10/twingate-remote-access-home-server/add-remote-network-on-premise.jpg)
+
+It'll show as offline until a Connector is running. Twingate already creates Connector entries with random names (mine was "tremendous-gopher"), and you can rename them later.
+
+## Step 2: Deploy Connectors
+
+Open a Connector and you'll see deployment options at the top: Docker, Linux, Helm, AWS, Azure, Google Cloud, and a few others. For a homelab you'll probably use Docker or Linux. Whichever one you pick, the steps are the same:
+
+1. Click **Generate Tokens**. Twingate makes you sign in again first. It does this for every sensitive change, which I think is a good thing.
+2. Optionally enable extras such as local connection logs.
+3. Copy the finished command it builds for you.
+
+![The Connector deployment method picker with Docker selected alongside Helm, AWS ECS, Azure, Linux, Terraform, Pulumi, and Manual](/docs-static/img/2026/10/twingate-remote-access-home-server/connector-deployment-methods.jpg)
+
+<Warning>
+The access and refresh tokens are what authenticate the Connector to your network. Don't share them, and don't commit them to Git. Each Connector needs its own token pair, and Twingate notes that reusing tokens on a second Connector makes it fail to connect. If a token leaks, delete that Connector and deploy a new one.
+</Warning>
+
+Connectors only need outbound internet access. The [Connector best practices](https://www.twingate.com/docs/connector-best-practices) say inbound access to the Connector host isn't required and isn't recommended. Put the Connector on the same network as the things you want to reach. A small Linux VM with 1 CPU and 2 GB of RAM is enough for hundreds of users according to Twingate, so a homelab won't stress it.
+
+### Option A: Docker
+
+In the video I pasted the generated `docker run` command into an SSH session on my Intel NUC, and the Connector showed up as online right away. That works fine. If you'd rather keep it in a Compose file, this follows Twingate's [Docker Compose guide](https://www.twingate.com/docs/deploy-connector-with-docker-compose), with the tokens moved into a `.env` file:
+
+```bash
+mkdir -p ~/twingate-connector
+cd ~/twingate-connector
+
+cat > .env <<'EOF'
+TWINGATE_NETWORK=your-network-name
+TWINGATE_ACCESS_TOKEN=PASTE_ACCESS_TOKEN
+TWINGATE_REFRESH_TOKEN=PASTE_REFRESH_TOKEN
+EOF
+chmod 600 .env
+```
+
+`TWINGATE_NETWORK` is just the `<name>` part of `<name>.twingate.com`. Then create `docker-compose.yml`:
+
+```yaml
+services:
+  twingate-connector:
+    image: twingate/connector:1
+    container_name: twingate-connector
+    restart: always
+    environment:
+      TWINGATE_NETWORK: ${TWINGATE_NETWORK}
+      TWINGATE_ACCESS_TOKEN: ${TWINGATE_ACCESS_TOKEN}
+      TWINGATE_REFRESH_TOKEN: ${TWINGATE_REFRESH_TOKEN}
+      TWINGATE_LOG_ANALYTICS: v3
+    sysctls:
+      net.ipv4.ping_group_range: "0 2147483647"
+```
+
+Start it and check the logs:
+
+```bash
+docker compose up -d
+docker compose logs -f twingate-connector
+```
+
+A few notes on that file:
+
+- **Image tag.** Twingate's docs use `latest`. I pinned the major version, `1`, which [Docker Hub](https://hub.docker.com/r/twingate/connector) updates with every 1.x release (1.93.0 at the time of writing). Images are published for amd64, arm64, and 32-bit ARM, so a Raspberry Pi works too.
+- **`TWINGATE_LOG_ANALYTICS: v3`** prints connection events to the container logs. Remove it if you don't want that.
+- **The sysctl** lets `ping` work through the Connector, which is handy for testing.
+- **Host networking.** By default the container runs on Docker's bridge network. Twingate's docs say `network_mode: host` can enable local peer-to-peer connections when a Client is on the same LAN as the Connector. If you switch to host mode, remove the `sysctls` block too. Twingate's [Docker Hub page](https://hub.docker.com/r/twingate/connector) says to drop that sysctl when making the Connector available on the host's local network, and Docker rejects network sysctls in host network mode.
+- **No sudo?** In the video I forgot `sudo` on the first try, as usual. If you want to run Docker without it, the [Docker post-install steps](https://docs.docker.com/engine/install/linux-postinstall/) cover that.
+
+The [Docker basics guide](/7-docker-basics-for-beginners) is a good place to start if Compose is new to you.
+
+### Option B: Linux systemd Service
+
+If you pick **Linux** in the console, you get a one-line `curl` command that sets the Connector up as a systemd service. Here's what the current [setup script](https://binaries.twingate.com/connector/setup.sh) does. On apt-based systems it adds Twingate's package repository with its GPG signing key, and on dnf-based systems it adds the RPM repository with GPG checking turned off. Then it installs the `twingate-connector` package, writes your network name and tokens to `/etc/twingate/connector.conf` with `0600` permissions, and enables the service.
+
+You can paste the command from the console, or download the script, read it, and run it yourself:
+
+```bash
+curl -fsSLo twingate-connector-setup.sh https://binaries.twingate.com/connector/setup.sh
+less twingate-connector-setup.sh
+
+sudo TWINGATE_NETWORK="your-network-name" \
+  TWINGATE_ACCESS_TOKEN="PASTE_ACCESS_TOKEN" \
+  TWINGATE_REFRESH_TOKEN="PASTE_REFRESH_TOKEN" \
+  bash twingate-connector-setup.sh
+
+sudo systemctl status twingate-connector
+```
+
+The tokens end up in your shell history this way, so clear that line afterward if it matters to you. Twingate's [Linux deployment page](https://www.twingate.com/docs/connectors-on-linux) lists the distributions it officially supports for the service (Ubuntu LTS, Debian, Fedora, and CentOS Stream), and Docker is the fallback for anything else. Updates come through your package manager.
+
+### Option C: Unraid
+
+My second Connector went on Unraid. When I recorded, I searched Community Apps and used a third-party template from Cornflake's repository, since that's what showed up. There's now an official template from the Twingate Community repository, and Twingate's [Unraid guide](https://www.twingate.com/docs/unraid-getting-started) says to pick the official entry. The steps:
+
+1. In the admin console, add a Connector to your Remote Network, choose the **Manual** option, and generate tokens.
+2. In Unraid, go to **Apps**, search for Twingate, and install the official **Twingate-Connector-Official** entry.
+3. Fill in the access token, the refresh token, and your network name. The field is labeled **Remote Network Name**, but it wants the `<name>` from `<name>.twingate.com`. Then click **Apply**.
+
+Back in the admin console, a refresh showed the Connector as online, and my Remote Network went green. I renamed this one so I'd know it was the media server.
+
+### Why Two Connectors
+
+You only need one Connector to get started, but I recommend at least two, and so does Twingate. Connectors in the same Remote Network are clustered for load balancing and failover. If I reboot the NUC for maintenance and it's my only Connector, I lose remote access until it comes back. With a second Connector on Unraid, the Client just switches to the other one. I said in the video that I'd probably add a couple more for extra safety.
+
+Connectors in the same Remote Network should be able to reach the same things, because Twingate treats them as interchangeable.
+
+## Step 3: Add Resources
+
+A Resource is something people can connect to. It can be an IP, a hostname, a wildcard domain, or a CIDR range, and Twingate resolves it from the Connector's side, so local IPs and local DNS names work from anywhere. Twingate [denies by default](https://www.twingate.com/docs/resources): if a user isn't given access to a Resource, they can't reach it.
+
+In the video I added my Unraid server:
+
+1. In **Network**, click **Add Resource**.
+2. Give it a label (this is what shows up in the Client), enter the address (my server's LAN IP), and choose the Remote Network.
+3. Pick the groups that get access. A brand-new network only has the built-in **Everyone** group. A Resource with no groups isn't accessible to anyone.
+
+### Port Restrictions
+
+By default a Resource allows every TCP and UDP port, plus ping. You can restrict that, and you can set TCP and UDP separately and block ICMP.
+
+This is the part I find really useful. I edited my Unraid Resource to only allow port `5055`, which is Overseerr (it's since been merged into [Seerr](/seerr-overseerr-migration)), and renamed the Resource to match. Then I created a second Resource with the same IP and no port restrictions and named it "Unraid." The two are given to different groups:
+
+| Resource | Address | Ports | Group |
+|---|---|---|---|
+| Overseerr | Unraid server IP | TCP `5055` only | Everyone |
+| Unraid | Unraid server IP | All | Editor |
+
+So everybody can get to the request page, but only people in the Editor group can reach the rest of the server. Twingate's docs describe the same pattern, like port 443 for everyone and port 22 for a few admins. When two Resources overlap, the more specific address wins.
+
+![Editing the UNRAID Resource at 10.0.0.90 with TCP and UDP port restrictions set to 5055 only](/docs-static/img/2026/10/twingate-remote-access-home-server/resource-port-restrictions.jpg)
+
+## Step 4: Users, Groups, and Policies
+
+Under **Team**, you invite users by email. They sign in with a social account that matches that email. Every user is automatically part of **Everyone**, and you create custom groups for anything more limited. Groups are the point: you give access to a group once instead of setting permissions for each person on each device. Think of an IT group that needs much more access than a marketing group.
+
+Each Resource also has a **Resource Policy**. Every network starts with a **Default Policy**, and you can make more under **Policies**. A policy can control:
+
+- **Authentication:** how often people have to sign in again, and whether Twingate's own MFA is required. That's how you add the authenticator app codes I mentioned in the video.
+- **Device security:** **Any Device**, **Only Trusted Devices**, or **Custom** rules such as minimum OS versions.
+- **Location:** country allow and deny lists, which are on the Enterprise plan only.
+
+You can also mark devices as trusted by hand under **Devices** and then require that for sensitive Resources. Check the pricing table before you plan around the device security options, since some of them are listed as paid features.
+
+## Step 5: Install the Client and Connect
+
+Clients are on the [download page](https://www.twingate.com/download) for Windows, macOS, Linux, ChromeOS, iOS, and Android. I've used the Windows and Linux ones.
+
+The Linux Client doesn't have a GUI. It uses systemd plus either systemd-resolved or NetworkManager for DNS. Installation is a script from Twingate's [Linux client docs](https://www.twingate.com/docs/linux):
+
+```bash
+curl -s https://binaries.twingate.com/client/linux/install.sh | sudo bash
+sudo twingate setup
+twingate start
+```
+
+Start it **without** `sudo` so the sign-in notification shows up on your desktop. A few other commands are useful:
+
+```bash
+twingate status
+twingate resources
+twingate stop
+```
+
+The install script handles apt, dnf, pacman, and emerge. Twingate's current support list is Ubuntu LTS, Debian, Fedora, CentOS Stream, and Oracle Linux on x86-64 and ARM64, plus Arch, NixOS, Gentoo, and HP ThinPro on x86-64. I had no idea what ThinPro was when I recorded. It turns out it's HP's thin client operating system.
+
+### Testing It from My Phone
+
+For the demo I used my Android phone. First I turned off Wi-Fi so I was only on mobile data, then signed in to the Twingate app.
+
+At first the only Resource I could see was Overseerr, because I was only in the Everyone group. I copied its address into the browser, added `:5055`, and the Overseerr page loaded over mobile data. Then I tried the Unraid web UI at the same IP without a port. It just hung, which was the point, since I hadn't given myself access.
+
+![The Twingate Android app on mobile data listing only the Overseerr Resource at 10.0.0.90](/docs-static/img/2026/10/twingate-remote-access-home-server/android-client-overseerr-resource.jpg)
+
+Next I added myself to the Editor group in the admin console. Unraid showed up in the app right away, and after a refresh the Unraid UI loaded.
+
+## It's Not Just Web Pages
+
+Twingate forwards any TCP or UDP traffic you allow, not just HTTP. To show that, I added the Intel NUC (the same machine running one of my Connectors) as a Resource and gave it to the Editor group. It showed up in the app, so I opened a terminal app on the phone, still on mobile data, and SSHed into the NUC's local IP. It connected, and I ran `neofetch` to prove it.
+
+So anything you'd normally do on your LAN works the same way: SSH, SFTP with something like FileZilla, network shares, RDP, and so on. You just use the same local IPs or hostnames you'd use at home.
+
+## My Take
+
+When I made this video, Twingate was how I reached my home network from outside, and it got rid of the VPN, the reverse proxy, and the open ports I'd been relying on. Getting started was simple. In the video I had two Connectors running, one with Docker on the NUC and one through an Unraid template, without much effort. The Remote Network, Resource, and Group setup gave me much finer control than "you're on the VPN, so you can see everything." Being able to give everyone Overseerr while keeping the Unraid UI to one group, using the same IP, is really cool.
+
+Two things to keep in mind. Twingate is a hosted, proprietary service, so the Controller and Relays run on Twingate's infrastructure and your setup depends on your account and their plan limits. And if you like this model but want to run the whole stack yourself, I've since switched my own remote access to NetBird, which is open source and self-hostable. I have a full guide to [self-hosting NetBird with Pocket ID](/self-host-netbird-pocketid). Either way, it beats putting your services directly on the internet.
+
+With all that, I do hope you found this helpful. Have a great one.
+
+## Official References
+
+- [Twingate](https://www.twingate.com/)
+- [Pricing and plan limits](https://www.twingate.com/pricing)
+- [Quick Start](https://www.twingate.com/docs/quick-start)
+- [How Twingate works](https://www.twingate.com/docs/how-twingate-works)
+- [Homelab and personal use cases](https://www.twingate.com/docs/homelab-personal-use-case)
+- [Remote Networks](https://www.twingate.com/docs/remote-networks)
+- [Understanding Connectors](https://www.twingate.com/docs/understanding-connectors)
+- [Connector best practices](https://www.twingate.com/docs/connector-best-practices)
+- [Deploy a Connector with Docker Compose](https://www.twingate.com/docs/deploy-connector-with-docker-compose)
+- [Deploy a Connector on Linux](https://www.twingate.com/docs/connectors-on-linux)
+- [Getting started with Unraid and Twingate](https://www.twingate.com/docs/unraid-getting-started)
+- [Resources](https://www.twingate.com/docs/resources)
+- [Groups](https://www.twingate.com/docs/groups)
+- [Users](https://www.twingate.com/docs/users)
+- [Social logins](https://www.twingate.com/docs/social-logins)
+- [Resource Policies](https://www.twingate.com/docs/resource-policies)
+- [Manually verified devices](https://www.twingate.com/docs/manually-verified-devices)
+- [Linux Client](https://www.twingate.com/docs/linux)
+- [Client downloads](https://www.twingate.com/download)
+- [Twingate and customer data](https://www.twingate.com/docs/twingate-customer-data)
+- [Docker Hub: twingate/connector](https://hub.docker.com/r/twingate/connector)
