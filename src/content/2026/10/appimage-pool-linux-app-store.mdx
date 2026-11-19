@@ -1,0 +1,199 @@
+export const title = "AppImage Pool: A Linux App Store for AppImages"
+export const description = "AppImage Pool is a small GTK-style app store for AppImageHub. Here's how to install it from Flathub or as an AppImage, download and run apps, keep several versions around, and add them to your app menu."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Apps"]
+export const cover = "/docs-static/img/2026/10/appimage-pool-linux-app-store/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="l_OCZrEPQgs" title="TechHut's AppImage Pool walkthrough" />
+
+AppImages are one of the ways Linux apps get packaged as a single, self-contained file. If you're coming from Windows, the closest comparison is a portable EXE: you download one file, mark it executable, and run it. Nothing gets installed in the traditional sense. The catch is that finding them usually means hunting through each project's release page.
+
+[AppImage Pool](https://github.com/prateekmedia/appimagepool) fixes that part. It's a simple, open source client for [AppImageHub](https://appimage.github.io/), so you get a store-like window with categories, search, and a download button. I tried it out in the video, and this article covers how to set it up and what it's like to use.
+
+Linode sponsored the video this article is based on.
+
+The video was published in December 2021, when Flathub was shipping AppImage Pool 4.9.0. The written install steps have been updated for [AppImage Pool 5.1.0](https://github.com/prateekmedia/appimagepool/releases/tag/5.1.0), which is still the latest release (February 27, 2023). The biggest change since the recording is that AppImage Pool can now add downloaded apps to your app menu itself, which I had to do by hand in the video. The screenshots and hands-on impressions come from the original recording.
+
+## Is AppImage Pool Still Maintained?
+
+It's alive, but quiet. The repository isn't archived, the last code merge landed in March 2026, and the Flathub package was rebuilt on a current runtime (freedesktop 25.08) in January 2026, so it isn't stuck on an end-of-life runtime. There hasn't been a new feature release since 5.1.0, though, and the issue tracker has open reports about icons missing after integration and directory changes in Preferences not taking effect. Expect a working app that isn't getting much new development.
+
+## Why Use AppImages at All
+
+AppImages often run about as well as a natively installed app. For me, the best reason to use them is keeping multiple versions of the same application on one system. If you use a lot of open source apps on Linux, you've probably had an update break a feature you rely on. I'm mostly pointing at Kdenlive here. With AppImages, rolling back is just running the older file.
+
+They're also handy on unusual distros. When I recorded this I was running Clear Linux, which isn't really built for a desktop like mine and leans heavily on Flatpak. Some of the apps I wanted, like the Firefox Nightly build, would have been hard to get any other way.
+
+If you're not sure how AppImages compare to the other formats, my [Flatpak vs Snap vs AppImage](/flatpak-vs-snap-vs-appimage) article goes through the differences.
+
+## What AppImage Pool Does
+
+Here's the feature list from the project:
+
+| Feature | Details |
+|---|---|
+| Catalog | Pulls the app list from AppImageHub's public feed |
+| Downloads | Grabs files straight from each project's GitHub releases, no extra server in between |
+| Version history | Lets you pick older releases, not just the newest one |
+| Multiple downloads | Queue several AppImages at once |
+| Integration | Add or remove an app from your app menu (since 5.0.0) |
+| License | GPL-3.0 |
+| Platform | Linux, x86_64 only |
+
+It helps to know what AppImageHub actually is. Per its [README](https://github.com/AppImage/appimage.github.io), it's a crowd-sourced directory that links to each author's download page. It doesn't host or distribute the files, and it only checks that an AppImage follows basic conventions and starts on the oldest supported Ubuntu LTS. That isn't a security review. AppImageHub says it plainly: only run apps from authors you trust.
+
+## Installing AppImage Pool
+
+There are two official ways to get it. The README lists Flatpak first, which is kind of funny for an AppImage store, but it's the one I used since my distro was so Flatpak-focused.
+
+### Flatpak (Flathub)
+
+AppImage Pool is on [Flathub](https://flathub.org/apps/io.github.prateekmedia.appimagepool) as a verified app. I installed it by searching for it in the software center, and you can also use the terminal:
+
+```bash
+flatpak install flathub io.github.prateekmedia.appimagepool
+flatpak run io.github.prateekmedia.appimagepool
+```
+
+If you don't have Flathub set up yet, follow the [Flathub setup guide](https://flathub.org/setup) for your distro first.
+
+<Note>
+The Flatpak isn't strongly sandboxed. Its permissions include access to the `org.freedesktop.Flatpak` D-Bus service, which lets it run commands outside the sandbox, and that's how it launches AppImages on your host system (with `flatpak-spawn --host`). AppImages themselves also run with your normal user permissions. Treat everything you download through it like any other program you run from the internet.
+</Note>
+
+### AppImage
+
+You can also grab AppImage Pool as an AppImage from the [releases page](https://github.com/prateekmedia/appimagepool/releases/latest), then make it executable and run it:
+
+```bash
+chmod +x appimagepool-5.1.0-x86_64.AppImage
+./appimagepool-5.1.0-x86_64.AppImage
+```
+
+If you'd rather click, open the file's **Properties**, find the **Permissions** section, and allow it to run as a program.
+
+If an AppImage fails to start with a FUSE error, your distro may be missing FUSE 2. The [AppImage FUSE troubleshooting page](https://docs.appimage.org/user-guide/troubleshooting/fuse.html) lists the package for each distro:
+
+```bash
+# Ubuntu 24.04 (the package was renamed)
+sudo apt install libfuse2t64
+
+# Ubuntu 22.04
+sudo apt install libfuse2
+
+# Arch Linux
+sudo pacman -S fuse2
+
+# openSUSE
+sudo zypper install fuse libfuse2
+```
+
+## Browsing the Store
+
+Once it's open, AppImage Pool looks pretty good. The **Browse** tab starts on **Explore**, with a carousel of featured apps at the top and rows for each category underneath. The sidebar has the full category list: Network, Utility, System, Science, Development, Education, Graphics, Office, Game, Video, Audio, Finance, and a few more.
+
+![AppImage Pool's Explore page with the GIMP featured banner, the category sidebar, and Network and Utility rows](/docs-static/img/2026/10/appimage-pool-linux-app-store/appimage-pool-explore-home.jpg)
+
+Clicking a category opens a full grid of everything in it. There's a search button in the top-left corner, and **Grid** and **List** buttons on the right switch the layout.
+
+![The Network category in AppImage Pool showing a grid of apps including Discord, Firefox, Firefox Beta, and Firefox ESR](/docs-static/img/2026/10/appimage-pool-linux-app-store/appimage-pool-network-category.jpg)
+
+The selection is broad. Scrolling through, I spotted Inboxer, ScreenCloud, Thunderbird, Waterfox, and Audacity, along with the different Firefox channels.
+
+## Downloading and Running Apps
+
+To test it, I grabbed the Firefox Nightly build. Open the app page and click **Download**. AppImage Pool pulls the release list from GitHub and shows a dialog with the latest build and its file. Tick the file and a **Download** button appears at the top of the dialog. The little up and down arrows next to the release name switch to older releases, which is where the version history comes in.
+
+![The download dialog for Firefox Nightly in AppImage Pool, listing the latest continuous build's x86_64 AppImage file](/docs-static/img/2026/10/appimage-pool-linux-app-store/firefox-nightly-download-dialog.jpg)
+
+Progress shows up under **Downloads**, and once it finishes the app appears under **Installed**. Click it there and it launches. Normally you'd have to mark a freshly downloaded AppImage as executable first, but AppImage Pool handles that for you, which is nice.
+
+By default, everything lands in an `Applications` folder in your home directory (`~/Applications`). You can change the download path in **Preferences**, though one open issue reports that changing directories there doesn't always work.
+
+<Note>
+The download dialog uses GitHub's API without logging in, which GitHub limits to 60 requests per hour per IP address. If **Download** suddenly does nothing, waiting a while is worth trying. Apps that aren't hosted on GitHub open their download page in your browser instead.
+</Note>
+
+Not everything went smoothly. I tried Waterfox and ran into a problem with it, and the app clearly had some rough edges at the time. The next release, 4.9.9 in January 2022, listed fixes for Waterfox and Etcher. Audacity worked fine, though. I clicked download, picked the file, and it was done almost immediately. It opened without any problems.
+
+![Choosing the Audacity 3.1.3 AppImage in AppImage Pool's download dialog, as shown in the video](/docs-static/img/2026/10/appimage-pool-linux-app-store/audacity-version-download.jpg)
+
+There's also a **Portable Home** option (added in 4.9.9) that launches apps with AppImage's `--appimage-portable-home` flag. That keeps an app's settings in a folder next to the AppImage instead of in your real home directory, which is handy when you're testing a version you don't want touching your normal config.
+
+## Adding AppImages to Your App Menu
+
+AppImages are never really installed. Everything the app needs is inside that one file. That also means a downloaded AppImage doesn't show up in your app launcher on its own. In the video, searching for Firefox only found the regular Firefox I already had installed, not the Nightly build.
+
+This is what AppImages call desktop integration. Some AppImages offer to do it themselves when you first run them. For the rest, you have a few options.
+
+### Option 1: AppImage Pool itself (5.0.0 and newer)
+
+This is the part that changed since the video. In current versions, every app in the **Installed** tab has a check-mark button to integrate it and an X to remove the integration, next to the trash icon. Integration extracts the AppImage's own `.desktop` file and icon, writes them to `~/.local/share/applications` and `~/.local/share/icons` with an `aip_` prefix, and points the entry at the AppImage. It also renames the AppImage file to add a checksum, so don't be surprised when the filename changes. It doesn't work for every AppImage, though. If the `.desktop` file inside the AppImage is a symlink, the menu entry it writes can end up as a broken link, which is one of the open issues on the tracker.
+
+### Option 2: Gear Lever
+
+If you want a dedicated manager, [Gear Lever](https://github.com/mijorus/gearlever) is the one I'd point people to now. It doesn't browse a catalog. It manages AppImages you already have: drag one in, and it moves the file into a folder of your choice, creates the menu entry, and can update apps in place or keep multiple versions side by side. It's GPL-3.0-or-later, actively developed (4.6.2 shipped in July 2026), and on Flathub:
+
+```bash
+flatpak install flathub it.mijorus.gearlever
+```
+
+AppImage Pool and Gear Lever pair nicely: one finds and downloads, the other organizes.
+
+### Option 3: AppImageLauncher
+
+In the video I tried [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher). It hooks into opening AppImages and asks whether to run the file once or integrate it, then adds update and remove entries to the launcher. It offered RPM, Debian, and AppImage builds, and none of them wanted to work on Clear Linux, so I gave up on it for that system. The project is still around, and its 3.0 line has been in beta since 2025 (v3.0.0-beta-3 came out in October 2025).
+
+### Option 4: Write a desktop entry by hand
+
+This is what I ended up doing. A desktop entry is a small text file in `~/.local/share/applications`, defined by the [Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry/latest/). I downloaded a PNG icon, saved it in an `icons` folder inside `~/Applications`, and created a file like this:
+
+```bash
+nano ~/.local/share/applications/firefox-nightly.desktop
+```
+
+```ini
+[Desktop Entry]
+Type=Application
+Name=Firefox Nightly
+Comment=Firefox Nightly
+Icon=/home/your-user/Applications/icons/firefox-nightly.png
+Exec=/home/your-user/Applications/firefox-nightly-x86_64.AppImage
+Terminal=false
+Categories=Network;
+```
+
+Replace the paths with your username and the real AppImage filename. Use full paths, since `~` isn't expanded in these fields. (I used `Internet` as the category in the video. `Network` is the official category name, so use that.)
+
+After saving it I restarted GNOME, typed "firefox" in the search, and Firefox Nightly showed up and launched. If the entry doesn't appear right away for you, logging out and back in does the same job.
+
+<Warning>
+A hand-written entry doesn't clean up after itself. If you delete or rename the AppImage, or swap in a new version with a different filename, you have to edit or remove the `.desktop` file yourself.
+</Warning>
+
+## Final Thoughts
+
+AppImage Pool is a nice little application. You could download all of this through your web browser, but I like having a graphical tool on my system where I can quickly grab whatever app I need, and being able to pick a specific version is exactly why I use AppImages in the first place.
+
+Today it's in a better spot than when I recorded, since it can handle menu integration itself. It's also clearly in maintenance mode, so if you hit integration bugs, pair it with Gear Lever and use AppImage Pool just for browsing and downloads. And keep in mind that AppImageHub is a directory, not a vetted store. Stick to apps from developers you trust.
+
+## Official References
+
+- [AppImage Pool on GitHub](https://github.com/prateekmedia/appimagepool)
+- [AppImage Pool releases](https://github.com/prateekmedia/appimagepool/releases)
+- [AppImage Pool 5.1.0 release](https://github.com/prateekmedia/appimagepool/releases/tag/5.1.0)
+- [AppImage Pool on Flathub](https://flathub.org/apps/io.github.prateekmedia.appimagepool)
+- [Flathub setup](https://flathub.org/setup)
+- [AppImageHub](https://appimage.github.io/)
+- [AppImageHub catalog repository](https://github.com/AppImage/appimage.github.io)
+- [AppImage project](https://appimage.org/)
+- [AppImage FUSE troubleshooting](https://docs.appimage.org/user-guide/troubleshooting/fuse.html)
+- [GitHub REST API rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
+- [Gear Lever on GitHub](https://github.com/mijorus/gearlever)
+- [Gear Lever on Flathub](https://flathub.org/apps/it.mijorus.gearlever)
+- [AppImageLauncher](https://github.com/TheAssassin/AppImageLauncher)
+- [Desktop Entry Specification](https://specifications.freedesktop.org/desktop-entry/latest/)
