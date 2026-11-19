@@ -992,7 +992,9 @@
     "name": "KDE Connect",
     "category": "Desktop",
     "description": "Connect a phone and Linux desktop for file sharing and remote controls.",
-    "coverage": [],
+    "coverage": [
+      "/kde-connect-iphone-linux"
+    ],
     "videos": [
       {
         "id": "d4ghirmM1Ys",
