@@ -2342,7 +2342,9 @@
     "name": "Ulauncher",
     "category": "Desktop",
     "description": "Launch applications and extensions with a configurable desktop search tool.",
-    "coverage": [],
+    "coverage": [
+      "/ulauncher-linux-app-launcher"
+    ],
     "videos": [
       {
         "id": "oO9ytyS5laQ",
