@@ -1,0 +1,179 @@
+export const title = "cool-retro-term: A Retro CRT Terminal Emulator for Linux and macOS"
+export const description = "cool-retro-term makes your shell look like an old CRT monitor. Here's how to install the current Qt6 build on Linux or macOS, plus a tour of its profiles, fonts, and effects."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Mac", "Terminal", "Customization"]
+export const cover = "/docs-static/img/2026/10/cool-retro-term-retro-terminal/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="oRU-hH17NnE" title="TechHut's cool-retro-term walkthrough" />
+
+I was doing research for a different video when I came across this, and it was too cool not to share. [cool-retro-term](https://github.com/Swordfish90/cool-retro-term) is a terminal emulator that works like any other terminal, except it makes everything look like it's running on an old cathode ray tube monitor. Glowing text, scanlines, screen curvature, a little flicker, the whole thing.
+
+A viewer recommended it in the comments on one of my terminal apps videos, which is how I found it.
+
+The video was recorded in June 2021 on EndeavourOS with KDE Plasma. Since then the project has moved to Qt6 and added tabs, multiple windows, and a new set of profiles and fonts. The install steps and the settings tour below have been updated for [2.0.0-beta2](https://github.com/Swordfish90/cool-retro-term/releases/tag/2.0.0-beta2), released May 31, 2026. The screenshots and my impressions come from the original recording, so the profile names you see in them are the older ones.
+
+## What cool-retro-term Is
+
+The project describes itself as a terminal emulator that mimics the look and feel of old cathode tube screens, built to be eye candy, customizable, and reasonably lightweight. Under the hood it uses [qmltermwidget](https://github.com/Swordfish90/qmltermwidget), a QML port of the terminal widget from Konsole, so it runs your normal shell and command-line tools. The look is all a rendering layer on top.
+
+- **Platforms:** Linux and macOS
+- **Toolkit:** Qt6 (the 1.x releases used Qt5)
+- **License:** GPL; the repository ships both GPL-2.0 and GPL-3.0 license files
+
+It's not trying to be a fast, minimal daily driver like [Ghostty](/ghostty-best-terminal-emulator-linux-mac). The whole point is that it's a bit extreme. You can tone it down, though, and I'll get to that.
+
+## Installing cool-retro-term
+
+The README gives you two options. Grab the AppImage (Linux) or dmg (macOS) from the releases page, or install the package from your distribution's official repositories. There's no Flathub listing.
+
+### Arch Linux
+
+In the video I installed it from the Arch repos. It's in the `extra` repository now (the old `community` repo was merged into `extra`), and as of this writing it's already at 2.0.0-beta2:
+
+```bash
+sudo pacman -S cool-retro-term
+```
+
+### Fedora, Debian, and Ubuntu
+
+Fedora has it in the official repos. Debian and Ubuntu have it too (on Ubuntu it's in `universe`):
+
+```bash
+# Fedora
+sudo dnf install cool-retro-term
+
+# Debian / Ubuntu
+sudo apt install cool-retro-term
+```
+
+Fedora 45 already ships 2.0.0-beta2. Fedora 44 and older, Debian, and Ubuntu are still on the older Qt5-based 1.2.0 release, which works fine but doesn't have tabs or the new profiles. If you want the current version on those, use the AppImage.
+
+### AppImage (any Linux distro)
+
+The AppImage is an x86_64 build. Download it, make it executable, and run it:
+
+```bash
+wget https://github.com/Swordfish90/cool-retro-term/releases/download/2.0.0-beta2/cool-retro-term-2.0.0-beta2.AppImage
+chmod +x cool-retro-term-2.0.0-beta2.AppImage
+./cool-retro-term-2.0.0-beta2.AppImage
+```
+
+Check the [releases page](https://github.com/Swordfish90/cool-retro-term/releases) for a newer version before you copy that. You'll also see a "Rolling Release" pre-release there. Stick with the latest tagged release unless you want to test things.
+
+### macOS
+
+Download `cool-retro-term-2.0.0-beta2.dmg` from the same release and drag the app into Applications.
+
+<Note>
+The Homebrew cask for cool-retro-term is stuck at 1.2.0 and was disabled on September 1, 2026, because it fails Homebrew's Gatekeeper check. Use the dmg from GitHub instead.
+</Note>
+
+### Building from source
+
+The README points to the wiki for [Linux](https://github.com/Swordfish90/cool-retro-term/wiki/Build-Instructions-(Linux)) and [macOS](https://github.com/Swordfish90/cool-retro-term/wiki/Build-Instructions-(macOS)) build instructions. Heads up: the Linux page still lists Qt5 dependencies, while the current code requires Qt6. Most people should use a package or the AppImage.
+
+## Using It
+
+Once it's open, it really is just a terminal. I typed `ls`, had neofetch on screen, and could already see how wild the color palette gets with the default amber profile. It looks like an old monitor with the colors totally out of whack compared to what we're used to. Scrolling has this delayed, smeared look to it from the burn-in effect, and there's a glow line that rolls down the screen.
+
+To see how a real TUI looks, I installed bpytop with `yay` and ran it. It looked super cool and gave me major Fallout vibes.
+
+![bpytop running in cool-retro-term with the Default Amber profile as shown in the original video, showing CPU, memory, disk, network, and process panels in glowing orange](/docs-static/img/2026/10/cool-retro-term-retro-terminal/bpytop-default-amber.jpg)
+
+## Settings and Profiles
+
+Everything is in the right-click menu. Right-click anywhere in the terminal and choose **Settings**. On Linux, the same menu has a **Profiles** submenu for quick switching, plus zoom, new tab, and new window.
+
+One thing I ran into: right-clicking did nothing while bpytop was running. That's because bpytop uses the mouse, so the click goes to the app. In the video I quit bpytop and right-clicked from the normal prompt. In the current code, holding Shift while you right-click opens the menu anyway. There's also a **Show Menubar** option under **Advanced** if you'd rather have a menu bar.
+
+The Settings window has four tabs: **General**, **Terminal**, **Effects**, and **Advanced**. My desktop theme didn't play nicely with the settings window in the video, so it looked a little washed out, but everything worked.
+
+### Profiles (General tab)
+
+The **General** tab is where the fun starts. The profile list is a set of complete looks you can switch between instantly, and you can **Save**, **Load**, **Remove**, **Import**, and **Export** your own. Below it, the **Screen** section has sliders for brightness, contrast, margin, screen radius, frame size, and opacity.
+
+![The cool-retro-term Settings window as shown in the original video, with the older profile list including Default Pixelated, Apple II, Vintage, IBM Dos, IBM 3278, and Futuristic](/docs-static/img/2026/10/cool-retro-term-retro-terminal/settings-profile-list-video.jpg)
+
+In the video, I clicked through the profiles that shipped back then: Default Amber, Monochrome Green, Green Scanlines (you could see the scanline rolling down), Default Pixelated, Apple ][, Vintage, IBM Dos, IBM 3278, and Futuristic. Vintage looked really old, and the IBM ones were great. My two favorites were **Default Pixelated** and **Futuristic**. Those are the two I said I'd actually use every day. Futuristic also handled transparency in the window pretty well.
+
+The 2.0 releases replaced that list with new and updated profiles. In 2.0.0-beta2 they are:
+
+| Profile | Profile | Profile |
+|---|---|---|
+| Default Amber | Monochrome Green | Deep Blue |
+| Commodore 64 | Commodore PET | Apple ][ |
+| Atari 400 | IBM VGA 8x16 | IBM 3278 Reborn |
+| Neon Cyan | Ghost Terminal | Plasma |
+| Boring | E-Ink | |
+
+So Default Pixelated and Futuristic aren't built in anymore. If you liked one of the old looks, save your own profile and tweak the settings below until it's close.
+
+Back in the video, I stuck with Default Pixelated and opened bpytop again. All the colors came through with that dotted pixel font, and it looked beautiful. It glitched off to the side every so often and a few things didn't line up perfectly, but that's kind of the charm.
+
+![bpytop in cool-retro-term using the older Default Pixelated profile as shown in the original video, with full-color text rendered as a dotted pixel font](/docs-static/img/2026/10/cool-retro-term-retro-terminal/bpytop-default-pixelated.jpg)
+
+### Fonts and colors (Terminal tab)
+
+The **Terminal** tab controls the font. In the video it was set to the pixel rendering because of the profile I picked. Here's what it has now:
+
+- **Source:** **Bundled** fonts or **System** fonts. Bundled includes retro fonts like Terminus, Apple II, IBM 3278, Commodore PET, and Fixedsys Excelsior, plus modern ones like JetBrains Mono, Fira Code, Hack, Iosevka, and Source Code Pro.
+- **Rendering:** Default, Scanlines, Pixels, Sub-Pixels, or Modern.
+- **Name:** the font itself.
+- **Scaling**, **Font Width**, and **Line Spacing**.
+
+The **Colors** section sets the font, background, and frame colors, plus chroma and saturation. For quick size changes you don't need the settings at all: Ctrl plus the scroll wheel zooms, and Zoom In and Zoom Out are in the right-click menu.
+
+### Effects tab
+
+This is where you fix the stuff that bugs you. Say you really like a profile and its font but don't want the static or the line rolling through. You can turn those off here. Each effect has its own slider and checkbox:
+
+- Bloom
+- BurnIn
+- Static Noise
+- Jitter
+- Glow Line
+- Screen Curvature
+- Ambient Light
+- Flickering
+- Horizontal Sync
+- RGB Shift
+- Frame Shininess
+
+### Advanced tab
+
+**Advanced** has the performance settings I mentioned in the video: effects FPS, texture quality, bloom quality, and burn-in quality. Lower them if the effects are heavy on your machine. It also has an option to run a custom command instead of your shell at startup, a blinking cursor toggle, and the menu bar option.
+
+### Tabs and windows
+
+Tabs and multiple windows are new in 2.0, so I couldn't show them in the video. On Linux, the default shortcuts are:
+
+| Action | Shortcut |
+|---|---|
+| New tab | Ctrl+Shift+T |
+| Close tab | Ctrl+Shift+W |
+| Switch to tab 1 to 9 | Alt+1 to Alt+9 |
+| New window | Ctrl+Shift+N |
+| Copy / Paste | Ctrl+Shift+C / Ctrl+Shift+V |
+
+## My Take
+
+This is just a fun one. It works like a normal terminal, and the CRT look is dramatic in the best way. Running something like bpytop in it is a blast. Out of the box it's pretty extreme, but between the profiles and the effects sliders you can dial it in until it's something you'd actually leave open.
+
+Keep in mind the 2.0 line is still labeled beta. If you want the latest profiles and tabs, use the Arch or Fedora 45 package, or the AppImage. If you just want to try the look, your distro's package is fine. If you're looking for more terminal tools to go with it, check out my list of [7 awesome Linux terminal utilities](/7-awesome-linux-terminal-utilities).
+
+## Official References
+
+- [cool-retro-term on GitHub](https://github.com/Swordfish90/cool-retro-term)
+- [cool-retro-term releases](https://github.com/Swordfish90/cool-retro-term/releases)
+- [2.0.0-beta2 release](https://github.com/Swordfish90/cool-retro-term/releases/tag/2.0.0-beta2)
+- [2.0.0-beta1 release (Qt6, tabs and windows)](https://github.com/Swordfish90/cool-retro-term/releases/tag/2.0.0-beta1)
+- [Build instructions (Linux)](https://github.com/Swordfish90/cool-retro-term/wiki/Build-Instructions-(Linux))
+- [Build instructions (macOS)](https://github.com/Swordfish90/cool-retro-term/wiki/Build-Instructions-(macOS))
+- [qmltermwidget](https://github.com/Swordfish90/qmltermwidget)
+- [Arch Linux package](https://archlinux.org/packages/extra/x86_64/cool-retro-term/)
+- [Debian package](https://packages.debian.org/sid/cool-retro-term)
+- [Fedora package](https://packages.fedoraproject.org/pkgs/cool-retro-term/cool-retro-term/)

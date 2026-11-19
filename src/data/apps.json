@@ -291,7 +291,9 @@
     "name": "cool-retro-term",
     "category": "Terminal",
     "description": "Use a terminal emulator with customizable retro display effects.",
-    "coverage": [],
+    "coverage": [
+      "/cool-retro-term-retro-terminal"
+    ],
     "videos": [
       {
         "id": "oRU-hH17NnE",
