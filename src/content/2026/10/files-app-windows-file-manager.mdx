@@ -1,0 +1,256 @@
+export const title = "Files: A Better File Manager for Windows with Tabs and Dual Pane"
+export const description = "Install Files, the open source File Explorer alternative for Windows, and tour its tabs, dual pane, layouts, tags, Git integration, previews, and the option to make it your default file manager."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Windows", "Apps", "Customization"]
+export const cover = "/docs-static/img/2026/10/files-app-windows-file-manager/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="qIfdcqe2oqo" title="TechHut's Files for Windows walkthrough" />
+
+Yes, this is a Windows article. I still keep a Windows partition on my laptop because a few apps I needed for school, like ArcGIS Pro, only run there. When I'm stuck in that environment I want it set up the way I like, and the first thing that bugs me is File Explorer. It looks fine, but even after the jump to Windows 11 it didn't have tabs when I made this video, which is something every Linux file manager figured out ages ago.
+
+[Files](https://files.community/) fixes that. It's an open source file manager for Windows from the Files Community, built around tabs, dual panes, multiple layouts, and tags. Tabs alone made it a game changer for me.
+
+Linode sponsored the video this article is based on.
+
+The video was published in January 2022 and shows Files 2.1. The written steps and feature notes have been updated for [Files v4.3](https://files.community/blog/posts/v4-3-0/), released October 11, 2026. A lot has changed since then: the Microsoft Store version is now paid (the classic installer is still free), the custom theme packs I installed are gone, the Bundles widget was removed, and tags, Git integration, and a preview pane have been added. The hands-on impressions come from the original recording, and I've noted where things look different now.
+
+## What Files Is
+
+Files describes itself as a modern file manager that helps you organize your files and folders. It's a packaged Windows app, so it runs alongside File Explorer instead of replacing anything on disk. Here's the current picture:
+
+| | Details |
+|---|---|
+| Latest stable | v4.3 (October 11, 2026) |
+| Platforms | Windows 10 version 2004 (build 19041) or newer, Windows 11; x64 and ARM64 |
+| Source | [files-community/Files on GitHub](https://github.com/files-community/Files) |
+| License | MIT for most of the code, with a portion of the source files under MPL-2.0 (the repo ships both [LICENSE-MIT](https://github.com/files-community/Files/blob/main/LICENSE-MIT) and [LICENSE-MPL](https://github.com/files-community/Files/blob/main/LICENSE-MPL)) |
+| Price | Free classic installer, or a paid Microsoft Store listing |
+
+The video description called it free and open source. It's still open source, but how you pay for it depends on where you get it, so here's how that works now.
+
+## Store or Classic Installer?
+
+There are two official ways to get the stable release, and both are on version 4.3 right now:
+
+- **Microsoft Store.** The [Store listing](https://apps.microsoft.com/detail/9NGHP3DX8HDX) is paid. It's $12.99 in the US as of October 2026, with a free trial, and prices vary by region. The project calls buying it "the best way to support its development."
+- **Classic installer.** This is the free option, from the [download page](https://files.community/download) or the [install docs](https://files.community/docs/getting-started/install). It's an `.appinstaller` file, not a classic `.exe` setup, and it installs Files as an MSIX package. The project asks classic installer users to consider [supporting it directly](https://files.community/sponsor) instead.
+
+Either way, Files checks for updates when it opens and periodically while it runs, and shows an indicator in the toolbar when one is ready. Installing an update restarts the app, so save what you're doing first.
+
+There's also a **Files Preview** channel that installs alongside stable if you want new features early.
+
+## Install Files
+
+### Classic installer (free)
+
+Open the [install page](https://files.community/docs/getting-started/install), download the stable `.appinstaller` file, and run it. Windows' App Installer handles the rest, along with dependencies like the Windows App Runtime.
+
+You can do the same thing from PowerShell. The docs say to use the built-in Windows PowerShell 5 as administrator, because PowerShell 7 won't work for this:
+
+```powershell
+Add-AppxPackage -AppInstallerFile https://cdn.files.community/files/stable/Files.Package.appinstaller
+```
+
+Wait for the blue progress bar at the top of the window to finish, and Files shows up in the Start menu.
+
+<Note>
+Installation needs the Windows Update and Delivery Optimization services enabled. The project says modified Windows builds and "debloat" scripts aren't supported, and suggests setting those two services to manual and starting them if an install fails. If you see "Cannot open app package," update the App Installer component from the Microsoft Store.
+</Note>
+
+The install page also lists offline packages for x64 and ARM64 that you install in order (two VCLibs packages, the Windows App Runtime, then the Files bundle).
+
+### Microsoft Store
+
+Search for Files in the Store or open the [listing](https://apps.microsoft.com/detail/9NGHP3DX8HDX) and buy or start the trial. In the video I pointed to the Store as the easy way to get it. Just know it's a paid listing now.
+
+### Package managers
+
+WinGet, Chocolatey, and Scoop packages exist, but the docs note these are maintained by third parties, not the Files team:
+
+```powershell
+winget install -e --id FilesCommunity.Files
+```
+
+If you'd rather build it yourself, the [building from source](https://files.community/docs/contributing/building-from-source) guide covers it.
+
+## The Interface
+
+When I first opened Files, the folder view reminded me of Deepin's default look, and the toolbar is close enough to File Explorer that you won't feel lost. Cut, copy, and paste are where you'd expect, just following whatever color scheme you pick in Files.
+
+### Selection, sorting, and layouts
+
+I jumped into my Downloads folder, which had plenty in it. The default was a list with name, date, type, and size columns, and the toolbar had selection options for select all, invert selection, and clear selection. Little features like that make it awesome. Inverting is a good example: select the one file you don't want, invert, and you've got everything else. Sorting and grouping options sit right next to it.
+
+![Files 2.1 in the video showing the Downloads folder in the Details layout with the Favorites, Drives, Cloud Drives, and Network drives sidebar](/docs-static/img/2026/10/files-app-windows-file-manager/files-details-view-downloads.jpg)
+
+The layout menu is where it gets fun. In 2.1 it offered Details, Tiles, Small, Medium, and Large Icons, and Columns. I flipped to Columns and drilled into a folder, which happened to be the Files release I'd downloaded. If you like working in columns, it's a great option. I switched back to Details for the rest of the video.
+
+The layouts have been reorganized since. Current Files has five [layout types](https://files.community/docs/features/layout-picker) plus an adaptive mode:
+
+| Layout | Shortcut |
+|---|---|
+| Details | `Ctrl+Shift+1` |
+| List | `Ctrl+Shift+2` |
+| Cards | `Ctrl+Shift+3` |
+| Grid | `Ctrl+Shift+4` |
+| Columns | `Ctrl+Shift+5` |
+| Adaptive (picks one based on folder contents) | `Ctrl+Shift+6` |
+
+Item size is a slider now, or `Ctrl+Plus` and `Ctrl+Minus`. A layout change only applies to the current folder unless you turn on layout syncing in settings.
+
+The same menu has toggles for hidden items (`Ctrl+H`) and file extensions, which is where I'd turn extensions off if I didn't want them.
+
+### Terminal and compact overlay
+
+The overflow menu had **Open in Terminal**, which I liked. Today the shortcut is ``Ctrl+` `` to open the current folder in a terminal, and ``Ctrl+Shift+` `` to open it as administrator. Files uses whatever default terminal Windows is set to, and with Windows Terminal each selected folder opens in its own tab. Windows Terminal on Windows 11 is actually really nice.
+
+There's also a **compact overlay** mode that shrinks Files into a tiny always-on-top window. I exited it with a hotkey in the video. In current versions, `F12` toggles it.
+
+### Sidebar
+
+The sidebar has your favorites, drives, cloud drives, and network locations. Most of it can be hidden. In the video I showed that if you don't want the network drives section, a quick right-click hides it. Current versions show a "Hide section" option on the same right-click menu.
+
+## Tabs
+
+This is the big one for me. `Ctrl+T` opens a new tab to the Home page, and I hammered it a few times in the video just to show how quick it is. Here's the current set of [tab shortcuts](https://files.community/docs/features/tabs):
+
+| Action | Shortcut |
+|---|---|
+| New tab | `Ctrl+T` |
+| Close tab | `Ctrl+W` |
+| Reopen closed tab | `Ctrl+Shift+T` |
+| Duplicate tab | `Ctrl+Shift+K` |
+
+You can also drag a tab out to make a new window, or drag tabs between windows.
+
+In 2.1 there was a vertical tab flyout next to the tab strip that listed every open tab so you could manage them. That flyout isn't in the current app. The button in the top-left corner of the title bar is now the tab **Actions** button, which mostly deals with panes.
+
+## The Home Page
+
+The Home page shows your main folders, drives, and recent files. In the video I used **Manage widgets** to turn on the **Bundles** widget, made a bundle called "testing," and added my Synology Drive folder to it. I liked the idea of a projects bundle plus shortcuts to backup and media folders.
+
+Bundles has since been removed. Current Home page widgets are Quick access, Drives, Network locations, Tags, and Recent files, each of which you can turn on or off in the General settings.
+
+## Settings and Themes
+
+Settings sit next to search in the title bar, or press `Ctrl+,`. The color option is the same idea as before: force light or dark, or leave it on Default to follow your Windows theme. `Ctrl+Alt+T` toggles between them.
+
+### What changed with custom themes
+
+In 2.1, I had downloaded the community theme pack from the Files Custom-themes repository and dropped the XAML files into the app's themes folder, which you could reach from the info button next to **Custom themes**. That got me Luxury Red, Matte Dark and Gray, Solarized, and a bunch more. My favorite was Glass, which added transparency, so I kept it for the rest of the video.
+
+![The Custom themes grid in Files 2.1 settings from the video, with the Glass theme selected among Bronze, Cyber, Dracula, Luxury Red, and others](/docs-static/img/2026/10/files-app-windows-file-manager/files-2-1-custom-themes.jpg)
+
+That system is gone. The Custom-themes repository no longer exists, and current Files doesn't load XAML theme files. [Appearance settings](https://files.community/docs/customize-settings/appearance) now cover:
+
+- **Backdrop:** Mica and Mica Alt (Windows 11 only) or Acrylic (Windows 10 and 11)
+- **Background color:** a palette or color picker, opaque or semi-transparent
+- **Background image:** any image or GIF, with opacity and scaling
+- **Font:** a font picker
+
+For finer control, there are color keys in the settings file. Go to **Settings > Advanced > Edit settings file**, but the docs say to quit Files first by right-clicking its tray icon and choosing **Quit**. The docs include a few ready-made sets, and the Glass look I liked is one of them. Pair it with the Acrylic backdrop and set these keys in the JSON file:
+
+```json
+{
+  "AppThemeBackgroundColor": "#00000000",
+  "AppThemeAddressBarBackgroundColor": "#00000001",
+  "AppThemeToolbarBackgroundColor": "#00000001",
+  "AppThemeSidebarBackgroundColor": "#00000001",
+  "AppThemeFileAreaBackgroundColor": "#00000001",
+  "AppThemeInfoPaneBackgroundColor": "#00000001"
+}
+```
+
+Only add or change those keys inside the existing file, don't replace the whole thing. The docs also have Finder, Nord, and Dracula sets. **Export settings** in the same Advanced page makes a backup archive first, which is worth doing.
+
+### Preferences
+
+The rest of the settings are what you'd expect: language, date format, and startup behavior (a new tab, your last session, or specific folders). The terminal app picker I showed in the video isn't in the settings anymore, since Files now follows the Windows default terminal.
+
+## Dual Pane
+
+Under the old Multitasking settings I enabled dual pane and "open new tabs in dual pane mode." After that, a new tab opened with two panes side by side, so I could have Downloads on one side and Documents on the other in one window and drag the divider to resize them. It's really cool, but I turned it back off. Tabs alone are enough for me.
+
+![Two Home page panes side by side in dual pane mode in Files 2.1, as shown in the video, including the since-removed Bundles widget](/docs-static/img/2026/10/files-app-windows-file-manager/files-dual-pane-home.jpg)
+
+Dual pane is no longer a setting you have to find first. Per the [dual pane docs](https://files.community/docs/features/dual-pane), you can:
+
+- Use the **Actions** button in the top-left corner and pick a vertical or horizontal split.
+- Right-click a folder and choose to open it in a new pane.
+- Drag a tab into the file area. Drop it on the left or right for a vertical split, or the top or bottom for a horizontal one.
+- Press `Ctrl+Shift+S` to toggle dual pane.
+
+The General settings page still has "always open new tabs in dual pane mode," off by default, and a choice of default split direction.
+
+## Tags
+
+Tags were an experimental toggle in 2.1, and I didn't cover them in the video. They're a full feature now. Per the [tags docs](https://files.community/docs/features/tags):
+
+1. Open **Settings > Tags** and click **New tag**. Each tag gets a random color you can change.
+2. Tag items from the right-click menu, the Details pane, or the toolbar, or drag items onto a tag in the sidebar.
+3. Click a tag in the sidebar to search for everything with it, or type `tag:Photos` in the search box. Separate several tags with commas.
+
+Tags are stored in NTFS alternate data streams, not a database, so they follow a file when it moves, even outside Files. That also means they only work on NTFS drives and may not work with every cloud storage provider. To get your tag list on another PC, export settings from **Settings > Advanced** and import them there.
+
+## Git Integration
+
+This one's new since the video, and it's handy if you keep repositories on Windows. According to the [Git docs](https://files.community/docs/features/git), when you open a folder that's a Git repository:
+
+- The status bar shows the current branch and how many commits you're ahead or behind. Click the count to push or pull.
+- A **Branches** flyout lets you switch branches or create a new one.
+- The Details layout can add Git status, last commit, commit hash, and commit author columns from the column headers.
+- You can clone a GitHub repository by dragging its URL from your browser into Files or from the Command Palette (`Ctrl+Shift+P`).
+
+Pushing and syncing with GitHub needs you to sign in, and Files shows instructions when it needs authorization. Version 4.3 added progress reporting for long Git operations, real error messages when one fails, and support for repositories cloned over SSH.
+
+## Previews
+
+The pane on the right is called the info pane now, toggled with `Ctrl+Alt+I`, and it shows file details or a preview of the selected item. If you'd rather have a macOS-style spacebar preview, Files [works with](https://files.community/docs/features/integrations) PowerToys Peek, QuickLook, and SeerPro without extra setup: select a file and press Space. The Files team notes those are third-party tools it doesn't officially endorse.
+
+## Set Files as the Default File Manager
+
+This was an experimental toggle in 2.1 alongside tags and folder size. I turned it on in the video, even though I hadn't tested it before, and it worked. When I opened a folder afterward, it opened in Files instead of File Explorer.
+
+It's still experimental. It's under **Settings > Advanced > Experimental feature flags > Set Files as the default file manager**. Windows doesn't have a supported way to replace File Explorer, so Files reroutes Explorer calls through the registry, including `Win+E`. The docs say it's stable in most cases but can cause problems, that the Files team takes no responsibility for them, and that you should back up your registry before turning it on. Take that advice.
+
+Folder size calculation is no longer experimental, by the way. It's **Calculate folder sizes** under **Settings > Files & folders**, with a warning that it's CPU-heavy.
+
+## File Transfers
+
+One thing I almost forgot to show: copying files. I dragged a couple of video files I'd just recorded into a project folder, and the transfer status popup showed exactly what it was copying and the progress. It's a small thing, but it's beautiful compared to the File Explorer dialog. In current versions this lives in the **Status Center**, which also shows Git operations.
+
+![The Ongoing Tasks flyout in Files 2.1 from the video showing two items being copied to a Videos folder at 4 percent](/docs-static/img/2026/10/files-app-windows-file-manager/files-ongoing-tasks-copy.jpg)
+
+## Final Thoughts
+
+I'm really liking Files. If you're stuck on Windows, or you dual boot into it every so often like I do, it makes the experience a little better. Tabs alone are worth it, the UI looks great, and the default file manager trick worked for me in the video.
+
+It's come a long way since 2.1. Dual pane is easier to get to, and tags, Git integration, and previews add a lot on top of the tabs I came for. Pay for the Store version if you want to support the project, or grab the free classic installer. Just back up your registry before you flip the default file manager switch.
+
+## Official References
+
+- [Files website](https://files.community/)
+- [Download](https://files.community/download)
+- [Install docs](https://files.community/docs/getting-started/install)
+- [Announcing Files v4.3](https://files.community/blog/posts/v4-3-0/)
+- [GitHub repository](https://github.com/files-community/Files)
+- [GitHub releases](https://github.com/files-community/Files/releases)
+- [Microsoft Store listing](https://apps.microsoft.com/detail/9NGHP3DX8HDX)
+- [MIT license](https://github.com/files-community/Files/blob/main/LICENSE-MIT)
+- [MPL-2.0 license](https://github.com/files-community/Files/blob/main/LICENSE-MPL)
+- [Tabs](https://files.community/docs/features/tabs)
+- [Dual pane](https://files.community/docs/features/dual-pane)
+- [Layout picker](https://files.community/docs/features/layout-picker)
+- [Tags](https://files.community/docs/features/tags)
+- [Git integration](https://files.community/docs/features/git)
+- [Terminal](https://files.community/docs/features/terminal)
+- [Third-party integrations](https://files.community/docs/features/integrations)
+- [Appearance settings](https://files.community/docs/customize-settings/appearance)
+- [General settings](https://files.community/docs/customize-settings/general)
+- [Files & folders settings](https://files.community/docs/customize-settings/files-and-folders)
+- [Advanced settings](https://files.community/docs/customize-settings/advanced)
+- [Building from source](https://files.community/docs/contributing/building-from-source)
