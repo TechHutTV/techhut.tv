@@ -1,0 +1,317 @@
+export const title = "Fancy Bash Prompt: Customize Your Linux Terminal with synth-shell"
+export const description = "Back up your .bashrc, install synth-shell's prompt with the setup script, get the Powerline font working, and recolor the prompt with 256-color codes. Also covers the greeter, better-ls, aliases, history, and launching fastfetch."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Terminal", "Customization"]
+export const cover = "/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="jS-QZKjAd-U" title="TechHut's synth-shell fancy Bash prompt walkthrough" />
+
+I've done a few videos on making the Linux terminal look nicer, and one thing you all kept asking about was the prompt itself: the colored blocks with the little triangle separators showing your user, host, and current folder. That's what this one covers. It's done with a script, so it's easy to set up and just as easy to customize.
+
+The tool is [synth-shell](https://github.com/andresgongora/synth-shell) by Andres Gongora. It's a collection of Bash scripts, and the part I care about here is **synth-shell-prompt**, the fancy Bash prompt. It adds configurable colors, Git status when you're inside a repository, and a clearer split between what you type and what commands print.
+
+The video came out in June 2021. synth-shell is still maintained. The master branch got a round of updates in August 2026 (refreshed docs, an isolated install test, and cleanup of the Git submodules), and more in October and November 2026 (installer and hook fixes, a warning for Zsh users, and a few prompt fixes). The steps below follow the current repository. The prompt config has picked up a few new options since I recorded, and neofetch, which I used for the bonus tip, has been archived. I've noted both where they come up. The hands-on footage and my impressions are from the original recording.
+
+## What synth-shell includes
+
+synth-shell isn't one program. The setup script offers five pieces, and you can say yes or no to each one:
+
+| Component | What it does |
+|---|---|
+| **synth-shell-greeter** | A system status report printed when a terminal opens: an ASCII logo, OS, kernel, CPU, uptime, IP addresses, failed services, and load, memory, and disk meters |
+| **synth-shell-prompt** | The fancy Bash prompt with colored segments, separators, and Git status |
+| **better-ls** | Makes a bare `ls` act like `ls -la`, with folders first, colors, and hidden files listed last after a separator |
+| **alias** | Color and nicer defaults for `grep`, `pacman`, `tree`, `dmesg`, and `free`, plus a `take` function (make a folder and `cd` into it) and command completion after `sudo` |
+| **better-history** | Timestamps in `history`, a much larger history size, and no consecutive duplicates or commands that start with a space |
+
+In the video I only installed the prompt. For the system info at the top of a terminal, I really prefer a fetch tool over the greeter (more on that at the end). For a better `ls`, I'd point you to [LSD](/lsd-lsdeluxe-ls-command) instead, which I covered separately. I skipped the aliases and history scripts too, to keep things focused on the prompt.
+
+Everything is GPLv3 and written in Bash. I did this on elementary OS in a VirtualBox VM, but the distro doesn't matter much. It works on Debian- and Arch-based systems alike, and the scripts themselves are plain Bash.
+
+## Step 1: Back up your .bashrc
+
+Before anything else, make a copy of `~/.bashrc`. The setup script writes into that file, so you want the original handy in case you need to go back. It isn't strictly required, but I recommend it.
+
+```bash
+cd ~
+cp .bashrc .bashrc.backup
+ls -a
+```
+
+You should see `.bashrc.backup` sitting next to `.bashrc`. If anything goes wrong later, restore it with:
+
+```bash
+cp ~/.bashrc.backup ~/.bashrc
+```
+
+## Step 2: Install the fonts
+
+The triangle separators are Powerline glyphs, so you need a font that has them. Install the Powerline symbols package for your distro:
+
+```bash
+# Debian, Ubuntu, elementary OS, Linux Mint
+sudo apt install fonts-powerline
+
+# Arch, EndeavourOS, Manjaro
+sudo pacman -S powerline-fonts
+
+# Fedora
+sudo dnf install powerline-fonts
+```
+
+The project also recommends setting your terminal to the [Hack](https://sourcefoundry.org/hack/) font. It's packaged as `fonts-hack` on Debian and Ubuntu and `ttf-hack` on Arch. If you already use a [Nerd Font](https://www.nerdfonts.com/), you're covered too, because Nerd Fonts include the Powerline symbols. On Arch, `ttf-hack-nerd` gets you Hack and the glyphs in one package.
+
+<Note>
+If the separators show up as boxes or question marks even with the fonts installed, check that your locale is UTF-8 (`locale` should show something like `en_US.UTF-8`), then try a different font in your terminal emulator. Some fonts just don't have these characters.
+</Note>
+
+## Step 3: Clone and run the setup script
+
+You'll need Git. elementary OS didn't have it out of the box, so I had to install it first:
+
+```bash
+sudo apt install git
+```
+
+Clone the repository with `--recursive`. The prompt and greeter live in Git submodules, and without that flag the setup script has nothing to install.
+
+```bash
+git clone --recursive https://github.com/andresgongora/synth-shell.git
+cd synth-shell
+./setup.sh
+```
+
+In the video I ran `chmod +x` on `setup.sh` first, because the README said to at the time. The script is already marked executable in the repository now, so the current quick-start skips that step. Running `chmod +x synth-shell/setup.sh` doesn't hurt if you get a permission error.
+
+The script walks you through a few prompts. Here's what I picked:
+
+| Prompt | My answer |
+|---|---|
+| Install or uninstall? | `i` (install, the default) |
+| Current user only or system wide? | `u` (current user, the default and recommended) |
+| Install synth-shell-greeter? | `n` |
+| Install synth-shell-prompt? | `y` |
+| Install better-ls? | `n` |
+| Install alias? | `n` |
+| Install better-history? | `n` |
+
+![The synth-shell setup wizard from the video on elementary OS, installing only synth-shell-prompt for the current user and skipping the greeter, better-ls, alias, and better-history](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/setup-wizard-prompt-only.jpg)
+
+A user install puts everything in `~/.config/synth-shell/` and hooks it into your `~/.bashrc`, so no root is needed. The system-wide option uses `sudo`, installs the scripts to `/usr/local/bin`, puts the configs in `/etc/synth-shell/`, and hooks into `/etc/bash.bashrc` for everyone.
+
+Close the terminal and open a new one. That's it. With the defaults you get white text on blue and light blue blocks for the user and host, a white block for the folder, and cyan text for your input. It already looks way better than the stock prompt.
+
+<Note>
+synth-shell is written for Bash. The installer looks up your login shell, and if it's zsh, it prints a warning that the scripts are Bash-only and then writes the hooks into `~/.zshrc` instead of `~/.bashrc`. If you use zsh day to day, check where the hooks landed.
+</Note>
+
+## How it hooks into .bashrc
+
+If you open your `.bashrc` with `nano ~/.bashrc` and scroll to the bottom, you'll see what the installer added. It's a short block that loads the prompt script, but only in interactive shells:
+
+```bash
+##-----------------------------------------------------
+## synth-shell-prompt.sh
+if [ -f "/home/you/.config/synth-shell/synth-shell-prompt.sh" ] && [ -n "$( echo $- | grep i )" ]; then
+	source "/home/you/.config/synth-shell/synth-shell-prompt.sh"
+fi
+```
+
+Your real home path goes where `/home/you` is. The prompt script reads its colors and settings from the config folder, so that's where all the customizing happens.
+
+```bash
+cd ~/.config/synth-shell
+ls
+```
+
+With just the prompt installed, the files that matter are:
+
+| File | Purpose |
+|---|---|
+| `synth-shell-prompt.config` | Your config. This is the one you edit. |
+| `synth-shell-prompt.config.default` | The stock settings, for reference |
+| `synth-shell-prompt.root.config` | A red and black variant meant for the root account |
+| `synth-shell-prompt.sh` | The assembled prompt script. Don't edit it, since reinstalling overwrites it. |
+| `examples/` | Ready-made color schemes (blue, gray, green, magenta, orange, red, yellow) |
+
+If you want to try one of the example themes, copy it over your config:
+
+```bash
+cp ~/.config/synth-shell/examples/synth-shell-prompt.orange.config ~/.config/synth-shell/synth-shell-prompt.config
+```
+
+## Step 4: Customize the colors
+
+Open the config:
+
+```bash
+nano ~/.config/synth-shell/synth-shell-prompt.config
+```
+
+The comment block at the top explains the layout. The prompt is built from segments, left to right: **USER**, **HOST**, **PWD** (the current working directory), and then segments you'll only see in certain situations: **GIT** inside a repository, **PYENV** inside a Python virtual environment, and **TF** in a Terraform workspace. **INPUT** is the text you type after the prompt.
+
+The order is set by the `format` line. Since the video, the default has also picked up a **KUBE** segment, which shows your current Kubernetes cluster, plus an optional **CLOCK** segment you can add yourself:
+
+```bash
+format="USER HOST PWD GIT PYENV TF KUBE"
+```
+
+KUBE stays hidden unless both `kubectl` and `yq` are installed, so you can leave it alone if you don't touch Kubernetes. If you want the time in your prompt, add `CLOCK` to the list. It uses `clock_format="%H:%M"` by default.
+
+Each segment has three settings: font color, background, and text effect. The defaults for the user segment look like this:
+
+```bash
+font_color_user="white"
+background_user="blue"
+texteffect_user="bold"
+```
+
+### Use 256-color codes
+
+You can use color names like `blue`, `light-purple`, or `dark-gray`, but when I tried, some of the named colors didn't come out right. I'd stick to the numeric 256-color codes (any number from 0 to 255). Search for "256 colors" and you'll find plenty of charts. The one I used in the video was Jonas Jacek's cheat sheet, which now lives at [ditig.com](https://www.ditig.com/256-colors-cheat-sheet).
+
+Colors can look a little different depending on your terminal's theme, so it helps to see them in your own terminal. This prints all 256 as numbered swatches:
+
+```bash
+for i in {0..255}; do printf '\e[48;5;%sm %3s \e[0m' "$i" "$i"; (( (i+1) % 16 )) || echo; done
+```
+
+For the demo, I wanted a dark orange user block and a light orange host block, and I kept the folder segment as it was. On the chart, Dark Orange 3 is `130` and Orange 1 is `214`:
+
+```bash
+background_user="130"
+background_host="214"
+```
+
+In nano, press **Ctrl+O** and **Enter** to save, then **Ctrl+X** to exit. Open a new terminal window and the new colors are there. I kept a second terminal window open while editing so I could check each change.
+
+![The synth-shell-prompt.config file in nano from the video, with background_user set to 130 and background_host set to 214 for the orange theme](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/prompt-config-colors.jpg)
+
+### Separators and padding
+
+The default elementary OS terminal didn't render the separator very cleanly, so you might want to change it or get rid of it. The layout settings sit near the top of the file, right under `format`:
+
+```bash
+separator_char=$'\uE0B0'          # Separation character, '\uE0B0'=triangle
+separator_padding_left=''         # Add a character or string to the left of the separator
+separator_padding_right=''        # Add a character or string to the right of the separator
+segment_padding=' '               # Add a character or string around segment text
+enable_vertical_padding=true      # Add an extra line above the prompt
+enable_command_on_new_line=false  # Add a new line between prompt and command
+```
+
+The padding values aren't numbers. You type the actual characters you want. In the video I set both separator paddings to three spaces (`'   '`), saved, and opened a new terminal to see the gaps around each triangle. Swap `separator_char` for another character, or set it to empty, if the triangle doesn't suit your terminal.
+
+A couple of things have changed in this part of the file since I recorded. The separator settings used to sit further down, and the `prompt_horizontal_padding` and `prompt_final_padding` options I scrolled past in the video are gone from the current default config. `enable_command_on_new_line` is new. Set it to `true` if you'd rather type on the line below the prompt, which helps when you're deep in a long path.
+
+### The Git segment
+
+When you're inside a Git repository, the prompt adds a segment with the branch name and a symbol for its state. The defaults are `▲` when you have commits to push, `▼` when there's something to pull, and `◔` when you have uncommitted changes. Newer versions also show the number of stashes. You can change any of the symbols in the GIT section, along with how often it fetches from the remote in the background (`git_update_period_minutes`). That's `-1`, meaning off, in the current default config, so set it to a number of minutes, like `15`, if you want the push and pull arrows to stay current without running `git fetch` yourself.
+
+## Bonus: launch a fetch tool with every terminal
+
+In the video, my last tweak was to have neofetch run every time a terminal opens, right above the new prompt. **neofetch was archived by its developer on April 26, 2024**, and is now read-only. The maintained tool most people moved to is [fastfetch](https://github.com/fastfetch-cli/fastfetch), and the setup is the same idea.
+
+Install it:
+
+```bash
+# Arch-based
+sudo pacman -S fastfetch
+
+# Fedora
+sudo dnf install fastfetch
+
+# Debian 13+ and Ubuntu 25.04+
+sudo apt install fastfetch
+```
+
+On older Ubuntu releases (22.04 and newer), the fastfetch README points to its PPA, `ppa:zhangsongcui3371/fastfetch`, or a `.deb` from the [releases page](https://github.com/fastfetch-cli/fastfetch/releases/latest). It also notes that some distros ship outdated builds.
+
+Then add it to the very bottom of your `.bashrc`. The file runs every time you open a terminal, so anything you put there runs too:
+
+```bash
+nano ~/.bashrc
+```
+
+```bash
+fastfetch
+```
+
+Save, open a new terminal, and you get the system info with the custom prompt underneath. If you'd rather stay inside synth-shell, the greeter does the same job. Rerun `./setup.sh` and say yes to it. Its config is `~/.config/synth-shell/synth-shell-greeter.config`, where you can set your own ASCII logo and choose which info lines to show.
+
+<Warning>
+The greeter's default config includes `EXTERNALIPV4`. To get your public IP, it sends a DNS query to Google's name servers (or a request to ipify.org if `dig`, `drill`, and `nslookup` aren't available) every time you open a terminal. If you don't want that, or it slows down opening a new tab, remove `EXTERNALIPV4` from the `print_info` list. On Ubuntu, Debian, Arch, Manjaro, Pop!_OS and Raspberry Pi OS, the installer starts you with a distro config that only sets the logo, so `print_info` isn't in your file. Copy the `print_info` block from `synth-shell-greeter.config.default` into your config and drop that line.
+</Warning>
+
+## My setup
+
+On my main machine, which runs EndeavourOS, I matched the prompt to the purple EndeavourOS look. The user block is white text on purple, and the host block is white on a lighter purple. That's another spot where the color names let me down, so I used `140` for the light purple. Everything is bold. For the folder segment I swapped the stock colors, so it's white text on dark gray. For what I type, I used `159`, a very light cyan.
+
+These are the lines I changed:
+
+```bash
+font_color_user="white"
+background_user="purple"
+texteffect_user="bold"
+
+font_color_host="white"
+background_host="140"
+texteffect_host="bold"
+
+font_color_pwd="white"
+background_pwd="dark-gray"
+texteffect_pwd="bold"
+
+font_color_input="159"
+```
+
+I didn't add any extra configuration beyond that. The Git section is further down the file, so if you work in Git a lot, you can customize how all of that looks too.
+
+![Brandon's EndeavourOS Konsole from the video with the purple and light purple prompt, neofetch output, and the .bashrc backup command](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/endeavouros-purple-prompt.jpg)
+
+## Updating or removing synth-shell
+
+To update, pull the latest code with its submodules and run the setup again. It rebuilds the scripts, and if you already have a `synth-shell-prompt.config`, it leaves yours alone and refreshes `synth-shell-prompt.config.default` next to it, so you can compare the two for new options:
+
+```bash
+cd ~/synth-shell
+git pull
+git submodule update --init --recursive
+./setup.sh
+```
+
+To remove it, I'd do it by hand. Open `~/.bashrc`, delete the synth-shell blocks at the bottom (or comment them out with `#` if you just want to turn them off for now), and then remove the folder:
+
+```bash
+nano ~/.bashrc
+rm -r ~/.config/synth-shell/
+```
+
+Or just restore the backup you made in step 1.
+
+<Warning>
+The setup script also has a `u` (uninstall) option, but as of the current master branch it doesn't clean up reliably. When I tested it on Ubuntu 24.04, it deleted the script files but left a few stray `|` lines at the bottom of `.bashrc`, and it doesn't remove your config files either. Your next terminal will then show a syntax error. If you've already run it, check the end of `.bashrc` with `bash -n ~/.bashrc` and remove the leftover lines, or restore your backup.
+</Warning>
+
+## Final thoughts
+
+This one is fairly easy to set up and just as easy to customize. A few minutes with the setup script and some color codes, and the prompt goes from plain to something you actually want to look at. If you like the defaults, you can leave it at that.
+
+Beyond the prompt, I'd also go into your terminal emulator's settings and play with everything: font, colors, transparency, padding. If you're shopping for a new one, I wrote about [why I switched to Ghostty](/ghostty-best-terminal-emulator-linux-mac). The more you customize the terminal and the better it looks, the more time you'll probably spend in it, and the more you'll learn about what it can do on your Linux system.
+
+## Official references
+
+- [synth-shell on GitHub](https://github.com/andresgongora/synth-shell)
+- [synth-shell-prompt](https://github.com/andresgongora/synth-shell-prompt)
+- [synth-shell-greeter](https://github.com/andresgongora/synth-shell-greeter)
+- [synth-shell-prompt-git on the AUR](https://aur.archlinux.org/packages/synth-shell-prompt-git)
+- [Powerline fonts](https://github.com/powerline/fonts)
+- [Hack font](https://sourcefoundry.org/hack/)
+- [Nerd Fonts](https://www.nerdfonts.com/)
+- [256 colors cheat sheet (ditig.com)](https://www.ditig.com/256-colors-cheat-sheet)
+- [fastfetch on GitHub](https://github.com/fastfetch-cli/fastfetch)
+- [neofetch on GitHub (archived)](https://github.com/dylanaraps/neofetch)
