@@ -2238,7 +2238,9 @@
     "name": "Tabby",
     "category": "Terminal",
     "description": "Manage local shells and remote connections in a configurable terminal.",
-    "coverage": [],
+    "coverage": [
+      "/tabby-terminal-emulator"
+    ],
     "videos": [
       {
         "id": "w-f074YweOY",
