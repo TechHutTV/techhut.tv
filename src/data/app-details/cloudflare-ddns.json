@@ -1,0 +1,34 @@
+{
+  "summary": "Keep Cloudflare DNS records pointed at a changing public IP address with a small, independent updater container.",
+  "overview": "Cloudflare DDNS by favonia detects your public IPv4 and IPv6 addresses and updates the matching A and AAAA records through the Cloudflare API. You list the domains to manage and supply a scoped API token; the updater finds the zones, preserves existing proxy settings, and rechecks on a schedule. It is an independent open-source project rather than a Cloudflare product, and it is usually run as a hardened Docker container next to a reverse proxy.",
+  "kind": "Container tool",
+  "platforms": [
+    "Docker",
+    "Go (from source)"
+  ],
+  "license": {
+    "name": "Apache-2.0",
+    "type": "Open source",
+    "url": "https://github.com/favonia/cloudflare-ddns/blob/main/LICENSE"
+  },
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/favonia/cloudflare-ddns"
+    },
+    {
+      "label": "Docker Hub",
+      "url": "https://hub.docker.com/r/favonia/cloudflare-ddns"
+    }
+  ],
+  "features": [
+    "IPv4 and IPv6 updates",
+    "Wildcard and multiple domains",
+    "Preserves proxy status",
+    "Failure notifications"
+  ],
+  "sources": [
+    "https://github.com/favonia/cloudflare-ddns#readme",
+    "https://github.com/favonia/cloudflare-ddns/blob/main/LICENSE"
+  ]
+}

@@ -1,0 +1,350 @@
+export const title = "Ultimate Home Server Part 4: SSL Certificates on Everything"
+export const description = "Put real domains and Let's Encrypt certificates in front of your home server with Nginx Proxy Manager, Cloudflare DDNS, and a local-only domain, without exposing more than you mean to."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Homelab", "Self-Host", "Docker", "Proxmox"]
+export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="79e6KBYcVmQ" title="TechHut's SSL certificates on everything walkthrough" />
+
+<Note>
+**The Ultimate Home Server series**
+
+1. [Part 1: Proxmox, ZFS, and Samba shares](/ultimate-home-server-part-1-proxmox-zfs-samba)
+2. [Part 2: Jellyfin media server VM](/ultimate-home-server-part-2-jellyfin)
+3. [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack)
+4. **Part 4: SSL certificates on everything**
+</Note>
+
+By this point in the series the server is doing real work: storage, Jellyfin, and the \*arr apps. But every one of them still lives at an IP address and a port number, and half of them greet you with a browser warning. In this part I'm getting rid of all of that. Every service gets a proper domain name and a valid Let's Encrypt certificate, so Proxmox shows a padlock instead of a "your connection is not private" page and I never have to remember another port.
+
+There are really two setups here:
+
+- A **public domain** for the handful of things I actually want reachable from the internet (a test page and Jellyfin in this guide), using [Nginx Proxy Manager](https://nginxproxymanager.com/), [Cloudflare](https://www.cloudflare.com/), and a dynamic DNS container.
+- A **local domain** for everything else. It gets real certificates too, but it only resolves to an address inside my network, so it's useless unless you're at home or connected through a VPN-style tool.
+
+A quick honesty note: I recorded this video in 2024 for my earlier Proxmox series (it was Part 3 back then) and later listed it as Part 4 of this 2025 series, so a few names, IPs, and container layouts differ from Parts 1-3. The concepts carry over directly. Twingate sponsored the video, and I used it at the end for remote access to the local domain.
+
+The written steps below have been updated for [Nginx Proxy Manager v2.16.0](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0), released September 24, 2026, and [cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) 1.17.1. The biggest visible change since the video is the first login, which I cover below. Everything I describe *doing* comes from the recorded walkthrough. My companion notes and compose file are in the [proxy folder of my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy).
+
+## How the Pieces Fit Together
+
+| | Public domain | Local domain |
+|---|---|---|
+| DNS record points to | Your home public IP (kept current by DDNS) | The private LAN IP of Nginx Proxy Manager |
+| Cloudflare proxy | On for normal web apps, off for media streaming | Off |
+| Router port forwarding | 80 and 443 to the proxy host | None |
+| Certificate | Let's Encrypt wildcard via DNS challenge | Let's Encrypt wildcard via DNS challenge |
+| Reachable from | Anywhere | Your LAN, or remotely through a private network tool |
+
+The trick that makes the local half work is the DNS challenge. Let's Encrypt never has to connect to your server. It only checks a TXT record that Nginx Proxy Manager creates through the Cloudflare API, so a domain that points at `10.0.0.203` can still get a publicly trusted certificate. The [DNS-01 challenge](https://letsencrypt.org/docs/challenge-types/) is also the only way to get wildcard certificates, which is why I use it for both domains.
+
+## What You Need
+
+- A domain managed in Cloudflare for public access, and ideally a second one for local use. I use two separate domains. A subdomain of your public domain (like `home.example.com`) also works, but it needs its own wildcard certificate, because `*.example.com` does not cover `proxmox.home.example.com`. Cloudflare's [add a site guide](https://developers.cloudflare.com/fundamentals/setup/manage-domains/add-site/) walks through moving a domain over.
+- A Docker host on your LAN where ports 80, 81, and 443 are free. In the video this is a dedicated Ubuntu 22.04 LXC on Proxmox with Docker and Portainer, set up the same way as my other Docker containers. Any Docker host works. If Docker is new to you, start with my [Docker basics guide](/7-docker-basics-for-beginners).
+- Access to your router's port forwarding settings, only if you want public access.
+
+In the examples, `example.com` is the public domain, `example.net` is the local domain, Nginx Proxy Manager runs on `10.0.0.203`, and Jellyfin is on `10.0.0.120:8096` to match [Part 2](/ultimate-home-server-part-2-jellyfin). In the video, my Jellyfin was at `10.0.0.205`. Swap in your own values.
+
+## Create a Scoped Cloudflare API Token
+
+Both the DDNS container and Nginx Proxy Manager use a Cloudflare API token. In the Cloudflare dashboard, go to **My Profile > API Tokens > Create Token** and use the **Edit zone DNS** template.
+
+In the video I set **Zone Resources** to all zones. I'd tighten that now. Cloudflare's [token docs](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) let you scope a token to specific zones, and the [certbot Cloudflare plugin docs](https://certbot-dns-cloudflare.readthedocs.io/en/stable/) ask for `Zone:DNS:Edit` only on the zones you need certificates for. A token that can edit DNS can redirect your domain anywhere, so treat it like a password:
+
+- Choose **Include > Specific zone** and pick only your public and local domains, not every domain on the account.
+- Consider two tokens: one for DDNS scoped to the public domain only, and one for Nginx Proxy Manager scoped to both domains.
+- Cloudflare shows the secret once. Store it somewhere safe, and don't paste it into screenshots, Git repos, or support threads.
+- Use an API token, not the old Global API Key. The Global Key can manage your entire account.
+
+## The Docker Compose Stack
+
+My stack has three services: Nginx Proxy Manager, the [favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) updater, and a tiny hello world container for testing. My repo version also includes an optional NetBird client, which I'll get to later. Here's the stack with the image tags pinned and the token pulled from an environment variable:
+
+```yaml
+services:
+  proxy:
+    image: 'jc21/nginx-proxy-manager:2.16.0'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - data:/data
+      - letsencrypt:/etc/letsencrypt
+    healthcheck:
+      test: ["CMD", "/usr/bin/check-health"]
+      interval: 10s
+      timeout: 3s
+
+  ddns:
+    image: favonia/cloudflare-ddns:1
+    container_name: cloudflare-ddns
+    restart: unless-stopped
+    user: "1000:1000"
+    read_only: true
+    cap_drop: [all]
+    security_opt: [no-new-privileges:true]
+    environment:
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
+      - DOMAINS=example.com,stream.example.com
+      - PROXIED=true
+      - IP6_PROVIDER=none
+
+  # Temporary test page. Remove it when you're done testing.
+  helloworld:
+    image: 'karthequian/helloworld:latest'
+    container_name: helloworld
+    restart: unless-stopped
+    ports:
+      - 8888:80/tcp
+
+volumes:
+  data:
+  letsencrypt:
+```
+
+Put the token in a `.env` file next to the compose file, then start the stack with `docker compose up -d`:
+
+```dotenv
+CLOUDFLARE_API_TOKEN=REPLACE_WITH_YOUR_SCOPED_TOKEN
+```
+
+In the video I pasted this into a Portainer stack named `proxy`, which works too. Just add `CLOUDFLARE_API_TOKEN` as a stack environment variable instead of typing the token into the YAML. My [repo compose file](https://github.com/TechHutTV/homelab/blob/main/proxy/compose.yaml) uses `latest` tags. I've pinned them here because the v2.16.0 release notes warn that DNS plugins may need attention after upgrading, and cloudflare-ddns recommends its `1` tag over `latest`.
+
+### Nginx Proxy Manager: Host or Bridge Networking
+
+I'm a sucker for a good web GUI, and this is one of the easiest containers you'll ever deploy. The one decision that matters is networking. I run it with `network_mode: host` because that has worked best for me, especially for containers on the same machine, where `localhost:8888` just works. The catch is that it takes ports 80, 81, and 443 directly on the host, which is another reason to give it its own LXC or VM.
+
+In bridge mode you publish and remap ports yourself. Here's the bridge example from my repo:
+
+```yaml
+  proxy:
+    # ...
+    network_mode: bridge
+    ports:
+      - 5080:80
+      - 5443:443
+      - 5000:81
+```
+
+In bridge mode, `localhost` means the container itself, so point proxy hosts at the Docker host's LAN IP. I use named volumes for `data` and `letsencrypt`. Bind mounts work fine too.
+
+### The DDNS Container
+
+My ISP changes my public IP every few days, and I don't want the site to go down every time that happens. The updater checks your IP on a schedule (every five minutes by default) and fixes the A records in Cloudflare. It has worked great in my testing. With a static IP, skip it.
+
+The `user`, `read_only`, `cap_drop`, and `no-new-privileges` lines are the project's recommended hardening. Set `user` to an unprivileged UID and GID on your host. The [upstream README](https://github.com/favonia/cloudflare-ddns) notes that `no-new-privileges` can fail on some older kernels and Proxmox-style virtualized setups, so if the container won't start in your LXC, remove just that line. I set `IP6_PROVIDER=none` because I don't use IPv6, which also lets it run in normal bridge mode. `DOMAINS` lists the hostnames it manages: the root domain and the `stream` subdomain below.
+
+## Set Up the Public Domain in Cloudflare
+
+### SSL/TLS Encryption Mode
+
+Under **SSL/TLS** for the public zone, check the encryption mode. In the video I set it to **Full**. Flexible gave me trouble with Jellyfin, and with Force SSL turned on it's a classic cause of [too many redirects](https://github.com/NginxProxyManager/nginx-proxy-manager/issues/852).
+
+![Cloudflare's SSL/TLS encryption mode options with Full selected, as set in the video](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cloudflare-ssl-encryption-mode-full.jpg)
+
+I also said in the video that Full (strict) would need extra API setup. That isn't accurate. Per [Cloudflare's encryption mode docs](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/), [Full (strict)](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/) only needs a valid public certificate, like Let's Encrypt, on the origin, which is exactly what Nginx Proxy Manager will serve. Once every proxied hostname has its certificate, Full (strict) is the better choice. Newer zones may default to **Automatic SSL/TLS**, which picks a mode for you.
+
+### DNS Records
+
+Under **DNS > Records**, create the records the DDNS container will manage:
+
+| Type | Name | IPv4 address | Proxy status |
+|---|---|---|---|
+| A | `@` (root) | `8.8.8.8` (temporary) | Proxied |
+| A | `stream` | `8.8.8.8` (temporary) | DNS only |
+
+I enter a placeholder IP on purpose. When the updater starts, it should replace it with your real public IP, which proves the container works. The updater also leaves the proxy status of existing records alone. `PROXIED=true` only applies to records it creates, so the manually set DNS-only `stream` record stays DNS-only.
+
+The `stream` record is not proxied because of Cloudflare's [CDN terms](https://www.cloudflare.com/service-specific-terms-application-services/). Unless you're an Enterprise customer, they require paid products like Stream for serving video and other large files through the CDN. I didn't want to risk my account by pushing Jellyfin through the proxy. The tradeoff is that a [DNS-only record](https://developers.cloudflare.com/dns/proxy-status/) returns your real home IP to anyone who looks it up. Proxied records return Cloudflare's addresses instead.
+
+If you don't stream media publicly, a wildcard CNAME (`*` pointing to your root domain) is simpler than separate A records.
+
+### Deploy and Check
+
+Start the stack, then check the `cloudflare-ddns` logs. You should see it update the stale A records, and the Cloudflare dashboard should now show your real public IP instead of `8.8.8.8`.
+
+## Port Forwarding
+
+Now forward ports 80 and 443 on your router to the machine running Nginx Proxy Manager. This is the most dangerous step in the guide, because it opens a door from the internet into your network.
+
+- **Never forward port 81.** That's the admin UI. With host networking it listens on every interface of that host, so keep it LAN-only.
+- Every proxy host on the public domain is an internet-facing service. Add only what you need, and keep those apps updated and behind strong passwords.
+
+The steps vary a lot by router. On my Omada setup, it's under **Settings > Transmission > NAT > Port Forwarding**. The two fields that trip people up are:
+
+- **Source port:** the port the connection comes in on from the internet, which is 443 for HTTPS.
+- **Destination port:** the port on your proxy host. With host networking that's also 443. With my bridge example it would be 5443, so you'd forward source 443 to destination 5443, and source 80 to destination 5080.
+
+## First Login to Nginx Proxy Manager
+
+Open `http://10.0.0.203:81`. In the video I logged in with the old default credentials (`admin@example.com` / `changeme`) and changed them. That no longer applies: [v2.13.0](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.13.0) replaced the default account with a setup screen where you create the first admin user, so use a unique email and a strong password. The [advanced configuration docs](https://nginxproxymanager.com/advanced-config/) cover `INITIAL_ADMIN_EMAIL`/`INITIAL_ADMIN_PASSWORD` for automated deployments and `NPM_ADMIN_PORT` for moving the UI off port 81.
+
+## Generate a Wildcard Certificate
+
+Go to **Certificates > Add Certificate > Let's Encrypt via DNS** and enter both the root and the wildcard:
+
+- `example.com`
+- `*.example.com`
+
+Choose **Cloudflare** as the DNS provider. The credentials box comes prefilled with a placeholder. Replace only the token value:
+
+```ini
+# Cloudflare API token
+dns_cloudflare_api_token=REPLACE_WITH_YOUR_SCOPED_TOKEN
+```
+
+Leave **Propagation Seconds** empty to use the plugin's default. If the request fails, setting it to `120` sometimes fixes it. When I did this, I also had to agree to Let's Encrypt's terms. Current versions removed that step from the form. Save it, and you should get a certificate covering the root domain and every subdomain.
+
+![The Nginx Proxy Manager certificate form with Use a DNS Challenge enabled and Cloudflare chosen as the DNS provider](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-dns-challenge-cloudflare.jpg)
+
+Nginx Proxy Manager stores this token in its database so it can renew the certificate automatically. As of v2.16.0, it also deletes the temporary credentials file after each Certbot run. That makes the `data` volume and the admin UI more sensitive, which is one more reason to keep port 81 private and back up that volume carefully.
+
+## Your First Proxy Host
+
+Test everything with the hello world container before adding anything real. Go to **Hosts > Proxy Hosts > Add Proxy Host**:
+
+- **Domain Names:** `example.com`
+- **Scheme:** `http`
+- **Forward Hostname / IP:** `localhost`, which works because Nginx Proxy Manager uses host networking and the test container is on the same machine
+- **Forward Port:** `8888`
+- Enable **Block Common Exploits**.
+
+On the **SSL** tab, choose the wildcard certificate and enable **Force SSL**. In the video, I turned on the other options as well. HTTP/2 is harmless. Be more careful with **HSTS Sub-domains** on a root domain, because browsers will then insist on HTTPS for every subdomain until the HSTS max-age expires. Turn it on only after everything under that domain has HTTPS.
+
+Visit your domain and you should see the hello world page. I tested it from my phone with Wi-Fi turned off, and it loaded over Cloudflare's proxy, so my home IP stayed hidden for that hostname.
+
+Once you're done testing, remove the `helloworld` service. Then go to **Settings > Default Site** and choose **404 Page** or **No Response (444)**, so random hostnames pointed at your IP don't show anything useful.
+
+## Jellyfin on the Public Domain
+
+Jellyfin is one of the few things I want reachable from outside the house, and if you followed [Part 2](/ultimate-home-server-part-2-jellyfin), yours is already running. It needs a little extra setup behind a reverse proxy.
+
+First, in Jellyfin go to **Dashboard > Networking** and add the Nginx Proxy Manager host IP (`10.0.0.203`) to **Known Proxies**, then restart Jellyfin. The [Jellyfin reverse proxy docs](https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/) explain why: without it, Jellyfin ignores forwarded headers and every client appears to come from the proxy.
+
+![Jellyfin's Networking settings with the Nginx Proxy Manager IP 10.0.0.203 entered under Known proxies](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/jellyfin-known-proxies.jpg)
+
+Then add a proxy host:
+
+- **Domain Names:** `stream.example.com`
+- **Scheme:** `http`. Use `https` only if the service itself serves HTTPS locally.
+- **Forward Hostname / IP:** `10.0.0.120`
+- **Forward Port:** `8096`
+- Enable **Block Common Exploits** and **Websockets Support**.
+- On **SSL**, choose the wildcard certificate and enable **Force SSL**.
+
+In the video I pasted an Nginx Proxy Manager snippet from Jellyfin's docs into the **Advanced** tab. That NPM-specific page is gone from the current docs. Nginx Proxy Manager already sends the `Host`, `X-Forwarded-For`, `X-Real-IP`, and `X-Forwarded-Proto` headers itself, so Known Proxies plus websockets covers the basics. From Jellyfin's [plain Nginx example](https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/nginx/), the one line worth adding in **Advanced** is this:
+
+```nginx
+proxy_buffering off;
+```
+
+### Custom Locations
+
+Instead of giving every app its own subdomain, you can use paths. I wanted a few streaming-type services to share the unproxied `stream` record, so I tried this with Jellyfin:
+
+1. In Jellyfin, go to **Dashboard > Networking**, set **Base URL** to `/jellyfin`, and restart.
+2. Edit the `stream.example.com` proxy host, open **Custom Locations**, and add `/jellyfin` pointing to `10.0.0.120:8096`.
+
+After that, `https://stream.example.com/jellyfin` works. Read the [Base URL caveats](https://jellyfin.org/docs/general/post-install/networking/) before you do this. Jellyfin notes that it breaks HDHomeRun, DLNA, Sonarr, Radarr, and some clients. Apps like the Android TV client also need the path included in the server address.
+
+## The Local Top-Level Domain
+
+Basically everything else in my homelab lives here. These hostnames resolve to a private IP, so they only work from inside the network or over a private connection back home.
+
+In Cloudflare, open the local domain's zone and add:
+
+| Type | Name | Content | Proxy status |
+|---|---|---|---|
+| A | `@` | `10.0.0.203` (the Nginx Proxy Manager host) | DNS only |
+| CNAME | `*` | `example.net` | DNS only |
+
+When a device looks up `proxmox.example.net`, DNS returns `10.0.0.203`, the device connects to Nginx Proxy Manager on your LAN, and it routes the request by hostname. From anywhere else, that address points into someone else's private network, so it won't reach you. DNS changes can take a few minutes to propagate.
+
+![Cloudflare DNS records for the local domain: a DNS-only A record pointing to 10.0.0.203 and a wildcard CNAME](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cloudflare-local-domain-dns-records.jpg)
+
+One common gotcha: some routers and DNS filters have DNS rebinding protection, such as dnsmasq's `stop-dns-rebind` option. They block public DNS answers that point to private IPs. If your local domain won't resolve at home but works on mobile data with a lookup tool, whitelist the domain in that protection.
+
+Now repeat the certificate step for `example.net` and `*.example.net`, using a DNS challenge with Cloudflare and your token. Then add proxy hosts like before. I tested with `hello.example.net` pointing to `localhost:8888`, then added Proxmox:
+
+- **Domain Names:** `proxmox.example.net`
+- **Scheme:** `https`, because Proxmox only serves HTTPS on 8006
+- **Forward Hostname / IP:** your Proxmox host IP, for example `10.0.0.32` from [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba)
+- **Forward Port:** `8006`
+- Enable **Websockets Support**, which the console needs.
+- On **SSL**, choose the `example.net` wildcard certificate and enable **Force SSL**.
+
+![The New Proxy Host dialog for proxmox.hopki.net with the https scheme, port 8006, and Websockets Support enabled](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-proxmox-proxy-host.jpg)
+
+That's the moment from the thumbnail: `https://proxmox.example.net` with a real Let's Encrypt certificate. No more browser warning, and no more remembering which IP Proxmox is on.
+
+### What a Local Domain with a Public Certificate Actually Exposes
+
+This setup is convenient, but "local" doesn't mean invisible. Here's what is public:
+
+- **Certificate names.** [Let's Encrypt submits every certificate to public Certificate Transparency logs](https://letsencrypt.org/docs/ct-logs/), and anyone can search those logs. Because I use a wildcard, the logs show `example.net` and `*.example.net`, not `proxmox.example.net`. Per-host certificates would list every service name.
+- **Your internal addressing.** Anyone can look up the local domain and see the private IP of your proxy. That's not a way in by itself, but it does reveal part of your internal network.
+- **The proxy host is shared.** This is the big one. The same Nginx Proxy Manager handles your public domain, so ports 80 and 443 are open to the internet, and it routes requests by hostname. Someone who guesses `proxmox.example.net` can point that name at your *public* IP in their hosts file, and Nginx Proxy Manager will happily proxy the request to Proxmox. Your local domain is only local because of DNS.
+
+<Warning>
+If you forward ports 80 and 443 to the same Nginx Proxy Manager instance that serves your local domain, protect every local-only proxy host with an **Access List**. Go to **Access Lists > Add Access List**. On the rules tab, **Allow** your LAN subnet (for example `10.0.0.0/24`) and any VPN or overlay subnet you use. Nginx Proxy Manager adds a final deny-all rule automatically. Then select that list on each local proxy host. Alternatively, run a second proxy instance for local services that isn't port forwarded.
+</Warning>
+
+Keep the apps behind those hostnames protected by their own logins too. A valid certificate means the connection is encrypted. It doesn't make the service safe to expose.
+
+## Reaching the Local Domain When You're Away
+
+The concept is the same with any tool: run a connector or routing peer on your LAN and allow remote devices to reach the Nginx Proxy Manager IP through it. Public DNS already resolves `*.example.net` to that IP, so every local hostname works as soon as the route exists.
+
+In the video I used Twingate, the sponsor. I deployed its connector in Docker next to the proxy stack and created a resource for the proxy IP with an alias for the local domain. With the device off my home network, `proxmox.example.net` loaded with a valid certificate.
+
+My [repo](https://github.com/TechHutTV/homelab/tree/main/proxy) now uses [NetBird](https://netbird.io/) instead, and in full disclosure, I work for NetBird. There it's a routing peer on the LAN (the repo compose file includes a NetBird client container), a [Network](https://docs.netbird.io/manage/networks) with a `/32` resource for the proxy IP, and an access policy for your group. I cover self-hosting NetBird in [this guide](/self-host-netbird-pocketid). Tailscale or plain WireGuard work the same way. If you use the access list above, include that tool's subnet, or the routing peer's LAN IP if it masquerades traffic.
+
+## How My Setup Ended Up
+
+A day after recording, I had moved basically everything over and ended up with 19 proxy hosts. That includes a `docker.` hostname for the Portainer instance on the proxy machine, plus the Portainer instances on my other Docker VMs and LXCs, Home Assistant, Jellyfin, the \*arr apps from [Part 3](/ultimate-home-server-part-3-arr-stack), NZBGet, and my torrent client. Most of them needed nothing special, but a few did:
+
+- **Home Assistant** rejects proxied requests until you trust the proxy. In the video I edited the `http:` block in `configuration.yaml`. Since Home Assistant 2026.8, that moved to the UI. Go to **Settings > System > Network > HTTP server**, enable **Trust X-Forwarded-For**, and add your proxy IP under **Trusted proxies**. If you still have an old `http:` YAML block, Home Assistant imports it and asks you to remove it ([HTTP integration docs](https://www.home-assistant.io/integrations/http/)).
+- **My torrent client** needed a few extra lines in the proxy host's **Advanced** tab. I found them while troubleshooting:
+
+```nginx
+proxy_read_timeout 120;
+proxy_redirect off;
+client_max_body_size 100M;
+```
+
+- **The \*arr apps** were the one place where I failed. I wanted them under paths on one hostname instead of separate hosts, using custom locations, but couldn't get it working. They each got their own subdomain. If you've cracked that, I'd love to hear how.
+
+The other open item is the streaming subdomain. It's DNS-only, so it shows my home IP. I'm still looking for a good way to hide that IP for media and file streaming without breaking Cloudflare's terms.
+
+![Part of the Nginx Proxy Manager proxy host list, with local-domain hosts like bazarr, docker, frigate, and hass all on Let's Encrypt certificates](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-proxy-hosts-list.jpg)
+
+## Wrapping Up the Series
+
+That's the whole build. [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) set up Proxmox, ZFS, and shared storage. [Part 2](/ultimate-home-server-part-2-jellyfin) added Jellyfin. [Part 3](/ultimate-home-server-part-3-arr-stack) automated the library. This part gave all of it real names and real certificates. The local domain in particular turned out to be pretty easy to set up, and not clicking through certificate warnings or remembering IP addresses anymore is worth the effort.
+
+With all of this configured, from VMs to containers to the proxy's data volume, make sure it's backed up. Rebuilding 19 proxy hosts from memory is nobody's idea of fun. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers that. If you're starting fresh, head back to [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba). With all that, I do hope you found this useful. Have a great one.
+
+## Official References
+
+- [TechHut homelab repo: proxy notes](https://github.com/TechHutTV/homelab/tree/main/proxy) and [compose file](https://github.com/TechHutTV/homelab/blob/main/proxy/compose.yaml)
+- [Nginx Proxy Manager guide](https://nginxproxymanager.com/guide/)
+- [Nginx Proxy Manager full setup](https://nginxproxymanager.com/setup/)
+- [Nginx Proxy Manager advanced configuration](https://nginxproxymanager.com/advanced-config/)
+- [Nginx Proxy Manager v2.16.0 release](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0)
+- [favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns)
+- [Cloudflare: create an API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)
+- [Cloudflare: create DNS records](https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/)
+- [Cloudflare: proxy status](https://developers.cloudflare.com/dns/proxy-status/)
+- [Cloudflare: SSL/TLS encryption modes](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/)
+- [Cloudflare service-specific terms](https://www.cloudflare.com/service-specific-terms-application-services/)
+- [Let's Encrypt challenge types](https://letsencrypt.org/docs/challenge-types/)
+- [Let's Encrypt Certificate Transparency logs](https://letsencrypt.org/docs/ct-logs/)
+- [certbot-dns-cloudflare](https://certbot-dns-cloudflare.readthedocs.io/en/stable/)
+- [Jellyfin networking](https://jellyfin.org/docs/general/post-install/networking/) and [reverse proxy](https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/)
+- [Home Assistant HTTP integration](https://www.home-assistant.io/integrations/http/)
+- [NetBird Networks](https://docs.netbird.io/manage/networks)

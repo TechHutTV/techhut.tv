@@ -140,6 +140,16 @@
       "https://api.github.com/repos/IceWhaleTech/CasaOS"
     ]
   },
+  "cloudflare-ddns": {
+    "repository": "favonia/cloudflare-ddns",
+    "label": "Cloudflare DDNS",
+    "link": "https://github.com/favonia/cloudflare-ddns",
+    "reason": "The favonia/cloudflare-ddns updater used in both the covered video and article; README and Apache-2.0 license verified. It is an independent project, not a Cloudflare repository.",
+    "sources": [
+      "https://github.com/favonia/cloudflare-ddns",
+      "https://github.com/favonia/cloudflare-ddns#readme"
+    ]
+  },
   "cloudreve": {
     "repository": "cloudreve/cloudreve",
     "label": "Cloudreve",
