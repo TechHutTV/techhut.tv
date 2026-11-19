@@ -199,7 +199,9 @@
     "name": "Bubble Card",
     "category": "Automation",
     "description": "Customize Home Assistant dashboards with cards and controls.",
-    "coverage": [],
+    "coverage": [
+      "/pi-hole-home-assistant-bubble-card"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
@@ -820,7 +822,9 @@
     "name": "Home Assistant",
     "category": "Automation",
     "description": "Connect devices and build automations on your own home server.",
-    "coverage": [],
+    "coverage": [
+      "/pi-hole-home-assistant-bubble-card"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
@@ -1600,7 +1604,8 @@
     "category": "Networking",
     "description": "Run a network-wide DNS filter with a web administration interface.",
     "coverage": [
-      "/split-dns-homelab"
+      "/split-dns-homelab",
+      "/pi-hole-home-assistant-bubble-card"
     ],
     "videos": [
       {
