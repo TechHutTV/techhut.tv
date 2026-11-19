@@ -682,7 +682,9 @@
     "name": "Glance",
     "category": "Server Management",
     "description": "Build a self-hosted dashboard for feeds and services.",
-    "coverage": [],
+    "coverage": [
+      "/glance-home-server-dashboard"
+    ],
     "videos": [
       {
         "id": "QGONe-NTWuI",
