@@ -1,0 +1,310 @@
+export const title = "I'm Done With Plex: Setting Up Jellystat for Jellyfin"
+export const description = "Set up Jellystat, a self-hosted statistics and monitoring app for Jellyfin, with Docker Compose and PostgreSQL, connect it to your server, and explore its sessions, libraries, users, and charts."
+export const date = "2026-10-09"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Monitoring", "PLEX"]
+export const cover = "/docs-static/img/2026/10/jellystat-jellyfin-statistics/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="mWV2bHVVENc" title="TechHut's Jellystat walkthrough" />
+
+For the longest time I was the biggest Plex defender around. I even made a whole video explaining why I picked Plex over Jellyfin, even though I like Jellyfin more. Plex just had better apps on more platforms and friendlier handling of hardware transcoding and subtitles. That trade-off doesn't work for me anymore.
+
+The final straw was pricing. Open source is my preference, but I'm also fine with proprietary software as long as I can buy a lifetime license and actually own the thing. In May, Plex [announced](https://www.plex.tv/blog/new-lifetime-plex-pass-pricing/) that a new Lifetime Plex Pass would jump from $249.99 to $749.99 on July 1, 2026, while monthly and annual pricing stayed the same. Even at $249.99 the lifetime pass was already steep. At around $7 a month, I figured the new price would take about nine years to pay for itself, compared to roughly three before. They really don't want people buying lifetime passes anymore.
+
+So I'm starting the slow process of moving my family over to Jellyfin. Before I do any of that, I want good data in place. One of the reasons I loved Plex was the ecosystem around it, and [Tautulli](https://tautulli.com/) was a big part of that for me. On the Jellyfin side, the tool that fills that role is [Jellystat](https://github.com/CyferShepard/Jellystat).
+
+HUANUO sponsored the video this article is based on.
+
+<Note>
+The written installation has been updated for [Jellystat 1.1.12](https://github.com/CyferShepard/Jellystat/releases/tag/1.1.12), released September 8, 2026. That release fixes two critical security issues that affect 1.1.11 and earlier, so the compose file below pins it instead of relying on `latest`. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## What Jellystat Does
+
+Jellystat is an MIT-licensed statistics app for Jellyfin. It runs alongside your media server and keeps its own PostgreSQL database of what's happening on it. According to the [project README](https://github.com/CyferShepard/Jellystat), the current features are:
+
+- Session monitoring and logging
+- Statistics for all libraries and users
+- Watch history
+- User overview and activity
+- Watch statistics
+- Backup and restore of Jellystat's data
+- Automatic syncing of library items
+- Integration with the Jellyfin Playback Reporting plugin
+
+Looking through that list, the only thing I really miss from Tautulli is the newsletter feature. I haven't dug into whether another tool covers that yet. For the core job of keeping an eye on my media server and seeing what's actually going on, Jellystat has what I want.
+
+There is one thing worth knowing before you commit to it. In April 2026 the developer posted a project update in the README saying Jellystat will be rebuilt from the ground up on a new architecture, and that the current codebase will mostly get fixes for major bugs in the meantime. Releases have continued since then, including the security fixes in 1.1.12, but treat the current version as being in maintenance mode, and expect some rough edges. The README itself says it's still in development.
+
+## How I Have It Set Up
+
+My media server stuff all runs on Unraid, and the containers live in the Servarr stack from my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/media). If you've never set that stack up, the repo walks through it. I added Jellystat directly to that stack so everything is managed in one place, but it works just as well as a standalone compose project.
+
+Either way, Jellystat is two containers:
+
+| Container | Image | Purpose |
+|---|---|---|
+| `jellystat-db` | `postgres:18.1` | The PostgreSQL database that stores your history and stats |
+| `jellystat` | `cyfershepard/jellystat:1.1.12` | The web app and background sync, on port `3000` |
+
+The image is also published to GHCR as `ghcr.io/cyfershepard/jellystat` with the same version tags if you'd rather pull from there.
+
+## Install Jellystat with Docker Compose
+
+This is the standalone version, based on the [upstream compose file](https://github.com/CyferShepard/Jellystat/blob/main/docker-compose.yml). I've moved the secrets into a `.env` file and swapped the named volumes for bind mounts so the data sits in an obvious place.
+
+### Create the Project and Secrets
+
+Make a directory for the project and generate the database password and JWT secret straight into a `.env` file:
+
+```bash
+mkdir -p ~/jellystat && cd ~/jellystat
+
+cat > .env <<EOF
+TZ=America/Los_Angeles
+JELLYSTAT_POSTGRES_USER=postgres
+JELLYSTAT_POSTGRES_PASSWORD=$(openssl rand -hex 24)
+JELLYSTAT_JWT_SECRET=$(openssl rand -hex 32)
+EOF
+
+chmod 600 .env
+```
+
+Set `TZ` to your own [tz database name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). In the video I just used the generator in my Bitwarden extension for the JWT secret, which works fine too. The important part is that it's long and random. Jellystat uses it to sign login tokens, and the upstream compose file no longer ships a default value for it.
+
+Do note that the Postgres image only reads `POSTGRES_PASSWORD` when it creates the database for the first time. If you change the value in `.env` later, the database password doesn't change with it, and Jellystat won't be able to connect.
+
+### The Compose File
+
+Create `docker-compose.yml` in the same directory:
+
+```yaml
+services:
+  jellystat-db:
+    image: postgres:18.1
+    container_name: jellystat-db
+    restart: unless-stopped
+    shm_size: "1gb"
+    environment:
+      - POSTGRES_USER=${JELLYSTAT_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${JELLYSTAT_POSTGRES_PASSWORD}
+    volumes:
+      - ./postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --dbname=postgres --username=${JELLYSTAT_POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jellystat:
+    image: cyfershepard/jellystat:1.1.12
+    container_name: jellystat
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${JELLYSTAT_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${JELLYSTAT_POSTGRES_PASSWORD}
+      - POSTGRES_IP=jellystat-db
+      - POSTGRES_PORT=5432
+      - JWT_SECRET=${JELLYSTAT_JWT_SECRET}
+      - TZ=${TZ}
+    volumes:
+      - ./backup-data:/app/backend/backup-data
+    ports:
+      - "3000:3000"
+    depends_on:
+      jellystat-db:
+        condition: service_healthy
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:3000/auth/isConfigured || exit 1
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+```
+
+A few notes on what's going on here:
+
+- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_IP`, `POSTGRES_PORT`, `JWT_SECRET`, and `TZ` are all marked as required in the README. `POSTGRES_IP` is just the database container's name, since both containers share the compose network.
+- The database volume mounts at `/var/lib/postgresql`, not `/var/lib/postgresql/data`. That's the [correct path for PostgreSQL 18 and newer images](https://hub.docker.com/_/postgres). If you mount the old path, your data won't survive the container being recreated.
+- The upstream file still has a `version: "3"` line at the top. Compose ignores it now, so I left it out, same as I did in the video.
+- `"3000:3000"` publishes Jellystat on every interface of the host. If you only want it reachable from the machine itself, or from a specific LAN IP, change it to something like `"127.0.0.1:3000:3000"` or `"192.168.1.50:3000:3000"`.
+
+Bring it up and watch the logs for the first start:
+
+```bash
+docker compose up -d
+docker compose ps
+docker compose logs -f jellystat
+```
+
+Once both containers show as healthy, head to `http://YOUR_SERVER_IP:3000`.
+
+### Adding It to My Servarr Stack Instead
+
+If you're already running my media stack, you don't need a separate project. The [media compose file](https://github.com/TechHutTV/homelab/tree/main/media) in the homelab repo now has a commented-out Jellystat section at the bottom. Uncomment the `jellystat-db` and `jellystat` services, then fill in these values in your `.env`:
+
+```dotenv
+SET_IP_JELLYSTAT_DB=172.39.0.8
+SET_IP_JELLYSTAT=172.39.0.9
+
+JELLYSTAT_POSTGRES_USER=postgres
+JELLYSTAT_POSTGRES_PASSWORD=REPLACE_WITH_RANDOM_VALUE
+JELLYSTAT_JWT_SECRET=REPLACE_WITH_RANDOM_VALUE
+```
+
+Those two static IPs put the containers on `servarrnetwork` next to everything else. If you've customized your stack, just pick the next free addresses in your subnet. One quirk of the repo's layout: `172.39.0.0/24` sits just outside the private `172.16.0.0/12` range from [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918#section-3), so containers on that network can't reach real public hosts that happen to use those addresses. If you're building a new stack, a subnet like `172.20.0.0/24` avoids that. Change the network definition and every static IP together. In the video I was adding the services by hand, so my numbers were a little different. The repo's `.env.example` has the current layout.
+
+That version of the stack uses relative bind mounts, `./jellystat/postgres-data` and `./jellystat/backup-data`. On my Unraid server I pointed them at appdata instead, following Unraid's usual scheme:
+
+```yaml
+    volumes:
+      - /mnt/user/appdata/jellystat/postgres-data:/var/lib/postgresql
+```
+
+```yaml
+    volumes:
+      - /mnt/user/appdata/jellystat/backup:/app/backend/backup-data
+```
+
+From there I took the stack down, ran an update so it pulled the two new images, and brought everything back up.
+
+<Warning>
+If you're coming from an older Jellystat install that used `postgres:15.x` with its volume at `/var/lib/postgresql/data`, don't just change the image tag to 18.1. PostgreSQL won't start on a data directory from a different major version. Take a backup from Jellystat's **Backup** settings first, or follow your normal PostgreSQL upgrade process, before moving to the new database image.
+</Warning>
+
+## First Login and Connecting Jellyfin
+
+The first time you open Jellystat, it asks you to create a user. This is a Jellystat account, separate from your Jellyfin users, so give it a proper password.
+
+Next, it wants a Jellyfin URL and an API key. Because Jellystat and Jellyfin are on the same machine for me, I used my server's LAN address on Jellyfin's [default HTTP port](https://jellyfin.org/docs/general/post-install/networking/), `8096`. There's no reason to send that traffic through a proxy.
+
+```text
+http://YOUR_JELLYFIN_IP:8096
+```
+
+![Step 2 of 2 of Jellystat's first-time setup asking for the Jellyfin URL and API key](/docs-static/img/2026/10/jellystat-jellyfin-statistics/first-time-setup-jellyfin-url.jpg)
+
+To get the API key in Jellyfin:
+
+1. Open the hamburger menu and go to the **Dashboard**.
+2. Under **Advanced**, open **API Keys**.
+3. Create a new key and name it something like `Jellystat`.
+4. Copy the key and paste it into Jellystat.
+
+Treat that key like a password. It gives Jellystat administrative API access to your Jellyfin server, which is what it needs to read sessions, users, and libraries. If you ever retire Jellystat, delete the key from the same screen.
+
+If everything is right, Jellystat connects and starts its first sync. Depending on how big your libraries are, that first sync can take a while.
+
+## Testing It with a Real Stream
+
+To make sure session tracking was working, I fired up the Jellyfin app on my Xbox Series X, which is apparently one of the platforms where the Jellyfin client works really well. I played a home movie so I wouldn't get anything flagged, and the session showed up in Jellystat almost right away, even while the library sync was still running in the background.
+
+![A Jellystat session card for a home video playing as a Direct Play on the Jellyfin client for Xbox Series X, above the Recently Added row](/docs-static/img/2026/10/jellystat-jellyfin-statistics/session-xbox-direct-play.jpg)
+
+It started as a direct play. Then I changed the quality on the Xbox to force a transcode, and the session in Jellystat updated to show it transcoding to 1080p. One small gripe, and this is about the Jellyfin client rather than Jellystat: the quality options on these clients are listed by bitrate rather than by resolution. I'd prefer it the other way around. If there's a setting for that, let me know.
+
+## Libraries, Users, Activity, and Charts
+
+With some data coming in, I went through the rest of the interface.
+
+### Libraries
+
+The **Libraries** page shows item counts and total size for each library. My numbers are, frankly, ridiculous: a huge file count, which I suspect includes a lot of subtitle files, and about 15 terabytes of media. My golly.
+
+![The Jellystat Libraries page showing the Music and Shows libraries, with 19,354 files and 15.84 TB in Shows](/docs-static/img/2026/10/jellystat-jellyfin-statistics/libraries-page.jpg)
+
+### Users and Activity
+
+**Users** shows each Jellyfin account and what it has been doing. Right now I'm the only person in there, but this is exactly the page I want once my family starts moving over. **Activity** is the running history of playback, and my test session was still listed as in progress. There's a little bit of delay before things show up, but it's not bad.
+
+### Statistics
+
+The **Statistics** page has the charts: play count over the last number of days, play count by day of week and by hour, and an option to switch from play count to duration. Compared to the graphs in Tautulli, it's hard to judge yet because I don't have much data in here, but the main views are covered.
+
+The one I care about most is play count by hour of day. That's how I decide when to schedule restarts, updates, and other maintenance on the server, so nobody's movie gets cut off. I already know my household's patterns at this point, but if this is your first time getting this kind of data, it's really useful.
+
+The home page also has quick watch statistics, like most viewed and most popular movies and series over the last 30 days, top clients, active users, and concurrent streams.
+
+## Remote Access with NetBird
+
+Jellystat has an **External URL** setting, which is the public address it should use for your Jellyfin server. To fill that in, I needed Jellyfin reachable from outside my network first.
+
+For that I used NetBird. We recently put together a [NetBird plugin for Unraid](https://github.com/netbirdio/netbird-unraid) that runs the NetBird client natively on the Unraid host, so the server itself becomes a peer. It installs from **Plugins > Install Plugin** with the URL in that repo's README, and then you configure it under **Settings > Netbird**. If you run Unraid and want to help test it, I'd love the feedback.
+
+With the server connected as a peer, I went to my self-hosted NetBird dashboard and added a new reverse proxy service:
+
+1. Name the service `jellyfin` and pick your domain.
+2. Add a target, select the Unraid peer directly, and set the port to `8096`.
+3. Under the access settings, I turned on [CrowdSec IP reputation](https://docs.netbird.io/manage/reverse-proxy/authentication) in **Enforce** mode and limited access to visitors from the United States.
+4. Save the service.
+
+![The Access Control tab of NetBird's Add HTTPS Service dialog with CrowdSec IP Reputation set to Enforce and an Allow Only rule for the United States](/docs-static/img/2026/10/jellystat-jellyfin-statistics/netbird-crowdsec-country-rules.jpg)
+
+The CrowdSec option only shows up if your proxy cluster has CrowdSec configured, and country restrictions on a self-hosted proxy need a GeoLite2 database. If any of this is new to you, my [self-hosted NetBird with Pocket ID guide](/self-host-netbird-pocketid) covers setting up NetBird and its reverse proxy from scratch.
+
+Once Jellyfin loaded through the proxy, I went back to Jellystat and set the External URL to the new address:
+
+```text
+https://jellyfin.your-domain.com
+```
+
+Notice that I only exposed Jellyfin. Jellystat itself stays on my LAN and NetBird network, and that's how I'd recommend running it.
+
+## Settings Worth Knowing
+
+The Settings page has a lot more in it than I expected.
+
+| Area | What it does |
+|---|---|
+| **Settings** | Jellyfin URL, External URL, API key, preferred admin, language, and 12 or 24-hour time. I switched to 12-hour. |
+| **Security** | Change your Jellystat password and toggle **Require Login**. Leave login required. |
+| **Activity Monitor** | How often Jellystat polls for sessions while people are watching and while the server is idle. |
+| **Tasks** | Schedules for background jobs. By default the recently added items sync runs every hour, and the full Jellyfin sync and backup run once a day. |
+| **Library Settings** | Choose which libraries to import. Activity for other libraries is still tracked. |
+| **API Keys** | Keys for Jellystat's own API, documented at the `/swagger` endpoint. |
+| **Backup** | Create, download, and restore backups of Jellystat's data. These land in the backup-data bind mount. |
+| **Logs** | Results of the scheduled tasks. |
+
+There's also a task for importing history from the Jellyfin Playback Reporting plugin, which is handy if you've been running that plugin and want older data in Jellystat. I didn't use it in the video.
+
+If you ever forget your Jellystat login, the README documents a recovery override: set both `JS_USER` and `JS_PASSWORD` in the container environment, restart it, and log in with those. Remove them again once you're back in.
+
+## A Few Security Notes
+
+Jellystat holds your viewing history and an admin API key for Jellyfin, so a few things are worth keeping in mind:
+
+- **Stay on 1.1.12 or newer.** The two advisories fixed in that release, [GHSA-8p88-j43q-rrp9](https://github.com/CyferShepard/Jellystat/security/advisories/GHSA-8p88-j43q-rrp9) and [GHSA-gjqm-fhgh-rrgv](https://github.com/CyferShepard/Jellystat/security/advisories/GHSA-gjqm-fhgh-rrgv), are rated critical. They're authenticated SQL injection bugs in the backup restore and library purge endpoints. Because the documented setup connects as the PostgreSQL superuser, they could be used to run commands on the database container.
+- **Don't expose Jellystat to the internet.** Keep it on your LAN or behind NetBird, Tailscale, or another VPN. Proxying Jellyfin doesn't mean you need to proxy Jellystat.
+- **Only restore backups you made.** The restore feature processes whatever file you upload.
+- **Pin and update deliberately.** When a new release comes out, read the notes, change the image tag, and run `docker compose pull && docker compose up -d`.
+
+## Other Ways to Run It
+
+Since it's Docker, you can run Jellystat on just about anything. If most of your media setup lives on Proxmox, the [Proxmox VE community scripts](https://community-scripts.org/scripts?id=jellystat) include a Jellystat add-on. It installs PostgreSQL if it's missing, uses port `3000`, keeps its config at `/opt/jellystat/.env`, and defaults to `jellystat` / `jellystat` for the database credentials, so change those. It may install a different version than the newest upstream release, so check which version you get.
+
+The README also documents Emby support through the `IS_EMBY_API=true` environment variable. Everything in this guide is the Jellyfin setup.
+
+## Final Thoughts
+
+For a first step away from Plex, this was exactly what I wanted. In a few minutes I had session monitoring, library numbers, user activity, and the hour-of-day chart I actually use for scheduling maintenance. Watching my Xbox stream show up and then switch to a 1080p transcode was a good sign that tracking works the way it should.
+
+It isn't a perfect Tautulli replacement. There's no newsletter feature, the charts need some history before they're useful, and the developer has said the current codebase is headed for a full rewrite. But for keeping an eye on a Jellyfin server while I slowly move my family over, it does the job.
+
+The Jellystat section is in my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/media) if you're running my media stack. Uncomment it, fill in your `.env`, and you're good to go. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Jellystat on GitHub](https://github.com/CyferShepard/Jellystat)
+- [Jellystat 1.1.12 release](https://github.com/CyferShepard/Jellystat/releases/tag/1.1.12)
+- [Upstream docker-compose.yml](https://github.com/CyferShepard/Jellystat/blob/main/docker-compose.yml)
+- [Jellystat on Docker Hub](https://hub.docker.com/r/cyfershepard/jellystat)
+- [Jellystat license (MIT)](https://github.com/CyferShepard/Jellystat/blob/main/LICENSE)
+- [PostgreSQL Docker image](https://hub.docker.com/_/postgres)
+- [Jellyfin networking and ports](https://jellyfin.org/docs/general/post-install/networking/)
+- [NetBird reverse proxy access restrictions](https://docs.netbird.io/manage/reverse-proxy/authentication)
+- [NetBird Unraid plugin](https://github.com/netbirdio/netbird-unraid)
+- [TechHut homelab media stack](https://github.com/TechHutTV/homelab/tree/main/media)
+- [Plex lifetime pricing announcement](https://www.plex.tv/blog/new-lifetime-plex-pass-pricing/)
