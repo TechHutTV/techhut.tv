@@ -1,0 +1,299 @@
+export const title = "Home Assistant: Building My Smart Home on a ZimaBoard"
+export const description = "Install Home Assistant OS on a ZimaBoard or other x86-64 machine, pair Zigbee shades through a USB coordinator, and get them into Alexa with Emulated Hue, with the steps updated for Home Assistant 2026.10."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/home-assistant-smart-home-setup/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="wfY_vwv3UQU" title="TechHut's Home Assistant walkthrough" />
+
+I've wanted a good excuse to run [Home Assistant](https://www.home-assistant.io/) for years. Before I moved, I had exactly two smart bulbs, and that didn't seem worth a whole server. The new place is different. I can drill into walls, mount things, and actually build out a smart home, so this was finally the time to do it.
+
+The plan was simple: put Home Assistant on a ZimaBoard, plug in a Zigbee USB dongle, and make a set of motorized shades the first real devices in the system. SmartWings sent me the shades for this video.
+
+What sold me on Home Assistant is that it's one place for everything. Zigbee, Wi-Fi, and Bluetooth devices can all live in the same dashboard and the same automations, instead of a separate app for every brand in the house.
+
+<Note>
+The written installation has been updated for [Home Assistant 2026.10.1](https://github.com/home-assistant/core/releases/tag/2026.10.1), released October 10, 2026, and [Home Assistant OS 18.3](https://github.com/home-assistant/operating-system/releases/tag/18.3), released September 17, 2026. A few things have changed since I recorded: new Home Assistant OS installs now serve the web UI on port 80, add-ons are now called apps, the Core and Supervised installation methods are no longer supported, and Zigbee settings moved under **Settings** > **Connectivity**. I've called out each change where it matters. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## Why I Went with Zigbee
+
+Zigbee is an open protocol smart devices use to talk to each other and to a coordinator. The shades I picked could be ordered with several radios, including Matter, Thread, Zigbee, and Z-Wave. I went back and forth between Zigbee and Z-Wave for a while, watched a few comparison videos, and settled on Zigbee. My plan is to use it for as many devices as I can.
+
+Zigbee needs a coordinator, so I picked up a Sonoff Zigbee 3.0 USB Dongle Plus from Amazon. Home Assistant talks to the dongle, and the dongle talks to the shades.
+
+![The Sonoff Zigbee 3.0 USB Dongle Plus with its antenna plugged into the ZimaBoard](/docs-static/img/2026/10/home-assistant-smart-home-setup/zimaboard-sonoff-dongle.jpg)
+
+## Choose an Installation Type
+
+The [installation page](https://www.home-assistant.io/installation/) now lists two supported installation types:
+
+| Type | What you get | Apps (formerly add-ons) | Updates |
+|---|---|---|---|
+| Home Assistant OS | A minimal operating system dedicated to Home Assistant | Yes | Managed from the UI |
+| Home Assistant Container | Home Assistant Core in a container you manage | No | Manual |
+
+Home Assistant OS is the recommended option, and it's what I used. Home Assistant [deprecated the Core and Supervised installation methods](https://www.home-assistant.io/blog/2025/05/22/deprecating-core-and-supervised-installation-methods-and-32-bit-systems/) in May 2025, along with 32-bit i386, armhf, and armv7 systems. Support ended with the 2025.12 release. Existing installs keep running, but issue reports aren't accepted for them anymore, so I wouldn't start a new setup that way.
+
+The installation guide also points out that Container installs don't get the apps that power features like Thread and Z-Wave out of the box. That's a big part of why HA OS makes sense for a first install.
+
+For hardware, Home Assistant sells the Green with HA OS preinstalled, and there are guides for Raspberry Pi, ODROID, generic x86-64 PCs, and virtual machines on Linux, Windows, and macOS. I watched Jeff Geerling's Home Assistant video before doing all this, and he goes the Yellow and Pi route. Personally, I prefer x86 machines. I find them easier to work with and more compatible. I also just like the ZimaBoard: it's wrapped in a heatsink, looks a lot cooler sitting on top of the cabinet, and has more headroom than a standard Raspberry Pi. A cheap mini PC would work just as well for about the same money, and some of them come with extras like built-in Wi-Fi or more I/O.
+
+The [ZimaBoard](https://www.zimaspace.com/products/single-board-server) is an Intel Apollo Lake x86-64 board with 32 GB of eMMC storage, two SATA ports, and a PCIe slot, so it falls under Home Assistant's **Generic x86-64** guide.
+
+## Install Home Assistant OS on a ZimaBoard
+
+The site labels this route as the harder one. I can vouch that it really isn't. It's just a couple of extra steps.
+
+<Warning>
+Writing Home Assistant OS wipes the target disk, including any operating system already on it. Back up anything on that machine before you start.
+</Warning>
+
+### Requirements
+
+The [generic x86-64 guide](https://www.home-assistant.io/installation/generic-x86-64) asks for:
+
+- A dedicated 64-bit machine that can boot in UEFI mode
+- A boot disk with 512-byte logical sectors (512n or 512e). Native 4K-only (4Kn) drives won't boot HA OS.
+- A USB flash drive of at least 8 GB for the recommended method
+- A wired Ethernet connection with internet access for the first boot
+
+### Configure the Firmware
+
+Enter the BIOS or UEFI setup, usually with `F2`, `Del`, `F1`, or `F10` during startup. Where the setting lives depends on your firmware, but it's generally in the boot section.
+
+1. Make sure UEFI boot mode is enabled.
+2. Disable Secure Boot.
+3. Save and exit.
+
+### Write the Image from a Live Ubuntu USB
+
+This is Method 1 in the docs, the recommended one, and what I did.
+
+1. On another computer, write an Ubuntu Desktop ISO to a USB drive by following [Ubuntu's instructions](https://documentation.ubuntu.com/desktop/en/latest/tutorial/try-ubuntu-desktop/). If you're already on Linux, GNOME Disks makes this easy. balenaEtcher and Rufus work too.
+2. Plug the USB drive into the ZimaBoard and boot from it. Choose **Try Ubuntu**, not **Install Ubuntu**, and connect to your network.
+3. In the live session, download the current HA OS image for generic x86-64. At the time of writing, that's 18.3:
+
+   ```bash
+   curl -fLO https://github.com/home-assistant/operating-system/releases/download/18.3/haos_generic-x86-64-18.3.img.xz
+   ```
+
+   Check the [installation guide](https://www.home-assistant.io/installation/generic-x86-64) for the latest release before copying this.
+4. Open **Disks**, select the internal disk you want to install to, open the three-dot menu, and choose **Restore Disk Image…**. On the ZimaBoard, that's the built-in eMMC. You can also add storage through the PCIe slot or SATA ports if you want a bigger boot disk.
+5. Select the downloaded image, choose **Start Restoring…**, and confirm with **Restore**.
+6. When it finishes, shut down and remove the USB drive.
+
+![GNOME Disks in the live Ubuntu session restoring a Home Assistant OS image to the ZimaBoard's built-in eMMC, shown with the older 11.4 image from the video](/docs-static/img/2026/10/home-assistant-smart-home-setup/gnome-disks-restore-image.jpg)
+
+If Disks reports **Error unmounting filesystem** or **target is busy**, you probably booted the installer instead of the live session, or a swap partition on the target disk is in use. Boot again with **Try Ubuntu**, or select the swap partition in Disks, stop it, and try again.
+
+If you can't use a live USB, Method 2 is to write the image straight to the boot disk from another computer with [balenaEtcher](https://www.balena.io/etcher), using **Flash from file** rather than **Flash from URL**. That needs a way to connect the target disk to that computer, such as a USB-to-SATA adapter, so it doesn't fit eMMC storage like the ZimaBoard's.
+
+### First Boot
+
+Connect Ethernet and power the machine on. HA OS downloads the latest Home Assistant on first start. That's about 700 MB, so the **Preparing Home Assistant** screen can take a while.
+
+After a few minutes, open the web UI from another computer:
+
+```text
+http://homeassistant.local
+```
+
+This is one of the changes since the video. [Home Assistant 2026.8](https://www.home-assistant.io/blog/2026/08/05/release-20268/) made port 80 the default for new HA OS installs, so the address no longer needs a port number. If it doesn't load without one, the guide says to try `http://homeassistant.local:8123`, or use the machine's IP address. Existing installs that were upgraded keep the port they always used, and Home Assistant Container still defaults to 8123.
+
+If the machine says there's no bootable device, the guide has a fix. From the live Ubuntu session, booted in UEFI mode, create an EFI boot entry for the disk you installed to. On many machines that's `/dev/sda` or `/dev/nvme0n1`. Replace the placeholder below with your disk's name, without `/dev/`:
+
+```bash
+sudo efibootmgr --create --disk /dev/<drivename> --part 1 --label "HAOS" \
+  --loader '\EFI\BOOT\bootx64.efi'
+```
+
+### Or Run It as a Proxmox VM
+
+You don't need a dedicated box. HA OS also ships as a `.qcow2` disk image for KVM and Proxmox, listed on the [alternative installation page](https://www.home-assistant.io/installation/alternative). The minimum is 2 GB of RAM and 2 vCPUs. Since a Zigbee coordinator is USB, you'll pass the dongle through to the VM.
+
+The community [Proxmox VE Helper Scripts](https://community-scripts.org/scripts/haos-vm) automate this, and they're what I've used for HA OS on my own Proxmox server since. I talk more about them in my [AdGuard Home on Proxmox guide](/adguard-home-proxmox-setup). They're not maintained by Home Assistant, so read [`vm/haos-vm.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/vm/haos-vm.sh) before you run it as root. Here's what the current script does:
+
+- Downloads the official `haos_ova-<version>.qcow2.xz` image from Home Assistant's GitHub releases
+- Creates a q35 VM with OVMF (UEFI) firmware, 2 cores, 4 GB of RAM, and a 32 GB disk by default
+- Imports the image as the boot disk and starts the VM
+
+The script loads a shared engine from the separate `community-scripts/core` repository at runtime. That engine includes anonymous diagnostics, but they stay off unless you opt in. The command from the project's page, run in the Proxmox host shell:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/vm/haos-vm.sh)"
+```
+
+## Onboarding
+
+This was my very first time in Home Assistant, so everything after this point was a genuine first impression. The [onboarding flow](https://www.home-assistant.io/getting-started/onboarding/) is still short:
+
+1. Select **Create my smart home**. If you're moving from another install, choose to restore a backup instead.
+2. Enter a name, a lowercase username, and a password. This is the owner account and it's an administrator. Store the password somewhere safe, because there's no way to recover the owner credentials.
+3. Set your home location. Mine defaulted to Amsterdam, which I'm definitely not in. The location sets your time zone, units, currency, and the home zone used in automations.
+4. Choose what anonymized analytics to share. It's all off by default. I turned it on to help the project.
+5. Select **Finish**.
+
+When I did this, Home Assistant had already found compatible devices on my network, including the Zigbee dongle I'd plugged in, which showed up as **Zigbee Home Automation**. It picked up my Elgato lights and pulled in a bunch of my Google devices right away. My Synology showed up under discovered devices too.
+
+![The Home Assistant onboarding screen listing compatible devices found on the network, including Zigbee Home Automation, Elgato Light, Apple TV, and Synology DSM](/docs-static/img/2026/10/home-assistant-smart-home-setup/onboarding-compatible-devices.jpg)
+
+## Pair Zigbee Devices
+
+There are two main ways to run a USB coordinator with Home Assistant. The built-in [Zigbee Home Automation (ZHA)](https://www.home-assistant.io/integrations/zha/) integration is what I used in the video. [Zigbee2MQTT](https://www.zigbee2mqtt.io/) is a separate project that talks to Home Assistant over MQTT.
+
+| | ZHA | Zigbee2MQTT |
+|---|---|---|
+| What it is | Built-in Home Assistant integration | Separate app, plus an MQTT broker such as Mosquitto |
+| Setup | Usually auto-discovered when the dongle is plugged in | Install the Mosquitto and Zigbee2MQTT apps, then pick the adapter in its onboarding |
+| Where you manage devices | Home Assistant UI | Zigbee2MQTT's own web UI, with entities in Home Assistant |
+| Good fit | Getting started with the fewest moving parts | Running Zigbee separately from Home Assistant, or deeper per-device options |
+
+A coordinator can only be driven by one of them at a time, so pick one per adapter. ZHA got me up and running the fastest. Later I ended up running Zigbee2MQTT and found it more reliable as its own service, separate from Home Assistant. I mention that in my [must-have homelab services list](/must-have-home-server-services-2025).
+
+### Set Up ZHA
+
+If Home Assistant detects your adapter, it appears under **Settings** > **Devices & services** as discovered. Select **Add** and follow the prompts. If it isn't discovered, choose **Add integration**, search for **Zigbee Home Automation**, and pick the serial port. The docs recommend the stable `/dev/serial/by-id/...` path. You can find it under **Settings** > **Connectivity** > **Serial**.
+
+The ZHA docs list the EFR32MG21-based Sonoff ZBDongle-E as a tested adapter, and ZHA also auto-discovers the older CC2652P-based ZBDongle-P. Home Assistant's own Connect ZBT-2 is now their pick for a new network. Home Assistant doesn't update third-party adapter firmware, so use the manufacturer's tools for that.
+
+Placement matters more than I expected. The docs recommend a shielded USB extension cable, a USB 2.0 port (or a powered USB 2.0 hub), and keeping the adapter away from Wi-Fi access points and power supplies. My office is on the basement level, and I was worried I'd need to move the board upstairs to reach the shades.
+
+### Add a Device
+
+1. Go to **Settings** > **Connectivity** > **Zigbee** and select **Add device**. In the video this was **Add devices via this device** on the integration page. It's moved since.
+2. Put the device in pairing mode. For the shades, I had to dig out the manual and do a little button routine on the motor.
+3. When the device shows up, rename it and assign an area. There are predefined areas like Kitchen, or you can create your own.
+
+![Two SmartWings shades paired through ZHA in the video, each renamed and assigned to an area under The device is ready to use](/docs-static/img/2026/10/home-assistant-smart-home-setup/zha-shades-paired.jpg)
+
+Pair mains-powered Zigbee devices before battery ones when you can. Mains-powered devices act as routers and extend the mesh. My first shade came in as "kitchen shade," and then I repeated the process for the other three. One small gripe: there's no save button in the device dialog. I would have liked some confirmation that what I typed actually stuck. It did, and in a new tab all four shades showed up with up, down, and stop controls.
+
+![The Home Assistant overview from the video with up, stop, and down controls for the kitchen, bedroom, and living room shades next to the Elgato lights](/docs-static/img/2026/10/home-assistant-smart-home-setup/dashboard-shades.jpg)
+
+### If You Choose Zigbee2MQTT Instead
+
+On HA OS, the [official Zigbee2MQTT app](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt) installs like this:
+
+1. Go to **Settings** > **Apps** > **App store**, install the **Mosquitto broker** app, and start it.
+2. In the App store, open the three-dot menu, choose **Repositories**, and add `https://github.com/zigbee2mqtt/hassio-zigbee2mqtt`.
+3. Install the **Zigbee2MQTT** app (not Edge), start it, and open the web UI.
+4. Select your adapter under **Found Devices**, set your closest Wi-Fi channel so it can pick a good Zigbee channel, and submit.
+
+## The SmartWings Shades
+
+SmartWings reached out a long time ago, but I couldn't install anything in my previous home. After the move, I got in touch again and they sent some over to try.
+
+I went with their roller shades: motorized, light filtering, with 70% blackout. You can't see through them, but they still let some light in. I also liked the zebra shades, and the dual shades looked great but were a lot more expensive. I chose ivory, an inside mount (I think it looks much better), and a flat white square cassette. At the time I ordered, the roller shades started at $179. That's not cheap, but if you're already considering motorized shades, it's not outrageous either.
+
+Some lessons from ordering and installing:
+
+- **Measure carefully.** You can enter width and height down to fractions of an inch, and you need to get it exactly right. I measured one kitchen shade a couple of inches too small, so it doesn't fit. The bigger one I measured a fraction too large. It went in, but barely, and I'll probably pull it out and sand the edges.
+- **Pick a smart motor.** The motor choices I saw were Zigbee, Matter, HomeKit, Z-Wave, Alexa, and a plain remote-control motor. Skip the remote-only one if you want any kind of automation. Zigbee and Alexa were the cheapest smart options, and Matter was the priciest.
+- **Think about the solar panel before you choose the motor side.** There's an optional solar panel that sticks to the window. Put the motor on the side next to glass that doesn't move. I put it on the side of the window that slides, so the panel isn't really an option for me. SmartWings claims a charge lasts about six months to a year, and a charge takes a couple of hours, so I'll carry a portable battery around to each one when it's needed.
+
+Installation itself is easy. Two screws hold each bracket into the frame, and the shade slides and pops in. It just takes longer with kids running around. They shipped pre-paired with the included remote, so I could raise and lower them before Home Assistant was even involved. SmartWings' lineup and options may have changed since I ordered, so check [their site](https://www.smartwingshome.com/) for what's currently available.
+
+![Brandon pressing a SmartWings roller shade cassette into its brackets at the top of a kitchen window](/docs-static/img/2026/10/home-assistant-smart-home-setup/installing-smartwings-shade.jpg)
+
+## A First Look at the Dashboard
+
+By the next day, I had added a few more devices: an Apple TV, a printer, and my Elgato Key Lights, plus the front, large, kitchen, and bedroom shades. Toggling the Key Lights from the dashboard worked instantly, and nearly everything was auto-detected. **Settings** > **Devices & services** has a list of discovered devices I still hadn't set up, next to everything I had. I disabled the cameras that came in, so they appear as unavailable on my overview.
+
+The mobile app is phenomenal. There's a ton of customization I still need to do to get the dashboard looking and working how I want, though.
+
+The dashboard you land on now looks different from mine. Since [Home Assistant 2026.2](https://www.home-assistant.io/blog/2026/02/04/release-20262/), the new **Home** dashboard is the default for new installs. If you want to build your own layout the old way, create a dashboard from the **Overview (legacy)** template under **Settings** > **Dashboards**.
+
+## Getting the Shades into Alexa
+
+My wife likes using Alexa for voice commands, so the shades needed to show up there. Home Assistant has three ways to do that.
+
+| Option | Cost | What it takes |
+|---|---|---|
+| [Home Assistant Cloud](https://www.nabucasa.com/pricing/) | $6.50/month or $65/year, 31-day free trial | Sign in and link the Alexa skill |
+| [Alexa Smart Home skill](https://www.home-assistant.io/integrations/alexa.smart_home/) | Free | An AWS Lambda function, an Alexa developer skill, and Home Assistant reachable from the internet over HTTPS on port 443 with a trusted certificate |
+| [Emulated Hue](https://www.home-assistant.io/integrations/emulated_hue/) | Free | YAML config, local network only, devices appear as Hue lights |
+
+When I tried adding the Amazon integration from **Add integration**, it pointed me to Home Assistant Cloud. Honestly, the price isn't bad and I might end up using it. Home Assistant Cloud is run by Nabu Casa, and it helps fund the project. Nabu Casa [plans to rename it Home Assistant Link](https://www.home-assistant.io/blog/2026/10/02/big-tech-ruined-the-cloud-so-were-renaming-ours/) in the 2026.12 release.
+
+I didn't want to pay for it just yet, so I tried the free option first: Emulated Hue.
+
+## Emulated Hue
+
+Emulated Hue makes Home Assistant pretend to be a Philips Hue bridge. Alexa already knows how to discover and control Hue lights, so anything you expose through the fake bridge shows up as a Hue device without a cloud account. It doesn't replace a real Hue bridge if you own Hue bulbs. The docs also say it doesn't work for new Google Home setups. For Google, use the Google Assistant integration or Home Assistant Cloud instead.
+
+In the most basic sense, it works. I added my shades in the Alexa app, and I can control them. The catch is that a shade isn't a light bulb. Emulated Hue maps a cover's position to brightness, so "set the shades to 50%" works, but a bulb hits 50% instantly while a shade takes a while to get there. Alexa doesn't wait, and she'll tell me the device is malfunctioning when it's actually still moving. One of mine got to 90%, and then I got the malfunction message anyway. It's a hacky but free workaround. That trade-off is why I'm still considering the cloud option.
+
+### Edit `configuration.yaml`
+
+Emulated Hue has no UI setup. You add it to `configuration.yaml`. The easiest way on HA OS is the official **File editor** app:
+
+1. Go to **Settings** > **Apps** > **Install app**, find **File editor**, and install it.
+2. Turn on **Show in sidebar**, start it, and refresh the page.
+3. Open **File editor** from the sidebar and select `configuration.yaml`.
+
+Covers aren't in Emulated Hue's default exposed domains, so the shades have to be listed explicitly. I prefer exposing only the entities I name, which also keeps you well under Alexa's device limit. The docs warn that more than 49 exposed devices can stop Alexa from seeing any of them. Swap in your own entity IDs from **Settings** > **Devices & services** > **Entities**:
+
+```yaml
+emulated_hue:
+  # Newer Echo devices only discover the bridge on port 80
+  listen_port: 80
+  # Only expose the entities listed below
+  expose_by_default: false
+  entities:
+    cover.bedroom_shade:
+      name: "Bedroom Shade"
+    cover.kitchen_shade:
+      name: "Kitchen Shade"
+    cover.living_room_shade:
+      name: "Living Room Shade"
+```
+
+The `name` is what Alexa calls the device, so pick something that's easy to say. Save the file and restart Home Assistant.
+
+<Warning>
+On a fresh Home Assistant OS install from 2026.8 or later, Home Assistant's own web UI already uses port 80. That's the same port Alexa needs for Emulated Hue, so Emulated Hue will fail to start with a "Failed to create HTTP server at port 80" error in the logs. Before enabling it, go to **Settings** > **System** > **Network** > **HTTP server** and change the server port to `8123`. Confirm the change within five minutes, or Home Assistant reverts it. Then update your bookmarks and the Companion app URL. Installs that were upgraded from before 2026.8 kept 8123 and aren't affected.
+</Warning>
+
+Give the Home Assistant machine a static IP or DHCP reservation on your router, since Alexa remembers the bridge by IP address. Then, in the Alexa app, run device discovery. The docs suggest searching for **Philips Hue Bridge V1 (round)** if a generic scan doesn't find it.
+
+To check that the bridge is responding, open these from a computer on your network, using your Home Assistant IP:
+
+```text
+http://YOUR_HA_IP/description.xml
+http://YOUR_HA_IP/api/v2/lights
+```
+
+The first should return an XML description, and the second should list the devices you exposed.
+
+The emulated bridge doesn't use a login. Home Assistant only answers requests from local network addresses, but anything on your LAN can control the entities you expose. Keep the list to things you'd be fine with any device on your network controlling, and never forward that port from your router.
+
+## Final Thoughts
+
+This is a first impression from someone who has run plenty of homelab services but never Home Assistant. Even so, it clicked immediately. The install was easier than the docs make it sound, the Zigbee dongle was picked up without any fiddling, and most of my existing devices were found on their own. My wife can now control the shades through Alexa without me paying for anything, even if Emulated Hue is a bit of a hack for covers.
+
+There's a lot left to do. I still need to customize the dashboards, figure out the light dimmers that came with the house (they're smart but need their own hub), and add cameras now that I can actually install things. Out of every homelab app I run, from Sonarr and Radarr to my security and backup tools, this is the one I can see becoming my absolute favorite and something I use every day.
+
+If you're still deciding whether a home server is worth it in the first place, I wrote up [why I think everyone should have one](/5-reasons-build-home-server). And if you later put Home Assistant behind a reverse proxy, [part 4 of my Ultimate Home Server series](/ultimate-home-server-part-4-ssl-certificates) covers the trusted proxy setting that moved into the UI. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Home Assistant installation](https://www.home-assistant.io/installation/)
+- [Generic x86-64 installation](https://www.home-assistant.io/installation/generic-x86-64)
+- [Alternative installation (Proxmox/KVM, ESXi)](https://www.home-assistant.io/installation/alternative)
+- [Onboarding](https://www.home-assistant.io/getting-started/onboarding/)
+- [Deprecating Core and Supervised installation methods](https://www.home-assistant.io/blog/2025/05/22/deprecating-core-and-supervised-installation-methods-and-32-bit-systems/)
+- [Home Assistant 2026.8 release notes](https://www.home-assistant.io/blog/2026/08/05/release-20268/)
+- [HTTP integration](https://www.home-assistant.io/integrations/http/)
+- [Zigbee Home Automation (ZHA)](https://www.home-assistant.io/integrations/zha/)
+- [Zigbee2MQTT Home Assistant app](https://github.com/zigbee2mqtt/hassio-zigbee2mqtt)
+- [Emulated Hue](https://www.home-assistant.io/integrations/emulated_hue/)
+- [Amazon Alexa Smart Home](https://www.home-assistant.io/integrations/alexa.smart_home/)
+- [Home Assistant Cloud pricing](https://www.nabucasa.com/pricing/)
+- [File editor app](https://github.com/home-assistant/addons/tree/master/configurator)
+- [Home Assistant OS releases](https://github.com/home-assistant/operating-system/releases)
+- [Home Assistant Core releases](https://github.com/home-assistant/core/releases)

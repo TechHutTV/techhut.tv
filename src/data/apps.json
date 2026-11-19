@@ -820,7 +820,9 @@
     "name": "Home Assistant",
     "category": "Automation",
     "description": "Connect devices and build automations on your own home server.",
-    "coverage": [],
+    "coverage": [
+      "/home-assistant-smart-home-setup"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
