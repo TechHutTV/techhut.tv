@@ -1,0 +1,352 @@
+export const title = "Zerobyte: The Best Home Server Backup App I've Used"
+export const description = "Set up Zerobyte, a Restic-powered backup web UI, with Docker Compose. Back up an SMB share to a local repository, add an encrypted Google Drive copy through rclone, and restore files when you need them."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/zerobyte-home-server-backups/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="vAQdYEhI04A" title="TechHut's Zerobyte walkthrough" />
+
+After my [Duplicati guide](/duplicati-encrypted-backups), I got a lot of good feedback and alternative suggestions. The one I liked most is [Zerobyte](https://github.com/nicotsx/zerobyte), a young backup tool for your homelab that covers just about everything I used Duplicati for, with a much nicer interface.
+
+Zerobyte is a web UI and scheduler built on top of [Restic](https://restic.net/). You point it at your data, whether that's a local folder or an SMB, NFS, WebDAV, SFTP, or rclone share. Then pick where the encrypted backups should go, set a schedule and retention policy, and it takes care of the rest.
+
+I want to say this up front: Zerobyte is early software. The README still says it's in version 0.x and **subject to major changes from version to version**. I really like it, but pair it with another backup solution until it matures. Don't make it the only copy of anything you care about.
+
+In this guide I'll install it with Docker Compose, back up my Immich library from an Unraid SMB share to a local repository, add an encrypted Google Drive repository through rclone, and then walk through restoring a file.
+
+Floppydata sponsored the video this article is based on.
+
+<Note>
+The video was recorded in December 2025. The written installation has been updated for [Zerobyte v0.43.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.43.2), released October 3, 2026. Since then, the compose file has gained two required variables, `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP volumes, multiple users, OIDC single sign-on, and encrypted configuration exports. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
+</Note>
+
+## How Zerobyte Is Organized
+
+Zerobyte has three building blocks, and once you understand them the rest of the UI makes sense:
+
+- **Volumes** are the data you want to back up. That can be a directory mounted into the container or a share Zerobyte mounts itself.
+- **Repositories** are where the backups go. Each one is a Restic repository, encrypted before anything leaves the machine.
+- **Backups** are jobs that connect one volume to one repository on a schedule, with a retention policy.
+
+Here's what the [current documentation](https://zerobyte.app/docs/concepts/repositories) lists:
+
+| | Supported types |
+|---|---|
+| Volumes (sources) | Directory, NFS, SMB/CIFS, WebDAV, SFTP, rclone |
+| Repositories (destinations) | Local, S3-compatible, Cloudflare R2, Google Cloud Storage, Azure Blob Storage, rclone, Restic REST server, SFTP |
+| Schedules | Manual only, hourly, daily, weekly, specific days, custom cron |
+| Retention | Keep last, daily, weekly, monthly, and yearly |
+
+Since it's Restic underneath, you get deduplication, compression, and incremental snapshots. After the first run, only changed data gets stored. It reminds me of ZFS snapshots in that sense: you aren't keeping a full copy for every day in your retention policy, just the changes. Zerobyte bundles Restic itself, so you don't install it separately.
+
+## Install Zerobyte with Docker Compose
+
+I installed it on the Fedora Server box from my [Fedora Server guide](/fedora-server-guide-cockpit-zfs-podman). I gave up on Podman on that machine and switched to Docker, so this is plain Docker and Docker Compose. The [official installation guide](https://zerobyte.app/docs/installation) only needs Docker and Compose on the host, and the image is published for amd64 and arm64.
+
+Create a project directory:
+
+```bash
+mkdir ~/zerobyte
+cd ~/zerobyte
+```
+
+Zerobyte now requires an `APP_SECRET`, which encrypts the credentials it stores in its database. Generate one and keep it out of the compose file in a private `.env` file:
+
+```bash
+printf 'APP_SECRET=%s\n' "$(openssl rand -hex 32)" > .env
+chmod 600 .env
+```
+
+Then create `compose.yaml`:
+
+```yaml
+services:
+  zerobyte:
+    image: ghcr.io/nicotsx/zerobyte:v0.43
+    container_name: zerobyte
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/fuse:/dev/fuse
+    ports:
+      - "4096:4096"
+    environment:
+      - TZ=America/Los_Angeles
+      - BASE_URL=http://YOUR_SERVER_IP:4096
+      - APP_SECRET=${APP_SECRET}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/lib/zerobyte:/var/lib/zerobyte
+      - /path/to/backups/zerobyte:/data
+```
+
+Here's what each part is doing:
+
+- **`image`**: `v0.43` is the tag upstream uses in its docs. It picks up 0.43.x patch releases but won't move you to 0.44 on its own. Because this is a 0.x project, read the [release notes](https://github.com/nicotsx/zerobyte/releases) before changing that tag.
+- **`cap_add: SYS_ADMIN` and `/dev/fuse`**: These let Zerobyte mount remote shares from inside the container. SMB, NFS, and WebDAV need `SYS_ADMIN`; SFTP and rclone volumes also need `/dev/fuse`. If you only back up folders that are already bind-mounted into the container, you can drop both. Upstream documents a [reduced-privilege setup](https://zerobyte.app/docs/installation#simplified-installation-no-remote-mounts) for that, and all repository types still work.
+- **`4096`**: The web UI port.
+- **`TZ`**: This sets the time zone used for the backup schedules. If you leave it out, schedules run in UTC.
+- **`BASE_URL`**: The address you will actually use to reach Zerobyte. For LAN access, that's `http://` plus the server IP and port. Behind a reverse proxy, use your HTTPS address, such as `https://backup.your-domain.com`, which also turns on secure cookies.
+- **`/var/lib/zerobyte`**: Zerobyte's database, configuration, and keys. Keep this on local storage. Upstream specifically warns against putting it on a network share.
+- **`/path/to/backups/zerobyte:/data`**: This is my addition. In the previous video I made a backups directory on that machine's spinning drives, so I mount a folder from there at `/data` to hold my local repository.
+
+<Note>
+In my compose file I had `privileged: true` turned on because I had better luck with it on that Fedora box. Upstream doesn't require it, and the [troubleshooting guide](https://zerobyte.app/docs/troubleshooting) treats it as a temporary last resort because it disables most container isolation. If mounts fail on Fedora, try the SELinux `security_opt` options from that guide first. Also note that remote mounts don't work with rootless Docker.
+</Note>
+
+Start it and watch the logs:
+
+```bash
+docker compose up -d
+docker compose logs -f zerobyte
+```
+
+Once it's up, press `Ctrl+C` to stop following the logs. The container keeps running in the background.
+
+<Warning>
+Upstream strongly discourages running Zerobyte on a server reachable from the internet. If you have to, change the port mapping to `"127.0.0.1:4096:4096"` and reach it through an authenticated tunnel or a [reverse proxy](https://zerobyte.app/docs/guides/reverse-proxy). On my network I keep it on the LAN.
+</Warning>
+
+### Create the Admin Account and Save the Recovery Key
+
+Open `http://YOUR_SERVER_IP:4096` and you'll get the welcome screen. Create your admin username and password. Zerobyte then sends you to a **Download Recovery Key** page, where you confirm your password and download `restic.pass`.
+
+Don't skip this. That file is the Restic password for your repositories. If the server dies, it's what lets you open your backups. Without it, your offsite copy is just encrypted noise. Store it somewhere that isn't the Zerobyte server, such as your password manager.
+
+Zerobyte now has separate secrets for separate jobs, which its [recovery key guide](https://zerobyte.app/docs/guides/recovery-key-and-repository-passwords) explains:
+
+| Secret | What it protects |
+|---|---|
+| Your account password | Signing in to the web UI |
+| Recovery key (`restic.pass`) | Opening repositories Zerobyte created |
+| `APP_SECRET` | Encrypting share and cloud credentials in Zerobyte's database |
+
+Back up your `.env` somewhere safe as well, because losing `APP_SECRET` means Zerobyte can't decrypt the credentials it has stored. Since v0.43.0, organization admins can also export an encrypted `.zbex` copy of the whole configuration, protected by its own passphrase. That's useful if you ever have to rebuild the instance.
+
+## Back Up an SMB Share to a Local Repository
+
+Once you're in, one of the first things you'll notice is that this is a seriously good-looking piece of software. The sidebar has **Volumes**, **Repositories**, **Backups**, **Notifications**, and **Settings**.
+
+My first job was a second copy of my Immich library, which lives on my Unraid server. That gives me two copies on two different machines locally before anything goes offsite.
+
+### Add the Volume
+
+Under **Volumes**, create a new volume, choose **SMB**, and fill in:
+
+- a name;
+- your server's IP address;
+- the share name; and
+- the share username and password.
+
+Test the connection, and if it's successful, create the volume. The volume page then shows the share's capacity and usage, and you can browse its files to confirm Zerobyte is looking at the right thing.
+
+You'll need the share set up on your NAS first. The current SMB form also has guest mode, protocol version, port, and a **Read Only** option. Read-only is a nice safety net for backups, but you won't be able to restore back into that share while it's enabled.
+
+### Create the Local Repository
+
+Under **Repositories**, create a new one, choose **Local**, and give it a name. By default, Zerobyte uses `/var/lib/zerobyte/repositories`. On my machine, that would put it on the small boot drive, so I clicked **Change** and picked `/data`, the spinning-drive folder I mounted in the compose file.
+
+![The Zerobyte Create Repository form with the Local backend, Auto (fast) compression, and the repository directory set to /data](/docs-static/img/2026/10/zerobyte-home-server-backups/create-local-repository.jpg)
+
+If you change the location, make sure the directory is mounted from the host. Otherwise the repository can disappear when the container is recreated.
+
+The repository page then shows its settings and snapshots. The current version also lets you set compression to auto (the default), off, or max, and limit upload and download bandwidth.
+
+### Create the Backup Job
+
+Under **Backups**, create a backup job:
+
+1. Pick the volume.
+2. Give the job a name and choose the repository.
+3. Set the frequency. I used **Daily** at **1:00 AM**.
+4. Choose the backup paths. For Immich, I only selected the `library` folder because that's the raw data, and it's neatly organized.
+5. Set the retention policy. I used the suggested example: **7** daily, **4** weekly, and **6** monthly snapshots.
+
+![The Backup paths picker in a new Zerobyte backup job with only the Immich library folder selected](/docs-static/img/2026/10/zerobyte-home-server-backups/backup-job-paths-library.jpg)
+
+There are plenty of other options, including exclude patterns and custom Restic parameters. Click **Create**, and the job shows as enabled.
+
+<Note>
+The `library` folder holds originals, not Immich's database. According to [Immich's backup guide](https://docs.immich.app/administration/backup-and-restore/), its automatic database dumps are stored in `UPLOAD_LOCATION/backups`, and the original files are in `library`, `upload`, and `profile`. Immich recommends backing up the whole `UPLOAD_LOCATION` if you can. Pick paths based on what you'd actually need for a restore.
+</Note>
+
+To test it, I clicked **Backup now**. My library is big, so this probably wasn't the best idea, but it moved along about as quickly as you'd expect over my 1 gig network. I stopped that run for the video. The first backup uploads everything, so expect it to take a while. After that, only the changes get stored.
+
+## Add Google Drive as an Encrypted Offsite Repository with rclone
+
+This was new territory for me. I hadn't set it up before recording.
+
+As I mentioned in the Duplicati video, I have the misfortune of paying for Google Workspace. I don't use Drive for regular files because I don't want my data there. Encrypted backups are a different story, though. As long as Google only ever sees encrypted chunks, I'm okay with uploading my important stuff.
+
+Zerobyte doesn't talk to Google Drive directly. You configure Drive in [rclone](https://rclone.org/) on the host, then mount the rclone configuration into the container.
+
+### Install rclone on the Server
+
+Zerobyte's [rclone guide](https://zerobyte.app/docs/guides/rclone) uses rclone's official install script. I always recommend reading a script before piping it into `sudo bash`. This one detects your OS and architecture, downloads the current release zip from `downloads.rclone.org`, and installs the binary to `/usr/bin/rclone` with its man page. It needs `unzip`, `7z`, or `busybox` installed to unpack it.
+
+Piping it into bash didn't cooperate for me, so I downloaded it, checked it, and ran the local file:
+
+```bash
+curl -fsSLO https://rclone.org/install.sh
+less install.sh
+sudo bash install.sh
+```
+
+### Create Your Own Google Drive Client ID
+
+rclone's [Google Drive docs](https://rclone.org/drive/) now say the shared rclone client ID is being retired during 2026, so you'll need your own. In the Google Cloud Console:
+
+1. Create a new project. Mine was called something like `gdrive-backup`. Make sure that project is selected.
+2. Under **APIs & Services**, enable the **Google Drive API**.
+3. Set up the OAuth consent screen, then create an **OAuth client ID** with the **Desktop app** application type.
+4. Copy the client ID and client secret.
+5. Under **Audience**, publish the app. rclone notes that authorizations made while the app is in testing mode expire after a week. A personal app may show an "unverified app" warning when you sign in.
+
+### Configure the rclone Remote
+
+Back on the server, run `rclone config`:
+
+```bash
+rclone config
+```
+
+1. Press `n` for a new remote and name it. I used `gdrive`.
+2. Choose **Google Drive** from the storage list. The number changes between rclone versions, so look for the name.
+3. Paste your client ID and client secret.
+4. Choose full access (`drive`) as the scope.
+5. Leave the service account blank and skip the advanced config.
+6. When rclone asks whether to use a web browser to authenticate, answer `n` because the server has no browser.
+
+rclone then prints an `rclone authorize` command. You need to run it on a machine that has rclone and a browser. I'm on a Mac, so I installed it with Homebrew:
+
+```bash
+brew install rclone
+```
+
+Paste the printed `rclone authorize` command on that machine, sign in to Google, and approve access. rclone then prints a token between `Paste the following into your remote machine` and `End paste`. Copy that into the `config_token` prompt on the server. It's best to use the same rclone version on both machines. Answer `n` for shared drive, then confirm the remote.
+
+Check that it works:
+
+```bash
+rclone listremotes
+rclone lsd gdrive:
+```
+
+### Mount the rclone Config into Zerobyte
+
+At this point I went to create a repository in Zerobyte, and Google Drive wasn't showing up yet. Zerobyte needs your rclone config. Find it with:
+
+```bash
+rclone config file
+```
+
+If you ran `rclone config` as your normal user, it's in `~/.config/rclone/rclone.conf`. Add that directory to the compose file as read-only. I used the full path so it doesn't depend on which user runs Compose:
+
+```yaml
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/lib/zerobyte:/var/lib/zerobyte
+      - /path/to/backups/zerobyte:/data
+      - /home/your-user/.config/rclone:/root/.config/rclone:ro
+```
+
+Then recreate the container:
+
+```bash
+docker compose down
+docker compose up -d
+```
+
+If Google's OAuth token stops working later, refresh it on the host with `rclone config reconnect gdrive:` and restart Zerobyte, as described in the Zerobyte rclone guide.
+
+### Create the rclone Repository
+
+After a refresh, choose **rclone** as the repository type, and the `gdrive` remote is right there. You can browse the remote from the form, too. I could see the folder Duplicati was using, so I created a new `ZeroByte` folder and selected it. I named the repository Google Drive and created it, and after a few seconds it said the repository was successfully created.
+
+![The Zerobyte Create Repository form with the rclone backend, the gdrive remote selected, and the path set to zerobyte](/docs-static/img/2026/10/zerobyte-home-server-backups/rclone-google-drive-repository.jpg)
+
+Then I made a second backup job for the Immich library, this time pointing at the Google Drive repository. It was also daily, but scheduled a bit later than the local job, with the same 7/4/6 retention. I clicked **Backup now**, opened the `ZeroByte` folder in Google Drive, and it was filling up with Restic's encrypted repository files. It worked.
+
+<Note>
+Zerobyte's docs warn that consumer cloud services such as Google Drive and Dropbox have API rate limits and aren't designed for heavy backup I/O. They're fine for personal or light-duty backups, but upstream recommends real object storage such as S3, Backblaze B2, or Cloudflare R2 for critical data.
+</Note>
+
+## Restoring Files
+
+Under **Backups**, I could see both jobs: the local one and the offsite one. I opened the local job because its first backup had finished, then clicked a snapshot. That opens a file browser, so you can see exactly what's in the snapshot before restoring anything.
+
+![The Zerobyte Backups page with the immich local backup job going to the local repository and the immich offsite job going to google-drive](/docs-static/img/2026/10/zerobyte-home-server-backups/backup-jobs-local-and-offsite.jpg)
+
+To restore, select what you want. I went into `library`, then my `admin` user folder, and picked a single picture. Then choose where it should go:
+
+- **Original location** puts it back where it came from.
+- **Custom location** restores it somewhere else.
+
+![The Zerobyte Restore Snapshot page with Original location and Custom location options, the overwrite mode, and the snapshot's library folder](/docs-static/img/2026/10/zerobyte-home-server-backups/restore-snapshot.jpg)
+
+According to the [restore guide](https://zerobyte.app/docs/guides/restoring), the current version also lets you choose an overwrite mode: always, only if the content changed, only if the snapshot is newer, or never. There's also a **Download** option for grabbing one item without restoring it onto a share.
+
+I'd use a custom location for anything important, so you can check the files before you overwrite something live. Restic also restores ownership, permissions, and timestamps. Restoring directly onto SMB, WebDAV, SFTP, or rclone mounts can fail with `lchown` or `chmod` errors even after the file contents are written. The restore guide's workaround is to restore to a local path first, then copy the files over.
+
+## Notifications
+
+I already had a Slack destination set up because I have Slack open all the time for work. I'm not a huge fan, but it's there. A Slack destination only needs a webhook URL and an optional bot username. I sent a test notification, and it came through.
+
+The current [notification options](https://zerobyte.app/docs/guides/notifications) are Email (SMTP), Slack, Discord, Gotify, ntfy, Pushover, Telegram, a generic webhook, and a custom Shoutrrr URL.
+
+After creating a destination, assign it to a backup job and pick events. I first selected start and success, then decided I only cared about success. When I ran the job again, Slack got a message as soon as the backup completed. The current version supports `start`, `success`, `warning`, and `failure` events.
+
+I'd definitely enable **failure**. A backup that fails quietly is the one that gets you.
+
+If you use the generic webhook, Gotify, a self-hosted ntfy server, or a custom Shoutrrr HTTP target, Zerobyte now requires its origin in the `WEBHOOK_ALLOWED_ORIGINS` environment variable, starting with v0.36.0. Slack, Discord, Telegram, Pushover, and public ntfy.sh don't need that.
+
+## Mirror Repositories Make 3-2-1 Easier
+
+At the bottom of a backup job, there's a **Mirror repositories** section, and this is really cool. After each successful backup, Zerobyte copies the new snapshot to any repositories you add as mirrors.
+
+![A Zerobyte backup job's Notifications section with Slack event toggles above the Mirror Repositories section and its Add mirror button](/docs-static/img/2026/10/zerobyte-home-server-backups/notifications-and-mirror-repositories.jpg)
+
+That changes how I'd set this up. I made two jobs, one local and one offsite, but I don't really need both. One job could write to the local repository and mirror each snapshot to Google Drive. I didn't notice mirrors when I first played with Zerobyte, so I'm going to rethink my setup.
+
+Zerobyte's [3-2-1 guide](https://zerobyte.app/docs/guides/3-2-1-backup-strategy) recommends the same layout: a fast local repository for day-to-day restores, plus an offsite mirror in a different failure domain. Newer versions have added more mirror tools. You can check which snapshots are missing from a mirror and choose which ones to sync, watch sync progress, and since v0.43.2, get failure notifications when a mirror sync fails.
+
+If you'd rather keep your offsite copy on hardware you control, Zerobyte also supports a Restic REST server as a repository. I covered that setup, with NetBird connecting the two machines, in [this article on the NetBird knowledge hub](https://netbird.io/knowledge-hub/zerobyte-rest-server).
+
+## How It Compares
+
+**[Duplicati](/duplicati-encrypted-backups)** is what I came from. It's more mature, runs as a desktop or server app on Windows, macOS, and Linux, and uses its own encrypted block format. Zerobyte is a server-side, Docker-based web UI that uses standard Restic repositories. You can open those repositories with the Restic CLI, and Zerobyte can import repositories created elsewhere. To me, Zerobyte's volume, repository, and job model is easier to follow, but Duplicati has been around much longer.
+
+**[Proxmox Backup Server](/proxmox-backup-server-complete-guide)** solves a different problem. It's for backing up Proxmox VMs and containers, and hosts through its client. Zerobyte is for file-level backups of shares and folders. Running both is completely reasonable.
+
+## Final Thoughts
+
+So far, Zerobyte is working great for me. It's a beautiful app, and the volume-repository-job model makes sense right away. Restic does the heavy lifting underneath. The SMB share, local repository, Google Drive repository, and Slack notifications all worked in the video, and the restore options were right where I expected them. Mirror repositories are the feature I'm most excited to use.
+
+The caveat is the same one I opened with. This is early software, and its own README still says to expect major changes between versions. Since I recorded the video, it has had several breaking changes, including two new required compose variables. Keep another backup method running alongside it, read release notes before upgrading, and test your restores.
+
+The developer seems passionate about it, it's open source under AGPL-3.0, and it has improved quickly. I think it's going places. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Zerobyte on GitHub](https://github.com/nicotsx/zerobyte)
+- [Zerobyte documentation](https://zerobyte.app/)
+- [Installation](https://zerobyte.app/docs/installation)
+- [Volumes](https://zerobyte.app/docs/concepts/volumes)
+- [Repositories](https://zerobyte.app/docs/concepts/repositories)
+- [Backups, schedules, and retention](https://zerobyte.app/docs/concepts/backups)
+- [Recovery keys and repository passwords](https://zerobyte.app/docs/guides/recovery-key-and-repository-passwords)
+- [rclone integration](https://zerobyte.app/docs/guides/rclone)
+- [Restoring data](https://zerobyte.app/docs/guides/restoring)
+- [Notifications](https://zerobyte.app/docs/guides/notifications)
+- [3-2-1 backup strategy](https://zerobyte.app/docs/guides/3-2-1-backup-strategy)
+- [Troubleshooting](https://zerobyte.app/docs/troubleshooting)
+- [Zerobyte releases](https://github.com/nicotsx/zerobyte/releases)
+- [Restic](https://restic.net/)
+- [rclone install](https://rclone.org/install/)
+- [rclone Google Drive backend](https://rclone.org/drive/)
+- [rclone remote setup](https://rclone.org/remote_setup/)
