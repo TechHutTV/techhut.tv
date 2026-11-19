@@ -1,0 +1,351 @@
+export const title = "Distrobox: Run Any Linux Distro's Apps on Your Current Distro"
+export const description = "Use Distrobox and rootless Podman to run Arch, Debian, Fedora, Ubuntu, and other distros as integrated containers, install AUR and GUI apps, and export them to your desktop."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Distros", "Podman", "Arch"]
+export const cover = "/docs-static/img/2026/10/distrobox-linux-containers-guide/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="Sj064D9ZUl8" title="TechHut's Distrobox walkthrough" />
+
+So you're tired of distro hopping. Maybe you love Debian, but there's that one package that only exists in the AUR. Or you're on an immutable system and need something that just isn't available as a Flatpak. You could wipe the drive and install something else, or you could use [Distrobox](https://distrobox.it/) and bring the other distro's software to the system you already have.
+
+We've seen this idea before. BlendOS spins up containers so you can install graphical apps from other distributions, and if you've tried Fedora Silverblue you've probably met [Toolbx](https://containertoolbx.org/), which gives you a mutable Fedora container on top of a read-only system. Distrobox takes that idea and opens it up: you can create a container for almost any distribution using Podman or Docker, and it still feels native. Your home folder is there, graphical apps open like normal windows, and there's basically no performance loss because it's a container, not a virtual machine.
+
+The way I like to describe it: it's kind of like Windows Subsystem for Linux, except it's the Linux subsystem for other Linux distributions.
+
+Linode (part of Akamai) sponsored the video this article is based on.
+
+I recorded the walkthrough in July 2023. The written instructions have been updated for [Distrobox 1.8.2.5](https://github.com/89luca89/distrobox/releases/tag/1.8.2.5), the current stable release from April 27, 2026. There's also a Go rewrite, Distrobox v2, in public release candidates, which I cover briefly below. My hands-on impressions come from the recorded walkthrough, which used the version that was current back then.
+
+## What Distrobox Actually Does
+
+Under the hood, Distrobox is a wrapper around `podman`, `docker`, or `lilipod`. It creates a container from any OCI image you pick, then wires it into your host. According to the [official docs](https://distrobox.it/), that includes your home directory, the Wayland and X11 sockets, networking, removable devices like USB sticks, the systemd journal, the SSH agent, D-Bus, `/dev`, and more. Audio and GPU acceleration work too. For Intel and AMD GPUs, containers install their own Mesa drivers, and NVIDIA has its own flag that I'll get to.
+
+That integration is what makes some fun use cases possible:
+
+- Setting up a Debian development environment on Void Linux.
+- Installing an AUR package on Ubuntu.
+- Running bigger, pickier applications like DaVinci Resolve without dependency issues. We have a whole guide on [installing DaVinci Resolve with DavinciBox](/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox), which is built on Distrobox.
+- Installing software on a machine where you don't have root, like a locked-down school laptop that happens to run Linux, or on something like SteamOS.
+- Getting a mutable environment on an immutable OS.
+
+### It Is Not a Sandbox
+
+This is the part I want to be really clear about before you start, because the integration that makes Distrobox great is also why it isn't a security boundary.
+
+<Warning>
+Distrobox containers can read and write your home directory, external drives, and much of your desktop session. The project's own [security notes](https://distrobox.it/#security-implications) say not to expect the isolation of a plain Podman/Docker container or a Flatpak. Treat anything you install in a distrobox the same as something installed on your host. If you need real isolation, use a virtual machine or a tool that is designed for sandboxing.
+</Warning>
+
+## Install Distrobox
+
+### Pick a Container Manager
+
+Distrobox needs a container manager. The [compatibility docs](https://distrobox.it/compatibility/) list three options:
+
+| Manager | How Distrobox uses it | Notes |
+|---|---|---|
+| Podman | Rootless | The one I'd recommend. Containers run as your user. |
+| Docker | Through the `docker` group (no `sudo`) | Docker's own docs warn that the `docker` group [grants root-level privileges](https://docs.docker.com/engine/install/linux-postinstall/). |
+| Lilipod | Rootless | A small manager from the Distrobox author, useful for installs in your home folder. |
+
+The rootful vs rootless difference matters here. Upstream warns that with Docker, or with Podman/Lilipod using the `--root` flag, **root inside the container can modify things outside the container**. In rootful mode Distrobox asks you to set a user password the first time you enter, so the container isn't a passwordless gate to root. If any of that makes you nervous, stick with rootless Podman. The docs also say rootless Docker isn't working as intended yet.
+
+### From Your Distro's Repositories
+
+If your distribution packages it, this is the easiest route. In the video I just ran `dnf install distrobox` on Fedora. Here's how that looks today, installing Podman alongside it:
+
+```bash
+# Fedora / RHEL family (EPEL on RHEL, Alma, Rocky, CentOS Stream)
+sudo dnf install distrobox podman
+
+# Debian 12+ / Ubuntu 22.10+
+sudo apt install distrobox podman
+
+# Arch Linux (in the extra repository)
+sudo pacman -S distrobox podman
+
+# openSUSE Tumbleweed / Leap
+sudo zypper install distrobox podman
+```
+
+Do note that LTS releases can lag behind. As of this writing, [Repology](https://repology.org/project/distrobox/versions) shows Debian 12 on 1.4.2.1 and Ubuntu 24.04 on 1.7.0, while Fedora 43 and 44, Arch, and Tumbleweed are on 1.8.2.5. An older version works for the basics in this guide, but if you hit a bug, check your version first.
+
+### Distros That Already Ship It
+
+Some systems come with Distrobox out of the box:
+
+- **Bazzite** lists [Distrobox as preinstalled](https://github.com/ublue-os/bazzite), and its [docs](https://docs.bazzite.gg/Installing_and_Managing_Software/Distrobox/) also include a graphical manager and a `ujust distrobox-assemble` shortcut for premade containers.
+- **openSUSE Aeon and Kalpa** install it by default, per the compatibility table.
+- **SteamOS** has included Podman and Distrobox since SteamOS 3.5, though upstream notes those versions are a bit behind. The [Steam Deck guide](https://distrobox.it/posts/steamdeck_guide/) covers installing newer versions in your home folder.
+
+Fedora's Atomic desktops like Silverblue lean on Toolbx, Fedora's own tool, but Distrobox is in the Fedora repos as well. On an immutable system you can also use the user-level installer below so nothing touches the base image.
+
+### The Install Script (No Root Required)
+
+If your distro doesn't package Distrobox, or packages a really old version, the project has an install script. As of 1.8.2.5 it installs the stable v1 release by default. I'd download it and look it over before running it:
+
+```bash
+curl -fsSL -o distrobox-install.sh \
+  https://raw.githubusercontent.com/89luca89/distrobox/legacy/install
+less distrobox-install.sh
+sh distrobox-install.sh
+```
+
+Run as a regular user, it installs into `~/.local`, so make sure `~/.local/bin` is in your `PATH`. Run it with `sudo` and it installs into `/usr/local` instead. You can also pass `--prefix /some/path`. The script pulls the tagged release tarball from GitHub and copies the Distrobox scripts, man pages, shell completions, and icons. It doesn't install a container manager for you. If you can't install Podman system-wide, upstream has a guide for [installing Podman in your home folder](https://distrobox.it/posts/install_podman_static/), which works well with sudoless setups and the Steam Deck.
+
+Check it worked:
+
+```bash
+distrobox --version
+```
+
+### A Note on Distrobox v2
+
+The developers are rewriting Distrobox in Go, and v2 is available as [release candidates](https://github.com/89luca89/distrobox/releases/tag/2.0.0-rc.4) (2.0.0-rc.4 as of July 25, 2026). The [announcement](https://distrobox.it/posts/announcing_distrobox_next/) says v1 remains the stable version and the one they recommend for production. The commands in this guide are the same in both. The main differences for you:
+
+- v2 ships as a single `distrobox` binary, so use `distrobox create` and `distrobox enter`, not `distrobox-create` and `distrobox-enter`. The helpers you run inside a container, like `distrobox-export`, keep their names.
+- Existing v1 containers work with v2, **except containers with exported apps or binaries**. Those need to be recreated.
+- v2 reads `distrobox.conf` and `~/.distroboxrc` as plain `key=value` files, so `$HOME` and other variables aren't expanded. Use absolute paths.
+
+If you want to test it anyway, the installer on the `main` branch takes a `--v2` flag. The `legacy` script above doesn't, and always installs v1:
+
+```bash
+curl -fsSL -o distrobox-install-main.sh \
+  https://raw.githubusercontent.com/89luca89/distrobox/main/install
+less distrobox-install-main.sh
+sh distrobox-install-main.sh --v2
+```
+
+I'd keep it to a test machine until it's declared stable.
+
+## Create Your First Container
+
+Running `distrobox create` with no options gives you a container called `my-distrobox` from the latest Fedora Toolbox image. In the video, that default was Fedora 38.
+
+For the demo I wanted an AUR package, so I needed an Arch Linux container. The `--image` flag picks the distribution and `--name` names the container. I called mine `aur`:
+
+```bash
+distrobox create --name aur --image docker.io/library/archlinux:latest
+```
+
+I'm using the full registry path here so Podman doesn't have to ask which registry you mean. Give it a second to pull the image, then enter it:
+
+```bash
+distrobox enter aur
+```
+
+The first time you enter, Distrobox installs the packages it needs inside the container and sets up your user, so that takes a minute. After that, entering is fast. Once you're in, it's a fully functional Arch environment, and `pacman` works exactly like you'd expect.
+
+### Image Choices
+
+Distrobox doesn't need a special image. It can use pretty much any OCI image, and the [compatibility list](https://distrobox.it/compatibility/#containers-distros) tracks the ones that have been tested. A few examples:
+
+| Distro | Image |
+|---|---|
+| Arch Linux | `docker.io/library/archlinux:latest` |
+| Debian 13 | `quay.io/toolbx-images/debian-toolbox:13` |
+| Ubuntu 24.04 | `quay.io/toolbx/ubuntu-toolbox:24.04` |
+| Fedora | `registry.fedoraproject.org/fedora-toolbox:latest` |
+| openSUSE Tumbleweed | `registry.opensuse.org/opensuse/distrobox:latest` |
+| Red Hat (UBI 8) | `registry.access.redhat.com/ubi8/toolbox` |
+| Alpine | `quay.io/toolbx-images/alpine-toolbox:latest` |
+
+The images marked as toolbox images are community-built for desktop use, so the first enter is quicker. A plain image like `ubuntu:24.04` works too. Distrobox just installs the missing pieces the first time you enter.
+
+### Useful Create Flags
+
+I didn't use these in the demo, but they're worth knowing:
+
+- `--nvidia` integrates your host's proprietary NVIDIA drivers into the container. Upstream notes it only works with glibc-based distros and needs reasonably recent ones.
+- `--additional-packages "git vim tmux"` installs extra packages during setup.
+- `--home ~/distrobox/aur-home` gives the container its own home directory so config files and dotfiles don't pile up in your real home. Do note that this **does not** stop your real home folder from being mounted. It's about tidiness, not isolation.
+- `--init` runs a real init system like systemd inside the container, so it behaves more like an LXC. It hides the host's processes from the container and may need extra packages, like this example from the docs:
+
+```bash
+distrobox create --name debian-init --init \
+  --image docker.io/library/debian:stable \
+  --additional-packages "systemd libpam-systemd pipewire-audio-client-libraries"
+```
+
+- `--root` creates a rootful container. Use that instead of `sudo distrobox`, and remember what I said above about root inside a rootful container.
+
+## Installing an AUR Helper and a GUI App
+
+With the Arch container running, let's get `yay` going. These are the build steps from the [yay README](https://github.com/Jguer/yay), run inside the container:
+
+```bash
+sudo pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+```
+
+Now for a graphical app. For the demo I installed the Pamac software manager from the AUR. That's kind of pointless unless you plan to install a lot more AUR packages, but it makes a good test:
+
+```bash
+yay -S pamac-aur
+```
+
+After it finished building, I launched it from the same terminal:
+
+```bash
+pamac-manager
+```
+
+This is one of the most mind-blowing parts of Distrobox. Because this is a container, not a VM, the Pamac window just opens on my desktop like it's running on the host. No remote display, no VM window, no weird scaling.
+
+![The Pamac software manager from the Arch container open as a normal window on the Fedora GNOME desktop](/docs-static/img/2026/10/distrobox-linux-containers-guide/pamac-from-arch-container.jpg)
+
+## Your Home Folder Is Shared
+
+Distrobox mounts your home directory into the container. To show this off, I installed a file manager in the Arch container. The video used `pcmanfm-gtk3`, but Arch's own `pcmanfm` package is now the GTK 3 build and `pcmanfm-gtk3` has moved to the AUR, so use this today:
+
+```bash
+sudo pacman -S pcmanfm
+pcmanfm
+```
+
+When you browse your home folder, it looks just like your normal system, because it is. But when you go into the root filesystem, say `/bin`, you're looking at the Arch container's files instead. If you need the host's root filesystem from inside the container, Distrobox makes it available under `/run/host`.
+
+![PCManFM running in the aur container and showing the Arch container's /bin directory](/docs-static/img/2026/10/distrobox-linux-containers-guide/pcmanfm-container-bin.jpg)
+
+It also shares your dconf settings, which is where desktops like GNOME store a lot of their configuration. When I switched my GTK theme on the host to a dark variant, the app in the container switched with it.
+
+![PCManFM from the Arch container browsing the shared /home/brandon folder with the host's dark GTK theme applied](/docs-static/img/2026/10/distrobox-linux-containers-guide/pcmanfm-home-dark-theme.jpg)
+
+One gotcha: for a GTK theme to carry over, the theme has to live in your home folder, like `~/.themes` or `~/.local/share/themes`. A theme installed system-wide in `/usr/share/themes` on the host, or from a host package, isn't visible to the container.
+
+## Host Integration with distrobox-export
+
+Distrobox automatically adds a launcher entry for each new container. In my app launcher there was now an icon for the `aur` container that opens a terminal inside it. That's handy, but you don't want to open a terminal and type a command every time you want Pamac.
+
+That's what `distrobox-export` is for. Run it from **inside** the container:
+
+```bash
+distrobox-export --app pamac-manager
+```
+
+Now Pamac shows up in the app launcher with the rest of my apps, and clicking it starts it from the Arch container. Under the hood, the [export docs](https://distrobox.it/usage/distrobox-export/) say it copies the app's `.desktop` file and icons into your home folder and adds the `distrobox-enter` command needed to launch it. The `--app` value can be the executable name, part of the launcher name, or the absolute path to a `.desktop` file.
+
+![The GNOME app grid with the Aur container launcher and the exported Add/Remove Software (on aur) entry for Pamac](/docs-static/img/2026/10/distrobox-linux-containers-guide/exported-app-launcher.jpg)
+
+CLI tools work too. `--bin` creates a small wrapper script on the host, in `~/.local/bin` by default:
+
+```bash
+distrobox-export --bin /usr/bin/yay
+```
+
+Run `yay` from your host terminal and it runs inside the `aur` container. To undo either kind of export, add `--delete`:
+
+```bash
+distrobox-export --app pamac-manager --delete
+distrobox-export --bin /usr/bin/yay --delete
+```
+
+Going the other way, `distrobox-host-exec` runs a command on the host from inside a container.
+
+## Managing Containers
+
+These are the commands you'll use day to day:
+
+```bash
+distrobox list                 # show your containers and whether they're running
+distrobox enter aur -- yay -Syu  # run one command in a container
+distrobox stop aur             # stop a running container
+distrobox upgrade --all        # update packages in all your containers
+distrobox rm aur               # delete a container
+```
+
+`distrobox rm` asks for confirmation first, and `--force` removes a container that's still running. If you used `--home`, that separate home directory isn't deleted unless you also pass `--rm-home`. Removing a container never touches your real home folder, which also means anything an app inside wrote to your home is still there afterward.
+
+### Throwaway Containers
+
+`distrobox ephemeral` creates a temporary container and destroys it when you exit. It takes the same flags as `distrobox create`:
+
+```bash
+distrobox ephemeral --image docker.io/library/alpine:latest -- cat /etc/os-release
+```
+
+This is great for testing things. The risiOS developer, who also wrote the script for this video, used it to build risiOS ISO files on distros that aren't based on Fedora.
+
+## Declare Containers with distrobox assemble
+
+This is something I didn't cover in the video, but it's worth knowing about. Instead of remembering a pile of `create` commands, you can describe your containers in a manifest and build them all at once. Here's a small `distrobox.ini` based on the [assemble docs](https://distrobox.it/usage/distrobox-assemble/):
+
+```ini
+[aur]
+image=docker.io/library/archlinux:latest
+additional_packages="git base-devel pcmanfm"
+exported_apps="pcmanfm"
+pull=true
+replace=false
+
+[rhel8-dev]
+image=registry.access.redhat.com/ubi8/toolbox
+home=/home/your-user/distrobox/rhel8-dev
+pull=true
+replace=false
+```
+
+Change `/home/your-user` to your own home directory. Then, from the folder with the file:
+
+```bash
+distrobox assemble create
+```
+
+Use `--file /path/to/distrobox.ini` if it lives elsewhere, `--dry-run` to see what it would do without doing it, and `distrobox assemble rm` to remove everything in the manifest. With `replace=true`, an entry is rebuilt each time you run `create`. Other options include `init`, `nvidia`, `volume`, `init_hooks`, and `exported_bins`.
+
+## More Things You Can Do with It
+
+### Developer Environments
+
+If you're a developer, Distrobox is a perfect fit for environments you don't actually want to run as your desktop. Say you work on something built for Red Hat Enterprise Linux 8. Nobody wants a RHEL 8 desktop with how old everything is, and the usual options are a RHEL test server or a VM. Instead, make a RHEL 8 container from Red Hat's freely available UBI toolbox image and develop in that. It works the other way too, if your project needs newer dependencies than your distro provides.
+
+### Immutable Distros
+
+On immutable systems that push you toward Flatpak or Snap, Distrobox is a good fallback for software that doesn't have one of those packages. If you're curious how those formats compare, I benchmarked them in [Flatpak vs. Snap vs. AppImage](/flatpak-vs-snap-vs-appimage).
+
+### Other CPU Architectures
+
+With QEMU's user-mode emulation installed on the host (the docs list `qemu`, `qemu-user-static`, and `binfmt-support`), you can create a container for a different architecture. That's useful for testing ARM software on an x86 machine, or for running x86 tools on an ARM system like Asahi Linux or a Pinebook Pro:
+
+```bash
+distrobox create --name debian-arm64 \
+  --image docker.io/library/debian:stable \
+  --platform linux/arm64
+```
+
+Expect emulated containers to be much slower than native ones.
+
+### A Whole Desktop in a Container
+
+This one is really cool. You can install a full desktop environment in a container, for example Fedora Rawhide, Fedora's development branch, add it to your display manager, and log into a completely different OS and desktop running from a container. The project's [guide for running the latest GNOME, KDE Plasma, and Hyprland](https://distrobox.it/posts/run_latest_gnome_kde_hyprland_on_distrobox/) walks through it. Upstream labels it experimental, so treat it as a fun project, not your daily driver.
+
+### If You'd Rather Click Than Type
+
+If you want a GUI, [BoxBuddy](https://flathub.org/apps/io.github.dvlv.boxbuddyrs) on Flathub handles a lot of the common create and enter tasks. It doesn't include Distrobox, so install that first. Bazzite already ships a graphical manager, as mentioned above. I haven't tested either of these for this article.
+
+## Final Thoughts
+
+Distrobox gives you a lot of flexibility. You can install one GUI app or a little terminal tool from another distro, set up a whole development environment, or boot into a completely different system, all without leaving the distro you actually like. The moment Pamac from an Arch container opened on my desktop like a native app is still what sold me on it.
+
+Just remember what it is. It's an integration tool, not a sandbox. Use rootless Podman, keep an eye on what you install, and use `--home` if you want to keep your dotfiles tidy. If you haven't played with it yet, you definitely should. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Distrobox documentation](https://distrobox.it/)
+- [Distrobox on GitHub](https://github.com/89luca89/distrobox)
+- [Distrobox 1.8.2.5 release](https://github.com/89luca89/distrobox/releases/tag/1.8.2.5)
+- [Announcing Distrobox v2](https://distrobox.it/posts/announcing_distrobox_next/)
+- [Compatibility: host distros, container managers, and images](https://distrobox.it/compatibility/)
+- [distrobox create](https://distrobox.it/usage/distrobox-create/)
+- [distrobox-export](https://distrobox.it/usage/distrobox-export/)
+- [distrobox assemble](https://distrobox.it/usage/distrobox-assemble/)
+- [distrobox ephemeral](https://distrobox.it/usage/distrobox-ephemeral/)
+- [Useful tips](https://distrobox.it/useful_tips/)
+- [Install Podman in your home folder](https://distrobox.it/posts/install_podman_static/)
+- [Podman installation](https://podman.io/docs/installation)
