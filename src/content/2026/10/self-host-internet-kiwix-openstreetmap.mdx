@@ -1,0 +1,314 @@
+export const title = "Self-Host the Internet: Offline Wikipedia with Kiwix and Your Own OpenStreetMap Server"
+export const description = "Serve offline copies of Wikipedia, Ask Ubuntu, TED talks, and more with Kiwix Server in Docker, then import OpenStreetMap data into your own tile server so maps keep working when the internet doesn't."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="OC67FoXVRPE" title="TechHut's Kiwix and OpenStreetMap self-hosting walkthrough" />
+
+In this guide we're hosting our own little slice of the internet, offline. That means Wikipedia, the ArchWiki, Ask Ubuntu, and one of my personal favorites, real map data, all sitting on your own network. Once it's downloaded, it doesn't matter whether the internet is up.
+
+Why would anybody do this? There are a couple of good reasons. Internet access isn't a given for everyone. If you live somewhere rural or remote, having a lot of this information stored locally is just easier. The second reason is more of a doomer mindset, and honestly it's mine. I don't fully trust that network infrastructure, or whoever happens to be in charge, will keep all of this available forever. Whatever your reason, it's a fun project, and it's really nice having all of that data on your NAS.
+
+We'll use two tools, both running in Docker:
+
+- **[Kiwix Server](https://get.kiwix.org/en/solutions/applications/kiwix-server/)** (`kiwix-serve`) serves offline archives called ZIM files to any browser on your network.
+- **[openstreetmap-tile-server](https://github.com/Overv/openstreetmap-tile-server)** imports an OpenStreetMap extract into PostgreSQL and renders map tiles from it.
+
+UGREEN sponsored the video this article is based on, as part of its NASync launch.
+
+<Note>
+The written steps have been updated for what upstream ships as of October 2026: the `ghcr.io/kiwix/kiwix-serve` image (pinned to 3.8.2, released March 2, 2026), current ZIM sizes, and the upstream Overv tile server image. The video description linked a fork of the tile server, so I've explained that switch below. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+If you'd rather have Wikipedia, maps, and a bunch of other offline tools wrapped up in one installer and dashboard, I also covered [Project NOMAD](/project-nomad-offline-knowledge-server), which uses Kiwix under the hood. This guide is the do-it-yourself version, with each piece set up by hand.
+
+## What I Started With
+
+You don't need much hardware for this. Before recording, I installed Ubuntu Server in a Proxmox VM, updated it, and installed Docker with Docker's convenience script. You can do this on a mini PC, a rackmount server, or a VM on a NAS that supports them. Kiwix also has [desktop and mobile apps](https://get.kiwix.org/en/solutions/applications/), so you don't strictly need a server. I still think a server is the better option, though. If you ever actually need this data, every device on your network can reach it by typing in an IP address. Nobody needs a local copy or an app installed.
+
+If Docker is new to you, start with my [Docker basics guide](/7-docker-basics-for-beginners). To install Docker Engine on Ubuntu the same way I did, use the [convenience script](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script):
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+Storage is the part to plan for. I only gave that VM 128 GB, and ZIM files get big fast, so I kept them on a NAS share that was already up and running.
+
+## Mount the Network Share
+
+I mounted the NAS share over SMB/CIFS with an `/etc/fstab` entry, so it comes back after a reboot. First, install the CIFS tools and create a mount point:
+
+```bash
+sudo apt update
+sudo apt install -y cifs-utils
+sudo mkdir -p /media/data
+```
+
+Keep the share credentials in a separate file instead of putting them in `fstab`:
+
+```bash
+sudo nano /root/.smbcredentials
+```
+
+```ini
+username=your-nas-user
+password=your-nas-password
+```
+
+```bash
+sudo chmod 600 /root/.smbcredentials
+```
+
+Then add a line like this to `/etc/fstab`, using your NAS's IP address and share name:
+
+```text
+//192.168.1.10/data  /media/data  cifs  credentials=/root/.smbcredentials,uid=1000,gid=1000,file_mode=0644,dir_mode=0755,nofail  0  0
+```
+
+The `uid` and `gid` values make your normal user (usually `1000`, check with `id`) the owner of the mounted files. The `0644`/`0755` modes keep them readable by everyone else, which matters here because the Kiwix container runs as its own unprivileged user (UID `1001` in the [current Dockerfile](https://github.com/kiwix/kiwix-tools/blob/main/docker/server/Dockerfile)). `nofail` keeps the VM booting if the NAS happens to be offline.
+
+Mount it and check that your files are there:
+
+```bash
+sudo mount -a
+ls /media/data/zim
+```
+
+On my share, the `zim` folder already had Wikipedia, Wikibooks, wikiHow, and some TED talk archives in it.
+
+## What Kiwix Actually Is
+
+[Kiwix](https://kiwix.org/en/) is the organization and software behind all of this. Their mission is free access to knowledge for everyone, including people without internet access. It's a really cool organization, and their site is worth a read. They package websites into ZIM files, compressed and searchable archives that the Kiwix apps and `kiwix-serve` can open.
+
+The easiest way to see what you'll end up with is the [Kiwix library](https://browse.library.kiwix.org/) (the old `library.kiwix.org` address now redirects there). That page is basically what your own server will look like: a grid of archives you can filter by language and category, and each one opens in the browser exactly like it would offline. I clicked into Wikipedia, went to Europe's geography article, and it's the full thing, pictures and all.
+
+Most projects come in several flavors, so you can trade size for completeness. Here's roughly what the archives I mentioned in the video weigh today:
+
+| Archive | ZIM name | Approx. size (Oct 2026) |
+|---|---|---|
+| English Wikipedia, everything with images | `wikipedia_en_all_maxi` | ~119 GB |
+| English Wikipedia, no images | `wikipedia_en_all_nopic` | ~49 GB |
+| English Wikipedia, intro sections only | `wikipedia_en_all_mini` | ~13 GB |
+| Best of Wikipedia (top articles, with images) | `wikipedia_en_top_maxi` | ~6.5 GB |
+| Wikibooks | `wikibooks_en_all_maxi` | ~5.8 GB |
+| Ask Ubuntu | `askubuntu.com_en_all` | ~2.6 GB |
+| TEDMED talks | `ted_mul_tedmed` | ~0.6 GB |
+| ArchWiki | `archlinux_en_all_maxi` | ~34 MB |
+
+Those sizes come from the [download.kiwix.org listings](https://download.kiwix.org/zim/wikipedia/) in October 2026, which use binary units. The library page shows the same files in decimal gigabytes, so full Wikipedia appears there as about 127 GB. It was around 110 GB when I recorded. Either way, for basically the entirety of Wikipedia, that's honestly not too bad. Every archive is rebuilt periodically, so expect these numbers to drift.
+
+wikiHow is one I showed in the video, but I couldn't find it in the Kiwix library catalog when I checked for this update. Availability of individual archives changes over time, so don't count on any specific one being there.
+
+## Download Your ZIM Files
+
+You can grab files from the library's download buttons, but for anything big I'd pull them straight onto the share from the server. `wget -c` resumes if the connection drops:
+
+```bash
+mkdir -p /media/data/zim
+cd /media/data/zim
+wget -c https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2026-08.zim
+wget https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2026-08.zim.sha256
+sha256sum -c wikipedia_en_all_maxi_2026-08.zim.sha256
+```
+
+Swap in whatever's newest in the [Wikipedia folder](https://download.kiwix.org/zim/wikipedia/) when you do this. The other projects live in sibling folders, for example `other/` for the ArchWiki and `stack_exchange/` for Ask Ubuntu.
+
+## Run Kiwix Server in Docker
+
+The [official Docker README](https://github.com/kiwix/kiwix-tools/blob/main/docker/server/README.md) has a few variations, one for specific ZIM files and one for a remote download. The one I used loads every ZIM in a directory with a glob. I made two changes to it. I pointed the volume at my share instead of `/tmp/zim`, and I moved the host port to `8000` because the map server is going to want `8080`:
+
+```bash
+docker run -d \
+  --name kiwix-serve \
+  --restart unless-stopped \
+  -v /media/data/zim:/data:ro \
+  -p 8000:8080 \
+  ghcr.io/kiwix/kiwix-serve:3.8.2 \
+  '*.zim'
+```
+
+A few notes on that:
+
+- Keep the single quotes around `'*.zim'`. You want the glob expanded inside the container's `/data` folder, not by your host shell.
+- `:ro` mounts the share read-only. Kiwix only needs to read the archives.
+- In the video I first ran it in the foreground so I could watch it list every ZIM it found, then hit Ctrl+C and re-ran it with `-d` so it stays in the background. `--restart unless-stopped` brings it back after a reboot.
+- The image is multi-arch (amd64, arm64, and 32-bit ARM), so this also works on ARM boards.
+- The glob is only expanded when the container starts. After adding or replacing ZIM files, run `docker restart kiwix-serve`.
+
+Now browse to `http://your-server-ip:8000`. You get your own version of that library page, with everything served from your machine.
+
+![The self-hosted Kiwix Server library page listing 13 ZIM archives, including TED, Wikibooks, Wikipedia, wikiHow, and TEDMED](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/kiwix-server-library.jpg)
+
+<Warning>
+Kiwix Server has no login. Keep it on your LAN or behind a VPN. If you want remote access, my [NetBird guide](/self-host-netbird-pocketid) is one way to do that without opening a port to the internet.
+</Warning>
+
+## Touring the Offline Library
+
+My Wikipedia archive was the English "all maxi" version, so everything. I did need to update it, since I'd had those files for a while. Then I clicked through some articles. From the article on trains, I went to electric locomotives, then solar panels, then cloud cover and cyclones. All of those links worked, completely offline on my local network.
+
+![The Wikipedia article on trains served offline by Kiwix Server, with its full text, links, and photos](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/offline-wikipedia-train.jpg)
+
+wikiHow was the full site with images: guitar chords, singing, motorcycles, driving basics, a lot of stuff. The one I find really cool is TED. In the TEDMED archive, the talks play as full videos right in the browser, with their extra information alongside.
+
+![A TEDMED talk playing as a full video inside the offline TEDMED archive in Kiwix](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/tedmed-offline-video.jpg)
+
+I recommend everybody keep a ZIM server with at least a little data on it, whether that's Wikipedia, a how-to site, or whatever you'd want if the internet went down. Even the small ArchWiki archive is worth having.
+
+## Set Up Your Own OpenStreetMap Tile Server
+
+In my doomer scenario, the other piece of data we need is maps. You need to know how to get around without digging out an atlas, or hunting for one that's actually up to date. That's where the OpenStreetMap tile server comes in. It takes a bit more time than Kiwix, but it's still pretty easy.
+
+### Which Tile Server Project to Use
+
+The link in the video description pointed to `fsievers/openstreetmap-tile-server`. That repository is a fork that hasn't been updated since 2020. It switched to the German map style and uses different volume paths. The upstream project is [Overv/openstreetmap-tile-server](https://github.com/Overv/openstreetmap-tile-server), and it's what I'm using here. Its latest release is v2.3.0, on Ubuntu 22.04 with PostgreSQL 14 and the standard openstreetmap-carto style. Do note that the upstream repo has been quiet since mid-2023 and isn't archived. The [`overv/openstreetmap-tile-server`](https://hub.docker.com/r/overv/openstreetmap-tile-server) image is published for amd64 and arm64. If it ever stops working for you, [switch2osm](https://switch2osm.org/) documents the manual way to build the same stack.
+
+### Pick a Region on Geofabrik
+
+The data comes from OpenStreetMap extracts. I pulled mine from [Geofabrik's download server](https://download.geofabrik.de/). There are other sources, but this one is really good. You can drill down from continent to country to state, and hovering over a region highlights it on the map.
+
+Pick the smallest region that covers what you need. When I first tested this, I imported the whole western United States. The download only took around five minutes, but processing it into the database took about an hour and a half. For the video I grabbed just Washington, which processed much faster. Here's how the extract sizes compare:
+
+| Extract | `.osm.pbf` size (Oct 2026) |
+|---|---|
+| US West | ~3.2 GB |
+| Washington | ~347 MB |
+
+On a region's page, the two files you care about are the `.osm.pbf` (the actual data) and the `.poly` file (the region boundary). Right-click each one and copy the link.
+
+![Geofabrik's Washington download page listing the .osm.pbf extract and the .poly boundary file, as it looked in the video](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/geofabrik-washington.jpg)
+
+### Create the Volumes
+
+The import goes into a PostgreSQL database stored in a Docker volume, and rendered tiles get cached in a second volume:
+
+```bash
+docker volume create osm-data
+docker volume create osm-tiles
+```
+
+How much space this uses depends heavily on the data you grab. A single state is a few gigabytes, but larger regions grow fast.
+
+In the video I mentioned you can put Docker volumes on a network share. Docker's local driver can [mount CIFS shares as volumes](https://docs.docker.com/engine/storage/volumes/#create-cifssamba-volumes) directly. For this database, though, I'd keep `osm-data` on local storage, ideally an SSD. PostgreSQL refuses to start if its data directory isn't owned by the `postgres` user, and a typical SMB mount shows every file with one fixed owner. Save the share for the ZIM files.
+
+### Import the Data
+
+The README has several ways to import. The one I used lets the container download the files itself, using the `DOWNLOAD_PBF` and `DOWNLOAD_POLY` variables. You can also download the `.pbf` yourself and mount it instead, but letting the container fetch it is simpler. Paste in the two Geofabrik links:
+
+```bash
+docker run --rm \
+  -e DOWNLOAD_PBF=https://download.geofabrik.de/north-america/us/washington-latest.osm.pbf \
+  -e DOWNLOAD_POLY=https://download.geofabrik.de/north-america/us/washington.poly \
+  -v osm-data:/data/database/ \
+  -v osm-tiles:/data/tiles/ \
+  overv/openstreetmap-tile-server:2.3.0 \
+  import
+```
+
+This pulls the image, downloads both files, sets up PostgreSQL with PostGIS inside the volume, and imports everything with osm2pgsql. Then it fetches the extra datasets the map style needs, like ocean and ice sheet polygons. The README says that when you persist tiles in `osm-tiles`, you should mount it during the import too, so I've included it here. When the container exits without errors, the import is done.
+
+<Note>
+The import step needs an internet connection. The `run` step doesn't. If the machine that will serve the maps is going to be fully offline, do the import somewhere with internet first. Then export the `osm-data` volume and restore it on the offline machine, as the README describes.
+</Note>
+
+On resources, the image defaults to 4 threads and an 800 MB osm2pgsql cache. You can raise those with `-e THREADS=8` and `-e "OSM2PGSQL_EXTRA_ARGS=-C 4096"` if you have the cores and RAM. For really large extracts (a whole continent or the planet), add `-e FLAT_NODES=enabled` to the import so osm2pgsql keeps node locations in a flat file inside the database volume instead of in PostgreSQL. A single state doesn't need it. The [osm2pgsql benchmarks](https://wiki.openstreetmap.org/wiki/Osm2pgsql/benchmarks) on the OpenStreetMap wiki give a feel for import times on different hardware. If an import dies partway through, memory is the first thing to look at.
+
+### Run the Tile Server
+
+Once the data is imported, start the server so you can actually reach it:
+
+```bash
+docker run -d \
+  --name osm-tile-server \
+  --restart unless-stopped \
+  -p 8080:80 \
+  -v osm-data:/data/database/ \
+  -v osm-tiles:/data/tiles/ \
+  overv/openstreetmap-tile-server:2.3.0 \
+  run
+```
+
+Give it a moment, then open `http://your-server-ip:8080`. You'll get a simple Leaflet map served from the container. The current image bundles Leaflet locally, so the page doesn't need to load scripts from the internet.
+
+The first time you view an area, it's slow. Tiles are rendered on demand, so zooming in somewhere new takes a few seconds before the map fills in. After that, they come from the `osm-tiles` cache. I zoomed into Washington, then into my teeny tiny hometown, and there it was, right down to the school I went to for kindergarten and second grade.
+
+![The self-hosted OpenStreetMap tile server rendering Washington State in the browser from the imported extract](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/osm-tile-server-washington.jpg)
+
+The tiles themselves are also available at `http://your-server-ip:8080/tile/{z}/{x}/{y}.png`. Map apps that accept a custom XYZ tile URL can use that to display your own server's map. Keep in mind that this is a map, not a navigation system. You get the rendered map with no routing or turn-by-turn directions. Think good old MapQuest printouts if GPS were ever down.
+
+<Warning>
+The README's "Connecting to Postgres" examples also publish port `5432`, and the database password defaults to `renderer`. You don't need that port to serve maps, so leave it unpublished. If you do expose it, set a strong password with `-e PGPASSWORD=...` and keep it off the internet.
+</Warning>
+
+If you see `could not resize shared memory segment` errors in the logs while tiles render, the README's fix is to add `--shm-size="192m"` to the `run` command.
+
+## Prefer Docker Compose?
+
+If you'd rather manage both services in one file, here's the equivalent Compose setup. Use it instead of the two `docker run -d` commands above, not alongside them. Run the one-time `import` step first, since the Compose file expects the volumes to exist already:
+
+```yaml
+services:
+  kiwix:
+    image: ghcr.io/kiwix/kiwix-serve:3.8.2
+    container_name: kiwix-serve
+    command: ["*.zim"]
+    volumes:
+      - /media/data/zim:/data:ro
+    ports:
+      - "8000:8080"
+    restart: unless-stopped
+
+  osm:
+    image: overv/openstreetmap-tile-server:2.3.0
+    container_name: osm-tile-server
+    command: run
+    volumes:
+      - osm-data:/data/database/
+      - osm-tiles:/data/tiles/
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  osm-data:
+    external: true
+  osm-tiles:
+    external: true
+```
+
+## Licensing, If You Share This with Others
+
+Hosting this for yourself is simple. If you serve it to other people, the content licenses still apply:
+
+- **Wikipedia** text is licensed under [CC BY-SA 4.0](https://en.wikipedia.org/wiki/Wikipedia:Copyrights), and most of it is also available under the GFDL. Images carry their own individual licenses.
+- **OpenStreetMap** data is licensed under the [Open Database License (ODbL)](https://www.openstreetmap.org/copyright). If you show maps built from it, credit "© OpenStreetMap contributors" and make clear the data is available under the ODbL, for example by linking to the copyright page. The tile server's demo page still credits the data as CC-BY-SA, which is out of date, so fix the attribution in whatever page you actually share. The [attribution guidelines](https://osmfoundation.org/wiki/Licence/Attribution_Guidelines) cover the details.
+- **The software** is open source too: kiwix-tools is GPL-3.0, and the tile server image is Apache-2.0.
+
+## Final Thoughts
+
+This is one of those projects I think everybody with a homelab should do, at least a little. A ZIM server with Wikipedia and a few reference sites takes minutes once the files are downloaded. The map server takes longer, mostly because of the import, but seeing my hometown render from data sitting on my own server was really satisfying.
+
+The main thing to plan for is storage. Full Wikipedia alone is well over 100 GB, and maps can get big depending on how much of the world you grab. Start with a single state or country and the ZIMs you'd actually reach for. Pair it with Plex or Jellyfin and the rest of your homelab, and a surprising amount of the internet keeps working when the internet doesn't. You don't need it, but it's good to have. With all that, I do hope you found this helpful. Have a great one.
+
+## Official References
+
+- [Kiwix](https://kiwix.org/en/)
+- [Kiwix Server](https://get.kiwix.org/en/solutions/applications/kiwix-server/)
+- [Kiwix library](https://browse.library.kiwix.org/)
+- [Kiwix ZIM downloads](https://download.kiwix.org/zim/wikipedia/)
+- [kiwix-serve Docker README](https://github.com/kiwix/kiwix-tools/blob/main/docker/server/README.md)
+- [kiwix-serve container image](https://github.com/kiwix/kiwix-tools/pkgs/container/kiwix-serve)
+- [kiwix-serve documentation](https://kiwix-tools.readthedocs.io/en/latest/kiwix-serve.html)
+- [Overv/openstreetmap-tile-server](https://github.com/Overv/openstreetmap-tile-server)
+- [overv/openstreetmap-tile-server on Docker Hub](https://hub.docker.com/r/overv/openstreetmap-tile-server)
+- [Geofabrik OpenStreetMap extracts](https://download.geofabrik.de/)
+- [switch2osm](https://switch2osm.org/)
+- [OpenStreetMap copyright and license](https://www.openstreetmap.org/copyright)
+- [Docker volumes: CIFS/Samba](https://docs.docker.com/engine/storage/volumes/#create-cifssamba-volumes)
+- [Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)

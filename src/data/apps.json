@@ -1057,7 +1057,8 @@
     "category": "Desktop",
     "description": "Serve downloaded knowledge archives for offline reading.",
     "coverage": [
-      "/project-nomad-offline-knowledge-server"
+      "/project-nomad-offline-knowledge-server",
+      "/self-host-internet-kiwix-openstreetmap"
     ],
     "videos": [
       {
