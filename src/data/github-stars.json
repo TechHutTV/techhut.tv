@@ -285,6 +285,11 @@
       "stars": 18549,
       "fetchedAt": "2026-09-06T14:22:02.820Z"
     },
+    "morpheus65535/bazarr": {
+      "repository": "morpheus65535/bazarr",
+      "stars": 4365,
+      "fetchedAt": "2026-10-18T03:14:46.221Z"
+    },
     "mrvladus/errands": {
       "repository": "mrvladus/errands",
       "stars": 521,
@@ -339,6 +344,11 @@
       "repository": "nlnetlabs/unbound",
       "stars": 4855,
       "fetchedAt": "2026-09-06T14:22:20.318Z"
+    },
+    "nzbgetcom/nzbget": {
+      "repository": "nzbgetcom/nzbget",
+      "stars": 767,
+      "fetchedAt": "2026-10-18T03:14:49.335Z"
     },
     "octoprint/octoprint": {
       "repository": "octoprint/octoprint",

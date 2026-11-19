@@ -107,6 +107,27 @@
     }
   },
   {
+    "id": "bazarr",
+    "name": "Bazarr",
+    "category": "Media",
+    "description": "Find and download subtitles for libraries managed by Sonarr and Radarr.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      }
+    ],
+    "icon": "/app-icons/bazarr.png",
+    "iconDark": "/app-icons/bazarr-light.png",
+    "details": {
+      "href": "/apps/bazarr"
+    }
+  },
+  {
     "id": "beaver-habit-tracker",
     "name": "Beaver Habit Tracker",
     "category": "Desktop",
@@ -700,7 +721,9 @@
     "name": "Gluetun",
     "category": "Networking",
     "description": "Route Docker container traffic through a VPN connection.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1268,6 +1291,26 @@
     }
   },
   {
+    "id": "nzbget",
+    "name": "NZBGet",
+    "category": "Media",
+    "description": "Download files from Usenet with a lightweight client that works with Sonarr and Radarr.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      }
+    ],
+    "icon": "/app-icons/nzbget.png",
+    "details": {
+      "href": "/apps/nzbget"
+    }
+  },
+  {
     "id": "powertoys",
     "name": "Microsoft PowerToys",
     "category": "Desktop",
@@ -1791,12 +1834,19 @@
     "name": "Prowlarr",
     "category": "Media",
     "description": "Manage indexers for a self-hosted media automation stack.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "Uzqf0qlcQlo",
         "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
         "published": "2024-10-01"
+      },
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
       }
     ],
     "icon": "/app-icons/prowlarr.png",
@@ -1895,7 +1945,9 @@
     "name": "qBittorrent",
     "category": "Media",
     "description": "Manage torrent downloads from a desktop or self-hosted web interface.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1914,7 +1966,8 @@
     "category": "Media",
     "description": "Organize and automate a movie library in a self-hosted media stack.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "videos": [
       {
@@ -2030,7 +2083,8 @@
     "category": "Media",
     "description": "Manage media requests and migrate an existing Overseerr installation.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "icon": "/app-icons/seerr.png",
     "videos": [
@@ -2038,6 +2092,11 @@
         "id": "Kdq4HN3cFmw",
         "title": "You need to DITCH Overseerr and Migrate to Seerr",
         "published": "2026-03-06"
+      },
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
       }
     ],
     "details": {
@@ -2068,7 +2127,8 @@
     "category": "Media",
     "description": "Organize and automate a TV library in a self-hosted media stack.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "videos": [
       {

@@ -60,6 +60,16 @@
       "https://api.github.com/repos/advplyr/audiobookshelf"
     ]
   },
+  "bazarr": {
+    "repository": "morpheus65535/bazarr",
+    "label": "Bazarr",
+    "link": "https://github.com/morpheus65535/bazarr",
+    "reason": "Official Bazarr software repository, linked from bazarr.media and the TechHut guide's resources; README and GPL-3.0 LICENSE verified, repository not archived.",
+    "sources": [
+      "https://github.com/morpheus65535/bazarr",
+      "https://www.bazarr.media/"
+    ]
+  },
   "beaver-habit-tracker": {
     "repository": "daya0576/beaverhabits",
     "label": "Beaver Habit Tracker",
@@ -705,6 +715,17 @@
     "sources": [
       "https://github.com/networkupstools/nut",
       "https://api.github.com/repos/networkupstools/nut"
+    ]
+  },
+  "nzbget": {
+    "repository": "nzbgetcom/nzbget",
+    "label": "NZBGet",
+    "link": "https://github.com/nzbgetcom/nzbget",
+    "reason": "Maintained NZBGet repository linked from nzbget.com. Its README identifies it as the continuation of the original project formerly maintained by hugbug; the original nzbget/nzbget repository was archived on 2022-11-18 and its last release is v21.1, so its stars are not used.",
+    "sources": [
+      "https://github.com/nzbgetcom/nzbget",
+      "https://nzbget.com/",
+      "https://github.com/nzbget/nzbget"
     ]
   },
   "octoprint": {
