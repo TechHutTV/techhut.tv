@@ -253,7 +253,9 @@
     "name": "Cloudreve",
     "category": "Files & Photos",
     "description": "Host, browse and share files through a web interface.",
-    "coverage": [],
+    "coverage": [
+      "/cloudreve-self-hosted-cloud-storage"
+    ],
     "videos": [
       {
         "id": "944IfBbSYtE",

@@ -1,0 +1,351 @@
+export const title = "Cloudreve: The Self-Hosted Cloud Drive That Caught Me Off Guard"
+export const description = "Deploy Cloudreve, a self-hosted file management and sharing server, with Docker Compose, then tour its web interface, remote downloads, sharing, admin dashboard, Windows client, and the line between the Community and Pro editions."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="944IfBbSYtE" title="TechHut's Cloudreve walkthrough" />
+
+[Cloudreve](https://cloudreve.org/) has been on my list to try for quite a while, and it turned out to be a really polished, feature-rich way to run a file server in your homelab. I'll be honest up front: I'm pretty partial to Nextcloud. It's still my preference. But preferences can change, and Cloudreve caught me a little off guard.
+
+The big difference is scope. Cloudreve is about files, and that's it. For me that might actually be a good thing. I've been slowly swapping pieces of my Nextcloud setup for more specific tools. I don't use Nextcloud Deck much anymore because I use my own project management system, and I replaced Nextcloud News with a self-hosted automation for a newsletter. I still love Nextcloud, but if all I really need from it is files, something focused like this is worth a look. If you're shopping around, I've also covered [OpenCloud](/self-host-opencloud-docker-compose), another file-focused Nextcloud alternative.
+
+Incogni sponsored the video this article is based on.
+
+<Note>
+The written installation has been updated for [Cloudreve 4.19.1](https://github.com/cloudreve/cloudreve/releases/tag/4.19.1), released September 18, 2026. The official Docker Compose files are essentially the same ones I cloned in the video, but there have been several releases since then, including fixes for security vulnerabilities in 4.16.1, 4.17.0, 4.18.0, and 4.19.0. If you're running an older 4.x install, update it. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## What Cloudreve Actually Is
+
+Cloudreve is a GPL-3.0 licensed, self-hosted file management and sharing system written in Go with a React frontend. The interesting part is that it builds a virtual file system in its database on top of whatever storage you configure. As the [concepts page](https://docs.cloudreve.org/usage/concept) explains, what users see as files and folders is separate from the physical blobs on your storage backend.
+
+That has one important consequence. Cloudreve is a cloud drive, not a file browser for an existing folder. The [docs are clear](https://docs.cloudreve.org/) that it isn't meant for managing files alongside other file managers or for aggregating other consumer cloud drives. If you want to point something at a folder of files you already have, that's more of a job for something like [copyparty](/copyparty-file-server-linux). Cloudreve wants to own its storage.
+
+The [README](https://github.com/cloudreve/cloudreve) lists storage on local disk, remote Cloudreve nodes, OneDrive, S3-compatible APIs, and several cloud object stores, with uploads and downloads going directly between the client and the storage provider where possible. On top of that you get background downloads through Aria2 or qBittorrent, archive handling, WebDAV for every storage provider, resumable drag-and-drop uploads, metadata and tag search, multiple users and groups, expiring share links, and online preview or editing for media, ePub, text, Markdown, diagrams, and Office documents. There's also a [public demo](https://demo.cloudreve.org) if you want to click around before deploying anything.
+
+## Community vs. Pro: Know Where the Line Is
+
+Before getting into the setup, I went straight to the pricing page, because with a really nice open-source project like this the first question is always how they make money. The answer is a free, open-source **Community** edition and a paid **Pro** edition. At the time of writing, the [pricing page](https://cloudreve.org/pricing) lists Pro at $89.90 per root domain as a lifetime license, and you only get the Pro frontend source, not the backend.
+
+Here's what the comparison page currently puts behind Pro:
+
+| Area | Pro-only features |
+|---|---|
+| Sharing and collaboration | Granular file and folder permissions, modifying or deleting files through a share link, anonymous uploads through share links, paid share links, default shares for new users |
+| Storage policy management | Multiple storage policies per user group, per-directory storage policies, load-balancing policies, migrating files between policies |
+| Users and authentication | Multi-account switching, OIDC sign-in, Logto and QQ sign-in, sign-up email filtering |
+| Monetization | Storage plans, memberships, redemption codes, credits |
+| System extensions | Activity logs, site announcements, node selection for background tasks, the iOS volume license, abuse reports |
+
+The one that stings for me is OIDC. Hooking a self-hosted app up to an identity provider is usually easy, and it would be nice to just use [Pocket ID](/self-host-netbird-pocketid) with this. Activity logs being Pro-only also kind of sucks. That said, the Community edition still covers multiple users, sharing with passwords and expiration, WebDAV, remote downloads, previews, two-factor authentication, and passkeys. For a personal or family file server, that's a lot.
+
+The clients are their own thing:
+
+- **iOS:** The [Cloudreve iOS app](https://cloudreve.org/ios) is a paid subscription for individual users, listed at $1 a month and up. A Pro site can instead buy a volume license so its users connect for free.
+- **Windows:** [Cloudreve Desktop](https://cloudreve.org/desktop) is free, MIT-licensed, and available from the [Microsoft Store](https://apps.microsoft.com/detail/9P3GH5RNNZFD). It's Windows-only.
+- **macOS and Linux:** There's no desktop sync client. WebDAV is the official answer for those platforms.
+
+The lack of a macOS client might be a deal breaker for me personally. I'll come back to that.
+
+## Deploy Cloudreve with Docker Compose
+
+Cloudreve supports three deployment methods: Docker Compose, a single Docker container, or the binary under a process supervisor. The [deployment overview](https://docs.cloudreve.org/overview/deploy/) recommends Docker, and Compose is the easiest way to get the full stack.
+
+For the video, I spun up a temporary LXC on Proxmox to test this out. Generally, if you're running Docker, I'd recommend a VM or actual hardware rather than an LXC, but this was just a test box. You'll need Docker and the Compose plugin installed; the [official install docs](https://docs.docker.com/engine/install/) cover each distro, and my [Docker basics guide](/7-docker-basics-for-beginners) walks through the fundamentals. I was on a root account, but normally you'll want to add your user to the `docker` group after installing.
+
+### Clone the Official Compose Repository
+
+Cloudreve keeps its compose files in a [separate repository](https://github.com/cloudreve/docker-compose). Clone it and copy the example environment file:
+
+```bash
+git clone https://github.com/cloudreve/docker-compose.git ~/cloudreve
+cd ~/cloudreve
+cp .env.example .env
+```
+
+There are three compose files in there:
+
+| File | Purpose |
+|---|---|
+| `docker-compose.yml` | The base stack: Cloudreve, PostgreSQL, and Redis |
+| `docker-compose.pro.yml` | An override that swaps in the Pro image and license key |
+| `docker-compose.fts.yml` | An optional full-text search add-on with Apache Tika and Meilisearch |
+
+For the Community edition, `.env` doesn't need anything. Its only entries are a commented-out Pro license key and a commented-out Meilisearch key for the full-text search add-on.
+
+### What's in the Base Stack
+
+Here's the current `docker-compose.yml` from upstream:
+
+```yaml
+services:
+  cloudreve:
+    image: cloudreve/cloudreve:v4
+    container_name: cloudreve
+    depends_on:
+      postgresql:
+        condition: service_started
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    ports:
+      - 5212:5212
+      - 6888:6888
+      - 6888:6888/udp
+    environment:
+      - CR_CONF_Database.Type=postgres
+      - CR_CONF_Database.Host=postgresql
+      - CR_CONF_Database.User=cloudreve
+      - CR_CONF_Database.Name=cloudreve
+      - CR_CONF_Database.Port=5432
+      - CR_CONF_Redis.Server=redis:6379
+    volumes:
+      - backend_data:/cloudreve/data
+
+  postgresql:
+    image: postgres:17
+    container_name: postgresql
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=cloudreve
+      - POSTGRES_DB=cloudreve
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  backend_data:
+  database_postgres:
+  redis_data:
+```
+
+A few things worth knowing before you start it:
+
+- **Port `5212`** is the web interface. **Port `6888`** (TCP and UDP) is only for BitTorrent through the Aria2 instance that's bundled in the Cloudreve image. If you don't plan to use torrents, you can leave it unpublished.
+- **`/cloudreve/data`** holds `conf.ini`, temporary files, and, with the default local storage policy, your actual uploads under `data/uploads`. In this file it's the named volume `backend_data`, so your files live wherever Docker keeps its volumes.
+- **PostgreSQL uses `trust` authentication** with no password. That's only acceptable because the database isn't published to the host and is reachable only on the Compose network. Don't add a `ports:` entry for it.
+- **`cloudreve/cloudreve:v4`** follows the latest 4.x release. If you'd rather upgrade on your own schedule, pin a version tag such as `cloudreve/cloudreve:4.19.1`.
+
+If you want your files on a particular disk, or just want them somewhere obvious for backups, you can swap the named volume for a bind mount. This is my change, not upstream's:
+
+```yaml
+    volumes:
+      - /path/to/cloudreve/data:/cloudreve/data
+```
+
+The container also bundles VIPS, FFmpeg, LibreOffice, and libraw for thumbnails, plus FFprobe for media metadata, so thumbnails work out of the box.
+
+### Start the Stack
+
+The first time, I like to run it in the foreground so I can see if anything fails right out of the gate:
+
+```bash
+docker compose up
+```
+
+Once it settles with no major errors, stop it with `Ctrl+C` and start it in the background:
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+Now browse to `http://YOUR_SERVER_IP:5212`.
+
+### Create the Admin Account First
+
+There's no setup wizard and no default password. The [docs](https://docs.cloudreve.org/overview/deploy/docker-compose) say to register an account, and the **first registered account becomes the administrator**. Do this right away, before anyone else can reach the page.
+
+<Warning>
+New sign-ups are enabled by default, and new accounts land in the default **User** group. If the instance is reachable by anyone you don't fully trust, go to **Dashboard → Settings → User session** and turn off **Accept new signups** once your admin account exists. You can still create accounts manually from the Users page.
+</Warning>
+
+### The Lightweight Version: No PostgreSQL or Redis
+
+PostgreSQL and Redis are optional. Without a database configured, Cloudreve uses SQLite, and without Redis it uses an in-memory cache that it persists to disk on a clean shutdown. The [deployment docs](https://docs.cloudreve.org/overview/deploy/) strongly recommend a real database for production because SQLite doesn't handle high concurrency well, but for a single user it's a reasonable way to keep things small. Here's the [single-container command](https://docs.cloudreve.org/overview/deploy/docker) from the docs, translated into Compose:
+
+```yaml
+services:
+  cloudreve:
+    image: cloudreve/cloudreve:v4
+    container_name: cloudreve
+    restart: unless-stopped
+    ports:
+      - 5212:5212
+      - 6888:6888
+      - 6888:6888/udp
+    volumes:
+      - ./data:/cloudreve/data
+```
+
+Do note that the docs say database and Redis settings passed as environment variables can't be changed later by editing `conf.ini`. Decide on the database before you put real data in it.
+
+## Things to Fix Right After Install
+
+### Set Up HTTPS and the Site URL
+
+Out of the box, you're talking straight to Cloudreve's built-in web server over HTTP. That's fine on a LAN, but share links and passkeys really want a proper domain with HTTPS. In the video, I used NetBird's reverse proxy feature to point a subdomain at the Cloudreve box on my local network. If you want that setup, my [NetBird and Pocket ID guide](/self-host-netbird-pocketid) covers it. Nginx, Caddy, Apache, and Nginx Proxy Manager all work too, and the [next steps page](https://docs.cloudreve.org/overview/deploy/configure) has example configs.
+
+Your proxy must pass the original `Host` header, and on Nginx you'll probably need to raise `client_max_body_size` for large uploads.
+
+The first time I opened the dashboard through my new domain, Cloudreve asked whether it should become the primary site URL. Say yes, or set it under **Settings → Basic**. If downloads or thumbnails break later, a wrong site URL is the first thing the [local storage docs](https://docs.cloudreve.org/usage/storage/local) tell you to check.
+
+### That 1 TB of Storage Probably Isn't Real
+
+After uploading a few things, my storage meter said I had a terabyte available. The LXC only had about 200 GB of disk. That number is a **group quota**, not your disk size. The default Admin group gets 1 TB and the default User group gets 1 GB. You change it under **Dashboard → Groups**. I set mine to about 200 GB, refreshed, and the meter looked much more honest. Set your quotas so the total actually fits on the disk.
+
+![Editing the Admin group in the Cloudreve dashboard with the initial storage quota changed to 200 GB](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/admin-group-storage-quota.jpg)
+
+## Using Cloudreve
+
+### Uploading and Previewing
+
+The first thing I did was drag a folder of NetBird assets into the browser. It uploaded really quickly. Double-clicking an image asks which app to open it with. Choose the built-in image viewer and select **Always**, and from then on images of that type open directly. It even handled GIFs nicely. Hovering over a file gives a slightly bigger preview at its full aspect ratio, which is a nice touch.
+
+![The Cloudreve web interface showing the uploaded NetBird Assets folder as a grid of image thumbnails](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/netbird-assets-file-grid.jpg)
+
+The left sidebar also groups everything by type into Photos, Videos, Music, and Documents.
+
+Beyond images, the [file apps docs](https://docs.cloudreve.org/usage/file-apps) cover the built-in music player, video player, ePub reader, and PDF reader. Office documents can be previewed through Google's or Microsoft's public viewers if your site is publicly reachable on a standard port, or edited by connecting a [WOPI service](https://docs.cloudreve.org/usage/wopi) like Collabora or OnlyOffice. I didn't set up document editing for this video.
+
+### Remote Downloads
+
+Under **New**, there's a **Remote download** option where you paste a link and the server downloads it for you. I pasted in the Proxmox ISO link and a task was created. It sat at processing for a bit before it figured out what it was doing, and the progress bar only refreshed when it felt like it rather than in real time. Once the download finished, it transferred the ISO into my files. It's a really nice way to get big files onto the server without downloading them to your own machine first.
+
+![The Cloudreve New menu with upload options, New remote download, and new file types like Markdown, draw.io, and Excalidraw](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/new-menu-options.jpg)
+
+There's also a seeding option, so you can use this as a torrent client too. The [remote download docs](https://docs.cloudreve.org/usage/remote-download) explain that the official image runs Aria2 inside the container, which is why port `6888` is in the compose file. You can also connect qBittorrent instead. Only download things you're allowed to share and store.
+
+Do note that on a fresh install, remote downloads are enabled for the Admin group but not for the default User group. Turn it on for that group if your other users need it.
+
+### Markdown Editor
+
+Under **New** you can also create files directly. I made a new Markdown file called `test`, and it opened in a full-fledged Markdown editor. I typed a little, saved it, and it appeared in Documents in the sidebar. Double-click it later and it opens straight back into the editor.
+
+### Sharing
+
+Clicking **Share** on a file gives you options to password-protect the link or have it expire after a number of downloads. I opened the link for my Proxmox ISO in another browser and got a clean share page showing the file. If you actually want to share files with people outside your network, put the instance behind a reverse proxy with HTTPS first.
+
+![The Cloudreve Create share link dialog with options to protect with a password, expire automatically, or expire after being downloaded](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/create-share-link-dialog.jpg)
+
+The rest of the sidebar covers **Shared with me**, **Shared by me**, **Trash**, and **Background tasks**, where my remote download showed up.
+
+### Connect & Mount
+
+**Connect & Mount** is where you create WebDAV accounts and find connection details for the iOS and Windows apps. WebDAV is your way in from macOS, Linux, or any app that speaks the protocol. One thing to know: WebDAV access is a group permission, and it's on for the Admin group but off for the default User group.
+
+### Personal Settings and Security
+
+Personal settings are pretty basic stuff: display name, profile picture, theme color (purple for me), syncing view settings to the server, and a folder click action, which is nice since single-click versus double-click tripped me up at first.
+
+For security, you get two-factor authentication and passkeys. Passkeys need HTTPS, so I tried again through my proxied domain, but it just wasn't wanting to enable for me. Two-factor authentication is there either way, and I'd turn it on for the admin account.
+
+## The Admin Dashboard
+
+The dashboard opens with some nice stats about your instance. Mine showed one user and 63 files. There are also links to the project site and version change information.
+
+![The Cloudreve admin dashboard Summary page with the admin sidebar and a trend chart of users, files, and shares](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/admin-dashboard-summary.jpg)
+
+The main sections:
+
+- **Settings → Basic:** Site name, the primary and secondary site URLs, and branding like the logo. I think it's cool they don't lock branding down, so you can brand it for your family or company. Site announcements are a Pro feature.
+- **Settings → Filesystem:** File-system behavior, such as the maximum size for editable documents. This is also where you configure file apps.
+- **Storage Policy:** How and where files are physically stored, including the directory and file naming rules.
+- **Nodes:** The master node and its settings. You can add more nodes to offload storage or remote downloads.
+- **Groups:** Quotas and permissions. This is where my 1 TB fix happened.
+- **Users:** Create users with an email, password, and group. I'd like an invite link so people could set their own password, but it works.
+- **Files, File Blobs, and Shares:** Admin-side file management. You can view and manipulate other users' files and manage share links.
+- **Background Tasks:** Running and finished tasks.
+
+### Storage Policies
+
+The default policy stores files locally in `data/uploads` inside the container. You can add more under **Storage Policies → New storage policy**. The [storage comparison page](https://docs.cloudreve.org/usage/storage/) breaks down what each provider supports. The docs include setup guides for local storage, remote nodes, OneDrive, S3-compatible services like MinIO, Backblaze B2, Cloudflare R2, and Google Cloud Storage, plus Alibaba Cloud OSS and Tencent COS.
+
+In the Community edition, each user group uses one storage policy. Pro lets a group use several, set policies per folder, load-balance across them, and migrate existing files between them.
+
+### OAuth Apps vs. OIDC
+
+I got confused here in the video. There's an **OAuth Apps** page in the Community admin dashboard, and I could add a new one with redirect URIs. That made me think single sign-on was available for free after all. It isn't the same thing.
+
+**OAuth Apps** make Cloudreve the authorization server, so clients can sign in *to* Cloudreve. Cloudreve creates built-in entries for its own iOS app and desktop client, and you can register your own apps using its [OAuth API](https://docs.cloudreve.org/api/auth). **OIDC sign-in** is the reverse: logging in to Cloudreve with an outside identity provider like Pocket ID. The [OIDC docs](https://docs.cloudreve.org/usage/oidc) mark that as Pro-only.
+
+## The Windows Desktop Client
+
+To test the desktop client, I fired up the Windows VM I keep on Proxmox for Rufus and the occasional test. I'm not a fan of Windows; I prefer my good old Unix back end.
+
+The setup was smooth. Add a drive, enter your Cloudreve URL (I used my NetBird proxy domain), and it bounces you to the browser to authorize the app. Then choose what to mount, which was My Files in my case, and pick a local folder. I made a new one called `cloudreve`. After that my files showed up in File Explorer, and it looks really nice.
+
+![Windows File Explorer in the mounted Cloudreve folder, with NetBird Assets, blankgif, the Proxmox ISO, and test.md all marked online-only in the Status column](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/windows-file-explorer-mount.jpg)
+
+Then I hit some rough edges. Right-clicking gave me options like **View online** and **Sync selected now**, but the sync button wasn't working for me. In the client's settings, I couldn't find an option to automatically keep everything synced and downloaded for offline use, and that's a setting I'd want.
+
+According to the [desktop client docs](https://docs.cloudreve.org/usage/desktop-client), the client uses Windows' cloud files placeholders. Files stay online-only until opened, and you can pin individual files or folders with **Always keep on this device** from the right-click menu. That's per item rather than a global setting. I didn't test pinning in the video, so I can't tell you how well it works.
+
+There's also a documentation mismatch. The desktop client docs list "a Cloudreve Pro server instance" as a requirement. The client's own [GitHub README](https://github.com/cloudreve/desktop) just says "a Cloudreve server instance," and the Community edition creates a built-in OAuth app for the desktop client. In my video, the client connected and mounted my files from a Community edition server without any license. If you plan to rely on it, test against your own install first.
+
+<Note>
+**Update, October 2026:** Since the video, Cloudreve has released an official [command-line client](https://github.com/cloudreve/cli) for Linux, macOS, and Windows. It's MIT-licensed, requires Cloudreve 4.17.0 or newer, and handles file operations, transfers, shares, and account management from the terminal. It isn't a sync client, and the README says it's under active development. I haven't tested it.
+</Note>
+
+## Keeping It Updated
+
+Upgrades within 4.x are the usual Compose routine. The [upgrade docs](https://docs.cloudreve.org/maintain/upgrade) say to back up the database first. With the default compose file, you can dump PostgreSQL like this:
+
+```bash
+cd ~/cloudreve
+docker compose exec -T postgresql pg_dump -U cloudreve cloudreve > cloudreve-db-$(date +%F).sql
+```
+
+Back up the `/cloudreve/data` volume or bind mount too, since that's where your uploaded files and `conf.ini` live with the local storage policy. If you want an off-site, encrypted copy, [Duplicati](/duplicati-encrypted-backups) is one option.
+
+Then update:
+
+```bash
+docker compose down
+docker compose pull
+docker compose up -d
+```
+
+Given the number of security fixes in recent releases, I'd check the [release notes](https://github.com/cloudreve/cloudreve/releases) and keep this one current, especially if it's exposed to the internet.
+
+## Final Thoughts
+
+When it comes to simple file management and sharing, Cloudreve's feature set is strong. The web interface is beautiful and quick. Remote downloads are genuinely useful, the Markdown editor and image viewer worked nicely, and sharing was easy. The admin dashboard is also more complete than I expected from the free edition.
+
+For me to replace Nextcloud with something like this, though, it needs more on the client side. Windows and iPhone are a good start, but I'm on macOS and Linux, and I want a simple setting that keeps everything synced and available offline. I'm also not thrilled about OIDC and activity logs being Pro-only, though I understand they need to make money somehow.
+
+So I'm not switching to Cloudreve as my permanent setup right now. I'm definitely going to keep an eye on it, though. If they add the client features I'm looking for, this could really be a contender. If you only need a file server and live on Windows and iOS, it's worth spinning up today. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Cloudreve home](https://cloudreve.org/)
+- [Cloudreve on GitHub](https://github.com/cloudreve/cloudreve)
+- [Cloudreve 4.19.1 release](https://github.com/cloudreve/cloudreve/releases/tag/4.19.1)
+- [Docker Compose repository](https://github.com/cloudreve/docker-compose)
+- [Docker Hub image](https://hub.docker.com/r/cloudreve/cloudreve)
+- [Documentation](https://docs.cloudreve.org/)
+- [Deploy with Docker Compose](https://docs.cloudreve.org/overview/deploy/docker-compose)
+- [Deploy with a single Docker container](https://docs.cloudreve.org/overview/deploy/docker)
+- [Next steps: site URL and reverse proxy](https://docs.cloudreve.org/overview/deploy/configure)
+- [Storage policy comparison](https://docs.cloudreve.org/usage/storage/)
+- [Remote download](https://docs.cloudreve.org/usage/remote-download)
+- [File apps](https://docs.cloudreve.org/usage/file-apps)
+- [Desktop sync client](https://docs.cloudreve.org/usage/desktop-client)
+- [OIDC (Pro)](https://docs.cloudreve.org/usage/oidc)
+- [Upgrading Cloudreve](https://docs.cloudreve.org/maintain/upgrade)
+- [Pricing and edition comparison](https://cloudreve.org/pricing)
+- [Cloudreve Desktop source](https://github.com/cloudreve/desktop)
+- [Cloudreve CLI](https://github.com/cloudreve/cli)
+- [Live demo](https://demo.cloudreve.org)
