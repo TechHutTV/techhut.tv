@@ -1,0 +1,202 @@
+export const title = "Synaptic: The Classic Package Manager for Ubuntu and Debian"
+export const description = "Install Synaptic on Ubuntu or Debian, search and install packages, lock versions, browse by section and repository, and understand how it handles root on Wayland and the newer deb822 .sources files."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Apps"]
+export const cover = "/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="NnCaw57FVMU" title="TechHut's Synaptic Package Manager walkthrough" />
+
+I wasn't planning on making a video that night. I was installing Ubuntu on my main desktop, and the Ubuntu software store just wouldn't open. Honestly, that was fine with me, because I don't like the Ubuntu store much anyway. So I grabbed the tool I'd rather use: the Synaptic Package Manager.
+
+Synaptic works on Ubuntu and pretty much any Debian-based system. It's not the prettiest app around, but it's very functional, and its layout reminds me a lot of the YaST software manager on openSUSE, which I love (I talked about YaST in my [openSUSE post-install guide](/opensuse-5-things-you-must-do-after-installing)).
+
+The video was published in September 2021. The written steps, version numbers, and the sections on root access, Wayland, and repository files have been updated for the Synaptic packages in Ubuntu 26.04 LTS and Debian 13 (both 0.91.7), plus [Synaptic 0.92](https://github.com/mvo5/synaptic), tagged upstream on October 5, 2026. The screenshots and hands-on impressions come from the original recording.
+
+## What Synaptic Is
+
+Synaptic is a GTK graphical front end for APT, the same package system behind `apt` and `apt-get`. It uses APT's own library, so it sees the same repositories, packages, and dependency rules as the command line. It's GPL-2.0-or-later, and Michael Vogt maintains it on [GitHub](https://github.com/mvo5/synaptic).
+
+The big difference from `apt` is that Synaptic lets you stage a bunch of changes (install this, remove that, upgrade everything) and nothing happens until you click **Apply**. Per the [project README](https://github.com/mvo5/synaptic#readme), it also handles:
+
+- Searching and filtering the full package list
+- Smart system upgrades
+- Fixing broken dependencies
+- Editing your repository list
+- Downloading package changelogs
+- Configuring packages through debconf
+
+Unlike a software store, Synaptic shows everything in the archive: libraries, fonts, command-line tools, kernels, and metapackages, not just desktop apps. That's the point. It's for managing the system, not shopping for apps.
+
+The project is still active. Recent work includes a switch from autotools to Meson, a rewrite of the menus and toolbar with modern GTK actions, a `run0` fallback for getting root, and read-only support for deb822 repository files. The default branch was renamed from `master` to `main` in October 2026.
+
+## Installing Synaptic
+
+Synaptic is in the official archives, so there's nothing to download from a website. Here's what each release ships, according to [packages.ubuntu.com](https://packages.ubuntu.com/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all) and [packages.debian.org](https://packages.debian.org/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all):
+
+| Release | Synaptic version | Where |
+|---|---|---|
+| Ubuntu 22.04 LTS | 0.90.2 | universe |
+| Ubuntu 24.04 LTS | 0.91.3 | universe |
+| Ubuntu 26.04 LTS | 0.91.7 | universe |
+| Debian 12 (bookworm) | 0.91.3 | main |
+| Debian 13 (trixie) | 0.91.7 | main |
+| Debian testing (forky) and unstable | 0.92 | main |
+
+### Ubuntu
+
+On Ubuntu, Synaptic lives in the **universe** component. In the video I enabled universe first, then updated and installed, using the same commands that are in the video description:
+
+```bash
+sudo add-apt-repository universe
+sudo apt update
+sudo apt install synaptic
+```
+
+A standard Ubuntu desktop install usually has universe turned on already. Since Ubuntu 24.04, the sources live in `/etc/apt/sources.list.d/ubuntu.sources`, so you can check the `Components:` line there. If universe is already listed, skip the first command.
+
+### Debian
+
+Synaptic is in Debian's main archive, so it's just:
+
+```bash
+sudo apt update
+sudo apt install synaptic
+```
+
+Synaptic only suggests `apt-xapian-index`, which powers the instant quick filter box above the package list. Install it too if you want that box. Synaptic 0.92 brought the quick filter back after it went missing from recent Debian builds.
+
+## Opening Synaptic, Root, and Wayland
+
+After installing, search for **Synaptic Package Manager** in your app launcher. It asks for your password before the window opens, and the first time, it shows a quick introduction dialog that explains the basic workflow: select a package, pick an action, then apply.
+
+That password prompt exists because Synaptic runs its entire interface as root. The menu entry launches `synaptic-pkexec`, a small wrapper script that runs `pkexec` on the real `synaptic` binary. On 0.92, if `pkexec` isn't installed, the wrapper falls back to systemd's `run0`.
+
+You can also start plain `synaptic` as your normal user. It opens in a browse-only mode where **Apply**, **Reload**, the repository editor, and **Lock Version** are disabled. That's handy for looking around without touching anything.
+
+### The Wayland caveat
+
+Running a whole GUI app as root is exactly what Wayland desktops don't like. `pkexec` resets the environment for safety. Synaptic's polkit policy sets the legacy `allow_gui` option, which keeps `DISPLAY` and `XAUTHORITY` (per the [pkexec man page](https://manpages.debian.org/trixie/pkexec/pkexec.1.en.html)) but not `WAYLAND_DISPLAY`. So on a Wayland session, the root Synaptic window has to connect through XWayland.
+
+Whether that works depends on how your desktop handles XWayland access. On some setups root is refused and Synaptic fails with a "cannot open display" style error. Ubuntu's [bug #1713313](https://bugs.launchpad.net/ubuntu/+source/synaptic/+bug/1713313) has tracked this since 2017, and the Synaptic task there is still open. The common workaround is to allow root on your X display just for the session, launch Synaptic, then take the permission away again:
+
+```bash
+xhost +si:localuser:root
+synaptic-pkexec
+xhost -si:localuser:root
+```
+
+The `run0` fallback in 0.92 passes `WAYLAND_DISPLAY` and `XDG_RUNTIME_DIR` through, but it's only used when `pkexec` is missing, which isn't the case on a normal Ubuntu or Debian desktop.
+
+<Note>
+If Synaptic won't open on Wayland and you don't want to loosen X access, your desktop's software center or the `apt` command line covers the same packages.
+</Note>
+
+## Installing a Package
+
+The **Search** button in the toolbar searches package names and descriptions. In the video I searched for GIMP, and it brought up every package that mentions GIMP anywhere in its name or description, including plugins, help files, and data packages.
+
+To install something:
+
+1. Click the checkbox next to the package and choose **Mark for Installation**.
+2. If the package needs anything else, Synaptic shows a **Mark additional required changes?** dialog listing the dependencies. Click **Mark**.
+3. Click **Apply** in the toolbar.
+4. Review the summary and click **Apply** again.
+
+![The Mark additional required changes dialog listing GIMP's dependencies in Synaptic, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-mark-additional-changes.jpg)
+
+Synaptic downloads and installs everything, and a few seconds later GIMP was on my system. You can queue up as many changes as you want before hitting Apply.
+
+Click on any package, and the panel below the list shows its description, with buttons to grab a screenshot, view the changelog, and visit the project's homepage.
+
+## Locking a Package Version
+
+Say you want to stay on the version you have. Maybe the new release has changes you don't like, or you just want things to stay stable. Select the package, open the **Package** menu, and choose **Lock Version**. Synaptic won't upgrade it from then on. To undo it, open the same menu and uncheck **Lock Version**.
+
+![Synaptic's Package menu with Mark for Removal, Mark for Complete Removal, Lock Version, and Properties, with GIMP selected, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-package-menu-lock-version.jpg)
+
+One thing to know: Synaptic stores these locks in its own pin file, `/var/lib/synaptic/preferences`, which only Synaptic reads. They apply to upgrades done in Synaptic. If you also update from the terminal with `sudo apt upgrade`, a locked package can still get upgraded there. Synaptic's main branch has since been changed so **Lock Version** also sets a dpkg hold, but that change isn't in a release yet (0.92 is still the latest). Until it is, to freeze a package for APT everywhere, put it on hold:
+
+```bash
+sudo apt-mark hold package-name
+sudo apt-mark unhold package-name
+```
+
+Per the [apt-mark man page](https://manpages.debian.org/trixie/apt/apt-mark.8.en.html), a hold stops the package from being automatically installed, upgraded, or removed.
+
+The same **Package** menu has the other actions:
+
+- **Mark for Removal** uninstalls the package but leaves its configuration files.
+- **Mark for Complete Removal** also removes its configuration files (a purge).
+- **Download Changelog** pulls the package's changelog.
+- **Properties** opens a window with tabs for general info (exact versions, download and installed sizes), **Dependencies**, **Installed Files** (everything the package put on your system), and **Versions**.
+
+## Browsing with Filters
+
+Click **All** in the left sidebar and you see literally every package available from your current repositories. Scrolling through tens of thousands of packages isn't practical, so the buttons at the bottom left switch what the sidebar shows:
+
+| Button | What it shows |
+|---|---|
+| **Sections** | Packages grouped by category, such as Communication, Libraries, or Mathematics, and split by repository component (universe, multiverse, and so on on Ubuntu) |
+| **Status** | Installed, installed manually, not installed, upgradeable, and similar states |
+| **Origin** | Packages grouped by the repository they come from |
+| **Custom Filters** | Built-in filters like broken packages, marked changes, and upgradeable packages, plus your own |
+| **Search Results** | Your recent searches, so you can jump back to them |
+| **Architecture** | Packages by CPU architecture, useful if you have multiarch enabled |
+
+![Synaptic's Sections view listing package categories like Libraries and Mathematics, with the filter buttons at the bottom left, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-sections-filter.jpg)
+
+**Status** is a quick way to see everything installed on your system, including what you installed manually, or everything in your repositories that you don't have yet. **Origin** shows which applications come from which repository, which also makes it easy to spot packages from a PPA or other third-party repo. In the video, the upgradeable filter came up empty because I had just updated my system.
+
+To upgrade everything the Synaptic way, click **Reload** (the same as `apt update`), then **Mark All Upgrades**, then **Apply**.
+
+## Repositories and the deb822 .sources Format
+
+This is the part that's changed the most since the video. APT has two ways to describe repositories:
+
+- The old one-line format in `/etc/apt/sources.list` and `*.list` files
+- The newer deb822 format in `*.sources` files, which the [sources.list man page](https://manpages.ubuntu.com/manpages/noble/man5/sources.list.5.html) says is meant to gradually become the default
+
+[Ubuntu 24.04](https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890) moved its own sources to `/etc/apt/sources.list.d/ubuntu.sources` in deb822 format. Debian 13's [upgrade notes](https://www.debian.org/releases/trixie/release-notes/upgrading.en.html) recommend the deb822 format too, and include `apt modernize-sources` to convert old files.
+
+None of this affects which packages Synaptic can install, because APT does the reading. It only matters for **Settings > Repositories**:
+
+- **If `software-properties-gtk` is installed**, Synaptic opens that tool (Ubuntu's Software & Updates) instead of its own editor, and it handles deb822 files. Fresh Ubuntu 26.04 desktop installs no longer include it, though, and it's not packaged for Debian 13.
+- **Synaptic's own editor in 0.91.x** only reads `.list` files. On a system that's all deb822, your main repositories just don't show up there.
+- **Synaptic 0.92** reads `.sources` files and lists them, but read-only. Select one and the editor says it uses the deb822 format and can't be edited there yet.
+
+So if you need to change a deb822 repository, edit the `.sources` file directly. For example, on Ubuntu:
+
+```bash
+sudo nano /etc/apt/sources.list.d/ubuntu.sources
+sudo apt update
+```
+
+Then hit **Reload** in Synaptic to pick up the change.
+
+<Warning>
+Be careful with your distro's main repository file. A typo or a disabled component can stop you from getting updates. Copy the file somewhere safe before editing it.
+</Warning>
+
+## My Take
+
+Synaptic isn't pretty, but it is very functional, and when I made the video I called it absolutely wonderful for Ubuntu and Debian-based systems. You can find literally anything in the archive, see exactly what a package depends on and what files it installs, lock versions, and queue up a pile of changes before applying them all at once. It's also a great fallback when the distro's software store is acting up, which is exactly why I reached for it in the first place.
+
+The main things to watch now are the root-on-Wayland quirk and the repository editor's limited deb822 support. If you'd rather stay in the terminal, check out my look at [Nala](/nala-apt-frontend), a friendlier front end for APT. And if you're wondering how distro packages compare to Flatpak, Snap, and AppImage, I covered that in [Flatpak vs Snap vs AppImage](/flatpak-vs-snap-vs-appimage).
+
+## Official References
+
+- [Synaptic on GitHub](https://github.com/mvo5/synaptic)
+- [Synaptic README](https://github.com/mvo5/synaptic#readme)
+- [Synaptic in Ubuntu (package search)](https://packages.ubuntu.com/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all)
+- [Synaptic in Debian (package search)](https://packages.debian.org/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all)
+- [Synaptic in Debian 13 (trixie)](https://packages.debian.org/trixie/synaptic)
+- [sources.list(5) man page](https://manpages.ubuntu.com/manpages/noble/man5/sources.list.5.html)
+- [Ubuntu 24.04 LTS release notes](https://discourse.ubuntu.com/t/ubuntu-24-04-lts-noble-numbat-release-notes/39890)
+- [Debian 13 upgrade notes](https://www.debian.org/releases/trixie/release-notes/upgrading.en.html)
+- [apt-mark(8) man page](https://manpages.debian.org/trixie/apt/apt-mark.8.en.html)
+- [pkexec(1) man page](https://manpages.debian.org/trixie/pkexec/pkexec.1.en.html)
+- [Ubuntu bug #1713313: pkexec apps on Wayland](https://bugs.launchpad.net/ubuntu/+source/synaptic/+bug/1713313)

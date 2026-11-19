@@ -2167,7 +2167,9 @@
     "name": "Synaptic",
     "category": "Desktop",
     "description": "Browse and manage APT packages with a graphical package manager.",
-    "coverage": [],
+    "coverage": [
+      "/synaptic-package-manager-ubuntu-debian"
+    ],
     "videos": [
       {
         "id": "NnCaw57FVMU",
