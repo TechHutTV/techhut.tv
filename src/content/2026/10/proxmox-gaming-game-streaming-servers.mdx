@@ -1,0 +1,424 @@
+export const title = "Proxmox Gaming Server: GPU Passthrough, Sunshine and Moonlight Streaming, and AMP Game Servers"
+export const description = "Turn one Proxmox box into a gaming server: host Minecraft and CS2 servers with AMP in an LXC, then pass a GPU through to a Nobara VM and stream games anywhere with Sunshine and Moonlight."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Virtualization", "Homelab", "Self-Host", "Linux"]
+export const cover = "/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="hAqGEUt9V_M" title="TechHut's Proxmox gaming server walkthrough" />
+
+Let's turn a Proxmox server into the ultimate gaming server. And I mean that two ways: a server that **hosts game servers** for things like Minecraft and Counter-Strike 2, and a machine that **plays the games itself** and streams them to whatever device I happen to be sitting at. Then, for the fun part, the streamed game connects back to the game server running on the same box.
+
+CubeCoders sponsored the video this article is based on, and its AMP panel is what I use for the game servers.
+
+Here's the plan, and how this guide is laid out:
+
+| Part | What runs where | Tools |
+|---|---|---|
+| 1. Game servers | An LXC container on Proxmox | [AMP by CubeCoders](https://cubecoders.com/AMP) |
+| 2. GPU passthrough | The Proxmox host | IOMMU and VFIO |
+| 3. Gaming VM | A Proxmox VM with the GPU passed through | [Nobara Linux](https://nobaraproject.org/), Steam |
+| 4. Game streaming | Host in the VM, clients on your devices | [Sunshine](https://github.com/LizardByte/Sunshine) and [Moonlight](https://moonlight-stream.org/) |
+
+Each part stands on its own. If you only want game servers, stop after part 1. If you only want a streaming VM, skip straight to part 2.
+
+<Note>
+I recorded the video on Proxmox VE 9.0. The written steps have been checked against current upstream releases: [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (May 21, 2026), [Sunshine v2026.914.233613](https://github.com/LizardByte/Sunshine/releases/tag/v2026.914.233613) (September 15, 2026), [Moonlight PC v6.2.0](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0) (October 4, 2026), and Nobara 44. AMP's install script has also changed since the video and now offers containerised instances differently, which I cover below. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## My Hardware and Layout
+
+Everything runs on one Proxmox host. The game streaming VM gets an **AMD Radeon RX 580** passed through to it, so the VM uses that card directly as if it were bare metal. AMP lives in its own LXC container next to it.
+
+Here's how I sized things:
+
+| Guest | Type | CPU | RAM | Storage |
+|---|---|---|---|---|
+| `amp` | LXC container | 4 cores | 8 GB + 2 GB swap | Just under 100 GB |
+| `gaming` (ID 200) | VM | 8 cores | 8 GB | 256 GB on NVMe, plus a second disk on my ZFS pool |
+
+Size these for what you actually plan to do and what you actually have. My main use for AMP is Minecraft, which is very RAM hungry, so that's why the container got 8 GB.
+
+If you're starting from a bare machine, my [Proxmox and ZFS home server guide](/ultimate-home-server-part-1-proxmox-zfs-samba) covers the Proxmox install and ZFS pool I'm building on here.
+
+## Part 1: Game Servers with AMP in an LXC
+
+### What AMP Is
+
+[AMP](https://cubecoders.com/AMP) (Application Management Panel) is a web panel for running game servers. I've used a bunch of game panels, and so far AMP has been the easiest to set up, with the most games that just work out of the box. You pick a game, it creates an instance, and you manage everything from the browser: console, settings, files, scheduling, and users.
+
+Some highlights:
+
+- A one-line install on Linux, or an installer on Windows.
+- A long list of supported games you can spin up in a couple of clicks.
+- A built-in scheduler, file manager, and SFTP.
+- Graphical settings editors that change per game. For Minecraft, that means editing `server.properties` without touching a text file.
+- Themes and plugins.
+
+It's important to be clear on one thing: **AMP is not open source.** It's paid software. For personal use, the [AMP site](https://cubecoders.com/AMP) lists it as a one-time cost starting at £7.50 GBP (about $10 USD), and CubeCoders' [licensing FAQ](https://discourse.cubecoders.com/t/licencing-and-activations-faq/38539) confirms that licences are lifetime. Licences are counted by tier and number of configured instances, not by machine. Standard covers 5 instances, Professional 15, and Advanced 50, and you can upgrade later by paying the difference. Those figures come from CubeCoders' [editions comparison sheet](https://discourse.cubecoders.com/t/editions-comparison-sheet/2247), so check the AMP site for current tier names and prices before you buy. The personal tiers are for non-commercial use. If you want to host servers commercially, look at the Enterprise tier and read the terms first.
+
+For me, the time saved compared with setting up any other panel is worth more than ten bucks.
+
+### Prepare the Container
+
+Create an LXC in Proxmox with a Debian or Ubuntu template. AMP's [download page](https://cubecoders.com/AMP) lists Debian 10 or newer, Ubuntu 22.04 LTS or newer, RHEL-family 8 or newer, and Arch. You can also install AMP on bare metal or in a VM. I went with an LXC to save some resources.
+
+Before running the installer, I updated the container, installed `curl`, and reconfigured the locale, because the AMP script wants a **UTF-8 locale**. From the container console, as root:
+
+```bash
+apt update && apt upgrade -y
+apt install -y curl
+dpkg-reconfigure locales
+```
+
+Select a UTF-8 locale for your region (I used `en_US.UTF-8`) and make it the default. Log out and back in, or reboot, so it takes effect.
+
+### Run the AMP Installer
+
+AMP's official one-liner, from the [download page](https://cubecoders.com/AMP), is below. I've written it with `https://` so the root installer is never fetched over plain HTTP. If you'd like to read the script first, it's [on GitHub](https://github.com/CubeCoders/AMP/blob/master/Scripts/getamp.sh).
+
+```bash
+bash <(curl -fsSL https://getamp.sh)
+```
+
+Run it **as root**. If you're logged in as a regular user, switch with `sudo su -` first; the script specifically tells you not to just put `sudo` in front of the command. There's also a `wget` variant (`bash <(wget -qO- https://getamp.sh)`) on the same page.
+
+The script installs dependencies, creates a dedicated `amp` system user, downloads AMP's instance manager from CubeCoders, and adds a firewall rule for the panel port through `ufw`, `firewalld`, or `iptables`, whichever it finds. Then it walks you through a few prompts:
+
+1. **Login details.** Pick a username and a strong password for the web panel.
+2. **Containers.** Running instances in containers isolates each game server. On a VM or bare metal, I'd say yes. In an unprivileged LXC, the current script says Podman isn't supported, offers Docker instead, and strongly recommends a proper VM. I said no to containers in the video since I'm already in a container.
+3. **Minecraft.** Say yes, and it installs the Java runtimes Minecraft servers need.
+4. **SteamCMD games.** For things like Rust, ARK, and CS2, say yes so it installs the 32-bit libraries those servers need. I said yes so I'd have everything.
+5. **HTTPS.** The script can set up an nginx reverse proxy with a certificate, but that requires a domain and opens ports 80 and 443. I said no, because I plan to put AMP behind my own proxy later.
+
+<Note>
+The installer's container prompt has changed since the video. When I recorded it, the question was simply whether to install Docker. The current GetAMP script offers rootless Podman on systems that support it, and Docker on unprivileged containers or older distros. If you don't want to install either, answer no and instances run natively, which is what I did in the LXC.
+</Note>
+
+When the script finishes installing, it waits for you to complete the first-time setup in a browser. **Don't close the terminal** until that's done. It prints the URL, which is your container's IP on port **8080**:
+
+```text
+http://YOUR_CONTAINER_IP:8080
+```
+
+8080 is a very common port, so watch for conflicts if other apps share the machine. The current script picks the next free port if 8080 is taken, so use the URL it prints.
+
+### First-Time Setup in the Browser
+
+Log in with the account you just created, then:
+
+1. **Paste your licence key.** It's emailed to you after you purchase. Mine verified straight away.
+2. **Choose an install type.** AMP can manage installations across several hosts as a controller, target, or hybrid. I'm on a single LXC, so I picked the **standalone** default.
+3. **Set privacy options.** I left everything enabled to help them improve the product. Choose what you're comfortable with.
+4. **Restart.** It applies the changes and restarts. If your terminal is wide enough, you'll even get a QR code in it.
+
+<Warning>
+The panel on port 8080 is plain HTTP and controls servers that run code. Keep it on your LAN or a VPN, or put it behind a reverse proxy with HTTPS. Don't port-forward 8080 to the internet. If friends outside your network need to join, forward only the game ports, or put everyone on something like [NetBird](/self-host-netbird-pocketid).
+</Warning>
+
+### Create a Minecraft Server
+
+The main page lists your instances. Click **Create Instance**, and you'll see just how many games AMP supports. I got briefly distracted by the option to spin up an old-school Call of Duty: World at War server, but I stayed focused and picked **Minecraft Java**.
+
+![AMP's Create new instance dialog with the application list open and Minecraft Java Edition highlighted](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/amp-create-instance-minecraft.jpg)
+
+You can tick options to update and start it after creation and to start it on boot, then click **Create Instance**. When it's configured, it pauses waiting for user input: you need to **accept the Minecraft EULA**. Once you accept, the server starts. The console shows it preparing the spawn area, and you're good to go.
+
+I joined from my Minecraft client using the container's IP, and AMP showed me in the player list right away. Minecraft Java's default port is `25565`. If you run several Minecraft instances, each one needs its own port.
+
+### Tour of the Instance
+
+A few things I liked poking around in:
+
+- **Status.** With one player and no settings changes, the server was using just under 1 GB of RAM.
+- **Configuration → Minecraft.** This is where you set the memory limit. I bumped mine to 2 GB, and you can raise it as more people join. You can also pick the Java version, add extra Java options, set the message of the day, choose the release, and swap the server JAR if you don't want vanilla. I'm going to date myself, but I used to run Bukkit, and I wish that was still a thing.
+- **Files.** There's a built-in editor. Double-click a file like the whitelist, make your changes, and save. No SFTP client needed for quick edits, although SFTP is there if you want it.
+- **Plugins.** This searches Spigot for plugins you can install. I don't know enough about the current state of Minecraft plugins to pick any, but it's a nice touch.
+
+### Add a CS2 Server
+
+Just to show it's not a Minecraft-only panel, I created a second instance for **Counter-Strike 2**. Same flow: **Create Instance**, pick CS2, and it downloads and installs through SteamCMD. That's why the SteamCMD prompt in the installer matters. Its configuration page has CS2-specific options like a server password and Workshop map IDs. We'll connect to this server from the streaming VM at the end.
+
+## Part 2: GPU Passthrough on the Proxmox Host
+
+Now for the meat and potatoes: the streaming VM. Before creating it, the host has to be ready to hand a whole GPU to a VM. I did these steps before recording. Here's the current procedure from the [Proxmox PCI(e) passthrough docs](https://pve.proxmox.com/wiki/PCI(e)_Passthrough).
+
+Do note that once a device is passed through, the host and every other VM lose access to it.
+
+### 1. Enable IOMMU in the BIOS
+
+Your CPU and motherboard need IOMMU support with interrupt remapping. In the BIOS or UEFI, enable the option, which is usually labelled **IOMMU**, **VT-d** (Intel), or **AMD-Vi**. Make sure CPU virtualisation (VT-x or SVM) is on too.
+
+### 2. Kernel Command Line
+
+In the video I added the IOMMU entry to my GRUB config, which was the standard advice for a long time. On current Proxmox VE you usually don't need it. The [passthrough docs](https://pve.proxmox.com/wiki/PCI(e)_Passthrough) say IOMMU is enabled by default on AMD CPUs, and on Intel CPUs with kernel 6.8 or newer. Proxmox VE 9.x ships far newer kernels than that.
+
+The one optional parameter worth knowing is `iommu=pt` (passthrough mode). If you're on an older kernel with an Intel CPU, add `intel_iommu=on`. Where you put it depends on your bootloader, so check with `efibootmgr -v` or `proxmox-boot-tool status`, as described in [Host Bootloader](https://pve.proxmox.com/wiki/Host_Bootloader).
+
+For GRUB, edit `/etc/default/grub`:
+
+```bash
+GRUB_CMDLINE_LINUX_DEFAULT="quiet iommu=pt"
+```
+
+Then apply it:
+
+```bash
+update-grub
+```
+
+For systemd-boot, which is common with a ZFS root on UEFI, append the parameter to the single line in `/etc/kernel/cmdline`, then run:
+
+```bash
+proxmox-boot-tool refresh
+```
+
+### 3. Load the VFIO Modules
+
+Create `/etc/modules-load.d/vfio.conf` with these three modules:
+
+```text
+vfio
+vfio_iommu_type1
+vfio_pci
+```
+
+### 4. Keep the Host's Driver Off the GPU
+
+Proxmox will try to release the card automatically, but the reliable approach is to make sure the host never claims it. In the video, I blacklisted the driver. For my AMD card, that's `amdgpu`. On NVIDIA it would be `nouveau` or `nvidia`. The cleaner alternative from the docs is to bind `vfio-pci` to the card's IDs.
+
+First, find the GPU and its audio function, along with their vendor:device IDs:
+
+```bash
+lspci -nn | grep -iE "vga|audio"
+lspci -k
+```
+
+`lspci -k` shows which kernel driver each device is using. Then pick one approach:
+
+```bash
+# Option A: blacklist the host driver (what I did)
+echo "blacklist amdgpu" >> /etc/modprobe.d/blacklist.conf
+
+# Option B: bind vfio-pci to the GPU and its audio function by ID
+echo "options vfio-pci ids=VENDOR:DEVICE,VENDOR:DEVICE" > /etc/modprobe.d/vfio.conf
+echo "softdep amdgpu pre: vfio-pci" >> /etc/modprobe.d/amdgpu.conf
+```
+
+Replace the `VENDOR:DEVICE` placeholders with the IDs from `lspci -nn`, shown in square brackets. If this is the only GPU in the machine, you'll lose the host's local console output after this step, so manage it through the web UI.
+
+### 5. Rebuild initramfs, Reboot, Verify
+
+```bash
+update-initramfs -u -k all
+reboot
+```
+
+After the reboot:
+
+```bash
+# IOMMU should show up as enabled
+dmesg | grep -e DMAR -e IOMMU -e AMD-Vi
+
+# The GPU should show "Kernel driver in use: vfio-pci" (or no driver line)
+lspci -nnk
+
+# Check IOMMU groups; the GPU should be isolated (its audio function alongside is fine)
+pvesh get /nodes/YOUR_NODE_NAME/hardware/pci --pci-class-blacklist ""
+```
+
+## Part 3: The Nobara Gaming VM
+
+### Why Nobara
+
+I'm using [Nobara](https://nobaraproject.org/download-nobara/), a Fedora-based distro that's tuned for gaming. It's one of my favorite Linux distributions, and the person behind it is GloriousEggroll, who's responsible for a lot of the software Linux gamers rely on every day. I went with the plain **GNOME** edition. The download page currently offers Official (KDE-based), GNOME, KDE, Steam-HTPC, and Steam-Handheld, and each ISO handles both AMD and NVIDIA. Upload the ISO to your Proxmox ISO storage before you start.
+
+### Create the VM
+
+In Proxmox, click **Create VM**:
+
+- **General:** I like to use ID `200`, and I named it `gaming`.
+- **OS:** Select the Nobara ISO.
+- **System:** I clicked straight through with the defaults in the video, and passthrough worked with my RX 580. For a fresh build, Proxmox's docs recommend the **q35** machine type for GPU passthrough, because PCIe passthrough is only available on q35. They also recommend **OVMF (UEFI)** if your card has a UEFI-capable ROM. If you choose OVMF, add the EFI disk and **untick Pre-Enroll keys**. Pre-enrolled keys turn Secure Boot on, and Nobara's download page says to disable Secure Boot.
+- **Disks:** I gave it 256 GB on my NVMe. I'd go bigger, but that drive is small. Then I added a second disk from my ZFS pool for extra game storage.
+- **CPU:** 8 cores. Proxmox's docs note that CPU type `host` gives the best performance if you don't need live migration.
+- **Memory:** `8192` MB.
+
+Tick **Start after created** and finish. It boots into the Nobara live environment.
+
+### Install Nobara
+
+Run the installer. Most of it is standard, but one setting really matters for this machine: **log in automatically without asking for a password**. Sunshine and Steam need to start on their own after the VM reboots, and they can't do that while it's sitting at a login screen. If you forget, you can enable automatic login later in the Users settings in GNOME Settings.
+
+I installed to the 256 GB disk, erasing it. When the installer finished, I **didn't** restart from it. Instead I shut the VM down and removed the ISO under **Hardware → CD/DVD Drive** so it wouldn't boot back into the installer. Then I started it again.
+
+### Post-Install
+
+Nobara's welcome app opens on first boot. Before anything else, I ran the system updates. Then:
+
+1. **QEMU guest agent.** This helps Proxmox talk to the VM for clean shutdowns and reboots. On Nobara it was already installed:
+
+   ```bash
+   sudo dnf install qemu-guest-agent
+   ```
+
+   Then, in Proxmox, go to the VM's **Options → QEMU Guest Agent**, enable it, and power the VM off and on again for it to take effect.
+
+2. **Media codecs.** I enabled these from the welcome app. That matters more than it sounds for streaming. Sunshine's [troubleshooting docs](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2troubleshooting.html) point out that Mesa ships with hardware H.264/H.265 encoding disabled by default for legal reasons, and AMD cards encode through Mesa's VA-API.
+
+### Add the GPU to the VM
+
+Power the VM off, then in Proxmox:
+
+1. Go to **Hardware → Add → PCI Device**.
+2. Choose **Raw Device** and pick your GPU from the list.
+3. Tick **All Functions** so the card's HDMI audio comes along too.
+4. On q35, tick **PCI-Express** as well.
+5. Leave **Primary GPU** unchecked for now.
+
+![The Proxmox PCI Device dialog in the video with Raw Device 0000:05:00.0 (the RX 580) selected, All Functions checked, and Primary GPU unchecked](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/proxmox-pci-device-rx580.jpg)
+
+I left Primary GPU off so I could keep using the noVNC console while setting everything up. Once the setup is done, you can enable it. Just know that, per the Proxmox docs, the VM's virtual display setting is then ignored and the web console can't show the card's output. Moonlight becomes your screen. A headless card generally also needs a monitor or an HDMI/DisplayPort dummy plug attached to give the desktop something to drive.
+
+The CLI equivalent looks like this, with your own VM ID and PCI address:
+
+```bash
+qm set 200 -hostpci0 0000:05:00,pcie=1
+```
+
+Start the VM. Nobara's **Driver Manager** detected the AMD card for me, so the passthrough worked. While you're in there, change that default blue wallpaper. I couldn't live with it.
+
+### Steam
+
+Steam comes preinstalled on Nobara (install it first on other distros). Sign in and check **Settings → Compatibility**; Proton Experimental was already enabled for me. I installed Counter-Strike 2 and Skyrim to test with, and let them download while I set up streaming.
+
+## Part 4: Streaming with Sunshine and Moonlight
+
+[Sunshine](https://github.com/LizardByte/Sunshine) is the host. It runs on the gaming VM, captures the screen, encodes it on the GPU, and serves the stream. [Moonlight](https://moonlight-stream.org/) is the client you run on your laptop, phone, TV, or whatever else you're playing on. Both are open source under GPLv3.
+
+### Install Sunshine in the VM
+
+In the video, I searched for Sunshine in Nobara's software manager. It showed up as "Self-hosted game stream host", so I selected it, applied it, confirmed the package list, and entered my password.
+
+If it doesn't show up for you, or you're on a different Fedora-based system, the [official Sunshine install docs](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2getting__started.html) use LizardByte's COPR. The package name is case-sensitive:
+
+```bash
+sudo dnf copr enable lizardbyte/stable
+sudo dnf install Sunshine
+```
+
+Upstream notes that stable builds only show up in the COPR for Fedora releases that came out before that Sunshine release, which is why it often suggests the `lizardbyte/beta` COPR instead. Prefer a native package over the Flatpak here. The docs say the Flatpak doesn't support KMS capture.
+
+<Warning>
+Sunshine v2026.914.233613 includes a high-severity security fix for Linux hosts, and LizardByte says Linux users should update as soon as possible. If you set this up a while ago, update Sunshine.
+</Warning>
+
+### Set Up the Web UI
+
+Launch Sunshine from the app menu. It runs in the background. Then open the web UI in the VM's browser:
+
+```text
+https://localhost:47990
+```
+
+You'll get a privacy warning, because Sunshine uses a self-signed certificate. That's expected, so proceed. The first time, it asks you to **create** a username and password. It suggests `sunshine` as the username. I changed mine to my name, set a strong password, and logged in. Write these down, because you'll need them for pairing.
+
+From here you've got the **Applications** list (upstream's Linux defaults include Desktop and Steam Big Picture entries), **Configuration**, **Troubleshooting**, and the **PIN** page we need next.
+
+![The Applications page in Sunshine's web UI listing Desktop, Low Res Desktop, and Steam Big Picture](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/sunshine-applications.jpg)
+
+By default, the web UI only accepts connections from your LAN (`origin_web_ui_allowed = lan`). Leave it that way.
+
+### Pair Moonlight
+
+I tested from my Mac first. On [moonlight-stream.org](https://moonlight-stream.org/), grab the client for your platform. There are clients for Windows, macOS, and Linux, plus Android, iOS and Apple TV, ChromeOS, and a lot more. On macOS, it's a Universal build. The current release is [Moonlight PC v6.2.0](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0).
+
+Open Moonlight and let it search your local network. Mine didn't find the VM automatically, so I used **Add PC manually** and typed in the VM's IP address. Once you select the host, Moonlight shows a four-digit PIN. Go back to Sunshine's web UI, open **PIN**, enter it, give the device a name, and send it. I named mine after my Mac. When you see the success message, you're paired.
+
+Double-click **Desktop** in Moonlight, and there's your Nobara desktop, streamed. While noVNC was still open in Proxmox, I got some graphical glitching. That's one more reason to close the console, or eventually switch to Primary GPU, once you've got this working.
+
+### Auto-Start Sunshine and Steam Big Picture
+
+To make this feel like a game console, Sunshine and Steam should start on their own whenever the VM boots. In GNOME's **Startup Applications**, I disabled a couple of first-run items I didn't need, then added two entries:
+
+| Name | Command |
+|---|---|
+| Sunshine | `sunshine` |
+| Big Picture | `steam -gamepadui` |
+
+`-gamepadui` launches Steam straight into the controller-friendly Big Picture interface. I rebooted the VM, Moonlight lost the connection for a moment, and when I reconnected I was greeted by Big Picture. That's exactly what I wanted, no matter which device I'm connecting from.
+
+![Steam Big Picture streamed over Moonlight from the Nobara VM, with Skyrim, Counter-Strike 2, and Cyberpunk under Recent Games](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/steam-big-picture-moonlight.jpg)
+
+Upstream Sunshine packages also ship a systemd user service, so you can use that instead of a startup entry:
+
+```bash
+systemctl --user --now enable app-dev.lizardbyte.app.Sunshine
+```
+
+Use one method or the other, not both. Otherwise you'll end up trying to launch Sunshine twice.
+
+### Ports and Remote Play
+
+These are Sunshine's default ports, worked out from the port offsets in [its source](https://github.com/LizardByte/Sunshine/blob/master/src/stream.h):
+
+| Port | Protocol | Used for |
+|---|---|---|
+| 47984 | TCP | HTTPS (pairing and app list) |
+| 47989 | TCP | HTTP |
+| 47990 | TCP | Web UI (keep LAN-only) |
+| 48010 | TCP | RTSP |
+| 47998–48000 | UDP | Video, control, audio |
+
+They all shift together if you change Sunshine's base `port` setting, and Moonlight's [setup guide](https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide) also lists UDP 48002 and 48010 for manual forwarding. On your LAN it just works. For playing away from home, that guide covers port forwarding and Sunshine's UPnP option, but I'd rather use a mesh VPN like Tailscale, ZeroTier, or [NetBird](/self-host-netbird-pocketid) than expose anything. Either way, pair on the home network first.
+
+### If the Stream Is Black or Uses the Wrong GPU
+
+With a virtual display and a passed-through card in the same VM, Sunshine has two devices to choose from. In its **Configuration** page, `adapter_name` sets the GPU used for encoding (for example `/dev/dri/renderD128`; the [configuration docs](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2configuration.html) suggest checking each `/dev/dri/renderD*` device with `vainfo`), and `output_name` sets the display to capture. If input doesn't work, the troubleshooting docs suggest `sudo usermod -aG input $USER`.
+
+## Playing, and Joining My Own Server
+
+Once I was in Big Picture over Moonlight, it was honestly pretty clear. It looked better than desktop mode, and the game audio came through perfectly on my headphones. Skyrim had defaulted to ultra, which was too much for an RX 580. After I dropped it to medium, it was way smoother. Counter-Strike 2 on medium played fine too. My aim, on the other hand, did not.
+
+Then, the payoff: connecting the streamed game to the game server.
+
+1. In CS2's settings, enable the **developer console**.
+2. Open the console with the tilde key.
+3. Connect to the AMP container's IP on the CS2 port. Mine was the default `27015`:
+
+   ```text
+   connect YOUR_AMP_CONTAINER_IP:27015
+   ```
+
+That dropped me into my own private CS2 server full of bots, hosted in an LXC, played in a VM, and streamed to my Mac, all on the same Proxmox box. I still couldn't beat the bots. Back in AMP, I could see all the activity in the instance console.
+
+![Counter-Strike 2 streamed from the Nobara VM, connected to the AMP-hosted server with bots on the map](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/cs2-own-server-bots.jpg)
+
+## Final Thoughts
+
+This was a really fun project, and the two halves complement each other nicely. AMP is the part I'd recommend without hesitation if you want game servers with minimal fuss. It's the easiest panel I've used, the game list is huge, and the per-game settings editors save a lot of time. Just go in knowing it's paid and closed source, and that it wants a real VM if you plan to use container isolation.
+
+The streaming VM takes more patience, mostly because GPU passthrough depends so much on your specific hardware. Once it's working, though, Nobara, Sunshine, and Moonlight turn a Proxmox node into something that feels like a Steam machine you can reach from any device in the house. An RX 580 isn't a powerhouse, so drop the graphics settings, but it was absolutely playable.
+
+If you build this out, start with the game server. It's the quickest win. Then tackle passthrough when you have an afternoon to spare. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [AMP by CubeCoders](https://cubecoders.com/AMP)
+- [AMP licensing and activations FAQ](https://discourse.cubecoders.com/t/licencing-and-activations-faq/38539)
+- [AMP issue tracker](https://github.com/CubeCoders/AMP)
+- [Proxmox VE PCI(e) passthrough](https://pve.proxmox.com/wiki/PCI(e)_Passthrough)
+- [Proxmox VE Host Bootloader](https://pve.proxmox.com/wiki/Host_Bootloader)
+- [Proxmox VE virtual machines (qm) documentation](https://pve.proxmox.com/pve-docs/chapter-qm.html)
+- [Proxmox VE roadmap and release notes](https://pve.proxmox.com/wiki/Roadmap)
+- [Nobara download page](https://nobaraproject.org/download-nobara/)
+- [Sunshine on GitHub](https://github.com/LizardByte/Sunshine)
+- [Sunshine getting started](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2getting__started.html)
+- [Sunshine configuration](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2configuration.html)
+- [Sunshine troubleshooting](https://docs.lizardbyte.dev/projects/sunshine/latest/md_docs_2troubleshooting.html)
+- [Moonlight](https://moonlight-stream.org/)
+- [Moonlight PC releases](https://github.com/moonlight-stream/moonlight-qt/releases)
+- [Moonlight setup guide](https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide)

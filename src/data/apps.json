@@ -24,7 +24,9 @@
     "name": "AMP",
     "category": "Gaming & Compatibility",
     "description": "Deploy and manage game server instances through a web control panel.",
-    "coverage": [],
+    "coverage": [
+      "/proxmox-gaming-game-streaming-servers"
+    ],
     "videos": [
       {
         "id": "hAqGEUt9V_M",
@@ -1290,7 +1292,9 @@
     "name": "Moonlight",
     "category": "Gaming & Compatibility",
     "description": "Stream games from a Sunshine host to another device.",
-    "coverage": [],
+    "coverage": [
+      "/proxmox-gaming-game-streaming-servers"
+    ],
     "videos": [
       {
         "id": "hAqGEUt9V_M",
@@ -1836,7 +1840,8 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/proxmox-gaming-game-streaming-servers"
     ],
     "videos": [
       {
@@ -1853,6 +1858,11 @@
         "id": "LuCXHHc2u18",
         "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
         "published": "2021-12-01"
+      },
+      {
+        "id": "hAqGEUt9V_M",
+        "title": "Proxmox Gaming Guide - SELF-HOST Game Streaming and Servers!",
+        "published": "2025-09-28"
       }
     ],
     "icon": "/app-icons/proxmox-ve.png",
@@ -2110,7 +2120,9 @@
     "name": "Sunshine",
     "category": "Gaming & Compatibility",
     "description": "Host a game streaming session for Moonlight clients.",
-    "coverage": [],
+    "coverage": [
+      "/proxmox-gaming-game-streaming-servers"
+    ],
     "videos": [
       {
         "id": "hAqGEUt9V_M",
