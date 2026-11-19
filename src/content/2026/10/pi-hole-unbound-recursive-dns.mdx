@@ -1,0 +1,393 @@
+export const title = "Pi-hole with Unbound: Network Ad Blocking and Your Own Recursive DNS"
+export const description = "Install Pi-hole v6 in a Proxmox container, then add Unbound as a local recursive resolver so your DNS lookups go straight to the authoritative servers instead of Google or Cloudflare."
+export const date = "2026-10-17"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="xtMFcVx3cHU" title="TechHut's Pi-hole and Unbound walkthrough" />
+
+In this one we're setting up our very own ad blocking server with [Pi-hole](https://pi-hole.net/), and then going a step further by adding [Unbound](https://nlnetlabs.nl/projects/unbound/about/) so Pi-hole does its own recursive DNS. The ad blocking is the fun part. The recursive DNS is the part that adds a real layer of privacy and security, because your lookups stop going through one of the giant public DNS providers.
+
+I did this in a Proxmox container, but you can run it on just about anything: a Raspberry Pi you have lying around, a Pi alternative, or a small x86 board like a ZimaBoard.
+
+Linode sponsored the video this article is based on.
+
+<Note>
+I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The written steps below have been updated for [Pi-hole Core v6.5](https://github.com/pi-hole/pi-hole/releases/tag/v6.5), FTL v6.8, and Web v6.6.1, all released October 17, 2026, and for the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## Why Bother With Recursive DNS?
+
+A quick bit of background. DNS is how your devices turn a name like `techhut.tv` into an IP address. Your device asks whatever name server it's configured to use, and that server comes back with the answer.
+
+Most people use their ISP's servers or one of the big public resolvers from Google or Cloudflare. The upside of the big ones is speed. Millions of people are querying them constantly, so almost everything is already in their cache.
+
+The downside is that every lookup you make goes through them. That adds up to a pretty complete picture of your browsing, and you're trusting them with it. You're also trusting that they don't get attacked. A big resolver is a juicy target, because poisoning one server can send millions of people to the wrong place.
+
+Pi-hole on its own is a middleman. It has a block list of domains associated with ads and tracking, answers those with nothing useful, and forwards everything else to an upstream provider. Add Unbound and that "upstream" becomes your own server. Instead of asking Google, Unbound walks the DNS hierarchy itself:
+
+1. It asks a root server who handles `.tv`.
+2. It asks the `.tv` servers who handles `techhut.tv`.
+3. It asks the authoritative name servers for `techhut.tv` for the actual address.
+
+No single company sees all of your lookups. The trade-off is that the first visit to a site is slightly slower, since Unbound has to do that legwork. After that, the answer is cached by Unbound and by Pi-hole, so it's quick from then on. The Pi-hole guide puts the first lookup to an unfamiliar TLD at up to a second, with later lookups under the same TLD usually well under 0.1 seconds.
+
+One thing to be clear about: plain recursive DNS isn't encrypted. Your ISP can still see the queries Unbound sends out. What you're removing is the single third-party resolver that logs everything.
+
+## What You Need
+
+Pi-hole is really lightweight. The [official prerequisites](https://docs.pi-hole.net/main/prerequisites/) are 512 MB of RAM and at least 2 GB of free disk space (4 GB recommended). It officially supports maintained releases of Debian, Ubuntu, Raspberry Pi OS, Armbian, Fedora, CentOS Stream, and Alpine, on x86_64, ARMv6, ARMv7, ARMv8, and RISC-V.
+
+The Unbound guide assumes a Debian or Ubuntu based system, so stick with one of those if you're following along.
+
+The important part is a **static IP address**. Every device on your network is going to point at this box, so its address can't change. Either set it statically or create a DHCP reservation for it in your router. The Pi-hole docs say a reservation is just fine.
+
+## Create the Container in Proxmox
+
+If you're on a Raspberry Pi or another machine with Ubuntu or Debian already installed, skip ahead to the next section.
+
+First, download a template. In Proxmox, select your storage, open **CT Templates**, click **Templates**, and grab an Ubuntu or Debian standard template. I used Ubuntu Server in the video. Today, the Proxmox repository offers Ubuntu 26.04 and 24.04 LTS as well as Debian 13, and Pi-hole's own test suite covers all three.
+
+Then click **Create CT** and work through the wizard. Here's what I used:
+
+| Setting | What I chose |
+|---|---|
+| Hostname | `pihole` |
+| Password | Set one for root |
+| Template | Ubuntu standard |
+| Disk | 8 GB |
+| CPU | 1 core |
+| Memory | 512 MB |
+| IPv4 | DHCP |
+
+Everything else stayed at its defaults. Current Proxmox versions create an unprivileged container by default, which is what you want here. I used DHCP and just made sure I knew the address it got. If you do the same, add a reservation in your router so it stays put, or set a static IPv4 address and gateway on the **Network** step instead.
+
+Finish the wizard, start the container, and open its console.
+
+## Prepare the System
+
+You really shouldn't do everything as root, so I created a regular user and gave it sudo. Swap `brandon` for your own username:
+
+```bash
+adduser brandon
+usermod -aG sudo brandon
+su - brandon
+```
+
+`adduser` asks for a password and then a bunch of optional details you can skip. Then update everything:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+The Proxmox templates are super minimal, so they're missing packages you'd normally take for granted. Install `curl` for the Pi-hole installer and `dig` (part of `bind9-dnsutils`), which we'll use for testing:
+
+```bash
+sudo apt install -y curl bind9-dnsutils
+```
+
+<Note>
+The Debian template doesn't include `sudo`. On Debian, run `apt install -y sudo` as root before creating your user.
+</Note>
+
+## Install Pi-hole
+
+Pi-hole's [one-step installer](https://docs.pi-hole.net/main/basic-install/) is a single command:
+
+```bash
+curl -sSL https://install.pi-hole.net | bash
+```
+
+The installer asks for sudo when it needs it. If you'd rather read [the script](https://github.com/pi-hole/pi-hole/blob/master/automated%20install/basic-install.sh) before running it, the docs also show how to download it first or clone the repository and run it from there.
+
+It runs some system checks and then walks you through a few screens:
+
+1. **Welcome screens.** The intro, a note that Pi-hole is free and powered by donations, and a reminder that it needs a static IP. Continue once that's sorted.
+2. **Interface.** If the machine has more than one network interface, pick the one your LAN is on.
+3. **Upstream DNS provider.** I left it on Google for now, since we're replacing it with Unbound in a few minutes. Any option is fine here.
+4. **Blocklists.** Say yes to StevenBlack's Unified Hosts List. It's the default, and it's what I generally use. You can add more later.
+5. **Query logging.** This one's up to you. If you don't want a record of lookups stored even on your own server, turn it off. I turned it on.
+6. **Privacy mode.** This decides what the logs show: everything, hide domains, hide domains and clients, or anonymous mode. I went with showing everything.
+
+If you remember the video, it also asked whether to install the web admin interface and its PHP modules. Those questions are gone in v6, because the web interface is built into `pihole-FTL` now.
+
+![The Pi-hole installer's Upstream DNS Provider screen with Google highlighted, as shown in the video](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/installer-upstream-dns-provider.jpg)
+
+When it finishes, you get the server's IP address, the dashboard URL, which looks like `http://192.168.0.71/admin`, and a random password.
+
+### Change the Admin Password
+
+That random password isn't something you're going to remember. In the video I used `pihole -a -p`, but that command is gone in v6. The current one is:
+
+```bash
+sudo pihole setpassword
+```
+
+Run it without an argument so it prompts for the password and confirmation, rather than putting it in your shell history. Use something strong. Leaving it blank removes the password entirely, which you don't want.
+
+Pi-hole v6 also has an API that the CLI uses, so some `pihole` commands will ask you to log in. To skip that for your own user, the [post-install docs](https://docs.pi-hole.net/main/post-install/) suggest adding it to the `pihole` group:
+
+```bash
+sudo usermod -aG pihole $USER
+```
+
+Log out and back in for that to apply.
+
+Now open `http://YOUR_PIHOLE_IP/admin` in a browser, log in, and you have full admin access. Pi-hole v6 also serves the interface over HTTPS on port `443` with an auto-generated certificate, so your browser will warn about it until you provide your own.
+
+At this point Pi-hole is a working ad blocker. If you don't care whether Google or Cloudflare can see your lookups, you could stop here and point your devices at it. We're going further.
+
+## Install Unbound
+
+From here I'm following the [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/). It explains everything I just covered much better than I can, so it's worth a read, but every step you need is below. Unbound runs on the same machine as Pi-hole, so there's nothing extra to buy.
+
+### Check That You Can Reach the Root Servers
+
+This is new since I made the video, and it's a good idea. Some ISPs, and some routers with security or parental filtering, quietly intercept outbound DNS and answer it themselves. If that's happening, Unbound can't reach the root servers and breaks in confusing ways. These three tests talk directly to `a.root-servers.net`:
+
+```bash
+dig @198.41.0.4 . NS +norec +time=3
+dig @198.41.0.4 . NS +norec +tcp +time=3
+dig @198.41.0.4 version.bind CH TXT +time=3
+```
+
+What you want to see:
+
+- **First two:** the `flags:` line includes `aa` and does **not** include `ra`, for example `flags: qr aa`. If you see `ra`, something in the middle is answering instead of the root server. If the first works but the TCP one times out, your connection is dropping DNS over TCP, which Unbound needs for large DNSSEC responses.
+- **Third:** a `TXT` record containing `ATLAS`. Anything else, a timeout, or `SERVFAIL` means your DNS traffic is being proxied.
+
+If any of these fail, the guide recommends sorting that out before setting up Unbound.
+
+### Install the Package
+
+```bash
+sudo apt install -y unbound
+```
+
+This also pulls in `dns-root-data`, which provides the root hints file, so you don't need to download it yourself. Your package manager keeps it updated.
+
+When it finishes, Unbound will probably fail to start. That's expected. Out of the box it tries to listen on port `53`, which Pi-hole already owns, and we haven't configured it yet.
+
+### Configure Unbound
+
+The main change is moving Unbound to port `5335` on `127.0.0.1`, so it only listens for Pi-hole and doesn't fight it for port `53`. The config also enables both UDP and TCP, validates DNSSEC and discards bogus answers, and applies some privacy and hardening options.
+
+Create the config file. I'm a fan of Nano, but use whatever you like:
+
+```bash
+sudo nano /etc/unbound/unbound.conf.d/pi-hole.conf
+```
+
+Paste in the configuration from the Pi-hole guide. This is the current version, with the guide's long explanatory comments trimmed:
+
+```text
+server:
+    # If no logfile is specified, syslog is used
+    # logfile: "/var/log/unbound/unbound.log"
+    verbosity: 0
+
+    interface: 127.0.0.1
+    port: 5335
+    do-ip4: yes
+    do-udp: yes
+    do-tcp: yes
+
+    # May be set to no if you don't have IPv6 connectivity
+    do-ip6: yes
+
+    # Leave this at no unless you have native IPv6
+    prefer-ip6: no
+
+    # Only needed if you downloaded root.hints yourself
+    #root-hints: "/var/lib/unbound/root.hints"
+
+    # Trust glue only if it is within the server's authority
+    harden-glue: yes
+
+    # Require DNSSEC data for trust-anchored zones
+    harden-dnssec-stripped: yes
+
+    # Capitalization randomization can cause DNSSEC issues
+    use-caps-for-id: no
+
+    # Avoid IP fragmentation for large UDP responses
+    edns-buffer-size: 1232
+
+    # Prefetch frequently queried entries before they expire
+    prefetch: yes
+
+    # One thread is plenty for a home network
+    num-threads: 1
+
+    # Larger kernel buffer for traffic spikes
+    so-rcvbuf: 1m
+
+    # Ensure privacy of local IP ranges
+    private-address: 192.168.0.0/16
+    private-address: 169.254.0.0/16
+    private-address: 172.16.0.0/12
+    private-address: 10.0.0.0/8
+    private-address: fd00::/8
+    private-address: fe80::/10
+
+    # Ensure no reverse queries to non-public IP ranges (RFC6303 4.2)
+    private-address: 192.0.2.0/24
+    private-address: 198.51.100.0/24
+    private-address: 203.0.113.0/24
+    private-address: 255.255.255.255/32
+    private-address: 2001:db8::/32
+```
+
+Notice the `interface: 127.0.0.1` and `port: 5335` lines. You'll need both when we point Pi-hole at it. Save with `Ctrl+O`, then exit with `Ctrl+X`.
+
+If your container has no IPv6 connectivity, you can set `do-ip6: no`.
+
+### Disable unbound-resolvconf (Debian 11 and Newer)
+
+This step also wasn't in the guide when I recorded. On Debian Bullseye and newer, a helper service can rewrite `/etc/resolv.conf` to point the system at `127.0.0.1` without the `5335` port, which confuses both Pi-hole and Unbound. Check whether it's running:
+
+```bash
+systemctl is-active unbound-resolvconf.service
+```
+
+If it says `active`, disable it and stop the related config file from being generated:
+
+```bash
+sudo systemctl disable --now unbound-resolvconf.service
+sudo sed -Ei 's/^unbound_conf=/#unbound_conf=/' /etc/resolvconf.conf
+sudo rm /etc/unbound/unbound.conf.d/resolvconf_resolvers.conf
+```
+
+If it says `inactive` or that the service couldn't be found, you can skip this.
+
+### Start and Test Unbound
+
+Restart the service and send it a test query:
+
+```bash
+sudo service unbound restart
+dig pi-hole.net @127.0.0.1 -p 5335
+```
+
+You should get a `NOERROR` status and an IP address back. The first query might take a moment, but repeating it should be fast.
+
+![A dig query to Unbound on 127.0.0.1 port 5335 returning NOERROR and an IP address for pi-hole.net, from the original video](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/unbound-dig-test-noerror.jpg)
+
+Then confirm DNSSEC validation is working:
+
+```bash
+dig fail01.dnssec.works @127.0.0.1 -p 5335
+dig +ad dnssec.works @127.0.0.1 -p 5335
+```
+
+The first one should return `SERVFAIL` with no IP address, since that domain is deliberately broken. The second should return `NOERROR`, an IP address, and `ad` in the `flags:` line, which means the answer was validated.
+
+If the Unbound logs complain that `so-rcvbuf 1048576 was not granted`, the guide's troubleshooting section shows how to raise `net.core.rmem_max` with `sysctl`. It's a warning, not a failure.
+
+## Point Pi-hole at Unbound
+
+Back in the Pi-hole web interface, go to **Settings > DNS**. Under **Upstream DNS Servers**:
+
+1. Untick every provider in the list, including the one you picked during install (Google for me).
+2. Expand **Custom DNS servers** and enter Unbound's address and port, separated by a hash, on its own line:
+
+```text
+127.0.0.1#5335
+```
+
+3. Make sure nothing else is left in that list, then click **Save & Apply** at the bottom of the page.
+
+![The older Pi-hole v5 DNS settings page from the video, with every upstream provider unticked and 127.0.0.1#5335 entered as a custom IPv4 server](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-upstream-dns-custom-unbound.jpg)
+
+If you'd rather do it from the terminal, v6 lets you set any option with `pihole-FTL --config`. This replaces the upstream list with just Unbound:
+
+```bash
+sudo pihole-FTL --config dns.upstreams '[ "127.0.0.1#5335" ]'
+```
+
+Either way, the setting ends up in `/etc/pihole/pihole.toml`. Pi-hole is now both your ad blocker and, through Unbound, your own DNS server.
+
+To confirm it from the Pi-hole machine itself, run a query through Pi-hole and check its log:
+
+```bash
+dig en.wikipedia.org @127.0.0.1
+sudo tail /var/log/pihole/pihole.log
+```
+
+You're looking for lines showing the query was `forwarded ... to 127.0.0.1#5335`, followed by the reply.
+
+## Test It on a Device
+
+I tested this on one device first by changing its DNS server by hand. It's basically the same process on Linux, macOS, and Windows: search for DNS in your system settings and you'll land in the right place.
+
+I was on Wi-Fi, so I opened my Wi-Fi connection's settings, went to the **IPv4** tab, turned off automatic DNS, entered my Pi-hole's address (`192.168.0.71` in my case), and applied it.
+
+Then I loaded up one of the worst offenders for ads I know of, CNN.com. The ad spaces just didn't fill in. Back in Pi-hole, the dashboard already showed 185 blocked queries from that one visit.
+
+![The Pi-hole v5 dashboard from the video showing 185 of 294 queries blocked after loading CNN.com](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-dashboard-cnn-blocked.jpg)
+
+The **Query Log** is where you can see what's actually going on. It shows each request, which client made it, and whether it was blocked. For the allowed ones, the status shows they were answered by `localhost#5335`, which is our Unbound server. Pi-hole v6 words it as "Forwarded, reply from" followed by the upstream.
+
+![The Pi-hole v5 query log from the video, with ad domains blocked by gravity and www.facebook.com answered by localhost#5335](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-query-log-localhost-5335.jpg)
+
+Then I refreshed and clicked through to another page on the site. In the query log, a lot of those same domains now showed as cached (v6 labels them "Served from cache"). The address was already stored locally, so the second lookup was much quicker than the first.
+
+## Temporarily Disable Blocking
+
+Some sites detect ad blocking and refuse to load until you turn it off. In the Pi-hole sidebar, open **Disable Blocking** and choose 10 seconds, 30 seconds, 5 minutes, a custom time, or indefinitely. From the terminal, `pihole disable 5m` does the same thing and `pihole enable` turns it back on.
+
+## Going Network-Wide
+
+Setting DNS device by device, like I did in the video, is a really good way to start, because it lets you see that everything works before you change anything for the whole house. When you're ready, change the DNS server your router hands out to clients. Pi-hole's [post-install docs](https://docs.pi-hole.net/main/post-install/) recommend configuring the router so DHCP clients use Pi-hole, falling back to Pi-hole's own DHCP server if your router can't do that.
+
+Every router hides this setting somewhere different. My [AdGuard Home guide](/adguard-home-proxmox-setup) walks through doing it on a TP-Link Omada setup, along with common reasons it can look like it isn't working: a public resolver set as the secondary DNS, setting it on the WAN instead of the LAN, and IPv6 handing out a different DNS server. All of that applies to Pi-hole as well.
+
+By default, Pi-hole only answers queries from devices on its local subnet (**Allow only local requests** under **Settings > DNS > Interface settings**). If you have VLANs or other subnets, you'll need to change that, but only if the machine isn't reachable from the internet.
+
+<Warning>
+Never port forward `53` from your router to Pi-hole, and keep the dashboard ports (`80` and `443`) off the internet too. An open DNS resolver gets found quickly and abused for amplification attacks. If you want Pi-hole on your phone away from home, connect back through a VPN instead. My [NetBird with Pocket ID guide](/self-host-netbird-pocketid) is one way to do that.
+</Warning>
+
+## Updating
+
+Pi-hole updates with one command:
+
+```bash
+sudo pihole -up
+```
+
+Unbound came from your distribution's repositories, so it updates with everything else through `sudo apt update && sudo apt upgrade`. Pi-hole recommends reading the release notes for Core, FTL, and Web before updating, especially for big jumps. If you still have a v5 install, the upgrade to v6 is one-way and migrates your old settings into `pihole.toml`, so back up first.
+
+## Pi-hole or AdGuard Home?
+
+I've also set up [AdGuard Home on Proxmox](/adguard-home-proxmox-setup), and both are great open source options. AdGuard Home has more built in, like encrypted upstream DNS and safe search toggles. Pi-hole plus Unbound is a really nice pairing when what you want is your own recursive resolver, and the Pi-hole docs walk you through exactly that. If you'd rather run Pi-hole in Docker, there's an [official image](https://docs.pi-hole.net/docker/) too, but Unbound is a separate setup in that case.
+
+## Final Thoughts
+
+It's incredibly quick and easy to get Pi-hole up and running, and the Unbound part only adds a config file and a setting change. In return, you get ad and tracker blocking for anything you point at it, a query log that shows exactly what your devices are doing, and DNS lookups that don't all funnel through one big provider.
+
+The first visit to a new site is a hair slower, but caching takes care of that quickly, and in my testing the second load was already coming from cache.
+
+For my own test instance, I used a throwaway password, which you absolutely should not do. Use something strong, give the box a static address, and then point your router at it once you're happy. With all that, have an absolutely beautiful day.
+
+## Official References
+
+- [Pi-hole](https://pi-hole.net/) and [Pi-hole documentation](https://docs.pi-hole.net/)
+- [Pi-hole on GitHub](https://github.com/pi-hole/pi-hole)
+- [Pi-hole Core v6.5 release](https://github.com/pi-hole/pi-hole/releases/tag/v6.5)
+- [Introducing Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/)
+- [Prerequisites](https://docs.pi-hole.net/main/prerequisites/)
+- [Installation](https://docs.pi-hole.net/main/basic-install/)
+- [Post-install](https://docs.pi-hole.net/main/post-install/)
+- [The pihole command](https://docs.pi-hole.net/main/pihole-command/)
+- [FTL configuration reference](https://docs.pi-hole.net/ftldns/configfile/)
+- [Updating Pi-hole](https://docs.pi-hole.net/main/update/)
+- [Pi-hole with Unbound](https://docs.pi-hole.net/guides/dns/unbound/)
+- [Pi-hole Docker documentation](https://docs.pi-hole.net/docker/)
+- [Unbound by NLnet Labs](https://nlnetlabs.nl/projects/unbound/about/) and [Unbound documentation](https://unbound.docs.nlnetlabs.nl/en/latest/)
+- [Unbound on GitHub](https://github.com/NLnetLabs/unbound)
+- [Proxmox VE Linux Containers](https://pve.proxmox.com/wiki/Linux_Container)
