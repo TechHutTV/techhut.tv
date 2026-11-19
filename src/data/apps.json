@@ -1540,7 +1540,9 @@
     "name": "ONLYOFFICE Workspace",
     "category": "Desktop",
     "description": "Host collaboration tools for documents, projects and mail.",
-    "coverage": [],
+    "coverage": [
+      "/onlyoffice-workspace-overview"
+    ],
     "videos": [
       {
         "id": "c0ArprJZ-0E",
