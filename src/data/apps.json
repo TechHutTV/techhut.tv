@@ -130,7 +130,9 @@
     "name": "Beszel",
     "category": "Monitoring",
     "description": "Monitor server resources and Docker statistics with a lightweight dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/beszel-home-server-monitoring"
+    ],
     "videos": [
       {
         "id": "RHPjdB7gyQM",
