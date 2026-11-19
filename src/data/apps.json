@@ -2396,7 +2396,9 @@
     "name": "UniFi OS Server",
     "category": "Networking",
     "description": "Self-host the management interface for UniFi network devices.",
-    "coverage": [],
+    "coverage": [
+      "/self-host-unifi-os-server"
+    ],
     "videos": [
       {
         "id": "SE1lDFVCrr0",

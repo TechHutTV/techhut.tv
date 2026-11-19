@@ -1,0 +1,266 @@
+export const title = "You Can Now Self-Host UniFi: UniFi OS Server on a Raspberry Pi 5"
+export const description = "Install Ubiquiti's free UniFi OS Server on a Raspberry Pi 5 running Ubuntu, then adopt UniFi switches and access points and create a Wi-Fi network without a Dream Machine or Cloud Gateway."
+export const date = "2026-10-09"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab", "Linux", "RaspberryPi", "Podman"]
+export const cover = "/docs-static/img/2026/10/self-host-unifi-os-server/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="SE1lDFVCrr0" title="TechHut's UniFi OS Server walkthrough" />
+
+Ubiquiti did something pretty cool last year. It released [UniFi OS Server](https://help.ui.com/hc/en-us/articles/34210126298775-Self-Hosting-UniFi), which lets you run the UniFi management software on your own hardware. You don't need a Dream Machine, a Cloud Gateway, or a CloudKey to manage your UniFi switches and access points.
+
+This one was personal for me. Before I had any of that console hardware, I was hunting for affordable UniFi gear, mostly on Facebook Marketplace. I found some really good deals. I got a Lite 8 PoE switch for around 40 bucks, a 16-port switch that I'm still using upstairs, and a little outdoor-mounted switch. What I could never find cheap was a Cloud Gateway. Right around then, Ubiquiti released the self-hosted version, so I wanted to see if a Raspberry Pi could fill that gap.
+
+Spoiler: it can. I put UniFi OS Server on a Raspberry Pi 5, adopted an access point, and created a Wi-Fi network, all self-hosted.
+
+Akiflow sponsored the video this article is based on.
+
+The written installation has been updated for [UniFi OS Server 5.1.42](https://community.ui.com/releases/UniFi-OS-Server-5-1-42/509f4de9-8fe4-4718-abad-1bb6990dedcc), released September 10, 2026. Since I recorded the video, Ubiquiti has raised the minimum Podman version, added automatic Let's Encrypt certificates, and added automatic migration from the legacy Network Server on Linux. The install flow is still the same download, `chmod`, and run. My hands-on impressions come from the recorded walkthrough.
+
+## What UniFi OS Server Actually Is
+
+UniFi OS Server is Ubiquiti's current way to self-host UniFi. It replaces the older self-hosted **UniFi Network Server** (often called the UniFi Network Application or "controller"), which Ubiquiti's help center now labels as legacy.
+
+The difference is that you get the full UniFi OS layer, not just the Network app. Ubiquiti describes it as the same management experience as its own consoles and Official UniFi Hosting, including Organizations, identity provider (IdP) integration, Site Magic SD-WAN, and Site Manager support for managing multiple sites from one place.
+
+| | UniFi OS Server | Legacy UniFi Network Server |
+|---|---|---|
+| What you get | UniFi OS plus the UniFi Network application | The UniFi Network application on its own |
+| Organizations, IdP, Site Magic SD-WAN | Supported | Not supported |
+| Linux install | Single installer binary that runs the stack with Podman | APT repository package with MongoDB |
+| Status | Current self-hosting option | Marked legacy in Ubiquiti's docs |
+
+A few things are worth knowing before you get excited:
+
+- **It's the Network app only.** In the video, I said I didn't think UniFi Protect or the VoIP side worked this way. Ubiquiti's FAQ confirms that Protect, Access, Talk, and Connect all still need a compatible UniFi console. A CloudKey can run those apps alongside UniFi OS Server, but only one host can manage your network devices.
+- **Cloud Gateways can't be managed by it.** A Dream Machine, UCG, or Fortress Gateway already has its own UniFi Network instance built in. If you want a UniFi gateway on a site managed by UniFi OS Server, Ubiquiti points you to its independent UXG-series gateways.
+- **It isn't a standalone container.** It uses Podman under the hood, but Ubiquiti says it won't be offered as a standalone Docker or Podman image. Some services need to run on the host for device discovery, adoption, and updates.
+- **It's free, but it isn't open source.** Ubiquiti's FAQ says UniFi OS Server is license-free and costs nothing. The software itself is proprietary Ubiquiti software, and you'll accept Ubiquiti's terms during setup. The download page notes that some bundled components are covered by the GPL and other open-source licenses.
+
+### Who This Is For
+
+Ubiquiti's marketing push is mostly aimed at MSPs, since one server can handle a whole bunch of sites. That's really nice if you're in that world.
+
+The other group is people like me, and maybe you: you've got UniFi equipment, but no real way to manage it all. If you scored some switches and access points secondhand, this gets you a proper UniFi controller without having to buy a console.
+
+## What You Need
+
+These are Ubiquiti's [published requirements](https://help.ui.com/hc/en-us/articles/34210126298775-Self-Hosting-UniFi) for Linux:
+
+| Requirement | Minimum |
+|---|---|
+| Distribution | Ubuntu 24.04 or later, Debian 13 or later, or another modern distro meeting the requirements below |
+| System | systemd and glibc 2.31 or newer |
+| Container runtime | Podman 4.9.3 or newer, using pasta networking |
+| Fallback networking | slirp4netns 1.2 or newer |
+| RAM | 2 GB |
+| Storage | At least 10 GB free |
+| Network | 100 Mbps wired Ethernet |
+
+There are also Windows and macOS installers. On Windows, the installer sets up WSL 2, and Ubiquiti notes that it can't currently run as a Windows service or inside a Hyper-V guest VM. I'm sticking with Linux here.
+
+My setup is a Raspberry Pi 5 with 8 GB of RAM and a PoE HAT, so I can power it with a single Ethernet cable, which is really nice. It's running Ubuntu. I'm not going to cover flashing Ubuntu onto the Pi here. As of this writing, Canonical's [Raspberry Pi downloads](https://ubuntu.com/download/raspberry-pi) offer Ubuntu 26.04.1 LTS for the Pi 5 as a 64-bit ARM image. Ubuntu 24.04 also meets Ubiquiti's minimum.
+
+<Note>
+**About ARM64:** Ubiquiti's hardware requirements still list an x86-64 processor. However, the official download page has a Linux ARM64 build for every release, including 5.1.42, and an ARM64 build is what I installed on the Pi in the video. It worked well for me, but x86-64 is the platform Ubiquiti's requirements actually describe. Use a 64-bit OS either way; there's no 32-bit build.
+</Note>
+
+## Installing UniFi OS Server on Linux
+
+Plug the Pi (or whatever box you're using) into your network, SSH in, and let's go.
+
+### 1. Install Podman and slirp4netns
+
+Interestingly, UniFi OS Server uses Podman as its backend, so Podman and `slirp4netns` are the prerequisites. This is the command from Ubiquiti's guide:
+
+```bash
+sudo apt-get update && sudo apt-get install podman slirp4netns
+```
+
+Then confirm the Podman version:
+
+```bash
+podman --version
+```
+
+You need 4.9.3 or newer. Ubuntu 24.04 ships 4.9.3, and Ubuntu 26.04 ships 5.x, so either works. On Ubuntu, the Podman package recommends `passt`, which apt installs by default. That package provides the pasta networking that UniFi OS Server now prefers. If the installer can't use pasta, it warns you and falls back to slirp4netns.
+
+On another distribution, check that its packaged Podman is new enough before going any further. Ubuntu 22.04, for example, ships a Podman release that's too old.
+
+### 2. Download the Installer for Your Architecture
+
+Check your CPU architecture first:
+
+```bash
+uname -m
+```
+
+`aarch64` means you want the **Linux (arm64)** build, which is what you'll use on a Pi 5. `x86_64` means you want **Linux (x64)**, which is what you'd use on an Intel or AMD mini PC.
+
+![The UniFi OS Server download page as shown in the video, listing 4.3.6 builds for Linux x64 and arm64, macOS, and Windows](/docs-static/img/2026/10/self-host-unifi-os-server/download-page-linux-builds.jpg)
+
+In the video, I went to the [UniFi OS Server download page](https://ui.com/download/software/unifi-os-server), right-clicked the Linux ARM64 download, and copied the link. That's still the official method, and it's the best way to make sure you have the newest release. As of this writing, these are the 5.1.42 links from that page:
+
+```bash
+# Raspberry Pi 5 and other 64-bit ARM machines
+wget -O uosserver-installer \
+  https://fw-download.ubnt.com/data/unifi-os-server/f730-linux-arm64-5.1.42-d2bca8bd-d6fc-4d20-99e5-b78235843c2f.42-arm64
+```
+
+```bash
+# Intel or AMD (x86-64) machines
+wget -O uosserver-installer \
+  https://fw-download.ubnt.com/data/unifi-os-server/5172-linux-x64-5.1.42-12e9e3cf-8f8b-4e54-928c-76b80a10c8a4.42-x64
+```
+
+It's roughly 770 to 790 MB. On my connection it was crawling along at about two megabytes a second for a bit, so grab a drink.
+
+Before you run anything as root, verify the download against the SHA-256 checksums Ubiquiti publishes for 5.1.42. Use the line that matches the build you downloaded:
+
+```bash
+# ARM64
+echo "8e29bd50cde8f781ace4b85599256ef62c02723bdc751044d4db90a087fb5207  uosserver-installer" | sha256sum -c -
+
+# x64
+echo "f6111e9396a42c74016f5dde9b01fbef486a6fe69efe137935e6e38b7c22f94d  uosserver-installer" | sha256sum -c -
+```
+
+You want to see `uosserver-installer: OK`. If you grabbed a newer release from the download page, these checksums won't match. That's expected; they only apply to 5.1.42.
+
+### 3. Make It Executable and Run It
+
+```bash
+chmod +x uosserver-installer
+sudo ./uosserver-installer
+```
+
+The installer asks you to confirm that you're about to install UniFi OS Server, along with whatever version you downloaded. Say yes, and it handles the rest: you'll see it doing a bunch of work with Podman as it loads and starts the container. When it finishes, it prints the address to open in your browser.
+
+I jumped the gun a bit and opened it before it was ready. On a low-powered device like a Pi, the web interface can take a few minutes to come up, so just give it a moment. You'll get a certificate warning because it uses a self-signed certificate. Ubiquiti says that warning is safe to skip past for a local install. You can upload your own certificate later under **Settings > Control Plane > Console > Certificates**, and 5.1.15 added support for automatic Let's Encrypt certificates.
+
+### 4. Run Through the Setup Wizard
+
+The first-run wizard is short:
+
+1. Give the server a name. I just went with "UOS Server" for now.
+2. Choose whether to sign in with a UI account. That's only needed for remote management through Site Manager and the other cloud features. I picked **proceed without an account** to keep everything local.
+3. Create a local admin password. It enforces password strength, and my first attempt was rejected, so make it a properly strong one.
+4. Accept Ubiquiti's terms and click **Finish**.
+
+![The Skip Account Setup dialog in the UniFi OS Server wizard comparing features with and without a UI Account](/docs-static/img/2026/10/self-host-unifi-os-server/skip-account-setup.jpg)
+
+Once setup completes, you land on the dashboard. It looks like UniFi. If you're coming from something else, that's probably pretty exciting. At this point, UniFi OS is running on a Raspberry Pi.
+
+### Managing the Service
+
+UniFi OS Server runs as a systemd service called `uosserver`:
+
+```bash
+sudo systemctl status uosserver    # check it
+sudo systemctl stop uosserver      # stop it
+sudo systemctl start uosserver     # start it
+sudo systemctl enable uosserver    # start at boot
+sudo systemctl disable uosserver   # don't start at boot
+```
+
+Keep it running. Your devices need the server online to be viewed and managed. If it goes down, they keep running with their last configuration, but you can't change anything until it comes back.
+
+## Firewall and Ports
+
+If the host has a firewall enabled, it has to let UniFi devices reach the server. These are the main ones from Ubiquiti's [Required Ports Reference](https://help.ui.com/hc/en-us/articles/218506997-Required-Ports-Reference):
+
+| Port | Protocol | Used for |
+|---|---|---|
+| 8080 | TCP | Device and application communication (the inform URL) |
+| 10001 | UDP | Device discovery during adoption |
+| 3478 | UDP | STUN, for adoption, device communication, and remote access |
+| 8444 | TCP | Secure hotspot and captive portal (moved from 8843 on the legacy server) |
+| 6789 | TCP | UniFi mobile speed test |
+| 28082 | TCP | Device packet capture and support file downloads |
+
+Also open the web interface port shown at the end of the installer. If you're using UFW on Ubuntu, the core adoption ports look like this:
+
+```bash
+sudo ufw allow 8080/tcp
+sudo ufw allow 10001/udp
+sudo ufw allow 3478/udp
+```
+
+Only open the optional ports for features you actually use. Also, don't port-forward the admin interface to the internet. For remote access, Site Manager or a VPN is the much safer route.
+
+## Adopting Devices
+
+With the server running, the UniFi Devices page was empty, so it was time to plug something in and see if it would pop up.
+
+### The Facebook Marketplace Fail
+
+I really wanted to adopt that little outdoor switch. I'd never actually tested it, and when I connected it with PoE in, it was an absolute catastrophe. It wasn't working. That's the risk with used gear: sometimes the risk-to-reward ratio isn't there. Hopefully there's something I can do with it, but it was not going to be in this video.
+
+### Adopting an Access Point
+
+Plan B was a U7 Pro access point, and this one worked. I had factory reset it first so it wouldn't try to reconnect to the Dream Machine that runs my main network. That's an important step if your gear has been adopted somewhere else: a device can only be managed by one UniFi host.
+
+After it finished booting, it appeared on the Devices page with **Click to adopt**. Another device showed up in the list for some reason too, but the white LED told me which one I'd just plugged in. Click adopt, give it a minute while it shows as getting ready, and it's now managed by the Pi.
+
+![The UniFi Devices page on UniFi OS Server showing a U7 Pro XG access point with a Click to Adopt status](/docs-static/img/2026/10/self-host-unifi-os-server/devices-click-to-adopt.jpg)
+
+If nothing appears, here's what Ubiquiti's [device adoption guide](https://help.ui.com/hc/en-us/articles/360012622613-UniFi-Device-Adoption) recommends:
+
+- **Same VLAN:** Make sure TCP 8080 and UDP 10001 aren't blocked between the device and the server, including by the host firewall. Factory reset the device as a last resort.
+- **Different VLAN or subnet:** Use [Layer 3 adoption](https://help.ui.com/hc/en-us/articles/204909754-Remote-Adoption-Layer-3). Point the device at the server through DHCP or DNS, or SSH into it and set the inform URL manually:
+
+```bash
+set-inform http://YOUR_SERVER_IP:8080/inform
+```
+
+Replace `YOUR_SERVER_IP` with your UniFi OS Server's address. You may need to run the command again after the device appears in UniFi.
+
+## Creating a Wi-Fi Network
+
+While the AP was getting ready, I looked around the settings. Most of the settings, at least on the networking side, are here and available. The default network uses a pretty generic subnet. If I were setting this up for real, I'd change it before adding anything else.
+
+To create a Wi-Fi network, go to **Wi-Fi**, create a new network, give it a name (I used "Uni Pi"), and set a password. I left everything else on auto. Once the access point finished adopting and was up to date, the network appeared on my laptop. I joined it, and I had internet access.
+
+![Creating the UniPi Wi-Fi network in UniFi Network, with Broadcasting APs set to All and Advanced set to Auto](/docs-static/img/2026/10/self-host-unifi-os-server/create-wifi-network.jpg)
+
+The connection dropped for a second when I switched networks. I have mixed UniFi networks at home, so IP addressing gets a little weird, but it reconnected on its own. The topology view showed the U7 Pro, and Client Devices showed my laptop connected through it. Really, that's it.
+
+Some options need a gateway adopted before you can configure them. With UniFi OS Server, that means one of the UXG-series gateways rather than a Cloud Gateway. Without one, you can still preconfigure things, but your existing network handles routing and internet access. That's how my test setup got online.
+
+## Updates, Backups, and Migration
+
+**Updates:** You can update UniFi OS Server and its UniFi applications from the Update Manager in Site Manager, or locally from the Control Plane settings. See [UniFi Updates](https://help.ui.com/hc/en-us/articles/7605005245975-UniFi-Updates) for details.
+
+**Backups:** System config backups are created and restored under **Settings > Control Plane > Console**. They include the OS, application, and device configuration. Take one before major updates.
+
+**Coming from the legacy Network Server:** Take a Network backup (`.unf`) first, then shut the old server down before installing UniFi OS Server. As of 5.1.15, the Linux installer can automatically migrate a legacy Network Server installation. If that doesn't happen, restore the backup in **Settings > Control Plane > Backups**, or use the Site Export tool. Ubiquiti's [Backups and Migration](https://help.ui.com/hc/en-us/articles/360008976393-Backups-and-Migration-in-UniFi) guide covers both paths. Also, don't run both controllers at the same time, or your devices won't know who's in charge.
+
+## Running It in a VM Instead
+
+A Pi is a fun fit for this, but you could also just make a virtual machine in Proxmox if you already have one set up. It's probably really easy to do that way. The same requirements and steps apply: use a 64-bit Linux guest with a new enough Podman and give it a static IP.
+
+There's one VM-specific gotcha from Ubiquiti: don't clone a UniFi OS Server VM unless it's for high availability or failover. Clones share the same remote access tokens for Site Manager, which leads to weird behavior. If you need another server, create a fresh installation.
+
+## Final Thoughts
+
+I'm really happy Ubiquiti is doing this. It makes UniFi much more accessible to people who want to self-host, especially if you can find cheap UniFi gear that actually works. The whole process was basically: install Podman, download one file, run it, and adopt an access point. It ran great on a Raspberry Pi 5.
+
+There are some limits. Self-hosting covers the Network side, not Protect or Talk. You need a UXG gateway rather than a Cloud Gateway if you want UniFi routing, and ARM64 doesn't appear in Ubiquiti's written requirements yet. Even so, if you already have a homelab and some marketplace UniFi gear, this is a really easy way to manage it all without buying another console. Just maybe test that outdoor switch before you pay for it. With all that, I do hope you found this useful. Have a great one.
+
+## Official References
+
+- [Self-Hosting UniFi (UniFi OS Server guide)](https://help.ui.com/hc/en-us/articles/34210126298775-Self-Hosting-UniFi)
+- [UniFi OS Server downloads](https://ui.com/download/software/unifi-os-server)
+- [UniFi OS Server 5.1.42 release notes](https://community.ui.com/releases/UniFi-OS-Server-5-1-42/509f4de9-8fe4-4718-abad-1bb6990dedcc)
+- [UniFi OS Server 5.1.15 release notes](https://community.ui.com/releases/UniFi-OS-Server-5-1-15/11843c60-7c4f-4263-9773-4c3df7168d07)
+- [UniFi OS Server 5.0.6 release notes](https://community.ui.com/releases/UniFi-OS-Server-5-0-6/27e08ff9-377c-4ffe-a67b-8c138d7faae1)
+- [Required Ports Reference](https://help.ui.com/hc/en-us/articles/218506997-Required-Ports-Reference)
+- [UniFi Device Adoption](https://help.ui.com/hc/en-us/articles/360012622613-UniFi-Device-Adoption)
+- [Remote Adoption (Layer 3)](https://help.ui.com/hc/en-us/articles/204909754-Remote-Adoption-Layer-3)
+- [Backups and Migration in UniFi](https://help.ui.com/hc/en-us/articles/360008976393-Backups-and-Migration-in-UniFi)
+- [UniFi Updates](https://help.ui.com/hc/en-us/articles/7605005245975-UniFi-Updates)
+- [(Legacy) Self-hosted UniFi Network Server on Linux](https://help.ui.com/hc/en-us/articles/220066768--Legacy-Updating-and-Installing-Self-Hosted-UniFi-Network-Servers-Linux)
+- [Ubuntu for Raspberry Pi](https://ubuntu.com/download/raspberry-pi)
