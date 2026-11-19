@@ -1,0 +1,473 @@
+export const title = "Ultimate Home Server Part 1: Proxmox, ZFS Pools, and Samba Shares"
+export const description = "Build the foundation of a Proxmox home server: install Proxmox VE, create mirrored and RAIDZ ZFS pools, set up an Ubuntu LXC with storage mount points, and share it across your network with Samba."
+export const date = "2026-10-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Proxmox", "Homelab", "Self-Host", "Virtualization", "Linux"]
+export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="qmSizZUbCOA" title="TechHut's Proxmox, ZFS, and Samba home server walkthrough" />
+
+<Note>
+**The Ultimate Home Server series**
+
+1. **Part 1: Proxmox, ZFS, and Samba shares**
+2. [Part 2: Jellyfin media server VM](/ultimate-home-server-part-2-jellyfin)
+3. [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack)
+4. [Part 4: SSL certificates on everything](/ultimate-home-server-part-4-ssl-certificates)
+</Note>
+
+Late in 2024 I put out a Part 1 for my Proxmox home server build, and since then I've learned quite a bit, a lot of it from you all opening issues and sending commits to my [homelab GitHub repo](https://github.com/TechHutTV/homelab). So this is the remake: a fresh Part 1 with all of those fixes and improvements rolled in.
+
+This part is the foundation everything else sits on. We install Proxmox VE, run through the post-install steps I always do, build two ZFS storage pools (a fast **flash** pool and a big **tank** pool), create our first container, give it storage, and share that storage with every computer on the home network using Samba. The later parts of the series build on exactly this layout, so it's worth getting right.
+
+The written companion to this video lives in my repo at [storage/README.md](https://github.com/TechHutTV/homelab/tree/main/storage), and I keep updating it as people find better ways to do things. The steps below have been updated for **Proxmox VE 9.2**, released May 21, 2026 (the video was recorded on the 8.x release line), and I've called out the places where the current procedure differs from what you'll see on screen.
+
+## The Layout We're Building
+
+Before clicking anything, here's the end result. Later parts of the series link back to this table, so keep it handy.
+
+| Piece | What it is | Used for |
+|---|---|---|
+| Boot drive (`local`) | The small NVMe Proxmox is installed on | ISO images, container templates. Nothing important lives here |
+| `flash` | ZFS **mirror** of two 1 TB NVMe SSDs | Container and VM root disks, plus the `/docker` mount point |
+| `tank` | ZFS **RAIDZ1** of six 4 TB hard drives | Bulk storage: media, image backups, archives. Holds the `/data` mount point |
+| CT `100` (`media`) | Unprivileged Ubuntu LXC | Owns `/data` and `/docker`, and runs Samba |
+| `\\media\data` | Samba share of `/data` | The share later parts mount, for example in the [Part 2 Jellyfin VM](/ultimate-home-server-part-2-jellyfin) |
+| `\\media\docker` | Samba share of `/docker` | Easy network access to small config files |
+
+Pool names are up to you. I've seen a lot of people call their SSD pool `nvme`. I like `flash` and `tank`, and that's what the rest of this series uses.
+
+## Pick Your Hardware
+
+You can install Proxmox on just about anything: a mini PC, a NAS box that lets you run a third-party OS, or an old desktop you're repurposing. There are a ton of variables, but here's what I generally recommend:
+
+- **CPU:** at least four cores, more depending on how many services you plan to run. On AMD, I'd say Ryzen 3000 series or newer as a bare minimum. On Intel, get something with Quick Sync so you can do hardware transcoding for media later on. That comes in really handy.
+- **GPU:** if you're on an AMD desktop without integrated graphics, throw in an NVIDIA card that supports hardware transcoding.
+- **Boot drive:** an NVMe SSD. If you can't add more NVMe drives to your system later, go bigger, 512 GB to 1 TB or more if your budget allows, since your VMs and containers will live on it too.
+- **Bulk storage:** affordable 4 TB hard drives work great. Get at least two so you can mirror them. If one fails, you swap it out and don't lose anything.
+- **RAM:** ZFS likes memory. The [Proxmox ZFS documentation](https://pve.proxmox.com/wiki/ZFS_on_Linux) says you need at least 8 GB to start, and its rule of thumb for the ZFS cache is 2 GiB plus 1 GiB per TiB of storage.
+
+For this video I'm using a ZimaCube with six 4 TB hard drives and three NVMe drives: a small one to boot Proxmox, and two 1 TB WD Blue drives mirrored for container and VM storage. An old desktop is honestly the most flexible option, though, since PCIe cards can add more SATA ports or NVMe slots.
+
+![The ZimaCube used in the video, with one of its six WD Red 4 TB drives sliding out of the front bays](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/zimacube-drive-bays.jpg)
+
+<Warning>
+ZFS needs direct access to the disks. Do not put ZFS on top of a hardware RAID controller. If you need more ports, use a plain HBA (for example an LSI card flashed to IT mode), as the [Proxmox ZFS docs](https://pve.proxmox.com/wiki/ZFS_on_Linux) recommend.
+</Warning>
+
+## Install Proxmox VE
+
+Download the current ISO from the [Proxmox VE downloads page](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso) and write it to a USB drive:
+
+- **Windows:** [Rufus](https://rufus.ie/) works, but the [Proxmox install docs](https://pve.proxmox.com/pve-docs/chapter-pve-installation.html) say to choose **DD mode** and to click **No** when it offers to download a different version of GRUB. [balenaEtcher](https://etcher.balena.io/) also works out of the box.
+- **macOS:** balenaEtcher.
+- **Linux:** I use GNOME Disks. Select the USB drive and use **Restore Disk Image** with the ISO. `dd` works too.
+
+Plug the USB into your server and boot from it. In the firmware settings, make sure virtualization (Intel VT-x or AMD-V) and the IOMMU option (often called VT-d or AMD-Vi) are enabled, since Proxmox is a virtualization platform first. In the video I mentioned you might need to disable Secure Boot. That's only true for installers older than 8.1. [Proxmox VE has supported Secure Boot](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html) out of the box since 8.1, so you can leave it on.
+
+Then walk through the installer:
+
+1. Choose **Install Proxmox VE (Graphical)** and accept the license agreement.
+2. **Target hard disk:** pick the correct drive. I chose the smallest one (238 GB), my boot NVMe. I hadn't installed the other NVMe drives yet, so it was the only option. If you have several drives connected, double-check the selection, because the installer wipes it. Keep the default ext4 filesystem if you want to follow the optional `local-lvm` step below.
+3. **Location and time zone.**
+4. **Password and email:** use a strong root password. The email address is where Proxmox sends notifications, so use one you actually read.
+5. **Network:** plug in Ethernet *before* you start the installer so it can detect the active interface. It's marked with a green dot.
+6. **Hostname:** this is how the machine appears on your network and on the login screen. The default is `pve.lan`. I used `pve-guide.local` for the video (PVE stands for Proxmox Virtual Environment). Set a static IP here if you want a specific one, and the gateway and DNS server can usually stay as detected.
+7. Review the summary and click **Install**. The system reboots when it finishes.
+
+After the reboot, the console shows the web interface address. Mine was `https://10.0.0.32:8006`. Open that from another computer, accept the self-signed certificate warning, and log in as `root` with the password you set during installation.
+
+The node in the sidebar (`pve-guide` for me) is the machine you just installed. Clicking it shows the summary, the **Shell** (we'll use that a lot), and everything else.
+
+## Post-Install Steps
+
+### Switch to the No-Subscription Repository
+
+Proxmox enables the enterprise repositories by default, and those require a paid subscription. Without one, updates fail. Here's the fix:
+
+1. Select your node and go to **Updates > Repositories**.
+2. Select the `pve-enterprise` entry and click **Disable**. On Proxmox VE 9 there's also a Ceph enterprise entry, so disable that one too.
+3. Click **Add**, acknowledge the subscription notice, choose **No-Subscription**, and click **Add**.
+4. Go to **Updates**, click **Refresh** (that's an `apt update`), then **Upgrade**.
+
+![The Proxmox Repositories page after adding the No-Subscription repository, with the Ceph enterprise entry disabled, on Proxmox VE 8.4 as shown in the video](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/proxmox-no-subscription-repository.jpg)
+
+When the upgrade finishes, you should see a message that your system is up to date. If you prefer the shell, Proxmox's [system update docs](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html) say to use `full-upgrade`, never plain `apt upgrade`:
+
+```bash
+apt update
+apt full-upgrade
+```
+
+The [Proxmox package repository docs](https://pve.proxmox.com/wiki/Package_Repositories) describe no-subscription as suitable for testing and non-production use, and say its packages aren't validated as heavily as enterprise packages. For a home server, that's the usual trade-off.
+
+My repo also mentions the community [Proxmox VE Post Install script](https://community-scripts.github.io/ProxmoxVE/scripts?id=post-pve-install) as a shortcut. I read the current script, and it asks before each change. Besides switching repositories and upgrading, it can also patch the web UI to hide the subscription nag, add a disabled test repository, and turn off the high-availability and Corosync services. That's more than the manual steps do, so read each prompt. Leave high availability alone if you plan to cluster later.
+
+### Optional: Delete local-lvm and Grow local
+
+This one is completely optional, and only for a **fresh** install with the default ext4 layout. By default the boot drive is split into `local` (a directory for ISOs, templates, and backups) and `local-lvm` (a thin pool for VM and container disks). On my 256 GB drive, `local` had only 72 GB free while `local-lvm` had 151 GB.
+
+I don't put any guest disks on the boot drive because the `flash` pool handles that, so `local-lvm` would sit unused. If you only have one SSD, skip this and keep `local-lvm`, since that's where your containers and VMs would go. There's also a [discussion in my repo](https://github.com/TechHutTV/homelab/issues/19) about installs that used advanced storage options, where these commands don't apply.
+
+<Warning>
+These commands destroy the `local-lvm` thin pool and everything on it. Only run them on a fresh install, before you've created any guests there.
+</Warning>
+
+First remove the storage entry under **Datacenter > Storage > local-lvm > Remove**. That only removes the configuration. To reclaim the space, open your node's **Shell** and run:
+
+```bash
+lvremove /dev/pve/data
+lvresize -l +100%FREE /dev/pve/root
+resize2fs /dev/mapper/pve-root
+```
+
+The first command deletes the logical volume behind `local-lvm`, the second gives all the free space to the root volume, and the third grows the ext4 filesystem to match. After that, `local` shows the full drive. I use it for ISO images and container templates.
+
+### IOMMU for PCI Passthrough
+
+IOMMU is what lets you pass hard drives, graphics cards, and other PCI devices through to VMs. In the video I edited `/etc/default/grub` to add `intel_iommu=on` and ran `update-grub`. That's no longer necessary on current releases. According to the [Proxmox admin guide](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html), IOMMU is enabled by default with AMD CPUs, and on Intel it's on by default with kernel 6.8 or newer. Proxmox VE 9.2 ships kernel 7.0.
+
+So now all you need to do is enable IOMMU or VT-d in your firmware and verify it after booting. These are the checks from the [PCI passthrough wiki](https://pve.proxmox.com/wiki/PCI_Passthrough):
+
+```bash
+dmesg | grep -e DMAR -e IOMMU
+dmesg | grep 'remapping'
+```
+
+You want something like `DMAR: IOMMU enabled` from the first command, and `AMD-Vi: Interrupt remapping enabled` or `DMAR-IR: Enabled IRQ remapping in x2apic mode` from the second. If the first command prints nothing, check your firmware settings before touching the kernel command line.
+
+You only need `intel_iommu=on` on an Intel system with an older kernel. With GRUB, add it to `GRUB_CMDLINE_LINUX_DEFAULT` in `/etc/default/grub` and run `update-grub`. With systemd-boot, add it to `/etc/kernel/cmdline` and run `proxmox-boot-tool refresh`. Skip `amd_iommu=on`. `on` isn't one of the [values the kernel accepts](https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html) for that parameter. The [PCI passthrough wiki](https://pve.proxmox.com/wiki/PCI_Passthrough) goes much deeper on GPUs and driver blacklisting.
+
+## Create the ZFS Pools
+
+Now it's my favorite time of the day: making storage.
+
+### Wipe the Disks
+
+Go to your node, then **Disks**. Any drive that has old data on it needs to be wiped. Select it and click **Wipe Disk**. This erases everything on that drive, so back up anything you care about first.
+
+Don't wipe the boot drive. It's the one with the BIOS boot and EFI partitions. I wiped my two NVMe drives and all six 4 TB drives, and each one only takes a second.
+
+### The Flash Pool (Mirror)
+
+Go to **Disks > ZFS > Create: ZFS**:
+
+- **Name:** `flash`
+- **Add Storage:** keep this checked. It makes the pool available to Proxmox immediately, and container volumes become ZFS datasets instead of `.raw` image files. Adding directories was how my older setup worked, and this is better.
+- **Devices:** the two 1 TB NVMe drives
+- **RAID Level:** `Mirror`
+- **Compression** and **ashift:** I leave these at the defaults (compression `on`, ashift `12`)
+
+Click **Create**, and `flash` shows up online.
+
+![The Create: ZFS dialog for the flash pool with both 1 TB WD Blue NVMe drives selected and RAID Level set to Mirror](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-flash-mirror.jpg)
+
+### The Tank Pool (RAIDZ)
+
+Run **Create: ZFS** again:
+
+- **Name:** `tank`
+- **Devices:** all six 4 TB WD Red drives
+- **RAID Level:** `RAIDZ`
+- **Add Storage:** checked
+
+RAIDZ (RAIDZ1) is roughly the ZFS equivalent of RAID 5. It survives one failed disk: replace it and you're safe. If two disks fail, the pool is gone. More parity (RAIDZ2, RAIDZ3, or mirrors) lets more disks fail but leaves less usable space. Look at your drive count, drive size, and how much storage you need, then pick the level that fits. And remember that RAID isn't a backup (more on that at the end).
+
+![The Create: ZFS dialog for the tank pool with all six 4 TB WD Red drives selected and RAID Level set to RAIDZ](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-tank-raidz.jpg)
+
+Finally, check **Datacenter > Storage** and confirm both `flash` and `tank` have the **Disk image, Container** content types.
+
+### Why the Free Space Looks Wrong
+
+After creating `tank`, the size in the GUI looked too big, and that's normal. The GUI is showing you `zpool list`, which reports raw pool capacity including parity. `zfs list` shows what you can actually write:
+
+```bash
+zpool list
+zfs list
+```
+
+On my six-drive RAIDZ pool, `zpool list` showed about 22 TB, and `zfs list` showed about 17 TB available. That's because the [OpenZFS pool properties](https://openzfs.github.io/openzfs-docs/man/master/7/zpoolprops.7.html) count raw physical space, while dataset space accounts for raidz parity and reserved space. Plan around the `zfs list` number.
+
+## Create the Media Container
+
+This first container is my main media server box. It holds most of the data on the server, and on my own machine it runs all the \*arr apps, plus things like music and ebooks. You can organize this however you want, but this is how I do it.
+
+### Download a Template
+
+Click your `local` storage, then **CT Templates > Templates**, search for Ubuntu, and download it. Use whatever distro you're most comfortable with. If you've never used one before, Ubuntu is a good place to start.
+
+In the video I picked **Ubuntu 22.04** because it seemed better supported on Proxmox at the time. Today I'd pick **Ubuntu 24.04 LTS**, which the repo now recommends too. Standard support for 22.04 [ends in May 2027](https://ubuntu.com/about/release-cycle). The Proxmox template list also includes 26.04. The only command that changes between 22.04 and 24.04 below is the Windows discovery package, and I'll point that out when we get there.
+
+### Container Settings
+
+Click **Create CT** in the top right. Here's what I used:
+
+| Tab | Setting | Value |
+|---|---|---|
+| General | CT ID | `100` |
+| General | Hostname | `media` |
+| General | Unprivileged container | Checked (better for security) |
+| General | Nesting | Checked |
+| General | Password | A strong root password |
+| Template | Template | The Ubuntu template you downloaded |
+| Disks | Storage / size | `flash`, `64` GiB |
+| CPU | Cores | `4` |
+| Memory | Memory / swap | `4096` MiB / about `1024` MiB |
+| Network | IPv4 | Static, `10.0.0.100/24`, gateway `10.0.0.1` |
+| DNS | | Leave as is |
+
+A few notes on those choices:
+
+- **CT ID and IP:** I like matching the container ID to the end of its IP address. In the video I used `10.0.0.33` because `.100` was already taken on my network, but these steps use `10.0.0.100` to follow that habit. Use your own subnet and gateway, or choose DHCP if your router manages addresses. If you leave the network tab untouched, the container won't get an address.
+- **Hostname:** `media` keeps things simple. On my real server, and in my repo, it's `servarr`.
+- **64 GiB root disk:** media files don't go here, but app data does, and a Jellyfin or Plex config folder gets big with cover art on a large library. You can expand it later.
+- **CPU and RAM:** size these for what you'll run. My repo lists 6 cores and 8 GB for my own server.
+
+Click **Finish**. Under the container's **Resources** tab, you'll see the root disk on `flash` as `subvol-100-disk-0` at 64 GB.
+
+### Add the Data and Docker Mount Points
+
+Now for the bulk storage. On the container, go to **Resources > Add > Mount Point**:
+
+**Mount point 0 (data):**
+
+- **Storage:** `tank`
+- **Disk size (GiB):** as much as you want for media. I used `8000` in the video, and my repo uses about 28 TB on my larger pool.
+- **Path:** `/data`
+
+I like mounting this at `/data` in the root of the filesystem. It makes Docker setups and my own organization much simpler, and the rest of the series uses that path.
+
+**Mount point 1 (docker):**
+
+- **Storage:** `flash`, since these are small config files that I want on fast storage
+- **Disk size (GiB):** `32` was plenty for the video, and my repo now uses 128
+- **Path:** `/docker`
+
+You can do the same thing from the Proxmox host shell. Sizes are in GiB:
+
+```bash
+pct set 100 --mp0 tank:8000,mp=/data,backup=1
+pct set 100 --mp1 flash:32,mp=/docker,backup=1
+pct config 100
+```
+
+These are storage-backed mount points, so each one becomes a ZFS dataset on its pool with a size limit that you can grow later. Unlike the GUI, `pct set` leaves mount points out of backups unless you add `backup=1`, which is why it's on both lines.
+
+![The media container Resources tab showing the 64G root disk on flash, the 8000G /data mount point on tank, and the 32G /docker mount point on flash](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/media-container-mount-points.jpg)
+
+<Warning>
+In the video I unchecked **Backup** on both mount points and said I'd cover backups in a future video. Only do that if the data is covered by a separate, tested backup. Unchecked mount points are left out of container backups entirely. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers backing up containers, and the [backup section of my storage README](https://github.com/TechHutTV/homelab/tree/main/storage#backups) covers what needs a file-level backup.
+</Warning>
+
+## First Boot: Updates, a User, and Permissions
+
+Start the container, open its **Console**, and log in as `root` with the container password. First things first:
+
+```bash
+apt update && apt upgrade -y
+ls /
+```
+
+You should see `data` and `docker` in the root listing.
+
+Doing everything as root isn't a great idea, so create a regular user. I'm using `brandon`. Replace `youruser` with your own name everywhere below:
+
+```bash
+adduser youruser
+adduser youruser sudo
+su - youruser
+```
+
+Creating the user also creates a group with the same name. Right now, if you `cd /data` and try `touch test.txt`, you'll get **permission denied**, because root owns the mount points. Make your user the owner of both:
+
+```bash
+sudo chown -R youruser:youruser /data
+sudo chown -R youruser:youruser /docker
+touch /data/test.txt && ls /data
+```
+
+## Share It with Samba
+
+In my 2024 series I used Cockpit's web interface for the network shares. That still works if you'd rather click through it, but I've found it easier to just configure Samba directly in the container. It's more terminal work, but you end up with one small config file that you understand.
+
+### Install and Back Up the Default Config
+
+```bash
+sudo apt install samba
+cd /etc/samba
+sudo mv smb.conf smb.conf.old
+```
+
+Keep that original file. It's full of comments and printer examples that are worth checking later, and it's your rollback if something goes wrong.
+
+### Write the Config
+
+```bash
+sudo nano /etc/samba/smb.conf
+```
+
+Paste this in, replacing `youruser` with your own username:
+
+```ini
+[global]
+   server string = Media
+   workgroup = WORKGROUP
+   security = user
+   map to guest = Bad User
+   name resolve order = bcast host
+   # Narrow this to your own LAN, for example 10.0.0.0/24
+   hosts allow = 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12
+   hosts deny = 0.0.0.0/0
+
+[data]
+   path = /data
+   force user = youruser
+   force group = youruser
+   create mask = 0774
+   force create mode = 0774
+   directory mask = 0775
+   force directory mode = 0775
+   browseable = yes
+   writable = yes
+   read only = no
+   guest ok = no
+
+[docker]
+   path = /docker
+   force user = youruser
+   force group = youruser
+   create mask = 0774
+   force create mode = 0774
+   directory mask = 0775
+   force directory mode = 0775
+   browseable = yes
+   writable = yes
+   read only = no
+   guest ok = no
+```
+
+Here's what that does:
+
+- **`server string`:** a description of the server. I match it to the container hostname.
+- **`security = user` with `guest ok = no`:** you need a Samba username and password to open the shares. `map to guest = Bad User` turns logins with unknown usernames into guests, but neither share allows guests, so a guest can see the server and nothing else. Nobody in my house needs anonymous access. The [smb.conf documentation](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html) covers guest-readable or group folders if you need them.
+- **`hosts allow` / `hosts deny`:** deny everything except local addresses. In the video I allowed only my subnet, `10.0.0.0/24`. The repo now lists all three private ranges so it works on more networks. I'd still narrow it to yours. Keep comments on their own lines in this file.
+- **`force user` / `force group`:** files written through the share are owned by your user, matching the earlier `chown`.
+- **The masks:** new files get `0774`, so owner and group get full access and everyone else can only read. New directories get `0775`.
+
+### Set a Samba Password and Start the Services
+
+Samba keeps its own password database, so give your user a Samba password. This is the password other computers use to connect:
+
+```bash
+sudo smbpasswd -a youruser
+```
+
+Then make sure the services start on boot and restart them to load the new config:
+
+```bash
+sudo systemctl enable smbd nmbd
+sudo systemctl restart smbd nmbd
+testparm
+```
+
+`testparm` checks the config for syntax mistakes, which is handy if a share doesn't show up.
+
+### macOS Compatibility (Optional)
+
+The video doesn't show this, but my repo now includes it for Mac and iOS users. Samba's [vfs_fruit module](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html) adds Apple's SMB extensions for Finder metadata and resource forks. Add these lines to the `[global]` section, then restart `smbd`:
+
+```ini
+   vfs objects = catia fruit streams_xattr
+   fruit:metadata = stream
+   fruit:model = MacSamba
+   fruit:nfs_aces = no
+   fruit:zero_file_id = yes
+```
+
+## Connect from Your Computers
+
+### macOS
+
+I tested from my Mac first. In Finder, under **Network**, `media` showed up right away. Opening it as a guest and clicking `data` threw an error, which is exactly what should happen with the config above. After reconnecting as my user (**Connect As**, then **Registered User**), `data` opened and the `test.txt` file from earlier was there. I edited it on the Mac, saved it, and ran `cat` on it in the container, and the new text was there.
+
+You can also connect directly with **Go > Connect to Server** (`Cmd+K`) and `smb://10.0.0.100/data`.
+
+### Windows and wsdd
+
+Windows is where discovery gets annoying. I booted a Windows VM, and under **Network** in File Explorer the only share it could see was my other server, not `media`. Windows 10 and 11 dropped the old NetBIOS-based discovery along with SMB1, so a Samba server doesn't appear automatically. The fix is [wsdd](https://github.com/christgau/wsdd), which advertises the server using Web Services Discovery, the method Windows uses now.
+
+On Ubuntu 22.04, as in the video, installing it was a single command, and `media` showed up in Windows almost immediately:
+
+```bash
+sudo apt install wsdd
+```
+
+On Ubuntu 24.04 and newer, the systemd service moved to a separate package called [`wsdd-server`](https://packages.ubuntu.com/noble/wsdd-server), so install that instead:
+
+```bash
+sudo apt install wsdd-server
+sudo systemctl enable --now wsdd-server
+```
+
+Double-clicking it right away may give you an access error, because Windows hasn't asked for credentials yet. Type `\\media` (or `\\10.0.0.100`) in the File Explorer address bar, enter your Samba username and password, and choose to remember them. After that, **Network** browsing works. For a persistent drive letter, use **This PC > Map network drive** with `\\10.0.0.100\data` and **Connect using different credentials** checked.
+
+![Windows File Explorer Network view listing MEDIA under Computer after wsdd was installed in the container](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/windows-network-media-share.jpg)
+
+I edited the same text file from Windows, then copied a big file over at plain gigabit speed. I really need to upgrade my network stack eventually.
+
+### Linux
+
+On a Linux desktop or VM, mount the share with `cifs-utils`. This is exactly how the [Part 2 VM](/ultimate-home-server-part-2-jellyfin) gets at `/data`, so I'll cover the permanent `fstab` setup there instead of repeating it here. A quick test looks like this:
+
+```bash
+sudo apt install cifs-utils
+sudo mkdir -p /mnt/data
+sudo mount -t cifs //10.0.0.100/data /mnt/data -o username=youruser
+```
+
+### If Something Doesn't Show Up
+
+I didn't need any firewall changes. But if you've enabled `ufw` in the container, allow Samba (the `samba` package ships a ufw profile), plus wsdd's discovery ports, [UDP 3702 and TCP 5357](https://github.com/christgau/wsdd):
+
+```bash
+sudo ufw allow Samba
+sudo ufw allow 3702/udp
+sudo ufw allow 5357/tcp
+```
+
+If Windows says the network name isn't available, check that your client's IP is covered by `hosts allow`. A `192.168.x.x` client hitting a config that only allows `10.0.0.0/24` gets refused.
+
+And keep these shares on your LAN. Don't port forward SMB to the internet. If you need remote access, use a VPN. My [NetBird guide](/self-host-netbird-pocketid) is one way to do it.
+
+## Final Thoughts
+
+Proxmox handles the hardware, ZFS handles the disks, and one plain Ubuntu container owns the data and shares it with everything else. A lot of the improvements over my older version came from people filing issues and sending commits to the repo, like checking **Add Storage** on the pools instead of adding directories. The guide is much better for it.
+
+Pick your RAID level based on your actual drives and how much risk you're comfortable with, and plan a real backup before you fill `tank` with things you can't replace. Parity protects you from a dead disk, not from deleting the wrong folder. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) is a good next step for that.
+
+If you find a better way to do any of this, open an issue on the [homelab repo](https://github.com/TechHutTV/homelab). I'll test it and update the docs.
+
+## Next Up
+
+With the pools built and the `data` share online, [Part 2: Jellyfin media server VM](/ultimate-home-server-part-2-jellyfin) creates a VM, mounts this `data` share inside it, and sets up Jellyfin on top. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Proxmox VE downloads](https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso)
+- [Proxmox VE installation guide](https://pve.proxmox.com/pve-docs/chapter-pve-installation.html)
+- [Proxmox VE host administration (repositories, updates, ZFS, Secure Boot, IOMMU)](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html)
+- [Proxmox VE package repositories](https://pve.proxmox.com/wiki/Package_Repositories)
+- [Proxmox VE ZFS on Linux](https://pve.proxmox.com/wiki/ZFS_on_Linux)
+- [Proxmox VE PCI passthrough](https://pve.proxmox.com/wiki/PCI_Passthrough)
+- [Proxmox VE Linux containers](https://pve.proxmox.com/pve-docs/chapter-pct.html)
+- [Proxmox VE roadmap and release notes](https://pve.proxmox.com/wiki/Roadmap)
+- [OpenZFS documentation](https://openzfs.github.io/openzfs-docs/)
+- [OpenZFS pool properties (zpoolprops)](https://openzfs.github.io/openzfs-docs/man/master/7/zpoolprops.7.html)
+- [Samba smb.conf manual](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html)
+- [Samba vfs_fruit manual](https://www.samba.org/samba/docs/current/man-html/vfs_fruit.8.html)
+- [wsdd on GitHub](https://github.com/christgau/wsdd)
+- [Community Proxmox VE Post Install script](https://community-scripts.github.io/ProxmoxVE/scripts?id=post-pve-install)
+- [TechHut homelab storage guide](https://github.com/TechHutTV/homelab/tree/main/storage)
