@@ -1,0 +1,41 @@
+{
+  "summary": "Run network storage, Docker containers, and virtual machines on one server from a web interface. Unraid OS is proprietary software sold as a per-server license after a free trial.",
+  "overview": "Unraid stores data on individual drives protected by up to two parity drives, so drives of different sizes can be mixed and added over time. Pools on faster drives can serve as cache or hold application data, with the Mover later shifting files to the array. Docker containers and plugins install from Community Applications, while KVM virtual machines can use hardware passthrough. Shares, users, and system tools are managed from the web interface, and Unraid boots from a USB flash drive or, in recent releases, an internal drive.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "x86-64 hardware (dedicated OS)"
+  ],
+  "license": {
+    "name": "Proprietary Unraid OS EULA",
+    "type": "Proprietary",
+    "url": "https://unraid.net/policies"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://unraid.net/"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://docs.unraid.net/"
+    },
+    {
+      "label": "Licensing FAQ",
+      "url": "https://docs.unraid.net/unraid-os/troubleshooting/licensing-faq/"
+    }
+  ],
+  "features": [
+    "Parity-protected array",
+    "Cache pools",
+    "Docker and Community Applications",
+    "Virtual machines"
+  ],
+  "sources": [
+    "https://unraid.net/",
+    "https://account.unraid.net/buy",
+    "https://unraid.net/policies",
+    "https://docs.unraid.net/unraid-os/troubleshooting/licensing-faq/",
+    "https://docs.unraid.net/unraid-os/getting-started/what-is-unraid/",
+    "https://docs.unraid.net/unraid-os/getting-started/set-up-unraid/internal-boot-faq/"
+  ]
+}

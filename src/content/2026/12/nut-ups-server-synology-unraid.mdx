@@ -1,0 +1,383 @@
+export const title = "You Need a UPS: Sharing One UPS with Synology and Unraid Using NUT"
+export const description = "Set up a Network UPS Tools (NUT) server on Linux or a Synology NAS, then connect Unraid and other machines so everything on one UPS shuts down cleanly during a power outage."
+export const date = "2026-12-22"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Homelab", "Self-Host", "Linux", "Monitoring"]
+export const cover = "/docs-static/img/2026/12/nut-ups-server-synology-unraid/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="tYi7RFDGtc8" title="TechHut's NUT UPS server walkthrough" />
+
+If your homelab is anything more than one mini PC or an old laptop, you probably need a UPS. I live on the eastern side of Washington, and we get some serious wind out here. When the wind picks up, the power flickers. That's a problem when you have disks spinning and data constantly moving between machines. One quick power drop can cause data loss, or worse, damage the hardware in your NAS or server.
+
+A UPS (uninterruptible power supply) is basically a big battery that sits between the wall and your gear. The battery alone isn't the whole solution, though. Your machines also need to know when they're running on battery so they can shut themselves down properly before it runs out. That's what [Network UPS Tools](https://networkupstools.org/) (NUT) is for.
+
+I'll go over the UPS I'm using, how to set up a NUT server on a Linux box, how I use my Synology NAS as the NUT server instead, and how to connect Unraid to it so everything shuts down in the right order.
+
+Tripp Lite (now part of Eaton) sent me the UPS in this article to review.
+
+The video was published in June 2023. The install script I used then hasn't changed since and doesn't set up network access or shutdowns, so the Linux setup below is a manual configuration for NUT 2.8.x. Upstream NUT is at [v2.8.5](https://github.com/networkupstools/nut/releases/tag/v2.8.5) (April 2026). The Synology steps are checked against DSM 7.4, and the Unraid steps use the actively maintained NUT plugin, which has different labels than the one in the video. My hands-on footage and impressions come from the original recording.
+
+## The UPS I'm Using
+
+The unit I have is the Tripp Lite SmartPro LCD **SMART1500LCD**. It's a 1500VA / 900W line-interactive UPS with a lead-acid battery, so it's a rather hefty boy. It's 2U, so it fits nicely in my rack. Tripp Lite rates it at roughly 12 minutes at half load (450W) and about 4 minutes at full load (900W). Even at full load, that's enough time to tell everything to shut down properly.
+
+![The front LCD of the Tripp Lite SMART1500LCD in my rack showing 120V output and a full battery capacity bar](/docs-static/img/2026/12/nut-ups-server-synology-unraid/ups-lcd.jpg)
+
+I'm nowhere near full load. I could have gotten a much smaller unit. With what I have plugged in, the UPS estimates somewhere around 40 to 45 minutes of runtime. Plugged into it are:
+
+- My **Unraid** server, which holds all of my media
+- My **Synology** NAS, which handles my backups
+- An **Intel NUC** that runs the media server itself
+
+Those three are constantly moving files between each other, which is exactly when a sudden power cut hurts.
+
+The UPS has eight outlets, but the most important port for this guide is the **USB port**. That's how one computer learns whether the UPS is on battery and what the charge level is, and then passes that along to everything else.
+
+The SMART1500LCD is listed in the [NUT hardware compatibility list](https://networkupstools.org/stable-hcl.html) under the `usbhid-ups` driver. Before buying any UPS for this, check that list for your model.
+
+<Note>
+Do a rough power calculation before you buy. Add up what your gear draws and how many minutes you need to shut it all down. It's easy to spend two or three hundred dollars more than you need to on a UPS that's way bigger than your setup.
+</Note>
+
+## How NUT Works
+
+NUT has a few moving pieces. Once you know which one does what, the config files make a lot more sense.
+
+| Piece | What it does |
+|---|---|
+| **Driver** (for example `usbhid-ups`) | Talks to the UPS over USB, serial, or SNMP |
+| **`upsd`** | The data server. It shares the UPS status over the network on TCP port `3493` |
+| **`upsmon`** | Watches the UPS and shuts the machine down. It runs as **primary** on the machine with the USB cable and **secondary** on everything else |
+| **`upsc`** | A command-line client for reading UPS values |
+
+The basic layout looks like this:
+
+1. **One machine** has the USB cable plugged into the UPS. This is the NUT server.
+2. **Every other machine** on that UPS runs a NUT client and connects to the server over the network.
+3. When the battery gets low, the clients shut down first. The server goes down last, and can optionally tell the UPS to cut power.
+
+Make sure your switch or router is on the UPS too. If the network goes down with the power, the clients can't hear the server.
+
+You have two options for the server. You can use a small Linux box like a Raspberry Pi or a mini PC, or you can use a NAS that already has NUT built in. Synology and Unraid both do. I'll cover both.
+
+## Option 1: A Linux NUT Server
+
+In the video I used an Ubuntu Server 22.04 box (an Intel NUC) with the UPS plugged in over USB. First check that the machine sees the UPS:
+
+```bash
+lsusb
+```
+
+You should see a line for your UPS. Mine showed up as a Tripp Lite UPS.
+
+### What the Install Script in the Video Does
+
+In the video I used [NUTandRpi](https://github.com/dzomaya/NUTandRpi), an install script from an Eaton employee. It's MIT licensed, aimed at Raspberry Pi OS and other apt-based distros, and it got me to a working status page in a few minutes. Reading through the [script source](https://github.com/dzomaya/NUTandRpi), this is what it does:
+
+- Installs `nut` and `nut-cgi` from your distro's repos. Apache comes along as a dependency of `nut-cgi`.
+- Sets `MODE=netserver` in `nut.conf`.
+- Runs `nut-scanner` and writes the result to `ups.conf`. The UPS is named whatever the scanner calls it (`nutdev1` in the video).
+- Adds the UPS to `hosts.conf` and enables Apache's CGI module, so you get the `upsstats.cgi` web page on port 80.
+- Installs Net-SNMP, **overwrites** `/etc/snmp/snmpd.conf`, and exposes UPS values over **SNMP v2c** using the community string you type in.
+
+What it doesn't do matters more for this guide:
+
+- It doesn't add a `LISTEN` line to `upsd.conf`, so `upsd` only listens on localhost. Other machines can't connect. There's still an open issue on the repo asking for that.
+- It doesn't create any `upsd.users` accounts or configure `upsmon`, so nothing will shut down when the battery runs out. It's a monitoring script.
+- HTTP and SNMP v2c both send data in plain text, and the script says it isn't production-ready.
+
+The repo isn't archived, and the maintainer was still replying to issues in 2025, but the script hasn't changed since June 2023. On Debian, `snmp-mibs-downloader` also lives in the `non-free` repo, which trips it up. If you only want a status page on a Pi, it's still a quick option, but read it before you run it. To share the UPS with other machines, do the manual setup below. It's only a handful of config files.
+
+<Note>
+In the video, the script pulled NUT 2.7.4 from Ubuntu 22.04's repos. The steps below are written for NUT 2.8.x, which is what Debian 13, Raspberry Pi OS based on it, and Ubuntu 24.04 or newer ship. If you're on Ubuntu 22.04, the old `master` and `slave` keywords replace `primary` and `secondary`, and the driver service is `nut-driver` instead of `nut-driver-enumerator`.
+</Note>
+
+### 1. Install NUT
+
+```bash
+sudo apt update
+sudo apt install nut
+```
+
+The `nut` package pulls in both the server and the client. The config files live in `/etc/nut/`.
+
+### 2. Find and Define the UPS
+
+Let `nut-scanner` find the UPS and print a ready-made config section:
+
+```bash
+sudo nut-scanner -U -N -q
+```
+
+The output looks something like this. NUT 2.8.2 and newer name the section `nutdev-usb1`, while older versions use `nutdev1`.
+
+```ini
+[nutdev-usb1]
+	driver = "usbhid-ups"
+	port = "auto"
+	vendorid = "09AE"
+	productid = "XXXX"
+```
+
+Open `/etc/nut/ups.conf`, paste that section at the bottom, and rename it to `[ups]`:
+
+```bash
+sudo nano /etc/nut/ups.conf
+```
+
+```ini
+[ups]
+	driver = "usbhid-ups"
+	port = "auto"
+	vendorid = "09AE"
+	productid = "XXXX"
+	desc = "Rack UPS"
+```
+
+Use the values your scan returned. The name `ups` isn't required, but it's what Synology and the Unraid plugin use by default, so it saves you some typing later.
+
+### 3. Set Server Mode and the Listen Address
+
+Tell NUT this machine is a network server:
+
+```bash
+sudo sed -i 's/^MODE=.*/MODE=netserver/' /etc/nut/nut.conf
+grep ^MODE /etc/nut/nut.conf
+```
+
+By default, `upsd` only listens on `127.0.0.1` (and `::1`). Add the machine's LAN address to `/etc/nut/upsd.conf` so clients can reach it:
+
+```bash
+sudo nano /etc/nut/upsd.conf
+```
+
+```ini
+LISTEN 127.0.0.1 3493
+LISTEN 192.168.1.50 3493
+```
+
+Replace `192.168.1.50` with the server's IP. Give it a static IP or a DHCP reservation, because `upsd` can refuse to start if it can't bind to an address you listed. If you'd rather not tie it to one address, `LISTEN 0.0.0.0 3493` listens on every IPv4 interface. Just make sure the firewall is doing its job.
+
+### 4. Create Your NUT Users
+
+`/etc/nut/upsd.users` holds the accounts that `upsmon` uses to log in. These are NUT-only users and have nothing to do with your Linux accounts. Generate a password for each one:
+
+```bash
+openssl rand -hex 16
+```
+
+Then add one user for the server's own `upsmon` and one for remote clients:
+
+```bash
+sudo nano /etc/nut/upsd.users
+```
+
+```ini
+[upsmon_local]
+	password = REPLACE_WITH_LOCAL_PASSWORD
+	upsmon primary
+
+[upsremote]
+	password = REPLACE_WITH_REMOTE_PASSWORD
+	upsmon secondary
+```
+
+<Warning>
+Don't copy example passwords like `secret`, `mypass`, or `monpass` out of docs, forum posts, or plugin defaults. Everyone knows those. Stick with letters and numbers for these passwords too, since some clients (like the Unraid plugin) don't handle special characters well.
+</Warning>
+
+### 5. Tell the Server to Watch Its Own UPS
+
+Add a `MONITOR` line to `/etc/nut/upsmon.conf` so the server's `upsmon` runs as primary:
+
+```bash
+sudo nano /etc/nut/upsmon.conf
+```
+
+```ini
+MONITOR ups@127.0.0.1 1 upsmon_local REPLACE_WITH_LOCAL_PASSWORD primary
+```
+
+The `1` is the number of power supplies this UPS feeds on this machine. The Debian and Ubuntu packages already set a `SHUTDOWNCMD`, so the machine powers off on its own when the time comes.
+
+### 6. Start It and Check It
+
+```bash
+sudo systemctl enable nut-server nut-monitor
+sudo systemctl restart nut-driver-enumerator nut-server nut-monitor
+upsc ups@127.0.0.1
+```
+
+You should get a long list of values. The important ones are `ups.status` (`OL` means online, `OB` means on battery, and `LB` means low battery), `battery.charge`, and `battery.runtime` in seconds. `battery.charge.low` is the level where the UPS will report low battery.
+
+```bash
+upsc ups@127.0.0.1 ups.status
+```
+
+If the driver can't open the UPS, unplug and replug the USB cable or reboot, so the packaged udev rules apply. If that doesn't fix it, try a different cable. It's more common than you'd think.
+
+### 7. Lock Down the Port
+
+Anyone who can reach port `3493` can read your UPS status, even without logging in. NUT also talks in plain text by default. Keep it on your LAN and never port forward it. With `ufw`, that looks like this:
+
+```bash
+sudo ufw allow from 192.168.1.0/24 to any port 3493 proto tcp
+```
+
+### Optional: The Web Status Page from the Video
+
+The script gave me a nice little status page with charts for voltage, battery, input, output, and load, plus an "all data" view that lists every value the UPS reports. You can add the same thing by hand:
+
+![The NUT upsstats.cgi page from the video's script install, showing the Tripp Lite UPS online with charge, voltage, input, output, and load bars](/docs-static/img/2026/12/nut-ups-server-synology-unraid/upsstats.jpg)
+
+```bash
+sudo apt install nut-cgi apache2
+echo 'MONITOR ups@127.0.0.1 "Rack UPS"' | sudo tee -a /etc/nut/hosts.conf
+sudo a2enmod cgi
+sudo systemctl restart apache2
+```
+
+Then open `http://192.168.1.50/cgi-bin/nut/upsstats.cgi`. Apache will serve this to anyone on your network over plain HTTP, so treat it like the NUT port. If you want something nicer, NUT data also feeds into tools like Grafana. I've got a [Grafana and Prometheus monitoring guide](/monitor-home-server-grafana-prometheus-influxdb) if you want to go that route.
+
+### Connecting Linux Clients
+
+Any other Linux machine on the same UPS just needs the client side:
+
+```bash
+sudo apt install nut-client
+sudo sed -i 's/^MODE=.*/MODE=netclient/' /etc/nut/nut.conf
+```
+
+Then add this to its `/etc/nut/upsmon.conf`:
+
+```ini
+MONITOR ups@192.168.1.50 1 upsremote REPLACE_WITH_REMOTE_PASSWORD secondary
+```
+
+And restart the monitor:
+
+```bash
+sudo systemctl restart nut-monitor
+```
+
+Other software can talk to the same server, too. Home Assistant's [NUT integration](https://www.home-assistant.io/integrations/nut/) just needs the host, port `3493`, and a username and password.
+
+## Option 2: Synology as the NUT Server (My Setup)
+
+The Linux route is perfectly fine, and if you want to go really deep, Techno Tim has a [full NUT server guide](https://www.youtube.com/watch?v=vyBP7wpN72c) that covers a lot more customization. I don't run a custom server, though. My UPS's USB cable is plugged straight into my Synology, and the Synology acts as the host for everything else. Under the hood, DSM's network UPS server is NUT, which is why Unraid can connect to it.
+
+On the Synology, go to **Control Panel > Hardware & Power > UPS**:
+
+1. Tick **Enable UPS support**.
+2. Set **UPS type** to **USB UPS**.
+3. Pick when the NAS should enter Standby Mode. Use **Until low battery** or **Customize time**.
+4. Tick **Enable network UPS server**.
+5. Click **Permitted Synology NAS Devices** and enter the IP of every machine that will connect. Despite the name, that includes non-Synology machines like Unraid.
+6. Click **Apply**, then **Device Information** to confirm DSM sees the UPS.
+
+For me it was basically plug and play. Device Information showed the Tripp Lite as connected right away.
+
+![The UPS tab in Synology DSM with USB UPS selected, Until low battery chosen, and Enable network UPS server ticked](/docs-static/img/2026/12/nut-ups-server-synology-unraid/synology-ups.jpg)
+
+In the video I said I didn't know what **Until low battery** really meant, and Synology support told me it depends on the UPS. Synology's [UPS help page](https://kb.synology.com/en-global/DSM/help/DSM/AdminCenter/system_hardware_ups?version=7) explains it. The NAS stops its services, unmounts volumes, and goes into Standby Mode when the UPS reports a low battery. Since the UPS decides what "low" means, run `upsc ups@NAS_IP` from a permitted machine and look at `battery.charge.low` to see the actual number. Even with a custom time set, DSM still enters Standby Mode at low battery.
+
+Since the Synology is the server for everything else, I'd leave it on **Until low battery** so it's the last thing to go down. Let the clients shut down earlier.
+
+If you also tick **Shut down UPS when the system enters Standby Mode**, turn on **Restart automatically after a power failure** under **Hardware & Power > General** so the NAS comes back by itself. Synology recommends pulling the plug on the UPS once to make sure your model behaves the way you expect.
+
+### The Credentials Synology Uses
+
+This is where I got stuck. DSM never shows you a username or password for its UPS server, and you need them to connect anything that isn't a Synology. I eventually found the answer in an old [Unraid forum thread](https://forums.unraid.net/topic/58291-ups-settings-network-ups-server-on-synology/). It's an old thread, but it was exactly my problem. Synology's NUT server uses fixed values:
+
+| Setting | Value |
+|---|---|
+| UPS name | `ups` |
+| Username | `monuser` |
+| Password | `secret` |
+| Port | `3493` |
+
+Synology doesn't document these, but they come up again and again in community guides, and they're what worked for me.
+
+<Warning>
+`monuser` and `secret` are about as public as credentials get, and DSM doesn't let you change them. The **Permitted Synology NAS Devices** list is your real protection here. Only list machines that need it, keep port `3493` off the internet, and don't let untrusted devices onto that network. If that bothers you, use a Linux NUT server with your own users instead.
+</Warning>
+
+The same values matter in reverse. When a Synology is a *client* of a non-Synology NUT server (UPS type **Synology UPS server**), it only asks you for the server IP. By most community accounts, it then logs in as `monuser` with the password `secret` and expects a UPS named `ups`. To make that work with the Linux server from Option 1, you'd have to add exactly that user to `upsd.users` with `upsmon secondary`. If you do that, firewall port `3493` so only that Synology can reach it.
+
+## Connecting Unraid
+
+One of the things I really love about Unraid is the community forums. Chances are, somebody already had your problem, and in this case the forum thread above had everything I needed.
+
+### Use the NUT Plugin, Not the Built-In UPS Settings
+
+Unraid has its own **Settings > UPS Settings** page, but that uses apcupsd. Unraid's [docs](https://docs.unraid.net/unraid-os/troubleshooting/common-issues/unclean-shutdowns/) point to the NUT plugin from Community Applications for hardware the built-in support doesn't cover. Connecting to a NUT server is that kind of case. Leave the built-in UPS daemon turned off so the two don't fight.
+
+Go to the **Apps** tab and search for **NUT**. In the video I installed the plugin called **NUT - Network UPS Tools**. Today, the actively maintained version is [Network UPS Tools (NUT) for UNRAID](https://github.com/desertwitch/NUT-unRAID) by desertwitch. It's a refactored fork of the original plugin with frequent updates, and it's the one I'd install now. It also has a [support thread](https://forums.unraid.net/topic/60217-plugin-nut-v2-network-ups-tools/) on the forums. Once installed, it adds a **NUT Settings** page under **Settings**.
+
+### Configure It as a Client
+
+These are the field names in the current plugin. The one in my video uses slightly older labels, like **UPS Mode** and **UPS IP Address**, but the settings are the same.
+
+| Field | Value |
+|---|---|
+| **NUT Mode** | `Slave` |
+| **NUT Master IP Address[:Port]** | Your Synology's IP (or your Linux NUT server's IP). No port needed for `3493`. |
+| **NUT Monitor Username** | `monuser` for Synology, or `upsremote` for the Linux server |
+| **NUT Monitor Password** | `secret` for Synology, or the password you generated |
+| **UPS Name** | `ups` |
+| **Shutdown Mode** | `Battery Level` |
+| **Battery Level to initiate Shutdown (%)** | I use `40` |
+
+Set **Start Network UPS Tools Service** to **Yes** and apply. If it connects, the top of the page fills in with the status, battery charge, and runtime. Mine showed the UPS online with the battery at 100 percent and about 41 minutes of runtime left.
+
+![The older Unraid NUT plugin from the video in Slave mode, pointed at the Synology with UPS name ups, user monuser, and a 40 percent battery shutdown level](/docs-static/img/2026/12/nut-ups-server-synology-unraid/unraid-nut-settings.jpg)
+
+The plugin's defaults are `monuser` / `monpass` for the monitor user and `slaveuser` / `slavepass` for the slave user, so you need to replace the monitor ones with whatever your server expects. If you ever switch the plugin to **Netserver** mode so Unraid hosts the UPS, change the slave username and password to something real, since that mode listens on all interfaces.
+
+### Why 40 Percent
+
+The plugin's **Battery Level** mode is one of the reasons I like it. You decide exactly when Unraid bails. I set it to 40 percent because I'm assuming the Synology's low battery point is somewhere around 20 or 25 percent. If Unraid's threshold were lower than the Synology's, the Synology could go into Standby Mode and take the NUT server down with it before Unraid ever got the signal to shut down. That would not be good.
+
+So the rule is simple. **Clients should shut down well before the server's low battery point.** Check `battery.charge.low` on your UPS and leave yourself a decent margin above it. The plugin also offers **Time on Battery**, and its own help text recommends that mode or Battery Level over **Runtime Left**, because runtime estimates bounce around a lot, especially on an older battery.
+
+The plugin also gives you more detail than Synology's Device Information window. There's a full NUT Details table with the status, shutdown timer, driver version, and every other value the UPS reports.
+
+### If It Won't Connect
+
+The forum thread also has the trick that got mine working. Connect to the NUT port directly and log in by hand. From any Linux or macOS machine on the network:
+
+```bash
+nc 192.168.1.10 3493
+```
+
+Then type these commands one at a time:
+
+```text
+USERNAME monuser
+PASSWORD secret
+LIST UPS
+LOGOUT
+```
+
+Each command should come back with `OK`, and `LIST UPS` should list `ups`. If you get `ERR ACCESS-DENIED`, the IP you're connecting from isn't in **Permitted Synology NAS Devices**. If it won't connect at all, check which IP the Synology is serving NUT on. One person in that thread had a bonded network interface and the UPS server was on a different IP than they expected.
+
+## Test It Before You Need It
+
+Don't trust any of this until you've seen it work. Pick a time when nobody needs the servers, make sure you have current backups, and pull the UPS's plug out of the wall. Then watch:
+
+- `ups.status` should flip from `OL` to `OB` on the server and the clients.
+- At your threshold, Unraid should begin a clean shutdown.
+- The Synology (or Linux server) should go down last, at low battery.
+
+Plug the UPS back in before the battery is completely drained, unless you're specifically testing the UPS power-off and restart behavior.
+
+## Final Thoughts
+
+A UPS is something you're eventually going to need in your homelab, so it's worth budgeting for. Just do the power calculation first so you don't overspend on capacity you'll never use. My SMART1500LCD is way more UPS than my three machines need, and that's fine, but you can probably go smaller.
+
+The Synology route was nearly plug and play, aside from hunting down credentials Synology doesn't document. The NUT plugin on Unraid gives me more control and more information than DSM does, and I'll probably move to Unraid as my main system eventually, though I do like Synology's software a lot. If you don't have a NAS with NUT built in, a Raspberry Pi or small Linux box makes a great NUT server. Just give it a listen address, your own users, and `upsmon`, so it shuts things down.
+
+If you haven't tried Unraid before, it's one of my favorite NAS operating systems, and you can put it on just about anything. With all that, I do hope you have an absolutely beautiful day.

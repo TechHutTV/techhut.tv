@@ -1169,6 +1169,14 @@
       "https://ui.com/download/software/unifi-os-server"
     ]
   },
+  "unraid": {
+    "repository": null,
+    "reason": "Unraid OS is proprietary software under Lime Technology's EULA; there is no public source repository for the operating system. The unraid/webgui repository covers only the web interface and was not selected.",
+    "sources": [
+      "https://unraid.net/policies",
+      "https://github.com/unraid/webgui"
+    ]
+  },
   "ventoy": {
     "repository": "ventoy/ventoy",
     "label": "Ventoy",

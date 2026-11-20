@@ -1271,5 +1271,13 @@
     "licenseSource": "https://github.com/homarr-labs/dashboard-icons/blob/376beb617e6354468fd677f2ce455d9f50144e9f/LICENSE",
     "changes": "None",
     "sha256": "e9f02f3ba23ed7069e835c307fc46b3dee8a1b54a1a40c022179448f7c68b2ad"
+  },
+  {
+    "app": "unraid",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/unraid.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "sha256": "133574c4f00e47f11882ad507fd9b379887a05bbe52c63033361601e260ba5bb"
   }
 ]
