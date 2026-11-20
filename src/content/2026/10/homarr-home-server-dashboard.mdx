@@ -10,19 +10,19 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="A6vcTIzp_Ww" title="TechHut's Homarr walkthrough" />
 
-A while back I did a tour of all the services running in my homelab, and one of the things I showed off was my dashboard. That dashboard is [Homarr](https://homarr.dev). The name presumably comes from the apps it integrates with, the \*arr stack. It's beautiful, it's fully functional, and it's far from perfect. I've tried a lot of dashboards, and at the time I recorded this, Homarr was my favorite by a long shot.
+A while back I did a tour of all the services running in my homelab, and one of the things I showed off was my dashboard. That dashboard is [Homarr](https://homarr.dev). The name lines up with the \*arr apps it integrates with. It's beautiful, it's fully functional, and it's far from perfect. I've tried a lot of dashboards, and at the time I recorded this, Homarr was my favorite by a long shot.
 
 The thing I like most is that you set it up in the browser. You drag tiles around, resize them, and add integrations from the UI instead of editing a config file for every little change.
 
 Linode sponsored the video this article is based on.
 
 <Note>
-**This guide has been updated for the Homarr rewrite.** The video was published in November 2023 and shows Homarr 0.x from the old `ajnart/homarr` project. That version is gone: Homarr was rewritten from scratch as [1.0 in September 2024](https://homarr.dev/blog/2024/09/23/version-1.0/) under the [homarr-labs](https://github.com/homarr-labs/homarr) organization, and the old repository was [archived in June 2026](https://github.com/ajnart/homarr) with a note not to use it anymore. Since then, [Homarr 2.0](https://homarr.dev/blog/2026/09/03/homarr-2.0/) (September 3, 2026) rebuilt the board editor again. The written installation below targets [Homarr v2.6.0](https://github.com/homarr-labs/homarr/releases/tag/v2.6.0), released October 15, 2026. The interface in the video is the old 0.x UI, so menus, settings, and widgets won't match what you see today. My hands-on impressions come from the original recording, and I've pointed out the differences as I go.
+The video was published in November 2023 and shows Homarr 0.x from the old `ajnart/homarr` project. That version is gone: Homarr was rewritten from scratch as [1.0 in September 2024](https://homarr.dev/blog/2024/09/23/version-1.0/) under the [homarr-labs](https://github.com/homarr-labs/homarr) organization, and the old repository was [archived in June 2026](https://github.com/ajnart/homarr) with a note not to use it anymore. Since then, [Homarr 2.0](https://homarr.dev/blog/2026/09/03/homarr-2.0/) (September 3, 2026) rebuilt the board editor again. The written installation below targets [Homarr v2.6.0](https://github.com/homarr-labs/homarr/releases/tag/v2.6.0), released October 15, 2026. The interface in the video is the old 0.x UI, so menus, settings, and widgets won't match what you see today. My hands-on impressions come from the original recording, and I've pointed out the differences as I go.
 </Note>
 
 ## What Homarr Does
 
-Homarr is a self-hosted start page for your server. At its simplest it's a grid of tiles linking to all of your apps, with a little status dot showing whether each one is reachable. Where it gets good is the integrations. You connect it to the services you already run and it pulls live data onto the board.
+Homarr is a self-hosted start page for your server. The basic board is a grid of tiles linking to all of your apps, with a little status dot showing whether each one is reachable. Where it gets good is the integrations. You connect it to the services you already run and it pulls live data onto the board.
 
 ![App tiles with online and offline status dots above torrent and media request widgets on my main dashboard, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/10/homarr-home-server-dashboard/old-dashboard-app-tiles.jpg)
 
