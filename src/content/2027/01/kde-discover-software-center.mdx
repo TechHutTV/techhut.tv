@@ -1,10 +1,10 @@
 export const title = "KDE Discover Is Actually Really Good Now"
 export const description = "A tour of KDE Discover, Plasma's software center: Flatpak, distro packages, Snap and firmware sources, app pages with permissions and reviews, updates, offline updates, and why it's great for finding new apps."
-export const date = "2026-10-17"
+export const date = "2027-01-11"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "KDE", "Apps"]
-export const cover = "/docs-static/img/2026/10/kde-discover-software-center/cover.jpg"
+export const cover = "/docs-static/img/2027/01/kde-discover-software-center/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -78,7 +78,7 @@ The first place I went in the video was Settings, because that's where all of yo
 
 The useful one here is **Make Default**. When an app is available from more than one source, the default source is what Discover picks first. KDE neon used its own repositories by default, and I switched it to Flatpak, which is my preference.
 
-![Discover's Settings page from the video with Flathub as the default source, the fwupd firmware remotes, Snap, and KDE neon repositories](/docs-static/img/2026/10/kde-discover-software-center/settings-sources.jpg)
+![Discover's Settings page from the video with Flathub as the default source, the fwupd firmware remotes, Snap, and KDE neon repositories](/docs-static/img/2027/01/kde-discover-software-center/settings-sources.jpg)
 
 Current versions add two things to this page. If your distro has backends that aren't installed, they can show up under **Missing Backends**. And **Configure Updates…** takes you to the update settings in System Settings.
 
@@ -86,7 +86,7 @@ Current versions add two things to this page. If your distro has backends that a
 
 Open any app and you get a lot of information. I used Krita as the example. At the top there's the name, developer, star rating, and a screenshot carousel you can click through. Below that are the version, download and installed size, where it's distributed from, and the license.
 
-![The Krita app page in Discover 5.27 from the video, showing the rating, screenshots, version, size, Flathub as the distributor, and the GPL-3.0 license](/docs-static/img/2026/10/kde-discover-software-center/krita-app-page.jpg)
+![The Krita app page in Discover 5.27 from the video, showing the rating, screenshots, version, size, Flathub as the distributor, and the GPL-3.0 license](/docs-static/img/2027/01/kde-discover-software-center/krita-app-page.jpg)
 
 Scroll down and you'll find the description, links to the website and documentation, reviews, and links for donating and reporting bugs. In the current version, the license can be clicked for an explanation of what it means, and there's also a content rating. Ratings and reviews come from the [Open Desktop Ratings Service](https://odrs.gnome.org/), the same service GNOME Software uses. You can write your own review once the app is installed.
 
@@ -94,7 +94,7 @@ Scroll down and you'll find the description, links to the website and documentat
 
 One of my favorite parts of the app page is the permissions list. For Flatpak apps, Discover spells out what the sandbox allows. Krita wanted network access and read and write access to all files, plus a couple of D-Bus permissions. If you're installing some random app you haven't heard of, this is worth scrolling down to check.
 
-![The Permissions for Krita section in Discover from the video, listing network access, all-files read and write access, and session and system bus access](/docs-static/img/2026/10/kde-discover-software-center/krita-permissions.jpg)
+![The Permissions for Krita section in Discover from the video, listing network access, all-files read and write access, and session and system bus access](/docs-static/img/2027/01/kde-discover-software-center/krita-permissions.jpg)
 
 Two newer features make this better. A **Configure permissions…** button opens that app's page in System Settings so you can tighten its permissions. Since Plasma 6.3, Discover also [highlights sandboxed apps whose permissions will change](https://kde.org/announcements/plasma/6/6.3.0/) when you update them.
 
@@ -116,7 +116,7 @@ This is the part that used to be broken, at least on openSUSE when I last ran it
 
 The **Updates** page shows your pending software updates and system updates. In the VM, everything was rolled into one **System upgrade** entry covering 211 packages. Click **More Info…** and you get the full list of what's being updated, with release notes for the components that provide them. A lot of small libraries had none, but things like AppStream and git did.
 
-![The System upgrade details page in Discover from the video, listing 211 packages with release notes for the AppStream update](/docs-static/img/2026/10/kde-discover-software-center/update-release-notes.jpg)
+![The System upgrade details page in Discover from the video, listing 211 packages with release notes for the AppStream update](/docs-static/img/2027/01/kde-discover-software-center/update-release-notes.jpg)
 
 From there you can uncheck anything you want to hold back, then click **Update All** (or **Update Selected**). Progress shows in Tasks again. Current versions also let you choose what happens when updates finish: do nothing, restart, shut down, or quit Discover. If an update fails, Discover now tells you to report the problem to your distribution rather than to KDE, because that's usually where the bug is.
 
@@ -140,7 +140,7 @@ This is the part I like, and it's right there in the name. In 5.27, the home pag
 
 The categories are the best part. Under **Internet > Web Browsers**, there were 30 browsers available in my VM, from Firefox to LibreWolf (a great pick if you want a privacy and security focused Firefox fork), ungoogled-chromium, Falkon, Brave, Floorp, Microsoft Edge, Tangram, Tor Browser Launcher, and more. A lot of people search the web for alternative browsers, and this is a better place to look.
 
-![The Web Browsers category in Discover from the video, sorted by rating and showing Floorp, LibreWolf, ungoogled-chromium, and Falkon](/docs-static/img/2026/10/kde-discover-software-center/web-browsers-category.jpg)
+![The Web Browsers category in Discover from the video, sorted by rating and showing Floorp, LibreWolf, ungoogled-chromium, and Falkon](/docs-static/img/2027/01/kde-discover-software-center/web-browsers-category.jpg)
 
 Each entry opens a full app page, so you can check ratings and permissions before installing anything. The **Mail** category is how I found Mailspring, a really nice email client for Linux. A lot of what's on my main system I found by browsing Discover.
 
