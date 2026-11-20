@@ -254,18 +254,3 @@ Getting TrueNAS running inside Proxmox is a fairly straightforward process. Most
 Knowing what I know now, I'd go with controller passthrough if your hardware supports it, or ZFS directly on the Proxmox host if you don't need the TrueNAS interface. Individual disk passthrough works, and it's a great way to try TrueNAS without dedicating a whole machine to it. Just know that TrueNAS can't see the real drive health, and keep an eye on SMART from the Proxmox side (**your node > Disks** shows SMART status).
 
 With all that, I do hope you have an absolutely beautiful day.
-
-## Official References
-
-- [TrueNAS Community Edition](https://www.truenas.com/truenas-community-edition/)
-- [TrueNAS downloads](https://www.truenas.com/download/)
-- [TrueNAS software status and recommended versions](https://www.truenas.com/software-status/)
-- [TrueNAS: installing TrueNAS (including on a VM)](https://www.truenas.com/docs/scale/gettingstarted/install/installingscale/)
-- [TrueNAS hardware guide (minimums and virtualization)](https://www.truenas.com/docs/scale/gettingstarted/tnhardwareguide/)
-- [TrueNAS: creating pools](https://www.truenas.com/docs/scale/storage/pools/creatingpools/)
-- [TrueNAS: migrating from CORE](https://www.truenas.com/docs/scale/gettingstarted/migrate/migrate-community/)
-- [TrueNAS blog: SCALE is now Community Edition](https://www.truenas.com/blog/truenas-community-edition-release-2504/)
-- [Proxmox wiki: Passthrough Physical Disk to Virtual Machine (VM)](https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM))
-- [Proxmox VE QEMU/KVM virtual machines (settings and PCI(e) passthrough)](https://pve.proxmox.com/pve-docs/chapter-qm.html)
-- [Proxmox VE `qm` manual (disk options such as `serial` and `backup`)](https://pve.proxmox.com/pve-docs/qm.1.html)
-- [Proxmox wiki: PCI passthrough](https://pve.proxmox.com/wiki/PCI_Passthrough)
