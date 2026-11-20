@@ -198,14 +198,15 @@ Do not forward this port, or any of the stack's ports, on your router. The forwa
 
 ## Create the Download Folders
 
-My repo has a one-liner that builds the download layout for both clients. Run it from inside `/data`:
+My repo has a one-liner that builds the download layout for both clients. Run these commands as the user whose IDs you selected for `PUID` and `PGID`, after verifying the `/data` mount. The first command inside `/data` also creates the library folders if you're starting without the earlier parts:
 
 ```bash
 cd /data
+mkdir -p movies shows music
 mkdir -p downloads/qbittorrent/{completed,incomplete,torrents} && mkdir -p downloads/nzbget/{completed,intermediate,nzb,queue,tmp}
 ```
 
-With my movies, music, and shows folders already in there, `/data` ends up looking like this:
+Existing folders are preserved. `/data` ends up looking like this:
 
 ```text
 data
