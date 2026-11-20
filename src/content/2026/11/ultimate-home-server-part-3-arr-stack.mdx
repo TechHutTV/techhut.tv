@@ -1,10 +1,10 @@
 export const title = "Ultimate Home Server Part 3: The Automated *arr Stack"
 export const description = "Deploy my Docker Compose media automation stack with Gluetun, qBittorrent, NZBGet, Prowlarr, Sonarr, Radarr, Bazarr, and Seerr, all wired together on static IPs and feeding Jellyfin."
-export const date = "2026-10-11"
+export const date = "2026-11-26"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/cover.jpg"
+export const cover = "/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -306,13 +306,13 @@ Setup is almost identical across the three apps, so I'll walk through Radarr. Fo
 
 Go to **Library Import** and choose `/data/movies`. Radarr scans the folder and matches each movie it finds. The first time you do this, double-check the matches. Mine were Cast Away, A Bug's Life, and a couple of others, all correct. You can set a quality profile here, then import. Give it a refresh and the posters, cast, crew, file paths, and alternate titles all fill in. Radarr also makes `/data/movies` a root folder, where it will put new movies.
 
-![Radarr's Library Import screen matching four folders in /data/movies, including A Bug's Life and Cast Away, with Monitor set to Movie Only and Minimum Availability set to Released](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/radarr-library-import.jpg)
+![Radarr's Library Import screen matching four folders in /data/movies, including A Bug's Life and Cast Away, with Monitor set to Movie Only and Minimum Availability set to Released](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/radarr-library-import.jpg)
 
 ### Renaming
 
 This is one of the cool things about these apps, especially in Sonarr when you have a show with a bunch of seasons at ten episodes each. Go to **Settings > Media Management** and turn on **Rename Movies**. The standard format includes the title, year, and quality. Back on a movie, **Preview Rename** shows the before and after, and **Organize** applies it. Do note that Jellyfin and Plex both have naming preferences, so check what your media server expects before you go wild with custom formats.
 
-![Radarr's Organize & Rename preview turning A Bugs Life (1998).mkv into A Bug's Life (1998) WEBDL-1080p.mkv](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/radarr-organize-rename.jpg)
+![Radarr's Organize & Rename preview turning A Bugs Life (1998).mkv into A Bug's Life (1998) WEBDL-1080p.mkv](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/radarr-organize-rename.jpg)
 
 ### Add a Download Client
 
@@ -322,7 +322,7 @@ Under **Settings > Download Clients**, add qBittorrent with host `172.39.0.2`, p
 
 To test the full pipeline, I added *The Gold Rush*, Charlie Chaplin's 1925 film. Under US law, the original version [definitively entered the public domain](https://en.wikipedia.org/wiki/The_Gold_Rush) in 2021, 95 years after its release. I added it with **Search** unchecked, fixed the download client, and then searched from the movie's page. Radarr sent the release to qBittorrent, which downloaded it into `incomplete` and moved it to `completed`. Radarr then imported it into `/data/movies/` with my rename format applied.
 
-![The Radarr add dialog for The Gold Rush (1925) with the /data/movies root folder and Movie Only monitoring](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/radarr-add-the-gold-rush.jpg)
+![The Radarr add dialog for The Gold Rush (1925) with the /data/movies root folder and Movie Only monitoring](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/radarr-add-the-gold-rush.jpg)
 
 Radarr hardlinks imports when your storage supports it and copies them when it doesn't, so seeding torrents can keep their original files either way. Then I opened Jellyfin on port `8096`, the server from [Part 2](/ultimate-home-server-part-2-jellyfin), and *The Gold Rush* was sitting in my movies library. Will you look at that.
 
@@ -330,7 +330,7 @@ Radarr hardlinks imports when your storage supports it and copies them when it d
 
 To keep file sizes reasonable, go to **Settings > Quality**. Each quality has a slider for minimum, preferred, and maximum size. Radarr works these out per minute of runtime, and the slider labels show them as gigabytes per hour. For Bluray-720p, for example, I aimed for about a gig per hour preferred and capped it at roughly three gigs per hour. Radarr won't grab anything above the maximum. The [Radarr settings docs](https://wiki.servarr.com/radarr/settings) cover quality profiles and custom formats if you want more control.
 
-![Radarr's quality definitions with Bluray-720p set to 1 GiB/h preferred and a 3.2 GiB/h maximum](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/radarr-quality-definitions.jpg)
+![Radarr's quality definitions with Bluray-720p set to 1 GiB/h preferred and a 3.2 GiB/h maximum](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/radarr-quality-definitions.jpg)
 
 ## Bazarr for Subtitles
 
@@ -354,7 +354,7 @@ The last piece is the request front end. In the video, I used Jellyseerr from my
 
 I use Seerr to find something to watch. You can share it with other people, or just use it yourself, to browse what's popular and filter by streaming service, genre, rating, and whatnot. I filtered for Apple TV titles, since I don't subscribe to it, and limited results to titles with a user score of 8 or higher. When something catches your eye, **Request** sends it straight to Radarr or Sonarr.
 
-![Jellyseerr's Discover page as shown in the video, with The Gold Rush at the front of Recently Added](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/jellyseerr-discover.jpg)
+![Jellyseerr's Discover page as shown in the video, with The Gold Rush at the front of Recently Added](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/jellyseerr-discover.jpg)
 
 I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I went shopping for a DVD so I could buy a copy and put it on the server, and the listing I found only offered streaming, no physical copy. Very disappointing. When a company won't sell you a copy you can own, there's no legitimate way to put it on your own server, and you're just out of luck. They'd rather keep the movie inside their own app.
 
