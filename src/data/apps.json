@@ -1409,7 +1409,9 @@
     "name": "Nextcloud",
     "category": "Files & Photos",
     "description": "Host file storage, sharing and collaboration tools on your own server.",
-    "coverage": [],
+    "coverage": [
+      "/nextcloud-aio-self-hosted-cloud"
+    ],
     "videos": [
       {
         "id": "6wMeL9xlzag",
@@ -1458,7 +1460,8 @@
     "category": "Networking",
     "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
     "coverage": [
-      "/split-dns-homelab"
+      "/split-dns-homelab",
+      "/nextcloud-aio-self-hosted-cloud"
     ],
     "videos": [
       {
