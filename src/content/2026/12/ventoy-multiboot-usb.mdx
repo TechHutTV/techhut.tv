@@ -1,0 +1,267 @@
+export const title = "Ventoy: Make One Multiboot USB for Linux, Windows, and More"
+export const description = "Install Ventoy on a USB drive from Windows or Linux, drag ISO files onto it, and boot any of them from a single menu, with Secure Boot, persistence, and updates covered."
+export const date = "2026-12-27"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Windows", "Distros"]
+export const cover = "/docs-static/img/2026/12/ventoy-multiboot-usb/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="6Mev24M-Bs8" title="TechHut's Ventoy multiboot USB walkthrough" />
+
+If you're anything like me, trying a new Linux distribution goes like this: grab a USB stick, open Etcher, Popsicle, or Rufus, flash the ISO, and boot it. Then do the whole thing again next week for the next distro. It turns out we've all been wasting our time.
+
+For the video, I put together one USB drive with ten operating systems on it, including Windows 10 and a bunch of my favorite Linux distributions. The tool that makes this possible is [Ventoy](https://www.ventoy.net/en/index.html). You install it on a drive once, and from then on you just copy ISO files onto it. At boot you get a menu and pick the one you want.
+
+The video was published in August 2021, and I recorded it with Ventoy 1.0.49. The steps below are for [Ventoy 1.1.18](https://github.com/ventoy/Ventoy/releases/tag/v1.1.18), released October 9, 2026. Since then Ventoy has added a native Linux GUI, a Windows command line, Secure Boot support that's on by default, a secondary boot menu, and a GUI tool for its plugins. The screenshots and hands-on impressions come from the original recording, and I've noted where things look different now.
+
+## What Ventoy Does
+
+Ventoy is an open source tool that turns a USB drive into a boot menu for disk images. When you install it, the drive is split into two partitions:
+
+- A large data partition, formatted exFAT by default and labeled **Ventoy**. This is where your images go.
+- A small 32 MB FAT partition named **VTOYEFI** that holds the bootloader. Leave it alone.
+
+Ventoy searches every folder on the data partition and lists the images it finds alphabetically. What it handles, according to the [official site](https://www.ventoy.net/en/index.html):
+
+| Feature | Details |
+|---|---|
+| Image formats | ISO, WIM, IMG, VHD(x), and EFI files, booted directly with no extraction |
+| Firmware | x86 Legacy BIOS, IA32 UEFI, x86_64 UEFI, ARM64 UEFI, MIPS64EL UEFI |
+| Partition style | MBR (default) or GPT |
+| Data partition | exFAT by default; FAT32, NTFS, UDF, XFS, Btrfs, and ext2/3/4 also work |
+| Large files | ISOs over 4 GB are fine on the default exFAT partition |
+| Tested images | 1,400+ in the [tested ISO list](https://www.ventoy.net/en/isolist.html) |
+
+The data partition still works as a normal USB drive, so other files can live next to your ISOs. Ventoy's own code is GPLv3+, and the source is on [GitHub](https://github.com/ventoy/Ventoy). Before you start, check the tested ISO list for whatever you plan to boot.
+
+## Download Ventoy
+
+Grab the package for your OS from the [GitHub releases page](https://github.com/ventoy/Ventoy/releases) or the [download page](https://www.ventoy.net/en/download.html), which points to SourceForge as a mirror. There are three files:
+
+- `ventoy-1.1.18-windows.zip` for Windows
+- `ventoy-1.1.18-linux.tar.gz` for Linux
+- `ventoy-1.1.18-livecd.iso`, a live system you can boot to install or update Ventoy if the normal tools fail
+
+The project asks you to check the SHA-256 hash, so do it. On Linux:
+
+```bash
+wget https://github.com/ventoy/Ventoy/releases/download/v1.1.18/ventoy-1.1.18-linux.tar.gz
+sha256sum ventoy-1.1.18-linux.tar.gz
+# expected: d86ff9de63d94c8b8f1f6b14d23c55af4b88e8207bf2893890892a6a97b1ad54
+```
+
+On Windows, in PowerShell:
+
+```powershell
+Get-FileHash .\ventoy-1.1.18-windows.zip -Algorithm SHA256
+# expected: 082C478E8C432E1AC653899FCF50E3A4077A2851BC6112B5DDD30545962164A9
+```
+
+<Warning>
+Installing Ventoy formats the target drive, and everything on it is lost. Back up anything you want to keep and double-check which disk you picked. Ventoy can also do an experimental [non-destructive install](https://www.ventoy.net/en/doc_non_destructive.html), but it has strict requirements, and the docs still tell you to back up first.
+</Warning>
+
+## Install on Windows
+
+1. Extract the zip.
+2. Run `Ventoy2Disk.exe`. It works on 32-bit and 64-bit Windows. The `altexe` folder has x64, ARM, and ARM64 builds. Copy the one you need up next to `Ventoy2Disk.exe` before running it.
+3. Pick your USB drive under **Device**. Only USB drives are listed by default.
+4. Check the **Option** menu. **Secure Boot Support** is enabled by default. **Partition Style** sets MBR or GPT, and **Partition Configuration** lets you reserve space at the end of the drive.
+5. Click **Install** and confirm the warnings.
+
+For scripting, there's also a [command-line mode](https://www.ventoy.net/en/doc_windows_cli.html), for example `Ventoy2Disk.exe VTOYCLI /I /Drive:F: /GPT`.
+
+## Install on Linux
+
+Extract the tarball and move into the folder:
+
+```bash
+tar -xzf ventoy-1.1.18-linux.tar.gz
+cd ventoy-1.1.18
+```
+
+Then pick one of three ways to install it.
+
+### Option 1: VentoyGUI
+
+This is the native GTK/Qt app. It wasn't part of the 1.0.49 release I used in the video, and now it's the easiest route. It looks and works just like the Windows tool:
+
+```bash
+./VentoyGUI.x86_64
+```
+
+There are also `VentoyGUI.i386`, `VentoyGUI.aarch64`, and `VentoyGUI.mips64el` builds. On some distros you can just double-click the file.
+
+### Option 2: The WebUI (what I used in the video)
+
+In the video, I opened a terminal in the extracted folder and started the web interface:
+
+```bash
+sudo bash VentoyWeb.sh
+```
+
+It prints a local address. Open `http://127.0.0.1:24680` in your browser, plug in your USB if you haven't, and hit the refresh button next to the device list. My 64 GB Kingston DataTraveler showed up, I clicked **Install**, and confirmed the two warnings. It only took a few seconds.
+
+![The Ventoy WebUI from the video with a 64 GB Kingston DataTraveler selected and the Install button, showing Ventoy 1.0.49 in package](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-webui-install.jpg)
+
+The WebUI only listens on localhost by default. You can bind it elsewhere with `-H` and `-P` for a headless box, but anyone who can reach that page can format disks, so stop it with Ctrl+C when you're done.
+
+### Option 3: The command line
+
+`Ventoy2Disk.sh` does everything without a GUI. First, find your drive. The `TRAN` column shows `usb` for USB drives:
+
+```bash
+lsblk -o NAME,SIZE,MODEL,TRAN
+```
+
+Then install, replacing `/dev/sdX` with your USB device (the whole disk, not a partition):
+
+```bash
+# Install with defaults (MBR, Secure Boot support on)
+sudo bash Ventoy2Disk.sh -i /dev/sdX
+
+# Install with GPT instead
+sudo bash Ventoy2Disk.sh -i -g /dev/sdX
+```
+
+The useful flags, from the script's own help text:
+
+| Flag | What it does |
+|---|---|
+| `-i` | Install; fails if Ventoy is already on the disk |
+| `-I` | Force install, even over an existing Ventoy drive |
+| `-u` | Update Ventoy, keeping your files |
+| `-l` | List Ventoy info for the disk |
+| `-g` | Use GPT (install only; MBR is the default) |
+| `-s` / `-S` | Enable / disable Secure Boot support (enabled by default) |
+| `-r SIZE_MB` | Leave unpartitioned space at the end of the disk (install only) |
+| `-L LABEL` | Label for the data partition (default `Ventoy`) |
+| `-n` | Try a non-destructive install |
+
+The script also accepts `/dev/disk/by-id/...` paths, which is a nice way to make sure you're pointing at the right stick.
+
+<Note>
+Ventoy's Get Started page still says Secure Boot support is off by default for `Ventoy2Disk.sh`. That line is out of date. The script in 1.1.18 defaults to on, and `-S` turns it off.
+</Note>
+
+### MBR or GPT?
+
+Ventoy works the same either way. Per the [MBR vs GPT page](https://www.ventoy.net/en/doc_mbr_vs_gpt.html), MBR has the best Legacy BIOS compatibility but a few UEFI machines only recognize GPT, while GPT can trip up some older BIOS systems. Stick with MBR unless a machine won't see the drive. The choice is only applied at install time.
+
+## Add Your ISOs
+
+This is the whole point. Once Ventoy is installed, the **Ventoy** partition shows up as a regular removable drive. Copy your ISOs onto it. In the video, I took my folder of images (EndeavourOS, Fedora, openSUSE, Pop!_OS, siduction, Solus, Zorin, a Manjaro Cutefish build, an Ubuntu Server ISO, and Windows 10) and just copied and pasted them in Dolphin. That was about 25 GB, so it took a little while.
+
+![Dolphin in the video showing the Ventoy removable drive with EndeavourOS, Fedora, and Manjaro Cutefish ISOs copied onto it](/docs-static/img/2026/12/ventoy-multiboot-usb/dolphin-ventoy-drive-isos.jpg)
+
+Two things I really like here:
+
+- **Windows ISOs work from Linux.** Making a Windows installer on Linux usually means WoeUSB or some other special tool. With Ventoy you drag the Windows ISO over like any other file.
+- **Swapping versions is just delete and copy.** When a new Ubuntu release comes out, delete the old ISO and drop in the new one. There's no reflashing, and you don't need to update Ventoy when a new distro is released.
+
+## Booting from the Drive
+
+I tested it on a ThinkPad. Plug in the drive, power on, and open the one-time boot menu. On my ThinkPad that was F12, but yours may use a different key. Then select the USB drive.
+
+![The Ventoy boot menu on a ThinkPad from the video, listing ten ISOs including EndeavourOS, Fedora 34, Pop!_OS, and Windows 10](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-boot-menu-isos.jpg)
+
+There's my menu with all ten images. I picked Manjaro Cutefish and chose the open source drivers, and it booted right into the live desktop. Then I rebooted, picked the Windows 10 ISO, and landed in Windows Setup. I didn't install it, but it was ready to go.
+
+![Windows 10 Setup booted from the Windows ISO on the Ventoy drive, as shown in the video](/docs-static/img/2026/12/ventoy-multiboot-usb/windows-setup-from-ventoy.jpg)
+
+One difference from the video: current versions open a small **secondary boot menu** when you press Enter on an image, with normal, GRUB2, WIMBOOT, and other modes. Use normal mode first and only try the others if it doesn't boot. `VTOY_SECONDARY_BOOT_MENU` turns that menu off.
+
+### Hotkeys in the menu
+
+The hotkey bar along the bottom has a few worth knowing:
+
+- **F2** browses and boots image files on the computer's local disks. (In the 1.0.49 build from the video, F2 was a power menu.)
+- **F3** switches to **TreeView**, which shows your real folder structure.
+- **F4** is **Localboot**, which boots the machine's installed OS.
+- **F5** opens **Tools**: keyboard layout, resolution and display settings, a ventoy.json checker, and in newer versions **Temporary Control Settings** for one-boot tweaks.
+
+![The Ventoy F5 Tools menu from the video with Keyboard Layouts, Resolution Configuration, Screen Display Mode, and the ventoy.json check](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-f5-tools-menu.jpg)
+
+New in 1.1.18, the Ventoy partition is also mountable from most mainstream Linux live sessions out of the box. If it doesn't show up, the [Linux remount page](https://www.ventoy.net/en/doc_linux_remount.html) explains how to mount `/dev/mapper/VentoyPart` by hand.
+
+## Secure Boot
+
+My ThinkPad booted the drive in Legacy BIOS mode in the video, so Secure Boot never came up. On most modern machines it will. Ventoy's [Secure Boot support](https://www.ventoy.net/en/doc_secure.html) is on by default, and the first time you boot the drive on each computer with Secure Boot enabled, you enroll Ventoy's key once:
+
+1. You'll see a blue **Verification failed: (0x1A) Security Violation** screen. Press **OK**.
+2. At **Press any key to perform MOK management**, press a key.
+3. Choose **Enroll key from disk**.
+4. Select the **VTOYEFI** partition, then `ENROLL_THIS_KEY_IN_MOKMANAGER.cer`.
+5. Choose **Continue**, then **Yes**, then **Reboot**.
+
+After that, Ventoy boots normally on that machine. A few details:
+
+- **New key since 1.1.14.** Ventoy switched to a new shim and signing key in June 2026 to handle Microsoft's UEFI CA 2023 change. If you enrolled the old key and then update your drive, you'll have to enroll the new key once. To remove an old key, use the [delete key guide](https://www.ventoy.net/en/doc_delete_key.html).
+- **Some machines need an extra firmware setting.** Some computers will only boot Ventoy with **Allow Microsoft 3rd Party UEFI CA** turned on in the firmware.
+- **Ventoy bypasses Secure Boot checks by default.** Once its key is enrolled, it will boot any EFI file without verifying it. If you want images checked against the normal UEFI policy, set `VTOY_SECURE_BOOT_POLICY` to `"1"` in the control plugin.
+
+If you get a different error screen instead of the blue one, Ventoy's Secure Boot method doesn't work on that machine, and you'll need to disable Secure Boot in the firmware.
+
+## Plugins, ventoy.json, and Persistence
+
+In the video I only pointed at the docs for plugins, but they're worth a look. All plugin settings live in `/ventoy/ventoy.json` on the data partition. Names are case-sensitive, the file must be UTF-8, and comments aren't allowed.
+
+You don't have to write the JSON by hand. **VentoyPlugson** is a browser-based editor that generates it for you, and it backs up the existing file as `ventoy_backup.json` each time it starts:
+
+```bash
+sudo bash VentoyPlugson.sh /dev/sdX
+# then open http://127.0.0.1:24681
+```
+
+On Windows, run `VentoyPlugson.exe`. There are plugins for themes, menu aliases, password protection, auto-install scripts, and global **control** options. Two control options are on by default and worth knowing about: `VTOY_WIN11_BYPASS_CHECK` and `VTOY_WIN11_BYPASS_NRO` skip the Windows 11 hardware check and online account requirement on standard Windows 11 ISOs.
+
+### Persistence
+
+[Persistence](https://www.ventoy.net/en/plugin_persistence.html) lets a live Linux system keep changes between boots, using a file on the drive instead of a separate partition. It works with Ubuntu, Arch, and distros based on them, plus a few others like Fedora and Kali. Each needs a specific label, listed in the docs.
+
+Create a backend file with the script included in the Linux package. Ubuntu-based distros use the default `casper-rw` label:
+
+```bash
+sudo bash CreatePersistentImg.sh -s 4096 -l casper-rw -o ubuntu-persistence.dat
+mkdir -p /path/to/Ventoy/persistence
+cp ubuntu-persistence.dat /path/to/Ventoy/persistence/
+```
+
+Then map it to the ISO in `ventoy.json`:
+
+```json
+{
+    "control": [
+        { "VTOY_DEFAULT_SEARCH_ROOT": "/ISO" }
+    ],
+    "persistence": [
+        {
+            "image": "/ISO/your-ubuntu-desktop.iso",
+            "backend": "/persistence/ubuntu-persistence.dat"
+        }
+    ]
+}
+```
+
+Replace `/path/to/Ventoy` with the data partition's mount point and match `image` to your real ISO path. The optional `control` block limits the ISO search to an `/ISO` folder, so drop it if you don't use one. When you boot that ISO, Ventoy asks whether to use the persistence file. Prebuilt backend files are also available from [ventoy/backend](https://github.com/ventoy/backend/releases).
+
+## Updating Ventoy Without Losing Your ISOs
+
+When a new Ventoy release comes out, you update the drive in place. The update leaves everything on the data partition alone, so your ISOs and `ventoy.json` stay put.
+
+- **Windows or VentoyGUI/WebUI:** open the new version's tool, select the drive, and click **Update**.
+- **Linux CLI:** run `sudo bash Ventoy2Disk.sh -u /dev/sdX` from the new release folder.
+
+Make sure you click **Update** and not **Install**. Install wipes the drive. If an update keeps failing on Windows, copy the LiveCD ISO onto your Ventoy drive, boot it, and update from there.
+
+## A Note on the Binary Files in the Repo
+
+In April 2024, after the xz backdoor, a user opened [issue #2795](https://github.com/ventoy/Ventoy/issues/2795) about the many prebuilt binaries in Ventoy's source tree (BusyBox, dmsetup, cryptsetup tools, and others) and asked for them to be built from source in CI. It's an auditability concern, not a report of a specific compromise. In May 2025 the maintainer moved the discussion to [issue #3224](https://github.com/ventoy/Ventoy/issues/3224), which is still open. He says every binary has corresponding source and keeps a [BLOB_List.md](https://github.com/ventoy/Ventoy/blob/master/BLOB_List.md) that documents where each one comes from or how to build it. CI or reproducible builds for all of them are still under discussion.
+
+## Final Thoughts
+
+I'm really happy I found this tool. Instead of a drawer full of USB sticks with one distro each, I've got one drive with all my ISOs on it, and adding or replacing one is just a file copy. Being able to drop a Windows ISO on it from Linux and have it just work is a big win on its own.
+
+It's only gotten better since, with a native Linux GUI, Secure Boot after a one-time key enrollment, and VentoyPlugson for the plugins. Grab a decent-sized USB drive, install Ventoy once, and stop reflashing. With all that, I do hope you have an absolutely beautiful day.

@@ -2531,7 +2531,9 @@
     "name": "Ventoy",
     "category": "Desktop",
     "description": "Create a multiboot USB drive by copying disk images onto it.",
-    "coverage": [],
+    "coverage": [
+      "/ventoy-multiboot-usb"
+    ],
     "videos": [
       {
         "id": "6Mev24M-Bs8",
