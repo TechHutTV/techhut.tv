@@ -1,10 +1,10 @@
 export const title = "CapRover: Deploy Web Apps and One-Click Docker Apps the Easy Way"
 export const description = "Install CapRover on a VPS or home server, point a wildcard domain at it, and deploy one-click apps like Wiki.js and Nextcloud with free Let's Encrypt HTTPS from a simple web dashboard."
-export const date = "2026-10-17"
+export const date = "2026-12-19"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/caprover-deploy-web-apps/cover.jpg"
+export const cover = "/docs-static/img/2026/12/caprover-deploy-web-apps/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -215,7 +215,7 @@ When I logged in at the captain subdomain, it was already on HTTPS. There honest
 - **Cluster.** If you know Docker Swarm and want to spread apps across several servers, this is where you add nodes.
 - **Settings.** Updates, backups, nginx configuration and changing your password.
 
-![NetData's System Overview opened from CapRover's Monitoring page, showing disk, CPU and network gauges on the test server, as shown in the video](/docs-static/img/2026/10/caprover-deploy-web-apps/netdata-system-overview.jpg)
+![NetData's System Overview opened from CapRover's Monitoring page, showing disk, CPU and network gauges on the test server, as shown in the video](/docs-static/img/2026/12/caprover-deploy-web-apps/netdata-system-overview.jpg)
 
 A quick note on backups: the [backup docs](https://caprover.com/docs/backup-and-restore) say this feature is still experimental, and it doesn't include your app volumes or built images. You'll need your own backup for app data. I like [Duplicati](/duplicati-encrypted-backups) for that.
 
@@ -223,7 +223,7 @@ A quick note on backups: the [backup docs](https://caprover.com/docs/backup-and-
 
 For me, the best thing about CapRover is how easy it is to spin up apps. Under **Apps**, open the one-click apps and you get a huge list. Audiobookshelf is in there (I [wrote it up here](/audiobookshelf-self-host-audible-library)), plus Discourse, FileZilla, Firefox, Focalboard, Ghost, Guacamole, Joomla, Plausible, Plex, Radarr and a whole lot more. Some VPS providers have their own one-click installers, but a lot of those don't deploy into containers. With CapRover, everything is a container. You can also search the list instead of scrolling.
 
-![The One Click Apps page in the CapRover dashboard with the app search box and the first templates, including AdGuard Home and Adminer](/docs-static/img/2026/10/caprover-deploy-web-apps/one-click-apps-list.jpg)
+![The One Click Apps page in the CapRover dashboard with the app search box and the first templates, including AdGuard Home and Adminer](/docs-static/img/2026/12/caprover-deploy-web-apps/one-click-apps-list.jpg)
 
 ### Example: Wiki.js
 
@@ -237,7 +237,7 @@ The Wiki.js template's default database password is a placeholder that anyone ca
 
 Click **Deploy** and CapRover shows its progress as it goes. When it was done it told me the app could take up to two minutes to be ready (you might see a 502 error until then). Back under Apps, I had two entries: the wiki itself and its Postgres database.
 
-![CapRover's Deploying your wiki-js progress list, partway through deploying the wiki-postgres database](/docs-static/img/2026/10/caprover-deploy-web-apps/wiki-js-deploy-progress.jpg)
+![CapRover's Deploying your wiki-js progress list, partway through deploying the wiki-postgres database](/docs-static/img/2026/12/caprover-deploy-web-apps/wiki-js-deploy-progress.jpg)
 
 ### Turning On HTTPS
 
@@ -247,7 +247,7 @@ This is the part that makes CapRover really cool. Go back to **Apps**, click the
 
 Under **HTTP Settings**, click **Enable HTTPS**. Give it a moment, and then load the site with `https://`. That's all it takes to get a valid certificate. Then turn on **Force HTTPS**, which the docs recommend, so plain HTTP visits get redirected.
 
-![The wiki app's HTTP Settings tab after HTTPS was enabled, with the Force HTTPS and Websocket Support options below](/docs-static/img/2026/10/caprover-deploy-web-apps/app-http-settings-https.jpg)
+![The wiki app's HTTP Settings tab after HTTPS was enabled, with the Force HTTPS and Websocket Support options below](/docs-static/img/2026/12/caprover-deploy-web-apps/app-http-settings-https.jpg)
 
 Now open `https://wiki.apps.your-domain.com` and you get the Wiki.js installer. Set an admin email and a strong password, use the `https://` address as the site URL, and click install. In the video that's all it took to get my own Wiki.js instance.
 
