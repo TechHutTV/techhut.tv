@@ -1,10 +1,10 @@
 export const title = "Nextcloud AIO: Self-Host Your Own Cloud on a Real Domain"
 export const description = "Set up Nextcloud All-in-One with Docker Compose and Nginx Proxy Manager on your own domain with trusted HTTPS, tour the apps worth enabling, and upgrade to the latest Nextcloud Hub release."
-export const date = "2026-10-11"
+export const date = "2026-12-05"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/cover.jpg"
+export const cover = "/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -203,7 +203,7 @@ I'm using this as a **local-only** domain. The DNS records are public, but they 
 
 The wildcard means any subdomain resolves to that same box, and NPM sorts out which service it goes to. Don't turn on Cloudflare's proxy (the orange cloud) for local-only records. It can't reach a private IP anyway, and the AIO docs list a whole set of Cloudflare proxy caveats for Nextcloud.
 
-![Cloudflare DNS records for hopki.net with an A record pointing to the LAN IP 10.0.0.210 and a wildcard CNAME, both set to DNS only](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/cloudflare-dns-records.jpg)
+![Cloudflare DNS records for hopki.net with an A record pointing to the LAN IP 10.0.0.210 and a wildcard CNAME, both set to DNS only](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/cloudflare-dns-records.jpg)
 
 ### Get a Wildcard Certificate with a DNS Challenge
 
@@ -226,11 +226,11 @@ I created three. The first is optional and only confirms DNS and the certificate
 | `aio.your-domain.com` | `https` | `127.0.0.1` | `8080` | AIO interface with a trusted cert (optional) |
 | `nc.your-domain.com` | `http` | `127.0.0.1` | `11000` | Nextcloud itself |
 
-![The Nginx Proxy Manager Proxy Hosts list from the video with the AIO, Nextcloud, and NPM hosts forwarding to the server's LAN IP on ports 8080, 11000, and 81](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/npm-proxy-hosts-list.jpg)
+![The Nginx Proxy Manager Proxy Hosts list from the video with the AIO, Nextcloud, and NPM hosts forwarding to the server's LAN IP on ports 8080, 11000, and 81](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/npm-proxy-hosts-list.jpg)
 
 For each one, enable **Block Common Exploits** and **Websockets Support**. Then on the SSL tab, select the wildcard certificate and enable **Force SSL** and **HTTP/2 Support**. Note that the AIO host uses `https` as its scheme, because port 8080 only speaks HTTPS. I forgot that the first time and had to go back and switch it.
 
-![The SSL tab of an Nginx Proxy Manager proxy host with the hopki.net wildcard certificate selected and Force SSL and HTTP/2 Support turned on](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/npm-proxy-host-ssl-tab.jpg)
+![The SSL tab of an Nginx Proxy Manager proxy host with the hopki.net wildcard certificate selected and Force SSL and HTTP/2 Support turned on](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/npm-proxy-host-ssl-tab.jpg)
 
 The Nextcloud host also needs a few lines under **Advanced** (gear icon). This comes from the [NPM section of the AIO reverse proxy docs](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md):
 
@@ -253,7 +253,7 @@ Back in the AIO interface, enter `nc.your-domain.com` and click **Submit domain*
 
 Next comes **Optional containers**. In the video I enabled Full-text search and left the antivirus off for now. Whiteboard and the Talk recording server are also in this list. At the top there's an **Office Suite** picker, which I like because it makes switching suites easy. It now offers Nextcloud Office powered by Euro-Office or by Collabora Online, and ONLYOFFICE is marked deprecated. Click **Save changes** before you continue.
 
-![The Optional containers list in AIO v10.15.0 as shown in the video, with ClamAV off and Collabora, Fulltextsearch, Imaginary, Talk, and Whiteboard checked](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/aio-optional-containers.jpg)
+![The Optional containers list in AIO v10.15.0 as shown in the video, with ClamAV off and Collabora, Fulltextsearch, Imaginary, Talk, and Whiteboard checked](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/aio-optional-containers.jpg)
 
 In the video there was a checkbox above the start button for the newest major version, and it said Hub 10. On v14.2.0 that box offered Hub 26 Summer and left you on Hub 26 Spring if you skipped it. [AIO v15.1.1](https://github.com/nextcloud/all-in-one/releases/tag/v15.1.1) already includes Nextcloud 35.0.3, and the checkbox is hidden, so a new install is Hub 26 Summer. Click **Download and start containers**.
 
@@ -277,7 +277,7 @@ The **Apps** page is where Nextcloud gets interesting. Under **Your apps** you c
 
 **Featured apps** has a lot of good stuff: Announcement center, Collectives, External sites, External storage support, File access control, Forms (a real Google Forms replacement), Mail, Maps, Music, and News. As an example, I enabled **News**, which is a full RSS reader. I subscribed to 9to5Linux's feed, and the latest posts showed up right away.
 
-![The Featured apps list in Nextcloud with Download and enable buttons for Forms, Mail, and Music, and an Allow untested app button for Maps](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/nextcloud-featured-apps.jpg)
+![The Featured apps list in Nextcloud with Download and enable buttons for Forms, Mail, and Music, and an Allow untested app button for Maps](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/nextcloud-featured-apps.jpg)
 
 There's also a games category, customization apps like Breeze Dark, custom CSS and app ordering, and options like Rocket.Chat or Roundcube under social and communication. There's honestly too much to cover in one go.
 
@@ -287,7 +287,7 @@ This is one of my favorite tricks. Enable **External storage support**, then go 
 
 I added an SMB share from my main storage server by entering the host, the share name, and my credentials, then made it available to all users. After the green check mark showed up, the share appeared in Files. I could open my movie folder and play a file in the browser (A Goofy Movie, before Disney comes after me). I could also copy a file from the share into Nextcloud's own storage. This works much more smoothly than when I first tried it years ago.
 
-![An SMB/CIFS external storage entry in Nextcloud with the host, share, and login filled in and made available to all people](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/external-storage-smb.jpg)
+![An SMB/CIFS external storage entry in Nextcloud with the host, share, and login filled in and made available to all people](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/external-storage-smb.jpg)
 
 Two notes from the AIO docs:
 
@@ -336,7 +336,7 @@ These are from my Hub 26 Winter video and [Nextcloud's release post](https://nex
 
 **Federation for Deck, Calendar, and Teams.** Deck boards, calendars, and Teams can now include people on other Nextcloud servers, and federated file shares support file locking. Servers aren't connected automatically. You add them under **Administration settings > Sharing > Trusted servers**.
 
-![The Trusted servers section of Nextcloud's sharing settings with the Add trusted server field](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/trusted-servers-federation.jpg)
+![The Trusted servers section of Nextcloud's sharing settings with the Add trusted server field](/docs-static/img/2026/12/nextcloud-aio-self-hosted-cloud/trusted-servers-federation.jpg)
 
 **Data migration.** Export and import now cover Mail, Contacts, Calendar, Tables, and Deck. I've seen plenty of forum complaints from people who couldn't get their data out of a hosted instance, so this is a welcome fix.
 
