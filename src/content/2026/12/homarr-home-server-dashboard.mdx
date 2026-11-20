@@ -1,10 +1,10 @@
 export const title = "Homarr: A Drag-and-Drop Home Server Dashboard in Docker"
 export const description = "Install the current Homarr release with Docker Compose or a Portainer stack, then build a home server dashboard with app tiles, *arr and download client integrations, Docker management, and widgets, all from the web UI."
-export const date = "2026-10-17"
+export const date = "2026-12-11"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab"]
-export const cover = "/docs-static/img/2026/10/homarr-home-server-dashboard/cover.jpg"
+export const cover = "/docs-static/img/2026/12/homarr-home-server-dashboard/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -22,7 +22,7 @@ The video was published in November 2023 and shows Homarr 0.x from the old `ajna
 
 Homarr is a self-hosted start page for your server. The basic board is a grid of tiles linking to all of your apps, with a little status dot showing whether each one is reachable. Where it gets good is the integrations. You connect it to the services you already run and it pulls live data onto the board.
 
-![App tiles with online and offline status dots above torrent and media request widgets on my main dashboard, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/10/homarr-home-server-dashboard/old-dashboard-app-tiles.jpg)
+![App tiles with online and offline status dots above torrent and media request widgets on my main dashboard, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-dashboard-app-tiles.jpg)
 
 On my main dashboard in the video, that looked like:
 
@@ -33,7 +33,7 @@ On my main dashboard in the video, that looked like:
 - **A now-playing widget.** I started Rudolph the Red-Nosed Reindeer in Plex to show it off, and clicking the session gave me detailed playback info. It works with both Plex and Jellyfin. I run both: Plex is my primary and Jellyfin is my backup, because Plex is definitely imperfect.
 - **Search**, plus a **Docker** panel that lists every container and lets you start, stop, restart, and remove them, or add one as a tile.
 
-![A SpongeBob SquarePants episode popup with an IMDb link opened from the calendar widget, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/10/homarr-home-server-dashboard/old-calendar-episode-popup.jpg)
+![A SpongeBob SquarePants episode popup with an IMDb link opened from the calendar widget, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-calendar-episode-popup.jpg)
 
 The current project is [Apache-2.0 licensed](https://github.com/homarr-labs/homarr), runs as a single container, and the integration list has grown a lot. The [integrations page](https://homarr.dev/docs/integrations/) now lists 91 services, including qBittorrent, Transmission, Deluge, SABnzbd, NZBGet, Sonarr, Radarr, Lidarr, Readarr, Prowlarr, Plex, Jellyfin, Emby, Seerr, Proxmox, Pi-hole, AdGuard Home, Home Assistant, Immich, and Docker. The [widgets list](https://homarr.dev/docs/widgets/) has 61 entries, from Calendar, Download Client, and Media server streams to Weather, RSS, iFrame, Video Stream, and Docker stats.
 
@@ -140,7 +140,7 @@ It deploys in no time since it's a lightweight service. I checked the container 
 
 The one thing the old install command left out was the Docker integration. To see and manage your other containers, Homarr needs the Docker socket mounted, which is the `/var/run/docker.sock` line in the compose file. In the video I said you might as well add it unless you specifically don't want Homarr touching your other containers.
 
-![The Docker panel listing my running containers with their images, ports, and state, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/10/homarr-home-server-dashboard/old-docker-container-list.jpg)
+![The Docker panel listing my running containers with their images, ports, and state, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-docker-container-list.jpg)
 
 I'd add a caveat to that now. The [Docker integration docs](https://homarr.dev/docs/integrations/docker) are clear that a Docker socket "grants extensive host control." Whatever can talk to that socket can control the Docker host, so if Homarr is ever compromised, so are your containers. If you only want Homarr to list containers, use a least-privilege socket proxy instead and point Homarr at it with `DOCKER_HOSTNAMES` and `DOCKER_PORTS`. If you don't need the integration at all, delete the socket line.
 
