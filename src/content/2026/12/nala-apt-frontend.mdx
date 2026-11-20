@@ -1,0 +1,224 @@
+export const title = "Nala: A Nicer Frontend for APT on Debian and Ubuntu"
+export const description = "Nala puts a cleaner, colorful interface on APT with parallel downloads, mirror selection, and transaction history. Here's how to install it today, and what changed with the Rust rewrite."
+export const date = "2026-12-30"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Terminal"]
+export const cover = "/docs-static/img/2026/12/nala-apt-frontend/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="skbE6U5uE3A" title="TechHut's Nala APT frontend walkthrough" />
+
+I found [Nala](https://gitlab.com/volian/nala) while scrolling through Reddit, and it's one of those small tools that makes a daily chore feel a lot nicer. It's a frontend for APT, so if you're on Debian, Ubuntu, or anything built on them, you can use it. It does the same package work APT does, just with output that's easier to read, colors that tell you what's about to happen, and a few extra features APT doesn't have.
+
+The video was published in March 2022, when Nala was a brand-new Python project. Its first release had come out about three months earlier, and the GitLab page I showed had just been bumped to version 0.6.0. A lot has changed since then. Nala has been rewritten in Rust, and the Rust version (0.18.3, released November 6, 2026) is now what Debian unstable and testing ship. Stable Debian and Ubuntu releases still ship the older Python version. The install steps and command notes below cover both, and I've marked which version each one applies to. The screenshots and hands-on impressions come from the original recording.
+
+## What Nala Does
+
+APT works fine, but its output can be hard to follow, especially if you're new to Linux. When you install or upgrade something, you get a wall of text, and it isn't always obvious what's being installed, upgraded, or removed. Nala tries to fix that by cutting out redundant messages, laying packages out in clean tables, and using color to show what will happen to each package.
+
+It's not a separate package manager. Nala uses `libapt-pkg` under the hood, so it reads the same repositories and installs the same packages. You can use `nala` and `apt` side by side.
+
+The main features:
+
+| Feature | What it does |
+|---|---|
+| Readable summaries | Tables of packages to install, upgrade, or remove, with old and new versions and sizes |
+| Parallel downloads | Up to 3 connections per mirror at once, spread across your mirrors |
+| `nala fetch` | Tests mirrors for your distro and picks the fastest ones |
+| `nala history` | Logs every install, remove, and upgrade, with undo and redo |
+| `show` / `search` | Package details and search with nicer formatting |
+
+Nala is open source under the GPLv3 (version 3 only). The official repository is on [GitLab](https://gitlab.com/volian/nala). There's also a [GitHub copy](https://github.com/volitank/nala) under the maintainer's account, but it tracks the same code, and the README points to GitLab as the official repo and the place for issues and releases.
+
+## Which Nala You'll Get
+
+This is the important part now. Running `apt install nala` gets you a different implementation depending on your distro release. I checked the Debian and Ubuntu archives on November 19, 2026:
+
+| Distro release | Nala version | Implementation |
+|---|---|---|
+| Debian unstable (sid) and testing (forky) | 0.18.3 | Rust |
+| Debian 13 (trixie) | 0.16.0 | Python |
+| Debian 12 (bookworm) | 0.12.2, or 0.15.4 from bookworm-backports | Python |
+| Ubuntu 25.10, 26.04 LTS, 26.10 | 0.16.0 (universe) | Python |
+| Ubuntu 24.04 LTS | 0.15.1 (universe) | Python |
+| Ubuntu 22.04 LTS | 0.11.1 (jammy-backports) | Python |
+
+The Rust port moved into the main development branch with 0.17.0, and the Python code is now archived under [`legacy/python`](https://gitlab.com/volian/nala/-/tree/main/legacy/python) in the repo. 0.18.0 is the release that officially replaced Python Nala in Debian. Anything 0.16.0 or older is the Python version.
+
+To check what you have:
+
+```bash
+nala --version
+```
+
+## Installing Nala
+
+### From your distro's repositories (recommended)
+
+In the video, Nala wasn't in the official repositories yet, so I added Volian's own "Scar" repository and its signing key first. That's no longer needed. Nala is packaged in Debian and Ubuntu, so on most systems it's just:
+
+```bash
+sudo apt update
+sudo apt install nala
+```
+
+On Ubuntu, Nala is in the universe component, which is enabled by default on standard installs. If APT can't find it, run `sudo add-apt-repository universe` first. On Ubuntu 22.04, it comes from `jammy-backports`, which is also enabled by default.
+
+On Debian 12, you can get a newer Python build from backports. Add `bookworm-backports` to your sources if you haven't already (see the [Debian backports instructions](https://backports.debian.org/Instructions/)), then:
+
+```bash
+sudo apt update
+sudo apt install -t bookworm-backports nala
+```
+
+### Trying the Rust version on Ubuntu 24.04
+
+If you're on Debian sid or testing, the normal install above already gives you the Rust version. For Ubuntu, the project publishes Ubuntu 24.04 builds of each Rust release on its [releases page](https://gitlab.com/volian/nala/-/releases), for amd64 and (since 0.18.2) arm64. For 0.18.3 on amd64:
+
+```bash
+wget https://gitlab.com/api/v4/projects/31927362/packages/generic/nala/v0.18.3/nala-v0.18.3-ubuntu-24.04-amd64.deb
+sudo apt install ./nala-v0.18.3-ubuntu-24.04-amd64.deb
+```
+
+Keep a few things in mind before you do this:
+
+- **It's only built for Ubuntu 24.04.** The package depends on 24.04's `libapt-pkg6.0t64`. The release notes say to use the package built for your distribution, and the Sid packages need `libapt-pkg7.0`, so don't install the Sid `.deb` on a stable release.
+- **The CI downloads are unsigned.** The release notes say so plainly. Only the uploads to the Debian archive are signed by the maintainer.
+- **You won't get updates automatically.** There's no APT repository behind it. To update, download the next release's `.deb` and install it the same way.
+
+If you just want to kick the tires without touching your system's package manager, a Debian sid container in [Distrobox](/distrobox-linux-containers-guide) is an easy way to try Rust Nala.
+
+<Note>
+Upgrading from Python Nala to the Rust version replaces an untouched `/etc/nala/nala.conf` automatically. If you edited that file, Rust Nala refuses to start until you migrate a few renamed and removed settings. The [debian/NEWS](https://gitlab.com/volian/nala/-/blob/main/debian/NEWS) file lists them, and the new default config is saved as `/etc/nala/nala.conf.dpkg-dist` for reference. Your old history is read automatically and imported the first time you change it (an install, removal, undo, and so on), and the original `history.json` is kept.
+</Note>
+
+### What about the Volian Scar repository?
+
+That's the third-party repo I used in the video. It's still online, but it was last updated in June 2025 and only carries Python Nala up to 0.16.0. It doesn't have the Rust releases. Unless you're on a release where the distro package isn't available, stick with the official Debian or Ubuntu package.
+
+## Updating and Upgrading
+
+I first tried Nala on an Ubuntu server that didn't have it yet. After it was installed, the first thing I did was:
+
+```bash
+sudo nala update
+```
+
+You get a clean list of every repository it checked, including any you just added. From there, `sudo nala upgrade` shows a table of every package with its old version, new version, and size, then asks before it does anything. `nala upgrade` refreshes your package lists first by default, so you don't have to run `update` separately.
+
+Once you say yes, you get a progress bar for the downloads and another for the install. It shows how many packages are done, what it's unpacking, and a percentage. The time remaining wasn't very accurate in my test. It sat on 13 seconds for about a minute. At the end, Nala told me which packages needed a reboot, which is nice to know on a server.
+
+Upgrades work a little differently in the Rust version:
+
+```bash
+sudo nala upgrade                      # normal upgrade, refreshes lists first
+sudo nala upgrade --exclude 'linux-*'  # skip packages matching a glob
+sudo nala full-upgrade                 # allow removals to resolve dependencies
+sudo nala safe-upgrade                 # never install or remove packages (Rust only)
+```
+
+`--exclude` and `full-upgrade` also exist in Python 0.16.0. `safe-upgrade` is new in the Rust version.
+
+## Installing Packages
+
+Back on my Kubuntu machine, `neofetch` wasn't installed, so I grabbed it with Nala:
+
+```bash
+sudo nala install neofetch
+```
+
+It showed a summary of everything it was going to install before asking to continue. My system wasn't fully up to date, so that turned into 27 packages. That's the part I like most. Instead of flooding the whole terminal, Nala keeps the download and install progress in a couple of compact boxes, and you still see each step.
+
+Later in the video, I did the same thing for `mpv`:
+
+![Nala installing mpv on Kubuntu in the video, with the package summary, the Downloading panel, the Installing Packages panel, and the dpkg progress bar](/docs-static/img/2026/12/nala-apt-frontend/nala-install-mpv-progress.jpg)
+
+A few install flags worth knowing. These work in Python 0.16.0 and in the Rust version:
+
+```bash
+sudo nala install htop --install-suggests   # also install suggested packages
+sudo nala install htop --no-install-recommends
+sudo nala install htop --update             # refresh package lists first
+sudo nala upgrade --no-update               # skip the list refresh
+```
+
+I showed `--no-update` in the video. It's there if you need it, but I wouldn't use it regularly, since you could end up working from stale package lists. Unlike `upgrade`, `install` doesn't refresh the lists by default, so `--update` is the one you'll reach for more often.
+
+One change in the Rust version: with `-y`/`--assume-yes`, Nala no longer removes unused packages automatically unless you also pass `--autoremove`. Interactive installs still autoremove like before.
+
+## Faster Mirrors with nala fetch
+
+This one works a lot like `netselect`. Nala downloads the mirror list for your distro, tests each mirror's latency, scores them, and lets you pick the fastest:
+
+```bash
+sudo nala fetch
+```
+
+In the video, it found the three fastest Ubuntu mirrors for me and wrote them to a sources file. After that, Nala and APT both use those mirrors, and since Nala spreads its downloads across the mirrors you have, a few fast ones can speed things up. I really couldn't get over how nice the progress bar looked while it tested them.
+
+![The output of sudo nala fetch writing three Ubuntu mirrors to nala-sources.list, followed by nala history showing one install transaction, from the video](/docs-static/img/2026/12/nala-apt-frontend/nala-fetch-and-history.jpg)
+
+The options have changed a little over the years, and so has the file it writes:
+
+| | Python 0.16.0 | Rust 0.18.3 |
+|---|---|---|
+| Interactive mode | Lists 16 mirrors to choose from | Full-screen picker in a supported terminal; picks 3 automatically in plain output mode |
+| Automatic mode | `--auto`, with `--fetches N` to set the count | `--auto` picks 3, or `--auto N` |
+| Other flags | `--https-only`, `-c/--country`, `--non-free`, `--sources` | Same |
+| File written | `/etc/apt/sources.list.d/fetch.sources` | `/etc/apt/sources.list.d/nala.sources` |
+
+Older Python releases, like the one in the video and the 0.15.1 package in Ubuntu 24.04, write `/etc/apt/sources.list.d/nala-sources.list` instead.
+
+For an unattended setup with the Rust version:
+
+```bash
+sudo nala fetch --auto --https-only --country US
+```
+
+Fetch supports Debian, Ubuntu, and Devuan. To undo it later, `sudo nala clean --fetch` removes the file Nala wrote.
+
+## Transaction History
+
+`nala history` is my favorite extra. If you've used `dnf history` on Fedora, it's the same idea. Every install, removal, and upgrade gets logged with an ID, the command, the date and time, how many packages it changed, and who ran it. I was curious whether it would work without `sudo`, and it did. At that point the only thing in my history was the `neofetch` install, with 28 packages altered.
+
+You can do more than look at the list:
+
+```bash
+nala history                # list all transactions
+nala history info 3         # details for one transaction
+sudo nala history undo 3    # reverse a transaction
+sudo nala history redo 3    # apply it again
+sudo nala history clear 3   # delete one entry
+```
+
+Those work in Python 0.16.0 and the Rust version, and both accept `last` in place of an ID (for example `sudo nala history undo last`) plus `sudo nala history clear --all` to wipe everything. The Rust version also lets you run `nala history last` to show the most recent entry, and it stores each entry as its own JSON file under `/var/lib/nala/history` instead of one `history.json`. Viewing history doesn't need root, but undo, redo, and clear do.
+
+## Show, Search, and the Rest
+
+`nala show` gives you the details for a package. When I ran it on Firefox, I got the version, whether it's installed, the section, source, origin, maintainer, bug tracker link, installed size, the full dependency list, recommends, and the description. Running it on `htop`, which wasn't installed yet, showed less because there are fewer dependencies, but it still had the description and sources.
+
+```bash
+nala show firefox
+nala search htop
+```
+
+`nala search` checks package names and descriptions. Searching for `htop` gave me both `bashtop` and `htop`, each with its repository and a one-line description. When I searched for `mpv`, I could see right away which package I wanted, then installed it with `sudo nala install mpv`. Add `--names` to search package names only, or use `nala list` to list packages by name. The Rust version also adds `nala policy` for pin and priority info.
+
+The other commands you'll use:
+
+```bash
+sudo nala remove package-name
+sudo nala purge package-name     # remove with config files
+sudo nala autoremove
+sudo nala clean                  # clear the local archive of downloaded .deb files
+```
+
+The Rust version also retired a few Python options. The `--raw-dpkg` flag I had in my help output is gone (Plain output mode replaces it), and so are `--license`, `history --installed`, and `list/search --nala-installed`.
+
+## Final Thoughts
+
+I know some people will say APT can already do all of this if you use the right options. Sure. Nala is just a prettier and easier way to work with the same package manager, and I figured I'd probably start using it, especially on my little Kubuntu system. At the time, I thought some distributions might eventually alias it to `apt` or make it their default frontend.
+
+Either way, the project has clearly matured. It's in the official Debian and Ubuntu repositories now, and the Rust rewrite has replaced the Python version in Debian unstable. If you're on a stable release, `sudo apt install nala` gets you the Python version, which still does everything I showed in the video. If you want the Rust version early, it's in Debian sid and testing, or you can grab the Ubuntu 24.04 build from GitLab. With all that, I do hope you have an absolutely beautiful day.
