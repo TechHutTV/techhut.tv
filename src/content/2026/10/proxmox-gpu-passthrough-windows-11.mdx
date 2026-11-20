@@ -12,10 +12,10 @@ import {YouTube} from "@/components/YouTube"
 
 My desktop tower had been sitting unused for a couple of months. My laptop handles most of my Linux work now, and I do a lot of my DaVinci Resolve editing on an M1 MacBook Air, so the tower had turned into a waste of space. The fix was one of my favorite applications: Proxmox. The plan was to install Proxmox on it, create a Windows 11 virtual machine, and hand the dedicated graphics card straight to that VM. With a real GPU, the VM should run DaVinci Resolve properly, and maybe Steam streaming later on.
 
-Despite how long this guide is, it's not a hard thing to do. I followed [The Ultimate Beginner's Guide to GPU Passthrough](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/) on r/homelab, which calls itself an idiot-friendly tutorial, so it was perfect for me. It was already three years old when I recorded, so I made a few tweaks, mostly in the VM creation and Windows 11 setup. It still took some trial and error and three takes of recording before my Windows VM would accept the AMD card.
+The steps are long. The work itself is straightforward. I followed [The Ultimate Beginner's Guide to GPU Passthrough](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/) on r/homelab, which calls itself an idiot-friendly tutorial, so it was perfect for me. It was already three years old when I recorded, so I made a few tweaks, mostly in the VM creation and Windows 11 setup. It still took some trial and error and three takes of recording before my Windows VM would accept the AMD card.
 
 <Note>
-**What's been updated:** I recorded the video in July 2022 on Proxmox VE 7.2 with a 5.15 kernel. The written steps follow the current [Proxmox VE PCI(e) passthrough documentation](https://pve.proxmox.com/wiki/PCI(e)_Passthrough) and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (released May 21, 2026, on a 7.0 kernel) instead of the old Reddit guide. Several host steps from the video are no longer needed, or have moved, and I flag each one below. Everything I describe doing, and all of the screenshots, come from the original recording, so the Proxmox and Windows screens will look a bit different today.
+I recorded the video in July 2022 on Proxmox VE 7.2 with a 5.15 kernel. The steps below follow the current [Proxmox VE PCI(e) passthrough documentation](https://pve.proxmox.com/wiki/PCI(e)_Passthrough) and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (released May 21, 2026, on a 7.0 kernel) instead of the old Reddit guide. Several host steps from the video are no longer needed, or have moved, and I flag each one below. Everything I describe doing, and all of the screenshots, come from the original recording, so the Proxmox and Windows screens will look a bit different today.
 </Note>
 
 ## What Changed Since the Video
@@ -28,7 +28,7 @@ If you followed the video or the original guide, this is the short version:
 | Where kernel parameters go | `/etc/default/grub` and `update-grub` | Depends on the bootloader. GRUB uses `/etc/default/grub`; systemd-boot uses `/etc/kernel/cmdline` and `proxmox-boot-tool refresh`. |
 | VFIO modules | Four modules in `/etc/modules`, including `vfio_virqfd` | Three modules in `/etc/modules-load.d/vfio.conf`. `vfio_virqfd` was folded into `vfio` in kernel 6.2. |
 | Unsafe interrupts and `ignore_msrs` | Set both | Last-resort options. Leave them out unless you need them. |
-| Blacklisting | Blacklisted `radeon`, `nouveau`, and `nvidia` | Bind the card to `vfio-pci` by ID. Blacklist only the driver your card actually uses. |
+| Blacklisting | Blacklisted `radeon`, `nouveau`, and `nvidia` | Bind the card to `vfio-pci` by ID. Blacklist only the driver your card uses. |
 | VirtIO drivers | Swapped ISOs in a single CD drive | The VM wizard can add a second drive for the VirtIO ISO. |
 | VM config file | Added `cpu: host,hidden=1` and a long `args:` line | Usually unnecessary. Those lines worked around NVIDIA's old driver check. |
 
@@ -334,11 +334,11 @@ For the ultimate test, I installed DaVinci Resolve. Out of any application out t
 
 ## Final Thoughts
 
-After all the trial and error, the actual process was pretty easy: turn on IOMMU, keep the host off the card, give the VM q35 and UEFI, load the VirtIO drivers, and get Remote Desktop working before you switch the display to the GPU. That last bit is the step most likely to leave you staring at a blank console.
+After all the trial and error, the process was pretty easy: turn on IOMMU, keep the host off the card, give the VM q35 and UEFI, load the VirtIO drivers, and get Remote Desktop working before you switch the display to the GPU. That last bit is the step most likely to leave you staring at a blank console.
 
-The good news is that it's easier now than when I recorded. Current Proxmox doesn't need the GRUB edit or the `vfio_virqfd` module, the wizard handles the VirtIO driver drive and Windows 11 defaults, and current NVIDIA drivers usually don't need the card hidden from them.
+It's easier now than when I recorded. Current Proxmox doesn't need the GRUB edit or the `vfio_virqfd` module, the wizard handles the VirtIO driver drive and Windows 11 defaults, and current NVIDIA drivers usually don't need the card hidden from them.
 
-This box was going to become my homelab, replacing the little mini PC that ran things like my Jellyfin server and a Transmission client. If you're heading that way, my [Jellyfin VM guide](/ultimate-home-server-part-2-jellyfin) uses the same PCI passthrough to give a VM Intel Quick Sync for hardware transcoding. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+This box was going to become my homelab, replacing the little mini PC that ran things like my Jellyfin server and a Transmission client. If you're heading that way, my [Jellyfin VM guide](/ultimate-home-server-part-2-jellyfin) uses the same PCI passthrough to give a VM Intel Quick Sync for hardware transcoding. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
