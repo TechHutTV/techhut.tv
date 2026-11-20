@@ -14,13 +14,13 @@ Today we're installing real Linux applications inside Windows. Not a full virtua
 
 Linode sponsored the video this article is based on.
 
-I recorded the video in early 2022 on Windows 11, back when WSLg, the part of WSL that runs Linux GUI apps, was still pretty new. The written steps have been updated against Microsoft's current documentation and [WSL 3.0.3](https://github.com/microsoft/WSL/releases), the latest release as of October 2026. A few things have changed: `wsl --install` now gives you a much newer Ubuntu, GUI apps work on Windows 10 too, systemd is on by default in Ubuntu, one of the commands I showed has been removed, and WSL itself is now open source. My hands-on impressions all come from the original recording, and I've called out the spots where things look different now.
+I recorded the video in early 2022 on Windows 11, back when WSLg, the part of WSL that runs Linux GUI apps, was still pretty new. The steps below follow Microsoft's current documentation and [WSL 3.0.3](https://github.com/microsoft/WSL/releases), the latest release as of October 2026. A few things have changed: `wsl --install` now gives you a much newer Ubuntu, GUI apps work on Windows 10 too, systemd is on by default in Ubuntu, one of the commands I showed has been removed, and WSL itself is now open source. My hands-on impressions all come from the original recording, and I've called out the spots where things look different now.
 
 ## What WSL Is
 
 WSL is a compatibility layer built into Windows that lets you install a Linux distribution (Ubuntu, Debian, Fedora, Arch, openSUSE, Kali, and others) and run its tools and apps unmodified. With WSL 2, which is the default, each distro runs on a real Linux kernel inside a lightweight utility VM that Windows manages for you. You don't create the VM or configure it. You just open Ubuntu like any other app.
 
-Here is what you get:
+What you get:
 
 | Feature | What it means for you |
 |---|---|
@@ -187,7 +187,7 @@ sudo apt install gimp
 gimp
 ```
 
-Since I launched it from the terminal, I saw a pile of GTK warnings scroll by. Ignore them. GIMP opened fully and ran well. I tried **Filters > Render > Lava**, which is one of the more demanding filters, and it finished without any trouble. Performance was genuinely good.
+Since I launched it from the terminal, I saw a pile of GTK warnings scroll by. Ignore them. GIMP opened fully and ran well. I tried **Filters > Render > Lava**, which is one of the more demanding filters, and it finished without any trouble. Performance was good.
 
 ![GIMP running through WSLg in the video with the Lava render filter applied to a 1920x1080 canvas](/docs-static/img/2026/10/wsl-linux-apps-on-windows/gimp-lava-filter.jpg)
 
@@ -278,9 +278,9 @@ Recent versions of WSL include `wslc.exe`, a built-in CLI for running Linux cont
 
 ## My Take
 
-Setting this up really is one command and a reboot. You get a real Ubuntu terminal inside Windows Terminal, Linux commands from PowerShell, and GUI apps like GIMP and Kate sitting in the Start menu next to your Windows apps. That last part is super cool to me. GIMP performed well, and the only rough edge I hit was some noisy GTK warnings in the terminal.
+Setting this up is one command and a reboot. You get a real Ubuntu terminal inside Windows Terminal, Linux commands from PowerShell, and GUI apps like GIMP and Kate sitting in the Start menu next to your Windows apps. That last part is super cool to me. GIMP performed well, and the only rough edge I hit was some noisy GTK warnings in the terminal.
 
-There's a lot more you can do than what I showed, especially once you start pointing tools like VS Code at your Linux environment. The command reference and the GUI apps guide linked below are the best places to keep going. If you're already on Linux and want the same trick for other distros, check out my [Distrobox guide](/distrobox-linux-containers-guide). It's basically a Linux subsystem for other Linux distributions.
+There's a lot more you can do than what I showed, especially once you start pointing tools like VS Code at your Linux environment. The command reference and the GUI apps guide linked below are where I'd keep going. If you're already on Linux and want the same trick for other distros, check out my [Distrobox guide](/distrobox-linux-containers-guide). It's basically a Linux subsystem for other Linux distributions. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
