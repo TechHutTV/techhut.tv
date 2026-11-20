@@ -987,7 +987,9 @@
     "name": "Jellystat",
     "category": "Monitoring",
     "description": "Track playback activity and library statistics for a Jellyfin server.",
-    "coverage": [],
+    "coverage": [
+      "/jellystat-jellyfin-statistics"
+    ],
     "videos": [
       {
         "id": "mWV2bHVVENc",
