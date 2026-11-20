@@ -1624,7 +1624,9 @@
     "name": "Plausible",
     "category": "Monitoring",
     "description": "View website traffic and referral analytics through a web dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/plausible-privacy-friendly-analytics"
+    ],
     "videos": [
       {
         "id": "P0T6VjTS7_Y",
