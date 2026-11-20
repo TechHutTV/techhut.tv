@@ -1586,7 +1586,8 @@
     "description": "Run local language models for private AI workflows.",
     "coverage": [
       "/local-ai-automation-n8n-ollama-whisper",
-      "/fedora-server-guide-cockpit-zfs-podman"
+      "/fedora-server-guide-cockpit-zfs-podman",
+      "/deepseek-raspberry-pi-ollama-open-webui"
     ],
     "icon": "/app-icons/ollama.png",
     "iconDark": "/app-icons/ollama-light.png",
@@ -1648,7 +1649,8 @@
     "category": "AI",
     "description": "Chat with locally hosted language models through a web interface.",
     "coverage": [
-      "/fedora-server-guide-cockpit-zfs-podman"
+      "/fedora-server-guide-cockpit-zfs-podman",
+      "/deepseek-raspberry-pi-ollama-open-webui"
     ],
     "videos": [
       {
