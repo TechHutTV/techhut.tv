@@ -1,10 +1,10 @@
 export const title = "Self-Host the Internet: Offline Wikipedia with Kiwix and Your Own OpenStreetMap Server"
 export const description = "Serve offline copies of Wikipedia, Ask Ubuntu, TED talks, and more with Kiwix Server in Docker, then import OpenStreetMap data into your own tile server so maps keep working when the internet doesn't."
-export const date = "2026-10-11"
+export const date = "2026-12-25"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/cover.jpg"
+export const cover = "/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -141,7 +141,7 @@ A few notes on that:
 
 Now browse to `http://your-server-ip:8000`. You get your own version of that library page, with everything served from your machine.
 
-![The self-hosted Kiwix Server library page listing 13 ZIM archives, including TED, Wikibooks, Wikipedia, wikiHow, and TEDMED](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/kiwix-server-library.jpg)
+![The self-hosted Kiwix Server library page listing 13 ZIM archives, including TED, Wikibooks, Wikipedia, wikiHow, and TEDMED](/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/kiwix-server-library.jpg)
 
 <Warning>
 Kiwix Server has no login. Keep it on your LAN or behind a VPN. If you want remote access, my [NetBird guide](/self-host-netbird-pocketid) is one way to do that without opening a port to the internet.
@@ -151,11 +151,11 @@ Kiwix Server has no login. Keep it on your LAN or behind a VPN. If you want remo
 
 My Wikipedia archive was the English "all maxi" version, so everything. I did need to update it, since I'd had those files for a while. Then I clicked through some articles. From the article on trains, I went to electric locomotives, then solar panels, then cloud cover and cyclones. All of those links worked, completely offline on my local network.
 
-![The Wikipedia article on trains served offline by Kiwix Server, with its full text, links, and photos](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/offline-wikipedia-train.jpg)
+![The Wikipedia article on trains served offline by Kiwix Server, with its full text, links, and photos](/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/offline-wikipedia-train.jpg)
 
 wikiHow was the full site with images: guitar chords, singing, motorcycles, driving basics, a lot of stuff. The one I find really cool is TED. In the TEDMED archive, the talks play as full videos right in the browser, with their extra information alongside.
 
-![A TEDMED talk playing as a full video inside the offline TEDMED archive in Kiwix](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/tedmed-offline-video.jpg)
+![A TEDMED talk playing as a full video inside the offline TEDMED archive in Kiwix](/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/tedmed-offline-video.jpg)
 
 I recommend everybody keep a ZIM server with at least a little data on it, whether that's Wikipedia, a how-to site, or whatever you'd want if the internet went down. Even the small ArchWiki archive is worth having.
 
@@ -180,7 +180,7 @@ Pick the smallest region that covers what you need. When I first tested this, I 
 
 On a region's page, the two files you care about are the `.osm.pbf` (the actual data) and the `.poly` file (the region boundary). Right-click each one and copy the link.
 
-![Geofabrik's Washington download page listing the .osm.pbf extract and the .poly boundary file, as it looked in the video](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/geofabrik-washington.jpg)
+![Geofabrik's Washington download page listing the .osm.pbf extract and the .poly boundary file, as it looked in the video](/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/geofabrik-washington.jpg)
 
 ### Create the Volumes
 
@@ -236,7 +236,7 @@ Give it a moment, then open `http://your-server-ip:8080`. You'll get a simple Le
 
 The first time you view an area, it's slow. Tiles are rendered on demand, so zooming in somewhere new takes a few seconds before the map fills in. After that, they come from the `osm-tiles` cache. I zoomed into Washington, then into my teeny tiny hometown, and there it was, right down to the school I went to for kindergarten and second grade.
 
-![The self-hosted OpenStreetMap tile server rendering Washington State in the browser from the imported extract](/docs-static/img/2026/10/self-host-internet-kiwix-openstreetmap/osm-tile-server-washington.jpg)
+![The self-hosted OpenStreetMap tile server rendering Washington State in the browser from the imported extract](/docs-static/img/2026/12/self-host-internet-kiwix-openstreetmap/osm-tile-server-washington.jpg)
 
 The tiles themselves are also available at `http://your-server-ip:8080/tile/{z}/{x}/{y}.png`. Map apps that accept a custom XYZ tile URL can use that to display your own server's map. Keep in mind that this is a map, not a navigation system. You get the rendered map with no routing or turn-by-turn directions. Think good old MapQuest printouts if GPS were ever down.
 
