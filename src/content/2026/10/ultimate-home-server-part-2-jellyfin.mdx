@@ -19,17 +19,17 @@ import {YouTube} from "@/components/YouTube"
 4. [Part 4: SSL certificates on everything](/ultimate-home-server-part-4-ssl-certificates)
 </Note>
 
-In [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) we built the foundation: a Proxmox node, ZFS storage, and a container sharing a `data` folder over Samba. Now it's time to put something fun on top of it. In this part we create a dedicated virtual machine, get Ubuntu Server and Docker running, pass through Intel Quick Sync, mount the data share, and spin up Jellyfin with working hardware transcoding.
+In [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) we built the foundation: a Proxmox node, ZFS storage, and a container sharing a `data` folder over Samba. Now it's time to put something fun on top of it. We create a dedicated virtual machine, get Ubuntu Server and Docker running, pass through Intel Quick Sync, mount the data share, and spin up Jellyfin with working hardware transcoding.
 
-The last time I did this series, the media server was Plex. With the direction Plex has been heading, I can't recommend it as enthusiastically as I used to, so this time it's Jellyfin. If you still prefer Plex, I keep a [Plex folder](https://github.com/TechHutTV/homelab/tree/main/media/plex) in my homelab repo, and the process is almost identical.
+The last time I did this series, the media server was Plex. With the direction Plex has been heading, I don't recommend it the way I used to, so this time it's Jellyfin. If you still prefer Plex, I keep a [Plex folder](https://github.com/TechHutTV/homelab/tree/main/media/plex) in my homelab repo, and the process is almost identical.
 
 Skillshare sponsored the video this article is based on.
 
-The written steps have been updated for [Jellyfin 12.2](https://github.com/jellyfin/jellyfin/releases/tag/v12.2), released October 5, 2026, and [Ubuntu Server 26.04.1 LTS](https://ubuntu.com/download/server). They also follow the current version of my [Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin), which now use a credentials file for the share mount. I recorded the video in May 2025, so a few screens may look different, and I've marked where current advice differs from what I did on camera.
+The steps below are for [Jellyfin 12.2](https://github.com/jellyfin/jellyfin/releases/tag/v12.2), released October 5, 2026, and [Ubuntu Server 26.04.1 LTS](https://ubuntu.com/download/server). They also follow the current version of my [Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin), which now use a credentials file for the share mount. I recorded the video in May 2025, so a few screens may look different, and I've marked where current advice differs from what I did on camera.
 
 ## What We're Building
 
-Here's how the pieces fit together by the end of this part:
+How the pieces fit together by the end of this part:
 
 | Piece | Where it lives | What it does |
 |---|---|---|
@@ -155,7 +155,7 @@ Do note that [Docker's post-install docs](https://docs.docker.com/engine/install
 
 ## Check Quick Sync Inside the VM
 
-Make sure the passed-through GPU actually showed up:
+Make sure the passed-through GPU showed up:
 
 ```bash
 ls -l /dev/dri
@@ -309,7 +309,7 @@ services:
     restart: unless-stopped
 ```
 
-Here's what to pay attention to:
+What to pay attention to:
 
 - **`PUID` and `PGID`:** the user and group the container runs as. I run everything as my default user, `1000:1000`, to keep permissions consistent across the server.
 - **`TZ`:** change this to your own time zone name, such as `America/New_York`.
@@ -404,7 +404,7 @@ For this setup, back up `/docker/jellyfin/config` after `docker compose down`, t
 
 ## Final Thoughts
 
-My own server still runs everything in one LXC, but for a guide, this is the cleaner way to build it. The VM keeps Docker away from the Proxmox host, the media stays on the ZFS pool from Part 1, and the configuration lives on a local disk where SQLite is happy. The one thing I'd really stress is that last part: keep your container configuration off the network share. That one cost me some trial and error.
+My own server still runs everything in one LXC. This VM layout is the cleaner way to build it. The VM keeps Docker away from the Proxmox host, the media stays on the ZFS pool from Part 1, and the configuration lives on a local disk where SQLite is happy. The one thing I'd really stress is that last part: keep your container configuration off the network share. That one cost me some trial and error.
 
 Hardware transcoding came down to a handful of steps: add the PCI device, check `/dev/dri`, map it into the container, select QSV in Jellyfin, and watch `intel_gpu_top` get busy.
 
@@ -412,7 +412,7 @@ The video was getting long, so I split the \*arr applications into their own par
 
 ## Next Up
 
-In [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack), we use this same VM to run the download clients and \*arr applications. They'll share the `/data` scheme we set up here, so new media lands in the same folders Jellyfin's libraries already watch. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+In [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack), we use this same VM to run the download clients and \*arr applications. They'll share the `/data` scheme we set up here, so new media lands in the same folders Jellyfin's libraries already watch. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
