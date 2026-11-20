@@ -10,21 +10,21 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="0gNn5oJWsrw" title="TechHut's Pi-hole in Home Assistant walkthrough" />
 
-This is a quick one. I'm going to show you how to get [Pi-hole](https://pi-hole.net/) into [Home Assistant](https://www.home-assistant.io/), and then the custom card I built for it. It works well enough that I barely need to open the Pi-hole dashboard anymore.
+This is a quick one. I'll show you how to get [Pi-hole](https://pi-hole.net/) into [Home Assistant](https://www.home-assistant.io/), and then the custom card I built for it. It works well enough that I barely need to open the Pi-hole dashboard anymore.
 
 The card has a big status icon that's green when Pi-hole is actively blocking and dark red when it isn't. Next to it are three buttons that turn blocking off for 5, 30, or 60 minutes. Under that sit three small graphs: total queries, blocked queries, and the percentage blocked.
 
 ![The Pi-hole card on my Home Assistant dashboard with blocking off, a dark red status icon, the 5m, 30m, and 60m buttons, and the Queries, Blocked, and Difference graphs, as shown in the video](/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/pi-hole-card-blocking-off.jpg)
 
-Those buttons are the whole reason I made this. Everybody in my house uses Home Assistant, and every once in a while someone tells me the internet's not working. Really they're just trying to open a site that refuses to load with an ad blocker, or they're researching something for a paper and need a news site. Now they open the app, tap a timer, and they're good to go. No admin login, and blocking turns itself back on.
+Those buttons are the whole reason I made this. Everybody in my house uses Home Assistant, and every once in a while someone tells me the internet's not working. They're trying to open a site that refuses to load with an ad blocker, or they're researching something for a paper and need a news site. Now they open the app, tap a timer, and they're good to go. No admin login, and blocking turns itself back on.
 
 <Note>
-The video was published in December 2024, when I was on Pi-hole v5. The written steps have been updated for the current versions. [Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) (February 2025) replaced the old API token with a new REST API and app passwords, and Home Assistant's built-in integration gained v6 support in [Home Assistant 2025.8](https://www.home-assistant.io/blog/2025/08/06/release-20258/). Several sensors were renamed along the way. The card YAML has also been updated for [Bubble Card v3.4.2](https://github.com/Clooos/Bubble-Card/releases/tag/v3.4.2), released October 14, 2026, and current Home Assistant action syntax. I also fixed a typo in the copy I posted to GitHub. My hands-on impressions come from the original recording.
+The video was published in December 2024, when I was on Pi-hole v5. The steps below use the current versions. [Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) (February 2025) replaced the old API token with a new REST API and app passwords, and Home Assistant's built-in integration gained v6 support in [Home Assistant 2025.8](https://www.home-assistant.io/blog/2025/08/06/release-20258/). Several sensors were renamed along the way. The card YAML has also been updated for [Bubble Card v3.4.2](https://github.com/Clooos/Bubble-Card/releases/tag/v3.4.2), released October 14, 2026, and current Home Assistant action syntax. I also fixed a typo in the copy I posted to GitHub. My hands-on impressions come from the original recording.
 </Note>
 
 ## What You'll Need
 
-This guide assumes you already have Pi-hole and Home Assistant up and running.
+You need Pi-hole and Home Assistant already running.
 
 - **Pi-hole.** If you don't have it yet, my [Pi-hole and Unbound guide](/pi-hole-unbound-recursive-dns) walks through the install.
 - **Home Assistant.** My [Home Assistant setup guide](/home-assistant-smart-home-setup) covers installing Home Assistant OS and onboarding.
@@ -43,7 +43,7 @@ In Home Assistant, go to **Settings** > **Devices & services**, click **Add inte
 | **Uses an SSL certificate** | Tick this if you connect over HTTPS |
 | **Verify SSL certificate** | Turn this off if Pi-hole is using its auto-generated certificate |
 
-The combination of host, port, and location should be the address you normally use for the Pi-hole login page, like `http://192.168.1.53:80/admin`. Pi-hole v6 [binds to ports 80 and 443](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) and falls back to `8080` for HTTP if those are taken. If you run it in Docker with a remapped port, use the port you actually browse to.
+The combination of host, port, and location should be the address you normally use for the Pi-hole login page, like `http://192.168.1.53:80/admin`. Pi-hole v6 [binds to ports 80 and 443](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) and falls back to `8080` for HTTP if those are taken. If you run it in Docker with a remapped port, use the port you browse to.
 
 In the video, the form also asked for a name. That field is gone now, and the device is just called **Pi-hole**, which is where the `switch.pi_hole` and `sensor.pi_hole_*` entity IDs below come from.
 
@@ -70,7 +70,7 @@ Once it's added, you get one device, **Pi-hole**, with 14 entities. That matches
 
 | Entity | Example ID on Pi-hole v6 | Notes |
 |---|---|---|
-| Switch | `switch.pi_hole` | Turns blocking on and off. This is the one you'll actually use. |
+| Switch | `switch.pi_hole` | Turns blocking on and off. This is the one you'll use. |
 | Status | `binary_sensor.pi_hole_status` | Whether blocking is enabled |
 | DNS queries | `sensor.pi_hole_dns_queries` | Was "DNS queries today" on v5 |
 | Ads blocked | `sensor.pi_hole_ads_blocked` | Was "Ads blocked today" on v5 |
@@ -98,7 +98,7 @@ Bubble Card has a graphical editor, which is really nice, but you'll still end u
 
 ![The Bubble Card visual editor in the video with a Button card, the State button type, and switch.pi_hole selected, next to a preview of the card](/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/bubble-card-editor-state-button.jpg)
 
-Here's my config, updated for the current Bubble Card release:
+My config, updated for the current Bubble Card release:
 
 ```yaml
 type: custom:bubble-card
@@ -188,9 +188,9 @@ Bubble Card also has a newer sub-button layout with `main` and `bottom` sections
 
 ## The Mini Graph Card Stats
 
-The bottom half is three cards from [Mini Graph Card](https://github.com/kalkih/mini-graph-card). You could use the history graph built into Home Assistant for this, and that works too, but these are really pretty. The documentation is very extensive, with all the options and a bunch of examples you can copy and tweak.
+The bottom half is three cards from [Mini Graph Card](https://github.com/kalkih/mini-graph-card). You could use the history graph built into Home Assistant for this, and that works too, but these are really pretty. The documentation covers the options and has a bunch of examples you can copy and tweak.
 
-Install it from HACS the same way. Search for **mini-graph-card** and download it. Here's my config, with the sensor names updated for Pi-hole v6:
+Install it from HACS the same way. Search for **mini-graph-card** and download it. My config, with the sensor names updated for Pi-hole v6:
 
 ```yaml
 type: horizontal-stack
@@ -246,7 +246,7 @@ The "Difference" card is the percentage of queries that were blocked. On v5 thes
 
 This card works well enough that I barely touch the Pi-hole dashboard anymore. Getting the integration running takes a couple of minutes, and having the timer buttons right in Home Assistant is really nice, since everybody in my house already uses it. When a site won't load for someone in my house, they open the app, tap 5, 30, or 60 minutes, and blocking comes back on by itself afterward.
 
-If you're on Pi-hole v6, the main thing to get right is the app password. After that, check your entity IDs, paste in the YAML, and customize it however you want. I still have some styling work to do on mine, and my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/homeassistant) has the rest of my Home Assistant configs, including the Bubble Card setup for my shades and my LocalTuya stuff. With all that, I do hope you found this helpful. Have a beautiful day.
+If you're on Pi-hole v6, the main thing to get right is the app password. After that, check your entity IDs, paste in the YAML, and customize it however you want. I still have some styling work to do on mine, and my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/homeassistant) has the rest of my Home Assistant configs, including the Bubble Card setup for my shades and my LocalTuya stuff. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
