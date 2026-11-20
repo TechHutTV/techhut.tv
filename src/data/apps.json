@@ -477,7 +477,8 @@
       "/copyparty-file-server-linux",
       "/dockhand-docker-manager",
       "/proxmox-backup-server-complete-guide",
-      "/bookorbit-self-hosted-library"
+      "/bookorbit-self-hosted-library",
+      "/ultimate-home-server-part-2-jellyfin"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
@@ -889,7 +890,9 @@
     "name": "Jellyfin",
     "category": "Media",
     "description": "Organize and stream your own movies, shows and music.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-2-jellyfin"
+    ],
     "videos": [
       {
         "id": "Vwtx_dfYrtA",
@@ -1839,7 +1842,8 @@
     "coverage": [
       "/proxmox-backup-server-complete-guide",
       "/monitor-home-server-grafana-prometheus-influxdb",
-      "/ultimate-home-server-part-1-proxmox-zfs-samba"
+      "/ultimate-home-server-part-1-proxmox-zfs-samba",
+      "/ultimate-home-server-part-2-jellyfin"
     ],
     "videos": [
       {
@@ -1856,6 +1860,11 @@
         "id": "LuCXHHc2u18",
         "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
         "published": "2021-12-01"
+      },
+      {
+        "id": "Vwtx_dfYrtA",
+        "title": "DITCH Netflix and Disney - the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.2",
+        "published": "2025-05-12"
       }
     ],
     "icon": "/app-icons/proxmox-ve.png",
