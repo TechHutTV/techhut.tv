@@ -1,10 +1,10 @@
 export const title = "AdGuard Home on Proxmox: Network-Wide Ad Blocking in an LXC"
 export const description = "Set up AdGuard Home in a Proxmox LXC with the community helper script, the official installer, or Docker, then point your devices and router at it for network-wide DNS ad blocking."
-export const date = "2026-10-11"
+export const date = "2026-12-14"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Self-Host", "Homelab", "Docker"]
-export const cover = "/docs-static/img/2026/10/adguard-home-proxmox-setup/cover.jpg"
+export const cover = "/docs-static/img/2026/12/adguard-home-proxmox-setup/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -182,7 +182,7 @@ Open `http://YOUR_SERVER_IP:3000`. The first thing I did was switch the page to 
 3. **Configure your devices.** A quick guide to pointing devices at the server. If you want network-wide coverage, the router section is the one you want. You can come back to this guide at any time from **Setup Guide** in the top menu.
 4. **Open Dashboard** and sign in.
 
-![The AdGuard Home setup wizard with the admin web interface on all interfaces at port 80 and the DNS server on all interfaces at port 53](/docs-static/img/2026/10/adguard-home-proxmox-setup/setup-wizard-listen-interfaces.jpg)
+![The AdGuard Home setup wizard with the admin web interface on all interfaces at port 80 and the DNS server on all interfaces at port 53](/docs-static/img/2026/12/adguard-home-proxmox-setup/setup-wizard-listen-interfaces.jpg)
 
 After that, the dashboard lives at `http://YOUR_SERVER_IP/`, or whatever port you chose, not on `3000`.
 
@@ -195,7 +195,7 @@ The dashboard is where I look first:
 - **Top queried domains** and **Top blocked domains**, with information about what each blocked domain is and what it does.
 - **Top upstreams** and **Average upstream response time**, which is what convinced me to change upstreams. More on that next.
 
-![The AdGuard Home dashboard on my main instance with 34,495 DNS queries, 2,809 blocked by filters, general statistics, and top clients](/docs-static/img/2026/10/adguard-home-proxmox-setup/adguard-dashboard.jpg)
+![The AdGuard Home dashboard on my main instance with 34,495 DNS queries, 2,809 blocked by filters, general statistics, and top clients](/docs-static/img/2026/12/adguard-home-proxmox-setup/adguard-dashboard.jpg)
 
 The **Query Log** gives you every individual request, which client made it, and whether it was blocked. It's great for figuring out why something is or isn't working.
 
@@ -203,7 +203,7 @@ The **Query Log** gives you every individual request, which client made it, and 
 
 AdGuard Home doesn't answer everything itself. Anything it doesn't block gets forwarded to an upstream resolver. By default, that's Quad9's unfiltered DNS-over-HTTPS server.
 
-![Top queried and blocked domains plus upstream stats on my main instance, where Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1](/docs-static/img/2026/10/adguard-home-proxmox-setup/top-domains-and-upstreams.jpg)
+![Top queried and blocked domains plus upstream stats on my main instance, where Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1](/docs-static/img/2026/12/adguard-home-proxmox-setup/top-domains-and-upstreams.jpg)
 
 On my main instance, Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1, so in the video I switched to Cloudflare. Go to **Settings > DNS settings > Upstream DNS servers** and add the servers you want, one per line. You can use whatever provider you prefer. The [known DNS providers list](https://adguard-dns.io/kb/general/dns-providers/) has the exact addresses. These are the encrypted versions for Cloudflare:
 
@@ -242,7 +242,7 @@ Then I went to a site that's absolutely covered in ads, CNN.com. Sure enough, a 
 
 Back in the new instance, I hit **Refresh statistics**. My computer showed up as the only client with 10 queries, and nothing blocked. That surprised me for a second, until I remembered my router was already sending everything through my main AdGuard Home server, which was catching those requests first. Sure enough, the main instance's **Query Log** had a whole bunch of recently blocked requests from my recording computer's IP. That was the CNN stuff.
 
-![The Query Log on my main AdGuard Home instance with blocked ad and tracking requests from my recording computer highlighted in red](/docs-static/img/2026/10/adguard-home-proxmox-setup/query-log-blocked.jpg)
+![The Query Log on my main AdGuard Home instance with blocked ad and tracking requests from my recording computer highlighted in red](/docs-static/img/2026/12/adguard-home-proxmox-setup/query-log-blocked.jpg)
 
 ## Go Network-Wide Through Your Router
 
@@ -250,7 +250,7 @@ Setting DNS on each device only protects that device. To cover everything, chang
 
 I use a TP-Link Omada setup. In the Omada controller, it's under **Settings > Wired Networks > LAN**. Edit the LAN network, change **DNS Server** from Auto to Manual, and enter your AdGuard Home server's IP. That's all it took for my main instance to start filtering the whole network.
 
-![The LAN network settings in the TP-Link Omada controller with DNS Server set to Manual and pointed at the AdGuard Home server](/docs-static/img/2026/10/adguard-home-proxmox-setup/omada-lan-dns-server.jpg)
+![The LAN network settings in the TP-Link Omada controller with DNS Server set to Manual and pointed at the AdGuard Home server](/docs-static/img/2026/12/adguard-home-proxmox-setup/omada-lan-dns-server.jpg)
 
 A few things that can make it look like it isn't working:
 
