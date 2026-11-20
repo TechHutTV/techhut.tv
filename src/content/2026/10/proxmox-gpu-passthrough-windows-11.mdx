@@ -339,23 +339,3 @@ After all the trial and error, the process was pretty easy: turn on IOMMU, keep 
 It's easier now than when I recorded. Current Proxmox doesn't need the GRUB edit or the `vfio_virqfd` module, the wizard handles the VirtIO driver drive and Windows 11 defaults, and current NVIDIA drivers usually don't need the card hidden from them.
 
 This box was going to become my homelab, replacing the little mini PC that ran things like my Jellyfin server and a Transmission client. If you're heading that way, my [Jellyfin VM guide](/ultimate-home-server-part-2-jellyfin) uses the same PCI passthrough to give a VM Intel Quick Sync for hardware transcoding. With all that, I do hope you have an absolutely beautiful day.
-
-## Official References
-
-- [Proxmox VE PCI(e) passthrough](https://pve.proxmox.com/wiki/PCI(e)_Passthrough)
-- [Proxmox VE PCI passthrough examples](https://pve.proxmox.com/wiki/PCI_Passthrough)
-- [Proxmox VE host bootloader](https://pve.proxmox.com/wiki/Host_Bootloader)
-- [Proxmox VE QEMU/KVM virtual machines](https://pve.proxmox.com/pve-docs/chapter-qm.html)
-- [Proxmox VE Windows 11 guest best practices](https://pve.proxmox.com/wiki/Windows_11_guest_best_practices)
-- [Proxmox VE Windows VirtIO drivers](https://pve.proxmox.com/wiki/Windows_VirtIO_Drivers)
-- [Proxmox VE roadmap and release notes](https://pve.proxmox.com/wiki/Roadmap)
-- [Proxmox VE installation](https://pve.proxmox.com/pve-docs/chapter-pve-installation.html)
-- [Prepare installation media](https://pve.proxmox.com/wiki/Prepare_Installation_Media)
-- [Proxmox downloads](https://www.proxmox.com/en/downloads)
-- [Proxmox patch dropping vfio_virqfd](https://lists.proxmox.com/pipermail/pve-devel/2024-October/065698.html)
-- [Linux kernel parameters](https://www.kernel.org/doc/Documentation/admin-guide/kernel-parameters.txt)
-- [virtio-win stable ISO](https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso)
-- [Windows 11 download](https://www.microsoft.com/en-us/software-download/windows11)
-- [Microsoft: How to use Remote Desktop](https://support.microsoft.com/en-us/windows/how-to-use-remote-desktop-5fe128d5-8fb1-7a23-3b8a-41e636865e8c)
-- [NVIDIA GeForce GPU passthrough support](https://nvidia.custhelp.com/app/answers/detail/a_id/5173)
-- [The Ultimate Beginner's Guide to GPU Passthrough (r/homelab)](https://www.reddit.com/r/homelab/comments/b5xpua/the_ultimate_beginners_guide_to_gpu_passthrough/)
