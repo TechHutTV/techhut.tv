@@ -10,9 +10,9 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="OC67FoXVRPE" title="TechHut's Kiwix and OpenStreetMap self-hosting walkthrough" />
 
-In this guide we're hosting our own little slice of the internet, offline. That means Wikipedia, the ArchWiki, Ask Ubuntu, and one of my personal favorites, real map data, all sitting on your own network. Once it's downloaded, it doesn't matter whether the internet is up.
+We're hosting our own little slice of the internet, offline. That means Wikipedia, the ArchWiki, Ask Ubuntu, and one of my personal favorites, real map data, all sitting on your own network. Once it's downloaded, it doesn't matter whether the internet is up.
 
-Why would anybody do this? There are a couple of good reasons. Internet access isn't a given for everyone. If you live somewhere rural or remote, having a lot of this information stored locally is just easier. The second reason is more of a doomer mindset, and honestly it's mine. I don't fully trust that network infrastructure, or whoever happens to be in charge, will keep all of this available forever. Whatever your reason, it's a fun project, and it's really nice having all of that data on your NAS.
+Why would anybody do this? There are a couple of good reasons. Internet access isn't a given for everyone. If you live somewhere rural or remote, having a lot of this information stored locally is just easier. The second reason is more of a doomer mindset, and it's mine. I don't fully trust that network infrastructure, or whoever happens to be in charge, will keep all of this available forever. Whatever your reason, it's a fun project, and it's really nice having all of that data on your NAS.
 
 We'll use two tools, both running in Docker:
 
@@ -22,14 +22,14 @@ We'll use two tools, both running in Docker:
 UGREEN sponsored the video this article is based on, as part of its NASync launch.
 
 <Note>
-The written steps have been updated for what upstream ships as of October 2026: the `ghcr.io/kiwix/kiwix-serve` image (pinned to 3.8.2, released March 2, 2026), current ZIM sizes, and the upstream Overv tile server image. The video description linked a fork of the tile server, so I've explained that switch below. My hands-on impressions come from the recorded walkthrough.
+The steps below are for what upstream ships as of October 2026: the `ghcr.io/kiwix/kiwix-serve` image (pinned to 3.8.2, released March 2, 2026), current ZIM sizes, and the upstream Overv tile server image. The video description linked a fork of the tile server, so I've explained that switch below. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
-If you'd rather have Wikipedia, maps, and a bunch of other offline tools wrapped up in one installer and dashboard, I also covered [Project NOMAD](/project-nomad-offline-knowledge-server), which uses Kiwix under the hood. This guide is the do-it-yourself version, with each piece set up by hand.
+If you'd rather have Wikipedia, maps, and a bunch of other offline tools wrapped up in one installer and dashboard, I also covered [Project NOMAD](/project-nomad-offline-knowledge-server), which uses Kiwix under the hood. This is the do-it-yourself version, with each piece set up by hand.
 
 ## What I Started With
 
-You don't need much hardware for this. Before recording, I installed Ubuntu Server in a Proxmox VM, updated it, and installed Docker with Docker's convenience script. You can do this on a mini PC, a rackmount server, or a VM on a NAS that supports them. Kiwix also has [desktop and mobile apps](https://get.kiwix.org/en/solutions/applications/), so you don't strictly need a server. I still think a server is the better option, though. If you ever actually need this data, every device on your network can reach it by typing in an IP address. Nobody needs a local copy or an app installed.
+You don't need much hardware for this. Before recording, I installed Ubuntu Server in a Proxmox VM, updated it, and installed Docker with Docker's convenience script. You can do this on a mini PC, a rackmount server, or a VM on a NAS that supports them. Kiwix also has [desktop and mobile apps](https://get.kiwix.org/en/solutions/applications/), so you don't strictly need a server. I still think a server is the better option, though. If you ever need this data, every device on your network can reach it by typing in an IP address. Nobody needs a local copy or an app installed.
 
 If Docker is new to you, start with my [Docker basics guide](/7-docker-basics-for-beginners). To install Docker Engine on Ubuntu the same way I did, use the [convenience script](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script):
 
@@ -82,13 +82,13 @@ ls /media/data/zim
 
 On my share, the `zim` folder already had Wikipedia, Wikibooks, wikiHow, and some TED talk archives in it.
 
-## What Kiwix Actually Is
+## What Kiwix is
 
 [Kiwix](https://kiwix.org/en/) is the organization and software behind all of this. Their mission is free access to knowledge for everyone, including people without internet access. It's a really cool organization, and their site is worth a read. They package websites into ZIM files, compressed and searchable archives that the Kiwix apps and `kiwix-serve` can open.
 
 The easiest way to see what you'll end up with is the [Kiwix library](https://browse.library.kiwix.org/) (the old `library.kiwix.org` address now redirects there). That page is basically what your own server will look like: a grid of archives you can filter by language and category, and each one opens in the browser exactly like it would offline. I clicked into Wikipedia, went to Europe's geography article, and it's the full thing, pictures and all.
 
-Most projects come in several flavors, so you can trade size for completeness. Here's roughly what the archives I mentioned in the video weigh today:
+Most projects come in several flavors, so you can trade size for completeness. Roughly what the archives I mentioned in the video weigh today:
 
 | Archive | ZIM name | Approx. size (Oct 2026) |
 |---|---|---|
@@ -163,7 +163,7 @@ I recommend everybody keep a ZIM server with at least a little data on it, wheth
 
 ## Set Up Your Own OpenStreetMap Tile Server
 
-In my doomer scenario, the other piece of data we need is maps. You need to know how to get around without digging out an atlas, or hunting for one that's actually up to date. That's where the OpenStreetMap tile server comes in. It takes a bit more time than Kiwix, but it's still pretty easy.
+In my doomer scenario, the other piece of data we need is maps. You need to know how to get around without digging out an atlas, or hunting for one that's up to date. That's where the OpenStreetMap tile server comes in. It takes a bit more time than Kiwix, but it's still pretty easy.
 
 ### Which Tile Server Project to Use
 
@@ -173,7 +173,7 @@ The link in the video description pointed to `fsievers/openstreetmap-tile-server
 
 The data comes from OpenStreetMap extracts. I pulled mine from [Geofabrik's download server](https://download.geofabrik.de/). There are other sources, but this one is really good. You can drill down from continent to country to state, and hovering over a region highlights it on the map.
 
-Pick the smallest region that covers what you need. When I first tested this, I imported the whole western United States. The download only took around five minutes, but processing it into the database took about an hour and a half. For the video I grabbed just Washington, which processed much faster. Here's how the extract sizes compare:
+Pick the smallest region that covers what you need. When I first tested this, I imported the whole western United States. The download only took around five minutes, but processing it into the database took about an hour and a half. For the video I grabbed just Washington, which processed much faster. How the extract sizes compare:
 
 | Extract | `.osm.pbf` size (Oct 2026) |
 |---|---|
@@ -221,7 +221,7 @@ On resources, the image defaults to 4 threads and an 800 MB osm2pgsql cache. You
 
 ### Run the Tile Server
 
-Once the data is imported, start the server so you can actually reach it:
+Once the data is imported, start the server so you can reach it:
 
 ```bash
 docker run -d \
@@ -287,14 +287,14 @@ volumes:
 Hosting this for yourself is simple. If you serve it to other people, the content licenses still apply:
 
 - **Wikipedia** text is licensed under [CC BY-SA 4.0](https://en.wikipedia.org/wiki/Wikipedia:Copyrights), and most of it is also available under the GFDL. Images carry their own individual licenses.
-- **OpenStreetMap** data is licensed under the [Open Database License (ODbL)](https://www.openstreetmap.org/copyright). If you show maps built from it, credit "© OpenStreetMap contributors" and make clear the data is available under the ODbL, for example by linking to the copyright page. The tile server's demo page still credits the data as CC-BY-SA, which is out of date, so fix the attribution in whatever page you actually share. The [attribution guidelines](https://osmfoundation.org/wiki/Licence/Attribution_Guidelines) cover the details.
+- **OpenStreetMap** data is licensed under the [Open Database License (ODbL)](https://www.openstreetmap.org/copyright). If you show maps built from it, credit "© OpenStreetMap contributors" and make clear the data is available under the ODbL, for example by linking to the copyright page. The tile server's demo page still credits the data as CC-BY-SA, which is out of date, so fix the attribution in whatever page you share. The [attribution guidelines](https://osmfoundation.org/wiki/Licence/Attribution_Guidelines) cover the details.
 - **The software** is open source too: kiwix-tools is GPL-3.0, and the tile server image is Apache-2.0.
 
 ## Final Thoughts
 
 This is one of those projects I think everybody with a homelab should do, at least a little. A ZIM server with Wikipedia and a few reference sites takes minutes once the files are downloaded. The map server takes longer, mostly because of the import, but seeing my hometown render from data sitting on my own server was really satisfying.
 
-The main thing to plan for is storage. Full Wikipedia alone is well over 100 GB, and maps can get big depending on how much of the world you grab. Start with a single state or country and the ZIMs you'd actually reach for. Pair it with Plex or Jellyfin and the rest of your homelab, and a surprising amount of the internet keeps working when the internet doesn't. You don't need it, but it's good to have. With all that, I do hope you found this helpful. Have a great one.
+The main thing to plan for is storage. Full Wikipedia alone is well over 100 GB, and maps can get big depending on how much of the world you grab. Start with a single state or country and the ZIMs you'd reach for. Pair it with Plex or Jellyfin and the rest of your homelab, and a surprising amount of the internet keeps working when the internet doesn't. You don't need it, but it's good to have. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
