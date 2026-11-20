@@ -17,7 +17,7 @@ The thing I like most is that you set it up in the browser. You drag tiles aroun
 Linode sponsored the video this article is based on.
 
 <Note>
-The video was published in November 2023 and shows Homarr 0.x from the old `ajnart/homarr` project. That version is gone: Homarr was rewritten from scratch as [1.0 in September 2024](https://homarr.dev/blog/2024/09/23/version-1.0/) under the [homarr-labs](https://github.com/homarr-labs/homarr) organization, and the old repository was [archived in June 2026](https://github.com/ajnart/homarr) with a note not to use it anymore. Since then, [Homarr 2.0](https://homarr.dev/blog/2026/09/03/homarr-2.0/) (September 3, 2026) rebuilt the board editor again. The written installation below targets [Homarr v2.6.0](https://github.com/homarr-labs/homarr/releases/tag/v2.6.0), released October 15, 2026. The interface in the video is the old 0.x UI, so menus, settings, and widgets won't match what you see today. My hands-on impressions come from the original recording, and I've pointed out the differences as I go.
+The video was published in November 2023 and shows Homarr 0.x from the old `ajnart/homarr` project. That version is gone: Homarr was rewritten from scratch as [1.0 in September 2024](https://homarr.dev/blog/2024/09/23/version-1.0/) under the [homarr-labs](https://github.com/homarr-labs/homarr) organization, and the old repository was [archived in June 2026](https://github.com/ajnart/homarr) with a note not to use it anymore. Since then, [Homarr 2.0](https://homarr.dev/blog/2026/09/03/homarr-2.0/) (September 3, 2026) rebuilt the board editor again. The written installation below targets [Homarr v2.13.1](https://github.com/homarr-labs/homarr/releases/tag/v2.13.1), released November 14, 2026. v2.13.1 is a fix release, and the compose file is the same. The interface in the video is the old 0.x UI, so menus, settings, and widgets won't match what you see today. My hands-on impressions come from the original recording, and I've pointed out the differences as I go.
 </Note>
 
 ## What Homarr Does
@@ -47,7 +47,7 @@ Overseerr and Jellyseerr have since merged into a single project called Seerr. H
 
 If you're following along with the video, here's what's different now:
 
-| | In the video (0.x) | Now (v2.6.0) |
+| | In the video (0.x) | Now (v2.13.1) |
 |---|---|---|
 | Image | `ghcr.io/ajnart/homarr` | `ghcr.io/homarr-labs/homarr` |
 | Volumes | `/app/data/configs`, `/app/public/icons`, `/data` | One `/appdata` folder |
@@ -94,7 +94,7 @@ Then create `docker-compose.yml`:
 services:
   homarr:
     container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:v2.6.0
+    image: ghcr.io/homarr-labs/homarr:v2.13.1
     restart: unless-stopped
     volumes:
       # Optional: only needed for the Docker integration (see below)
@@ -106,7 +106,7 @@ services:
       - "7575:7575"
 ```
 
-I've pinned it to `v2.6.0`. The official compose file uses `latest`, which follows each new release, if you'd rather float. Start it up and check the logs:
+I've pinned it to `v2.13.1`. The official compose file uses `latest`, which follows each new release, if you'd rather float. Start it up and check the logs:
 
 ```bash
 docker compose up -d
@@ -268,6 +268,6 @@ Later on, I moved my main dashboard to Glance, which is configured with YAML and
 - [Docker labels](https://homarr.dev/docs/integrations/docker-labels/)
 - [Homarr 1.0 announcement](https://homarr.dev/blog/2024/09/23/version-1.0/)
 - [Homarr 2.0 announcement](https://homarr.dev/blog/2026/09/03/homarr-2.0/)
-- [v2.6.0 release notes](https://github.com/homarr-labs/homarr/releases/tag/v2.6.0)
+- [v2.13.1 release notes](https://github.com/homarr-labs/homarr/releases/tag/v2.13.1)
 - [GitHub repository (homarr-labs/homarr)](https://github.com/homarr-labs/homarr)
 - [Archived 0.x repository (ajnart/homarr)](https://github.com/ajnart/homarr)
