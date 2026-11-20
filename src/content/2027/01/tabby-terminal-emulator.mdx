@@ -1,10 +1,10 @@
 export const title = "Tabby: A Modern Terminal Emulator for Linux, macOS, and Windows"
 export const description = "A quick tour of Tabby, the cross-platform terminal with split panes, deep theming, plugins, and a built-in SSH and SFTP connection manager, with current install steps and what changed with config sync."
-export const date = "2026-10-17"
+export const date = "2027-01-08"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Mac", "Windows", "Terminal", "Customization"]
-export const cover = "/docs-static/img/2026/10/tabby-terminal-emulator/cover.jpg"
+export const cover = "/docs-static/img/2027/01/tabby-terminal-emulator/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -101,7 +101,7 @@ The first time you launch Tabby, a welcome tab walks you through a few settings:
 
 The tiling is what grabbed me first. In the video I hit Command+D, and Tabby split the current tab into a second terminal. Then I held Command and Shift and dragged the panes around to rearrange them, going from stacked to side by side. It's the tiling behavior you'd expect from a modern terminal emulator, and all of it can be driven from the keyboard.
 
-![Tabby from the video with the window split into two panes, neofetch on the left and htop on the right](/docs-static/img/2026/10/tabby-terminal-emulator/tabby-split-panes.jpg)
+![Tabby from the video with the window split into two panes, neofetch on the left and htop on the right](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-split-panes.jpg)
 
 These are the current default hotkeys for the basics:
 
@@ -121,7 +121,7 @@ The settings tab is where you'll spend some time. **Application** has the langua
 
 Appearance is probably the most important part of a terminal for a lot of us, and Tabby has a huge selection of color schemes. I'm using a customized version of Espresso Libre, and in the video I was only about halfway down the list. There's going to be one you like.
 
-![The Tabby Color scheme settings page from the video with a customized Espresso Libre scheme selected above the 3024 Day preview](/docs-static/img/2026/10/tabby-terminal-emulator/tabby-color-scheme-settings.jpg)
+![The Tabby Color scheme settings page from the video with a customized Espresso Libre scheme selected above the 3024 Day preview](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-color-scheme-settings.jpg)
 
 The one con I ran into in that macOS build was that after changing the color scheme I had to close Tabby and reopen it to see the change. That was the only real negative I found.
 
@@ -150,7 +150,7 @@ This is a feature I'm going to be using a lot. Next to the new tab button is the
 4. Choose an authentication method: Auto, Password, Key, Agent, or Interactive.
 5. Click **Save**.
 
-![The Tabby SSH profile editor from the video with the General tab open, port 22, and the Auto, Password, Key, Agent, and Interactive authentication options](/docs-static/img/2026/10/tabby-terminal-emulator/tabby-ssh-profile-dialog.jpg)
+![The Tabby SSH profile editor from the video with the General tab open, port 22, and the Auto, Password, Key, Agent, and Interactive authentication options](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-ssh-profile-dialog.jpg)
 
 In the video I named mine after techhut.tv, set a password, left the ports and advanced options at their defaults, and saved it. It showed up in an Ungrouped section, and one click connected me. That's all there is to it. Other tabs in that dialog cover port forwarding, ciphers, and login scripts.
 
@@ -160,7 +160,7 @@ Saved passwords go into your operating system's keychain, or into Tabby's Vault 
 
 Once you're connected, there's an **SFTP** button at the top of the session. Click it and you get a graphical file browser for the remote machine right inside the terminal. You can drag and drop to upload and click to download.
 
-![The Tabby SFTP panel from the video open on an SSH session to techhut.tv, listing the remote root folders](/docs-static/img/2026/10/tabby-terminal-emulator/tabby-sftp-panel.jpg)
+![The Tabby SFTP panel from the video open on an SSH session to techhut.tv, listing the remote root folders](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-sftp-panel.jpg)
 
 I've been getting really into homelabbing, with a few machines running websites and Nextcloud instances, so this is a big deal for me. In the video I ran `sudo apt upgrade` on the server in one tab and kept poking around Tabby's settings in another, all in the same window.
 
