@@ -847,7 +847,9 @@
     "name": "Homarr",
     "category": "Server Management",
     "description": "Organize home server applications and integrations on a dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/homarr-home-server-dashboard"
+    ],
     "videos": [
       {
         "id": "A6vcTIzp_Ww",

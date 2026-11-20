@@ -1,0 +1,249 @@
+export const title = "Homarr: A Drag-and-Drop Home Server Dashboard in Docker"
+export const description = "Install the current Homarr release with Docker Compose or a Portainer stack, then build a home server dashboard with app tiles, *arr and download client integrations, Docker management, and widgets, all from the web UI."
+export const date = "2026-12-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab"]
+export const cover = "/docs-static/img/2026/12/homarr-home-server-dashboard/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="A6vcTIzp_Ww" title="TechHut's Homarr walkthrough" />
+
+A while back I did a tour of all the services running in my homelab, and one of the things I showed off was my dashboard. That dashboard is [Homarr](https://homarr.dev). The name lines up with the \*arr apps it integrates with. It's beautiful, it's fully functional, and it's far from perfect. I've tried a lot of dashboards, and at the time I recorded this, Homarr was my favorite by a long shot.
+
+The thing I like most is that you set it up in the browser. You drag tiles around, resize them, and add integrations from the UI instead of editing a config file for every little change.
+
+<Note>
+The video was published in November 2023 and shows Homarr 0.x from the old `ajnart/homarr` project. That version is gone: Homarr was rewritten from scratch as [1.0 in September 2024](https://homarr.dev/blog/2024/09/23/version-1.0/) under the [homarr-labs](https://github.com/homarr-labs/homarr) organization, and the old repository was [archived in June 2026](https://github.com/ajnart/homarr) with a note not to use it anymore. Since then, [Homarr 2.0](https://homarr.dev/blog/2026/09/03/homarr-2.0/) (September 3, 2026) rebuilt the board editor again. The written installation below targets [Homarr v2.13.1](https://github.com/homarr-labs/homarr/releases/tag/v2.13.1), released November 14, 2026. v2.13.1 is a fix release, and the compose file is the same. The interface in the video is the old 0.x UI, so menus, settings, and widgets won't match what you see today. My hands-on impressions come from the original recording, and I've pointed out the differences as I go.
+</Note>
+
+## What Homarr Does
+
+Homarr is a self-hosted start page for your server. The basic board is a grid of tiles linking to all of your apps, with a little status dot showing whether each one is reachable. Where it gets good is the integrations. You connect it to the services you already run and it pulls live data onto the board.
+
+![App tiles with online and offline status dots above torrent and media request widgets on my main dashboard, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-dashboard-app-tiles.jpg)
+
+On my main dashboard in the video, that looked like:
+
+- **App tiles** for everything in my homelab, each with an online/offline indicator.
+- **A media requests widget** from Overseerr, showing what people have requested and whether it was approved.
+- **Download client widgets** showing my current torrents and a history graph of download speed. NZBGet showed up there too, alongside the torrent client.
+- **A calendar** that ties into Sonarr and the request service. A dot on a day means something is coming out. Clicking one showed me a new SpongeBob episode, with a link to IMDb.
+- **A now-playing widget.** I started Rudolph the Red-Nosed Reindeer in Plex to show it off, and clicking the session gave me detailed playback info. It works with both Plex and Jellyfin. I run both: Plex is my primary and Jellyfin is my backup, because Plex is definitely imperfect.
+- **Search**, plus a **Docker** panel that lists every container and lets you start, stop, restart, and remove them, or add one as a tile.
+
+![A SpongeBob SquarePants episode popup with an IMDb link opened from the calendar widget, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-calendar-episode-popup.jpg)
+
+The current project is [Apache-2.0 licensed](https://github.com/homarr-labs/homarr), runs as a single container, and the integration list has grown a lot. The [integrations page](https://homarr.dev/docs/integrations/) now lists 91 services, including qBittorrent, Transmission, Deluge, SABnzbd, NZBGet, Sonarr, Radarr, Lidarr, Readarr, Prowlarr, Plex, Jellyfin, Emby, Seerr, Proxmox, Pi-hole, AdGuard Home, Home Assistant, Immich, and Docker. The [widgets list](https://homarr.dev/docs/widgets/) has 61 entries, from Calendar, Download Client, and Media server streams to Weather, RSS, iFrame, Video Stream, and Docker stats.
+
+<Note>
+Overseerr and Jellyseerr have since merged into a single project called Seerr. Homarr has a [Seerr integration](https://homarr.dev/docs/integrations/seerr/) for the request widgets, and still lists the older Overseerr and Jellyseerr ones. If you're still on one of the old apps, I wrote up the [Overseerr to Seerr migration](/seerr-overseerr-migration).
+</Note>
+
+## What Changed Since the Video
+
+If you're following along with the video, here's what's different now:
+
+| | In the video (0.x) | Now (v2.13.1) |
+|---|---|---|
+| Image | `ghcr.io/ajnart/homarr` | `ghcr.io/homarr-labs/homarr` |
+| Volumes | `/app/data/configs`, `/app/public/icons`, `/data` | One `/appdata` folder |
+| Required settings | None in the video's compose file | `SECRET_ENCRYPTION_KEY` (64 hex characters) |
+| First launch | A default board with demo tiles | A six-stage onboarding at `/init` that creates the admin account and your first board |
+| Storage | Board configs you could download as a file | A SQLite database (PostgreSQL optional) |
+| Users and permissions | Not covered in the video | Users, groups, and View, Modify, and Full permissions per board, with OIDC and LDAP options |
+| Integrations | Set up inside each tile | Created once under **Management → Integrations**, tested, then shared by apps and widgets |
+| Layout | Saved per window size, categories you couldn't group | Base and Mobile layouts (plus custom breakpoints), rails, and nestable Containers |
+| Architectures | Included 32-bit ARM | `linux/amd64` and `linux/arm64` only |
+
+Every widget was also rewritten in 1.0, and 2.0 added Custom Widgets v2, the community Workshop, an optional AI Assistant, and 31 more integrations, while dropping MySQL.
+
+## Requirements
+
+Per the [getting started docs](https://homarr.dev/docs/getting-started/), you need:
+
+- Docker with Compose (or Portainer, Unraid, Kubernetes, and so on)
+- About 500 MB of RAM and 600 MB of disk for the image
+- A persistent, writable folder for `/appdata`
+- An amd64 or arm64 host. A 64-bit Raspberry Pi OS is fine; 32-bit `arm/v7` is not supported.
+
+## Install Homarr with Docker Compose
+
+In the video I installed it through Portainer on my Intel NUC, which is a separate box from the Unraid server my main dashboard runs on. Portainer is covered in the next section. Plain Docker Compose works the same way and follows the [official Docker guide](https://homarr.dev/docs/getting-started/installation/docker).
+
+Back then I made a `homarr` folder in my home directory with `configs` and `icons` subfolders. The new version only needs one folder:
+
+```bash
+mkdir -p ~/homarr/appdata
+cd ~/homarr
+```
+
+Generate the encryption key and put it in a `.env` file next to the compose file:
+
+```bash
+echo "SECRET_ENCRYPTION_KEY=$(openssl rand -hex 32)" > .env
+chmod 600 .env
+```
+
+Then create `docker-compose.yml`:
+
+```yaml
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:v2.13.1
+    restart: unless-stopped
+    volumes:
+      # Optional: only needed for the Docker integration (see below)
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${SECRET_ENCRYPTION_KEY}
+    ports:
+      - "7575:7575"
+```
+
+I've pinned it to `v2.13.1`. The official compose file uses `latest`, which follows each new release, if you'd rather float. Start it up and check the logs:
+
+```bash
+docker compose up -d
+docker compose logs -f homarr
+```
+
+Homarr listens on port `7575`, same as before. Open `http://YOUR_SERVER_IP:7575`.
+
+<Warning>
+`SECRET_ENCRYPTION_KEY` encrypts the integration credentials stored in Homarr's database, like your API keys and passwords. Save it in a password manager along with your `appdata` backups. The docs say to keep both unchanged across updates. If the key is missing, the container prints a random one in the error and exits. Don't use that printed key for a long-term install without saving it somewhere first.
+</Warning>
+
+A couple of other notes:
+
+- **Updating:** pull the new image (or bump the tag) and run `docker compose up -d`. Back up `appdata` before major version jumps. The 1.x to 2.x upgrade migrates the database in place, and the [docs](https://homarr.dev/docs/getting-started/installation/docker) say the old image can't use it afterwards.
+- **Coming from 0.x:** you can't just swap the image. The database isn't backward compatible, and the [1.0 notes](https://homarr.dev/blog/2024/09/23/version-1.0/) describe exporting your data from the old UI and importing it into the new version. Back up first. Unraid users have to reinstall the app because the old directories are incompatible.
+- **Running user:** the container runs as root by default. `PUID` and `PGID` are available in the [environment variables](https://homarr.dev/docs/advanced/environment-variables/) if you want it to run as another user, as long as that user can access the volumes and the Docker socket.
+- **Behind a reverse proxy:** set `BASE_URL` to your public origin, like `https://home.your-domain.com`. If you need certificates for that, my [SSL certificates guide](/ultimate-home-server-part-4-ssl-certificates) walks through it.
+
+## Install with a Portainer Stack
+
+This is how I did it in the video. The official [Portainer page](https://homarr.dev/docs/getting-started/installation/portainer) uses the same compose file:
+
+1. In Portainer, go to **Stacks** and click **Add stack**. I named mine `homarr`.
+2. Paste in the compose file from above.
+3. Change `./appdata` to an absolute path on the host, like `/home/your-user/homarr/appdata`. That's what I did in the video, using `pwd` to grab the full path of the folder I'd just created.
+4. Run `openssl rand -hex 32` on the server and either paste the result in place of `${SECRET_ENCRYPTION_KEY}`, or add `SECRET_ENCRYPTION_KEY` in the stack's environment variables section.
+5. Click **Deploy the stack**.
+
+It deploys in no time since it's a lightweight service. I checked the container logs to make sure it was listening on the right port, and that was it.
+
+## The Docker Integration (and the Socket)
+
+The one thing the old install command left out was the Docker integration. To see and manage your other containers, Homarr needs the Docker socket mounted, which is the `/var/run/docker.sock` line in the compose file. In the video I said you might as well add it unless you specifically don't want Homarr touching your other containers.
+
+![The Docker panel listing my running containers with their images, ports, and state, shown in the old Homarr 0.x interface from the video](/docs-static/img/2026/12/homarr-home-server-dashboard/old-docker-container-list.jpg)
+
+I'd add a caveat to that now. The [Docker integration docs](https://homarr.dev/docs/integrations/docker) are clear that a Docker socket "grants extensive host control." Whatever can talk to that socket can control the Docker host, so if Homarr is ever compromised, so are your containers. If you only want Homarr to list containers, use a least-privilege socket proxy instead and point Homarr at it with `DOCKER_HOSTNAMES` and `DOCKER_PORTS`. If you don't need the integration at all, delete the socket line.
+
+The integration is also more capable than what I showed:
+
+- Each Docker endpoint can be limited to specific capabilities: `inventory` (required), plus optional `logs`, `lifecycle`, and `remove`.
+- `DOCKER_ENDPOINTS` lets you connect several Docker or Podman hosts, including over TLS.
+- During onboarding, Homarr can suggest apps from your running containers. Adding `homarr.name` and `homarr.href` [labels](https://homarr.dev/docs/integrations/docker-labels/) to a container gives it the exact name and URL, and `homarr.hide` skips one.
+
+That last part addresses one of my complaints from the video, which I'll get to below.
+
+## First Launch: Onboarding
+
+In the video, the first page load dropped me straight onto a default dashboard with weather, a notebook, and some helpful links. That's no longer the case. A fresh install now redirects to `/init`, and you choose **Get started** (or **Restore backup** if you have a compatible SQLite backup). The [onboarding](https://homarr.dev/docs/getting-started/after-the-installation/) has six stages:
+
+1. **Essentials:** language, theme, your usual server address, and the anonymous analytics preference.
+2. **Discover:** what Homarr can reach, like the database, Docker, Kubernetes, the Assistant, and the Workshop.
+3. **Connect:** import detected services or add integrations by hand. You can skip anything you haven't finished.
+4. **Board:** name, colors, corner radius, column count, and optional sidebars.
+5. **Extend:** optionally connect the Workshop, set up an Assistant provider, or review the MCP endpoint.
+6. **Review:** check the summary and build the board.
+
+This is also where your administrator account gets created, so there's no default login to worry about. Pick a strong password. Integrations, the Workshop, and the AI Assistant are all optional, and you can ignore them entirely.
+
+## Building the Dashboard
+
+The core idea is the same as what I showed, but the pieces have names now. In the [docs' terms](https://homarr.dev/docs/getting-started/): services expose data, **integrations** connect to them, **widgets** display that data, and **boards** arrange it all on a grid. An **app** is a saved shortcut with a name, URL, icon, and optional status check.
+
+### Edit Mode
+
+In the video, entering edit mode and clicking a tile opened its settings: a name and address, behavior options like a description and status check, appearance options like the icon and font size, and an integration tab.
+
+Now you enter edit mode from the board header. From there you can add, move, resize, configure, or remove items, and then save the board. The [board docs](https://homarr.dev/docs/management/boards/) list a few handy extras: hold `Ctrl` (or `Cmd` on macOS) to select several items, and press Escape mid-drag to put a tile back where it was. Tiles can also be moved and resized with the keyboard.
+
+### Adding an App
+
+The add-content menu in edit mode can add an app, integration, widget, or Container. Apps are also managed centrally under **Management → Apps**, with these [fields](https://homarr.dev/docs/management/apps/):
+
+- **Name** shown on the board
+- **Icon URL**, which can be a direct link, a result from the built-in icon library, or an upload
+- **Description**, shown as a tooltip
+- **URL** that opens when you click the tile
+- **Ping URL**, an optional address for status checks when it's different from the main URL
+
+The status dot was the thing that tripped me up in the video. I added my torrent client, waited for the indicator, and nothing happened. Turns out I hadn't enabled ping in the layout settings. Once I turned it on, the tile flashed red and then picked up its status. In the current version, the status setting lives in the board's **Behaviour** settings, and the check comes from the Homarr server, not your browser.
+
+### Adding an Integration
+
+This part works differently now. In the video, I set up the integration inside the tile: I pasted in the torrent client's address (which was on a different machine, so I wasn't sure it would work right away), and for that client all it needed was the password. Other services need an API key or more information.
+
+Now integrations are their own thing. You create one under [**Management → Integrations**](https://homarr.dev/docs/management/integrations/), or while adding content to a board:
+
+1. Pick the service.
+2. Enter its base URL and credentials. Use the service root, not a settings page, and use an address the **Homarr container** can reach. That matters if the service is on another machine, like mine was.
+3. Test the connection. Homarr won't save it until the test passes.
+4. Optionally link the integration to an app, so integration widgets know where to send you when you click through.
+
+Credentials are encrypted with your secret key and only used on the server. As for what each one needs: [Sonarr](https://homarr.dev/docs/integrations/sonarr/), [Seerr](https://homarr.dev/docs/integrations/seerr/), and [Plex](https://homarr.dev/docs/integrations/plex/) each take an API key, while [Jellyfin](https://homarr.dev/docs/integrations/jellyfin/) and [qBittorrent](https://homarr.dev/docs/integrations/q-bittorent/) accept either an API key or a username and password. The docs also suggest creating the least-privileged account or key the service allows. In the video I said hooking up Sonarr or Radarr really just needs the API key, and that still holds.
+
+### Adding Widgets
+
+Once the integration was working, I added two widgets from it: download speeds and the torrent list. They started pulling data right away. The bigger you make a widget, the more information it shows, so drag it to whatever size works for you.
+
+In the current version, both of those live in the **Download Client** widget, which shows and manages torrent and Usenet downloads. The rest of my original dashboard maps to:
+
+| What I had | Current widget |
+|---|---|
+| Overseerr requests | Media Request List, Media Requests Stats |
+| Download speed and torrents | Download Client |
+| Upcoming episodes | Calendar (from Sonarr and other integrations) |
+| Now playing in Plex/Jellyfin | Media server streams |
+| Notes on the default board | Notebook |
+| Weather | Weather |
+
+There's also Video Stream, which I thought was super cool. I'm pretty sure you could use it with an IP camera fed through another service, and the docs describe it as embedding a video stream or camera feed.
+
+### Adding Containers as Apps
+
+With the socket mounted, the Docker panel in the video could see just about everything on that host, including my Kasm, Plex, and TeslaMate containers. I tried adding several at once and it only liked doing them one at a time. I also wished it could pull in the IP address automatically. When I switched one to Plex, though, it pulled the right icon on its own, since it searches a database for the app by name. I skipped the Plex integration because I didn't feel like grabbing my API key, then forgot to save, and the tile disappeared. Oh well, you get the point.
+
+The current version handles this during onboarding with the assisted setup. It compares the containers it discovers with your existing apps, suggests new ones from their image and published ports, and only creates anything after you confirm. Labels let you set the name and URL exactly.
+
+### Layout, Categories, and Containers
+
+Two things bugged me about the old layout. First, a layout only saved for the window size you arranged it in, so a different screen size meant rearranging things again. Second, you could create categories (I made one called "media" and it showed up as its own section), but I couldn't move categories around or group them how I wanted. That was definitely a feature request of mine.
+
+Both of those were reworked. Boards now have a protected **Mobile** layout (from 0px) and **Base** layout (from 768px), and you can add custom breakpoints. Each layout keeps its own positions, and **Reset from Base** generates a Mobile layout from your desktop one. Categories were replaced by **Containers**, which can hold apps, widgets, and other Containers, can collapse, and have an option to open the apps inside them. In the video, opening everything in a category in new tabs was something I thought could be handy, so it's nice that idea stuck around. **Rails** are fixed sidebars that stay put while the rest of the board scrolls.
+
+## Settings and Customization
+
+In the old version, settings were thinner than I'd have liked, but enough: search engine, language, clearing the cache, and downloading your config to move it elsewhere. Customization covered layout toggles, grid sizing, page metadata, colors and opacity, and custom CSS if you have more skill than me.
+
+The current [board settings](https://homarr.dev/docs/management/boards/) are grouped into **General** (page title, browser title, logo, favicon), **Layout**, **Background**, **Appearance** (colors, opacity, icon color, item radius), **Custom CSS**, and **Behaviour**. Custom CSS is per board, and you can share it through the Workshop. A few other changes worth knowing:
+
+- **Multiple boards.** Create, duplicate, and delete them under **Management → Boards**. `Shift+C` opens a board switcher.
+- **Home boards.** Each user can have a different board at `/`, with separate desktop and mobile choices.
+- **Public or private.** A public board can be viewed without signing in. Private boards need View, Modify, or Full access for a user or group.
+- **Backups.** Instead of downloading a config file, back up the `appdata` folder (with the container stopped) and keep the encryption key with it.
+
+## My Take
+
+Homarr was my favorite dashboard when I made this video, and the reason was simple: it does everything through a UI. A lot of the other dashboards I'd used needed config file edits for the simplest changes. Here you just drag things where you want them and connect your services. If you run any of the \*arr apps, download clients, or media servers, I'd say it's worth having as at least your media dashboard, even if you use something else as your main start page.
+
+It wasn't perfect. I wanted more settings, more widgets, a way to add several containers at once, and a way to group and rearrange categories. Looking at the current release, the rewrite has gone after several of those: there are a lot more widgets and integrations, Containers can nest, layouts work per screen size, and container discovery is built into onboarding. I haven't tested 2.x hands-on for this article, so treat that as what the docs describe, not my experience.
+
+Later on, I moved my main dashboard to Glance, which is configured with YAML and lighter on features. I've got a full [Glance setup guide](/glance-home-server-dashboard) if you want to compare. If you prefer clicking over editing YAML, though, Homarr is still the one I'd point you to. With all that, I do hope you found this helpful. Have an absolutely beautiful day.
