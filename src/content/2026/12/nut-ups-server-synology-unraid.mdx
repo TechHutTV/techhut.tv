@@ -1,10 +1,10 @@
 export const title = "You Need a UPS: Sharing One UPS with Synology and Unraid Using NUT"
 export const description = "Set up a Network UPS Tools (NUT) server on Linux or a Synology NAS, then connect Unraid and other machines so everything on one UPS shuts down cleanly during a power outage."
-export const date = "2026-10-15"
+export const date = "2026-12-22"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Homelab", "Self-Host", "Linux", "Monitoring"]
-export const cover = "/docs-static/img/2026/10/nut-ups-server-synology-unraid/cover.jpg"
+export const cover = "/docs-static/img/2026/12/nut-ups-server-synology-unraid/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -24,7 +24,7 @@ The video was published in June 2023. The install script I used then hasn't chan
 
 The unit I have is the Tripp Lite SmartPro LCD **SMART1500LCD**. It's a 1500VA / 900W line-interactive UPS with a lead-acid battery, so it's a rather hefty boy. It's 2U, so it fits nicely in my rack. Tripp Lite rates it at roughly 12 minutes at half load (450W) and about 4 minutes at full load (900W). Even at full load, that's enough time to tell everything to shut down properly.
 
-![The front LCD of the Tripp Lite SMART1500LCD in my rack showing 120V output and a full battery capacity bar](/docs-static/img/2026/10/nut-ups-server-synology-unraid/ups-lcd.jpg)
+![The front LCD of the Tripp Lite SMART1500LCD in my rack showing 120V output and a full battery capacity bar](/docs-static/img/2026/12/nut-ups-server-synology-unraid/ups-lcd.jpg)
 
 I'm nowhere near full load. I could have gotten a much smaller unit. With what I have plugged in, the UPS estimates somewhere around 40 to 45 minutes of runtime. Plugged into it are:
 
@@ -231,7 +231,7 @@ sudo ufw allow from 192.168.1.0/24 to any port 3493 proto tcp
 
 The script gave me a nice little status page with charts for voltage, battery, input, output, and load, plus an "all data" view that lists every value the UPS reports. You can add the same thing by hand:
 
-![The NUT upsstats.cgi page from the video's script install, showing the Tripp Lite UPS online with charge, voltage, input, output, and load bars](/docs-static/img/2026/10/nut-ups-server-synology-unraid/upsstats.jpg)
+![The NUT upsstats.cgi page from the video's script install, showing the Tripp Lite UPS online with charge, voltage, input, output, and load bars](/docs-static/img/2026/12/nut-ups-server-synology-unraid/upsstats.jpg)
 
 ```bash
 sudo apt install nut-cgi apache2
@@ -280,7 +280,7 @@ On the Synology, go to **Control Panel > Hardware & Power > UPS**:
 
 For me it was basically plug and play. Device Information showed the Tripp Lite as connected right away.
 
-![The UPS tab in Synology DSM with USB UPS selected, Until low battery chosen, and Enable network UPS server ticked](/docs-static/img/2026/10/nut-ups-server-synology-unraid/synology-ups.jpg)
+![The UPS tab in Synology DSM with USB UPS selected, Until low battery chosen, and Enable network UPS server ticked](/docs-static/img/2026/12/nut-ups-server-synology-unraid/synology-ups.jpg)
 
 In the video I said I didn't know what **Until low battery** really meant, and Synology support told me it depends on the UPS. Synology's [UPS help page](https://kb.synology.com/en-global/DSM/help/DSM/AdminCenter/system_hardware_ups?version=7) explains it. The NAS stops its services, unmounts volumes, and goes into Standby Mode when the UPS reports a low battery. Since the UPS decides what "low" means, run `upsc ups@NAS_IP` from a permitted machine and look at `battery.charge.low` to see the actual number. Even with a custom time set, DSM still enters Standby Mode at low battery.
 
@@ -333,7 +333,7 @@ These are the field names in the current plugin. The one in my video uses slight
 
 Set **Start Network UPS Tools Service** to **Yes** and apply. If it connects, the top of the page fills in with the status, battery charge, and runtime. Mine showed the UPS online with the battery at 100 percent and about 41 minutes of runtime left.
 
-![The older Unraid NUT plugin from the video in Slave mode, pointed at the Synology with UPS name ups, user monuser, and a 40 percent battery shutdown level](/docs-static/img/2026/10/nut-ups-server-synology-unraid/unraid-nut-settings.jpg)
+![The older Unraid NUT plugin from the video in Slave mode, pointed at the Synology with UPS name ups, user monuser, and a 40 percent battery shutdown level](/docs-static/img/2026/12/nut-ups-server-synology-unraid/unraid-nut-settings.jpg)
 
 The plugin's defaults are `monuser` / `monpass` for the monitor user and `slaveuser` / `slavepass` for the slave user, so you need to replace the monitor ones with whatever your server expects. If you ever switch the plugin to **Netserver** mode so Unraid hosts the UPS, change the slave username and password to something real, since that mode listens on all interfaces.
 
