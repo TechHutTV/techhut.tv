@@ -16,8 +16,6 @@ The easiest way to run all of that is Nextcloud All-in-One (AIO). The setup cove
 
 The install steps below are for [AIO v15.1.1](https://github.com/nextcloud/all-in-one/releases/tag/v15.1.1), released November 19, 2026. That release includes Nextcloud 35.0.3, which is [Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/). A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
 
-Both videos had sponsor segments (Brilliant in the setup guide, Brevo in the Hub 26 video). Neither company is involved with Nextcloud, and I've left those segments out.
-
 ## How AIO Works
 
 Nextcloud wants a database, Redis, a web server, push notifications, and optionally an office server, a Talk backend, search, and antivirus. Wiring that up by hand is a project. With AIO you run a single **mastercontainer**, which uses the Docker socket to create, update, and back up everything else, and you manage it from a web interface on port `8080`. Per the [AIO README](https://github.com/nextcloud/all-in-one), the stack includes:
