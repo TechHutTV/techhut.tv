@@ -1783,7 +1783,9 @@
     "name": "Podgrab",
     "category": "Media",
     "description": "Download and manage podcast episodes on your own server.",
-    "coverage": [],
+    "coverage": [
+      "/podgrab-self-hosted-podcasts"
+    ],
     "videos": [
       {
         "id": "tQgGTI8wfqw",

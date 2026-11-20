@@ -1,0 +1,221 @@
+export const title = "Podgrab: A Self-Hosted Podcast Downloader for Docker and Unraid"
+export const description = "Install Podgrab with Docker Compose or Unraid Community Apps, lock it down with a password, and use it to automatically download and archive podcast episodes on your own server."
+export const date = "2026-12-04"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab"]
+export const cover = "/docs-static/img/2026/12/podgrab-self-hosted-podcasts/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="tQgGTI8wfqw" title="TechHut's Podgrab walkthrough" />
+
+If you don't know already, I'm a data hoarder. For a lot of what I do, I could just use an app and stream everything from the internet. I'd rather self-host as much as I possibly can, though, and at some point I realized podcasts were one thing I wasn't keeping a copy of.
+
+So I went digging through Reddit threads and search results, looking for something like Lidarr but for podcasts. The best thing I found was [Podgrab](https://github.com/akhilrex/podgrab), a self-hosted podcast manager that subscribes to shows and automatically downloads new episodes to your server. It's a small Go application, it ships as a Docker container, and it's licensed under GPL-3.0.
+
+The video was published in December 2023, and I installed Podgrab on Unraid through Community Apps. The steps below are checked against the current upstream project in October 2026, and I've added a generic Docker Compose install alongside the Unraid route. My hands-on impressions all come from the original recording.
+
+## Is Podgrab Still Maintained?
+
+This is the first thing you should know. Even when I recorded, Podgrab hadn't been updated in about a year. That hasn't changed:
+
+- The last published container image, `akhilrex/podgrab` (tagged both `latest` and `1.0.0`), was pushed to [Docker Hub](https://hub.docker.com/r/akhilrex/podgrab) on September 20, 2022.
+- The README still lists the current version as 2022.07.07.
+- The only activity in the [commit history](https://github.com/akhilrex/podgrab/commits/master) since then is a dependency bump merged in July 2026. No new image was published with it.
+- An [open issue from 2024](https://github.com/akhilrex/podgrab/issues/304) asking whether the project is still in development has no reply from the developer.
+
+The repository isn't archived, and the developer has never said it's discontinued. It's simply dormant. The image still pulls and runs, and the Unraid template is still listed, but treat it as finished software that isn't getting fixes. That matters for the security section below.
+
+## What Podgrab Does
+
+Podgrab is focused on one job: grabbing podcast episodes and keeping them on disk. From the [README](https://github.com/akhilrex/podgrab#features), the main features are:
+
+- Download or archive an entire podcast's back catalog
+- Automatically download new episodes as they come out
+- Tag podcasts into groups
+- Download individual episodes on demand
+- Search for podcasts, or add them by RSS feed URL or OPML import
+- OPML export, so you can take your subscriptions elsewhere
+- A built-in web player that plays downloaded files or streams from the source
+- Detection of files that already exist, so it won't re-download them on a fresh install
+- Optional basic authentication and a dark mode
+
+It's built with Go, the Gin web framework, and SQLite, so there's no separate database container to run. Everything lives in two folders: a config folder for the database and backups, and an assets folder for the actual audio.
+
+The [roadmap](https://github.com/akhilrex/podgrab#roadmap) has three unchecked items: setting ID3 tags, filtering and sorting options, and native installers. Those were open when I recorded, and given the state of the project, I wouldn't wait on them.
+
+## A Quick Note on Podcast Licensing
+
+Before you start archiving everything, check the terms of the podcasts you're downloading. Some shows are fully copyrighted, while others use permissive licenses that let you do pretty much whatever you want with the files. Keeping a personal copy of a public feed is a different thing from redistributing it, so don't go re-hosting other people's shows.
+
+For my test I picked a Linux podcast, since a lot of those follow free and open source principles anyway.
+
+## Installation
+
+The official image is [`akhilrex/podgrab`](https://hub.docker.com/r/akhilrex/podgrab), built for `amd64`, `arm64`, `arm/v7`, and `arm/v6`, so it runs on a normal server or a Raspberry Pi. There are only a few settings to know about:
+
+| Setting | Container value | Notes |
+|---------|-----------------|-------|
+| Web UI port | `8080` | Change the host side if something else already uses 8080 |
+| Config volume | `/config` | Holds `podgrab.db` and the automatic backups |
+| Assets volume | `/assets` | Where podcasts get downloaded |
+| `CHECK_FREQUENCY` | `240` in the examples | Minutes between checks for new episodes and missing files. It defaults to 30 if unset |
+| `PASSWORD` | empty | Any non-empty value turns on basic authentication with the username `podgrab` |
+| `PORT` | empty | Changes the internal port. You usually don't need this |
+
+Port 8080 is the big one to watch for. A lot of containers default to it, so there's a decent chance you'll need to map Podgrab to something else on the host.
+
+### Docker Compose
+
+The upstream [docker-compose.yml](https://github.com/akhilrex/podgrab/blob/master/docker-compose.yml) still has a `version: "2.1"` line, which current Docker Compose ignores. This cleaned-up version also turns on the password and runs the container as a regular user instead of root.
+
+First, make the folders and give them to your user. Check your IDs with `id -u` and `id -g`; I'm using `1000` here.
+
+```bash
+sudo mkdir -p /opt/podgrab/config /srv/podcasts
+sudo chown -R 1000:1000 /opt/podgrab/config /srv/podcasts
+cd /opt/podgrab
+```
+
+Put the password in a `.env` file next to the compose file so it isn't sitting in the YAML:
+
+```bash
+printf 'PODGRAB_PASSWORD=change-me-to-a-strong-password\n' | sudo tee /opt/podgrab/.env > /dev/null
+sudo chmod 600 /opt/podgrab/.env
+```
+
+`/opt/podgrab` itself is still owned by root (only the `config` subfolder was handed to your user), so write the compose file with `sudo tee` too:
+
+```bash
+sudo tee /opt/podgrab/compose.yaml > /dev/null <<'EOF'
+services:
+  podgrab:
+    image: akhilrex/podgrab:1.0.0
+    container_name: podgrab
+    user: "1000:1000"
+    environment:
+      - CHECK_FREQUENCY=240
+      - PASSWORD=${PODGRAB_PASSWORD}
+    volumes:
+      - /opt/podgrab/config:/config
+      - /srv/podcasts:/assets
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+EOF
+```
+
+A few notes on that file:
+
+- `1.0.0` and `latest` point to the exact same image on Docker Hub. I pinned the version so it's obvious what you're running. The README suggests using an auto-updater to keep up with frequent releases, but there haven't been any since 2022.
+- The `user` line does the same thing as the `--user 99:100` flag in the Unraid template. If you drop it, the container runs as root and your downloads will be owned by root on the host.
+- If 8080 is taken, change only the left side, for example `"8081:8080"`.
+
+Start it up:
+
+```bash
+sudo docker compose up -d
+sudo docker compose logs -f podgrab
+```
+
+The logs print the config folder, assets folder, and check frequency on startup, which is an easy way to confirm your volumes landed in the right place. Then open `http://your-server-ip:8080` and log in with the username `podgrab` and the password from your `.env` file.
+
+If you'd rather use plain `docker run`, the README has a [one-line version](https://github.com/akhilrex/podgrab#using-docker) with the same two volumes. If you use Portainer or another GUI, the same values just go into its form. There's also an [official guide](https://github.com/akhilrex/podgrab/blob/master/docs/ubuntu-install.md) for building from source and running it as a systemd service on Ubuntu, but Docker is the much easier route.
+
+### Unraid Community Apps
+
+This is how I installed it in the video, and the template is still in Community Apps. It comes from the [Selfhosters template repository](https://github.com/selfhosters/unRAID-CA-templates) and uses the official `akhilrex/podgrab` image. When I opened it in the Apps tab, the download graph was trending down, which makes sense for something that hasn't had an update in a while.
+
+1. Go to **Apps**, search for **Podgrab**, and click **Install**.
+2. Leave **Network Type** on **Bridge**.
+3. **WebUI Port** defaults to `8080`. Nothing else on my server was using it, so I left it alone. Unraid shows you which ports your other containers use, which is a really nice touch when you're picking one.
+4. **Check Frequency** defaults to `240` minutes.
+5. Set a **Password**. The field is masked, but the template's help text says the default password is `podgrab`, which is misleading. `podgrab` is the username, and the password is whatever you type here.
+6. Set **Appdata** to something like `/mnt/user/appdata/podgrab`.
+7. Set **Assets** to wherever you want the episodes. I didn't have a podcasts folder yet, so I made one inside my data share: `/mnt/user/data/podcasts`.
+8. Click **Apply**.
+
+That's all the template asks for. It's really just a little GUI on top of a Docker run command, and Unraid shows you the full command once it's done. If you record your screen like I do, remember that command includes your password in plain text.
+
+![The Podgrab template in Unraid with WebUI port 8080, a 240-minute check frequency, a masked password, and the appdata and podcasts paths filled in](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/unraid-podgrab-template.jpg)
+
+One cosmetic thing: the template doesn't define an icon, so Podgrab shows up as a question mark in the Docker tab. Click it, choose **WebUI**, and log in as `podgrab` with your password.
+
+## Security: Set a Password and Keep It Local
+
+<Warning>
+With no `PASSWORD` set, Podgrab has no authentication at all. A [recent security report](https://github.com/akhilrex/podgrab/issues/337) (opened September 2026, with no fix or reply as of this writing) points out that the add-podcast API will fetch any URL it's given from the server side. On an open instance, anyone who can reach it can use it to probe services on your internal network. Always set a password, and don't expose Podgrab directly to the internet.
+</Warning>
+
+Even with a password, a few things are worth keeping in mind:
+
+- It's HTTP basic auth over plain HTTP, so the username and password travel with every request in a form anyone who can observe the connection can read (basic auth is only encoded, not encrypted). That includes your home network, not just the internet. Put it behind a reverse proxy with HTTPS, or only reach it over a VPN, rather than forwarding the port.
+- If you do put it behind a reverse proxy, the README says to enable websocket support, which the player's "add to playlist" feature needs.
+- Since the project isn't getting updates, the container's dependencies are frozen in 2022. That's another reason to keep it on your own network.
+
+For remote access without opening ports, my [NetBird and Pocket ID guide](/self-host-netbird-pocketid) is one way to do it.
+
+## Settings to Change First
+
+Once you log in, Podgrab looks like a really simple, almost WordPress-style site. The home page even tells you to visit the settings before adding any podcasts, and the README says the same thing. What's in there:
+
+- **Download episodes whenever a new podcast is added**, and **how many** to grab when you do. It defaults to 5, which seemed good to me.
+- **Automatically download new episodes** to disk.
+- **Append the episode date or episode number** to file names.
+- **Use Dark Mode.** I turned this on right away, and it looks a lot better.
+- **Download episode images** with the files, and **generate NFO files** for podcasts.
+- **Don't re-download files deleted from disk**, so cleaning up old episodes doesn't bring them back.
+- **Base URL**, for when you access Podgrab through a domain. Podgrab uses it to build links in its RSS and OPML exports. Leave it empty if you aren't sure.
+- **Limit simultaneous downloads**, which defaults to 5.
+- **User-Agent** header used for downloads, which helps if a podcast host blocks the default one.
+
+The settings page also has a small **Disk Stats** table showing how much space your downloads use and how much is still pending. Hit save, and you're ready to add something.
+
+![Podgrab's settings page with the download options, Use Dark Mode checked, the Disk Stats table, and the Backups and OPML export buttons](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-settings-page.jpg)
+
+Podgrab also backs up its database every two days into the config folder. You can find them with the **Backups** button on the settings page, and they're worth including in your normal server backups.
+
+## Adding a Podcast
+
+Go to **Add Podcast**. You can paste an RSS feed URL, upload an OPML file exported from another podcast app, or search. When I recorded, search offered two sources, iTunes and Podcast Index. I searched for "linux" and went with Jupiter Broadcasting's LINUX Unplugged, which is a great podcast that I highly recommend.
+
+It said the podcast was added successfully, and on the **Episodes** page I could see it pulling episodes right away. The artwork hadn't shown up yet at that point.
+
+![Podgrab search results for linux from iTunes, with LINUX Unplugged marked Already Added and a Podcast added successfully notice](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-search-linux-unplugged-added.jpg)
+
+Click a podcast from the home page, and you get its full episode list. Each episode can be:
+
+- Marked as played
+- Bookmarked
+- Downloaded on demand
+- Deleted
+- Played in the browser
+
+You can also tag podcasts into groups and play an entire tag as a playlist.
+
+## The Built-In Player
+
+The player works. I hit play on an episode, and it started right up in the browser. I skipped ahead to about 23 minutes, went back to the episode list, and opened the same episode again to see whether it remembered my spot. It didn't, and it started over.
+
+![Podgrab's built-in web player playing a LINUX Unplugged episode at the 23-minute mark](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-built-in-player.jpg)
+
+That's fine for me, because I'm not planning to use Podgrab as my podcast player. I see it as a collection tool. Its job is getting episodes onto my server, and something else can handle the listening.
+
+Podgrab does have one feature that could help here, though I didn't try it in the video: it serves its own RSS feeds of what you've downloaded, for each podcast, for each tag, and for everything. A podcast app that can reach your server could subscribe to those and play the episodes from your copy instead of the original host.
+
+## What It Looks Like on Disk
+
+I wanted to see how it organizes files, so I opened the podcasts folder in my data share. Each show gets a folder named after the podcast, so LINUX Unplugged had its own folder with the episode files inside and a `folder.jpg` with the show's artwork. It's clean and easy for other apps to read.
+
+![The Unraid file browser showing the LINUX Unplugged folder Podgrab created, with numbered MP3 episodes and folder.jpg](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-episodes-on-disk.jpg)
+
+Because it's just audio files in folders, you can point another media server at that directory. When I recorded, I hadn't decided between Plex and Audiobookshelf for listening. Audiobookshelf [keeps progress per user, syncs it across devices](https://www.audiobookshelf.org/docs/), and has companion mobile apps, which is exactly what the Podgrab player is missing. It can also search for and auto-download podcasts on its own, so if you already run it, you might not need Podgrab at all. My [Audiobookshelf guide](/audiobookshelf-self-host-audible-library) walks through setting it up with Docker Compose.
+
+## My Take
+
+Podgrab does what I was looking for. You add a podcast, it downloads the episodes, and they sit on your own storage in tidy folders. Setup on Unraid took a couple of minutes, and it's just as simple with Compose. If you're a data hoarder like me, it's a nice little podcast aggregation tool.
+
+The catch is the maintenance situation. It was already quiet when I made the video, and it's been quiet ever since. It still works, but it isn't getting new features or security fixes. Set a password, keep it on your local network, and pair it with a better player if you want to listen to what it collects.
+
+If you know of other self-hosted podcast tools, especially ones that are actively developed, let me know. With all that, I do hope you have an absolutely beautiful day.
