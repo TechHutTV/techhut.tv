@@ -23,7 +23,7 @@ Late in 2024 I put out a Part 1 for my Proxmox home server build, and since then
 
 This part is the foundation everything else sits on. We install Proxmox VE, run through the post-install steps I always do, build two ZFS storage pools (a fast **flash** pool and a big **tank** pool), create our first container, give it storage, and share that storage with every computer on the home network using Samba. The later parts of the series build on exactly this layout, so it's worth getting right.
 
-The written companion to this video lives in my repo at [storage/README.md](https://github.com/TechHutTV/homelab/tree/main/storage), and I keep updating it as people find better ways to do things. The steps below are for **Proxmox VE 9.2**, released May 21, 2026 (the video was recorded on the 8.x release line), and I've called out the places where the current procedure differs from what you'll see on screen.
+The video originally linked to the [storage guide in my homelab repo](https://github.com/TechHutTV/homelab/tree/main/storage). This article brings that walkthrough together with the video, including the repo's updates for Samba access, Windows discovery, Apple clients, and backups. I still keep the repo updated as people find better ways to do things. The steps below are for **Proxmox VE 9.2**, released May 21, 2026 (the video was recorded on the 8.x release line), and I've called out the places where the current procedure differs from what you'll see on screen.
 
 ## The Layout We're Building
 
@@ -39,6 +39,8 @@ Before clicking anything, this is the end result. Later parts of the series link
 | `\\media\docker` | Samba share of `/docker` | Easy network access to small config files |
 
 Pool names are up to you. I've seen a lot of people call their SSD pool `nvme`. I like `flash` and `tank`, and that's what the rest of this series uses.
+
+If you're following the GitHub guide alongside this article, its container is called `servarr` instead of `media`. Both use CT `100`, `/data` on `tank`, and `/docker` on `flash`. The repo's 6 cores, 8 GB of RAM, roughly 28 TB data mount, and 128 GiB Docker mount describe my larger setup. The smaller allocations below follow the video; size them for your own pools rather than copying the repo's numbers.
 
 ## Pick Your Hardware
 
@@ -369,11 +371,11 @@ Then make sure the services start on boot and restart them to load the new confi
 
 ```bash
 sudo systemctl enable smbd nmbd
-sudo systemctl restart smbd nmbd
 testparm
+sudo systemctl restart smbd nmbd
 ```
 
-`testparm` checks the config for syntax mistakes, which is handy if a share doesn't show up.
+`testparm` checks the config for syntax mistakes. Fix any errors before restarting the services.
 
 ### macOS Compatibility (Optional)
 
@@ -387,6 +389,8 @@ The video doesn't show this, but my repo now includes it for Mac and iOS users. 
    fruit:zero_file_id = yes
 ```
 
+Run `testparm` again, then `sudo systemctl restart smbd` to load the changes. These settings improve Apple client compatibility; they don't configure a Time Machine backup destination.
+
 ## Connect from Your Computers
 
 ### macOS
@@ -394,6 +398,10 @@ The video doesn't show this, but my repo now includes it for Mac and iOS users. 
 I tested from my Mac first. In Finder, under **Network**, `media` showed up right away. Opening it as a guest and clicking `data` threw an error, which is exactly what should happen with the config above. After reconnecting as my user (**Connect As**, then **Registered User**), `data` opened and the `test.txt` file from earlier was there. I edited it on the Mac, saved it, and ran `cat` on it in the container, and the new text was there.
 
 You can also connect directly with **Go > Connect to Server** (`Cmd+K`) and `smb://10.0.0.100/data`.
+
+### iPhone and iPad
+
+The storage README also covers connecting from the Files app. While connected to your home network, open **Files > Browse**, tap the three-dot menu, and choose **Connect to Server**. Enter `smb://10.0.0.100`, choose **Registered User**, and sign in with the username and password you set with `smbpasswd`. Open `data` or `docker` from the server's share list. Use your container's IP if it differs from this example, and apply the Apple compatibility settings above if needed.
 
 ### Windows and wsdd
 
@@ -428,7 +436,15 @@ sudo mkdir -p /mnt/data
 sudo mount -t cifs //10.0.0.100/data /mnt/data -o username=youruser
 ```
 
-### If Something Doesn't Show Up
+## Troubleshooting Samba
+
+The [storage README's troubleshooting section](https://github.com/TechHutTV/homelab/tree/main/storage#troubleshooting-samba) is useful here: first separate a connection problem from a discovery problem. From Windows PowerShell, check whether the container is reachable on SMB's port:
+
+```powershell
+Test-NetConnection -ComputerName 10.0.0.100 -Port 445
+```
+
+If that fails, check the container's IP, network path, and firewall. If it succeeds, try opening `\\10.0.0.100\data` directly in File Explorer. A working direct connection means you can use the share even when the server is missing from **Network**. Discovery normally stays within the local subnet; clients on another subnet may need the direct address even when routing allows SMB traffic.
 
 I didn't need any firewall changes. But if you've enabled `ufw` in the container, allow Samba (the `samba` package ships a ufw profile), plus wsdd's discovery ports, [UDP 3702 and TCP 5357](https://github.com/christgau/wsdd):
 
@@ -440,7 +456,39 @@ sudo ufw allow 5357/tcp
 
 If Windows says the network name isn't available, check that your client's IP is covered by `hosts allow`. A `192.168.x.x` client hitting a config that only allows `10.0.0.0/24` gets refused.
 
+Run these checks **inside the container**, where Samba is installed:
+
+```bash
+grep 'hosts allow' /etc/samba/smb.conf
+sudo ufw status
+sudo systemctl status smbd
+testparm
+```
+
+For an **access denied** or **bad password** error, check Samba's user database and reset the password for the Linux user you created earlier:
+
+```bash
+sudo pdbedit -L
+sudo smbpasswd -a youruser
+```
+
+Use those credentials on the client. If login succeeds but writing fails, check ownership with `ls -ld /data /docker` and make sure it matches the `force user` and `force group` in your config. If direct access works but Windows discovery doesn't, check `sudo systemctl status wsdd-server` on Ubuntu 24.04, or `sudo systemctl status wsdd` on the 22.04 setup shown in the video.
+
 And keep these shares on your LAN. Don't port forward SMB to the internet. If you need remote access, use a VPN. My [NetBird guide](/self-host-netbird-pocketid) is one way to do it.
+
+## Back Up the Storage Before Filling It
+
+The repo's [backup section](https://github.com/TechHutTV/homelab/tree/main/storage#backups) goes further than the original video. Creating the pools and shares doesn't create a backup, and a snapshot on `tank` won't help if you lose that pool.
+
+For this layout, check these items before putting anything irreplaceable on the server:
+
+- **Container and mount points:** schedule backups of CT `100`, and confirm `/data` and `/docker` are included. The `backup=1` commands above include these storage-backed volumes. If you exclude the large `/data` volume, give it a separate file backup. Proxmox excludes bind and device mount contents from container backups, so check the actual mount type if you adapt this layout.
+- **Configuration and recovery access:** preserve the Proxmox host configuration, container settings, Samba config, and the passwords or encryption keys needed to restore. Keep recovery information somewhere you can reach with this server offline.
+- **Application data:** once later parts add services, use each application's supported backup procedure. A database and its files need a consistent recovery point; copying a live database directory through the `docker` share isn't enough.
+- **Copies and schedule:** start with daily backups to a separate machine or disk, plus an encrypted offsite copy. Take another backup before upgrades or storage changes. The repo suggests 14 daily, 8 weekly, and 6 monthly recovery points as a starting policy, adjusted for capacity. Configure failure notifications and test that they reach you.
+- **Restore test:** restore to a separate test container or directory before relying on the backup. Open restored files, check ownership, and test Samba access. Repeat after major changes and periodically; the repo suggests quarterly. Record which backup you used and how long recovery took.
+
+Those are steps to configure and verify, not things the storage setup has already done. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) walks through guest backups; keep a separate plan for anything you leave out of those jobs.
 
 ## Final Thoughts
 
