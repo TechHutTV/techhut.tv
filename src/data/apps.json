@@ -1188,7 +1188,9 @@
     "name": "LocalTuya",
     "category": "Automation",
     "description": "Control compatible Tuya devices locally through Home Assistant.",
-    "coverage": [],
+    "coverage": [
+      "/localtuya-home-assistant-holiday-lights"
+    ],
     "videos": [
       {
         "id": "M-sQcS3KEm8",

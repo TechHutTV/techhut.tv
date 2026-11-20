@@ -14,6 +14,10 @@
     {
       "label": "GitHub",
       "url": "https://github.com/rospogrigio/localtuya"
+    },
+    {
+      "label": "xZetsubou fork on GitHub",
+      "url": "https://github.com/xZetsubou/hass-localtuya"
     }
   ],
   "features": [
@@ -23,6 +27,10 @@
   ],
   "sources": [
     "https://github.com/rospogrigio/localtuya#readme",
-    "https://github.com/rospogrigio/localtuya/blob/HEAD/LICENSE"
-  ]
+    "https://github.com/rospogrigio/localtuya/blob/HEAD/LICENSE",
+    "https://github.com/xZetsubou/hass-localtuya#readme"
+  ],
+  "coverageNotes": {
+    "/localtuya-home-assistant-holiday-lights": "Uses the xZetsubou/hass-localtuya fork, which adds Tuya protocol 3.5 support. Both install as the same localtuya integration, so only one can be installed at a time."
+  }
 }
