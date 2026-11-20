@@ -1,10 +1,10 @@
 export const title = "WSL Setup Guide: Run Linux Apps on Windows"
 export const description = "Install the Windows Subsystem for Linux with one command, add Ubuntu and Debian, run Linux GUI apps like GIMP and Kate from the Start menu, and learn the WSL commands worth knowing."
-export const date = "2026-10-17"
+export const date = "2027-01-01"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Windows", "Linux", "Terminal"]
-export const cover = "/docs-static/img/2026/10/wsl-linux-apps-on-windows/cover.jpg"
+export const cover = "/docs-static/img/2027/01/wsl-linux-apps-on-windows/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -72,7 +72,7 @@ Once the setup is done you can close that window. Ubuntu shows up as its own app
 
 I prefer Windows Terminal. Click the down arrow next to the tabs and Ubuntu is in the list of profiles. Every distro you install gets its own profile automatically, which makes jumping between PowerShell and Linux really easy.
 
-![The Windows Terminal new-tab dropdown with an Ubuntu profile listed under Azure Cloud Shell, as shown in the video](/docs-static/img/2026/10/wsl-linux-apps-on-windows/windows-terminal-ubuntu-profile.jpg)
+![The Windows Terminal new-tab dropdown with an Ubuntu profile listed under Azure Cloud Shell, as shown in the video](/docs-static/img/2027/01/wsl-linux-apps-on-windows/windows-terminal-ubuntu-profile.jpg)
 
 ## First Steps Inside Ubuntu
 
@@ -167,7 +167,7 @@ gedit
 
 It opened as a normal window on my Windows desktop. Tabs, typing, all of it works like it would on a Linux desktop. The save dialog shows both worlds: `/mnt/c/Users/Brandon Hopkins` for my Windows files and `/home/brandon` for my actual Linux home folder.
 
-![The gedit save dialog in the video browsing the Windows user folder through the mnt, c, Users path](/docs-static/img/2026/10/wsl-linux-apps-on-windows/gedit-save-dialog-windows-files.jpg)
+![The gedit save dialog in the video browsing the Windows user folder through the mnt, c, Users path](/docs-static/img/2027/01/wsl-linux-apps-on-windows/gedit-save-dialog-windows-files.jpg)
 
 gedit is still in the Ubuntu 26.04 archive, but it's no longer GNOME's default editor. Microsoft's [GUI apps guide](https://learn.microsoft.com/en-us/windows/wsl/tutorials/gui-apps) now uses GNOME Text Editor:
 
@@ -187,11 +187,11 @@ gimp
 
 Since I launched it from the terminal, I saw a pile of GTK warnings scroll by. Ignore them. GIMP opened fully and ran well. I tried **Filters > Render > Lava**, which is one of the more demanding filters, and it finished without any trouble. Performance was good.
 
-![GIMP running through WSLg in the video with the Lava render filter applied to a 1920x1080 canvas](/docs-static/img/2026/10/wsl-linux-apps-on-windows/gimp-lava-filter.jpg)
+![GIMP running through WSLg in the video with the Lava render filter applied to a 1920x1080 canvas](/docs-static/img/2027/01/wsl-linux-apps-on-windows/gimp-lava-filter.jpg)
 
 The best part is that WSL adds Start menu entries for the Linux apps you install. After installing GIMP, **GNU Image Manipulation Program** showed up in my Start menu, and I could launch it straight from Windows without opening a terminal. I also installed Kate, and it showed up the same way. That's the screen on the thumbnail: Ubuntu, Debian, Text Editor, Kate, and GIMP pinned next to each other.
 
-![The Windows 11 Start menu in the video showing GNU Image Manipulation Program and Ubuntu entries like Text Editor under Recommended](/docs-static/img/2026/10/wsl-linux-apps-on-windows/start-menu-linux-apps.jpg)
+![The Windows 11 Start menu in the video showing GNU Image Manipulation Program and Ubuntu entries like Text Editor under Recommended](/docs-static/img/2027/01/wsl-linux-apps-on-windows/start-menu-linux-apps.jpg)
 
 ```bash
 sudo apt install kate
