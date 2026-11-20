@@ -1,0 +1,249 @@
+export const title = "Pi-hole in Home Assistant: A Bubble Card Dashboard with Disable Timers"
+export const description = "Connect Pi-hole v6 to Home Assistant with an app password, then build a Bubble Card control with 5, 30, and 60 minute disable buttons and Mini Graph Card stats, with the YAML updated for current releases."
+export const date = "2026-12-18"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab"]
+export const cover = "/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="0gNn5oJWsrw" title="TechHut's Pi-hole in Home Assistant walkthrough" />
+
+This is a quick one. I'll show you how to get [Pi-hole](https://pi-hole.net/) into [Home Assistant](https://www.home-assistant.io/), and then the custom card I built for it. It works well enough that I barely need to open the Pi-hole dashboard anymore.
+
+The card has a big status icon that's green when Pi-hole is actively blocking and dark red when it isn't. Next to it are three buttons that turn blocking off for 5, 30, or 60 minutes. Under that sit three small graphs: total queries, blocked queries, and the percentage blocked.
+
+![The Pi-hole card on my Home Assistant dashboard with blocking off, a dark red status icon, the 5m, 30m, and 60m buttons, and the Queries, Blocked, and Difference graphs, as shown in the video](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/pi-hole-card-blocking-off.jpg)
+
+Those buttons are the whole reason I made this. Everybody in my house uses Home Assistant, and every once in a while someone tells me the internet's not working. They're trying to open a site that refuses to load with an ad blocker, or they're researching something for a paper and need a news site. Now they open the app, tap a timer, and they're good to go. No admin login, and blocking turns itself back on.
+
+<Note>
+The video was published in December 2024, when I was on Pi-hole v5. The steps below use the current versions. [Pi-hole Core v6.6](https://github.com/pi-hole/pi-hole/releases/tag/v6.6), released November 11, 2026, is a security update, and the app password steps are the same. [Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) (February 2025) replaced the old API token with a new REST API and app passwords, and Home Assistant's built-in integration gained v6 support in [Home Assistant 2025.8](https://www.home-assistant.io/blog/2025/08/06/release-20258/). Several sensors were renamed along the way. The card YAML has also been updated for [Bubble Card v3.4.2](https://github.com/Clooos/Bubble-Card/releases/tag/v3.4.2), released October 14, 2026, and current Home Assistant action syntax. I also fixed a typo in the copy I posted to GitHub. My hands-on impressions come from the original recording.
+</Note>
+
+## What You'll Need
+
+You need Pi-hole and Home Assistant already running.
+
+- **Pi-hole.** If you don't have it yet, my [Pi-hole and Unbound guide](/pi-hole-unbound-recursive-dns) walks through the install.
+- **Home Assistant.** My [Home Assistant setup guide](/home-assistant-smart-home-setup) covers installing Home Assistant OS and onboarding.
+- **HACS**, for the two custom cards. The [HACS download docs](https://www.hacs.xyz/docs/use/download/download/) cover installing it, and I went over the short version in my [LocalTuya guide](/localtuya-home-assistant-holiday-lights). You don't need HACS for the integration itself, since Pi-hole is built into Home Assistant.
+
+## Add the Pi-hole Integration
+
+In Home Assistant, go to **Settings** > **Devices & services**, click **Add integration**, and search for **Pi-hole**. The setup form asks for:
+
+| Field | What to enter |
+|---|---|
+| **Host** | The IP address or hostname of your Pi-hole, like `192.168.1.53` |
+| **Port** | The port of the Pi-hole web interface, usually `80` for HTTP or `443` for HTTPS |
+| **Location** | `admin` (only used by Pi-hole v5, ignored by v6) |
+| **App password or API key** | See below |
+| **Uses an SSL certificate** | Tick this if you connect over HTTPS |
+| **Verify SSL certificate** | Turn this off if Pi-hole is using its auto-generated certificate |
+
+The combination of host, port, and location should be the address you normally use for the Pi-hole login page, like `http://192.168.1.53:80/admin`. Pi-hole v6 [binds to ports 80 and 443](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/) and falls back to `8080` for HTTP if those are taken. If you run it in Docker with a remapped port, use the port you browse to.
+
+In the video, the form also asked for a name. That field is gone now, and the device is just called **Pi-hole**, which is where the `switch.pi_hole` and `sensor.pi_hole_*` entity IDs below come from.
+
+### Get an App Password (Pi-hole v6)
+
+This is the part that changed the most. In the video, I grabbed an API token from **Settings** > **API** > **Show API token** in Pi-hole. That was the Pi-hole v5 way, and it's still what you use if you're on v5.
+
+On Pi-hole v6, Home Assistant authenticates with an **app password** instead. Per the [Home Assistant docs](https://www.home-assistant.io/integrations/pi_hole/):
+
+1. Log in to Pi-hole and go to **Settings** > **Web Interface / API**.
+2. Switch the settings view from **Basic** to **Expert**.
+3. Select **Configure app password**, then copy the password it generates and save it.
+4. Paste it into the **App password or API key** field in Home Assistant and submit.
+
+A few things worth knowing:
+
+- Pi-hole only shows the app password once, so copy it before you close the dialog. Pi-hole stores a single app password, so generating a new one replaces the old one. If something else already uses it, update that too.
+- You can also use your normal admin password, but the Home Assistant docs recommend against it. The app password also keeps working if you turn on two-factor authentication, which is what it's [designed for](https://docs.pi-hole.net/api/auth/).
+- By default, app password sessions [can't change Pi-hole's configuration](https://docs.pi-hole.net/ftldns/configfile/) (the `webserver.api.app_sudo` setting is `false`). Turning blocking on and off still works, so you don't need to change it for anything in this guide.
+
+## What the Integration Gives You
+
+Once it's added, you get one device, **Pi-hole**, with 14 entities. That matches what I had in the video, although some of the names are different on v6:
+
+| Entity | Example ID on Pi-hole v6 | Notes |
+|---|---|---|
+| Switch | `switch.pi_hole` | Turns blocking on and off. This is the one you'll use. |
+| Status | `binary_sensor.pi_hole_status` | Whether blocking is enabled |
+| DNS queries | `sensor.pi_hole_dns_queries` | Was "DNS queries today" on v5 |
+| Ads blocked | `sensor.pi_hole_ads_blocked` | Was "Ads blocked today" on v5 |
+| Ads percentage blocked | `sensor.pi_hole_ads_percentage_blocked` | Was "Ads percentage blocked today" on v5 |
+| Other sensors | `sensor.pi_hole_dns_queries_cached`, and so on | Cached, forwarded, seen clients, unique clients, unique domains, domains blocked |
+| Updates | Core, Web, and FTL | Shows when a Pi-hole update is available |
+
+The [integration docs](https://www.home-assistant.io/integrations/pi_hole/#sensors) list every sensor with its v5 and v6 name. Check your own entity IDs under the Pi-hole device before you paste any YAML, especially if you set the integration up back on v5. Also keep in mind that the integration [polls Pi-hole every five minutes](https://github.com/home-assistant/core/blob/dev/homeassistant/components/pi_hole/const.py), so a change made in the Pi-hole web UI can take a few minutes to show up in Home Assistant.
+
+### The Quick Way: Built-In Cards
+
+You don't need any custom cards for a basic setup. In the video, I edited the dashboard, clicked **Add card**, picked **By entity**, searched for "pi hole," and selected **DNS queries cached**. Home Assistant suggested a card for it, I added it to the dashboard, and that was it. Clicking a sensor shows a history graph of its values, which already looks pretty good.
+
+That's fine if you just want numbers on a screen. I wanted something nicer, though.
+
+## The Bubble Card Control
+
+The top half of my card is [Bubble Card](https://github.com/Clooos/Bubble-Card). If you've never used it, it's a collection of cards from HACS with a ton of customization options. I'm also using it for the lights and shades in my house, including some preset buttons for the shades that are very similar to what I did here.
+
+![Bubble Card shade controls on my dashboard with Close, 15, 50, and 75 preset sub-buttons above up, stop, and down buttons, as shown in the video](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/bubble-card-shades-presets.jpg)
+
+To install it, open **HACS**, search for **Bubble Card**, and click **Download**. Then edit your dashboard and add a card by searching for "Bubble Card." The README lists Home Assistant 2023.9.0 as the lowest supported version.
+
+Bubble Card has a graphical editor, which is really nice, but you'll still end up in the code editor for something like this.
+
+![The Bubble Card visual editor in the video with a Button card, the State button type, and switch.pi_hole selected, next to a preview of the card](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/bubble-card-editor-state-button.jpg)
+
+My config, updated for the current Bubble Card release:
+
+```yaml
+type: custom:bubble-card
+card_type: button
+button_type: state
+entity: switch.pi_hole
+card_layout: large
+show_name: false
+force_icon: false
+scrolling_effect: false
+state_content:
+  - state
+  - last-changed
+tap_action:
+  action: more-info
+button_action:
+  tap_action:
+    action: toggle
+sub_button:
+  - entity: switch.pi_hole
+    name: 5m
+    icon: mdi:block-helper
+    show_name: true
+    show_background: false
+    tap_action:
+      action: perform-action
+      perform_action: pi_hole.disable
+      target:
+        entity_id: switch.pi_hole
+      data:
+        duration: "00:05:00"
+  - entity: switch.pi_hole
+    name: 30m
+    icon: mdi:block-helper
+    show_name: true
+    show_background: false
+    tap_action:
+      action: perform-action
+      perform_action: pi_hole.disable
+      target:
+        entity_id: switch.pi_hole
+      data:
+        duration: "00:30:00"
+  - entity: switch.pi_hole
+    name: 60m
+    icon: mdi:block-helper
+    show_name: true
+    show_background: false
+    tap_action:
+      action: perform-action
+      perform_action: pi_hole.disable
+      target:
+        entity_id: switch.pi_hole
+      data:
+        duration: "01:00:00"
+styles: |
+  .is-on .bubble-button-card-container {
+    background-color: transparent;
+    border-radius: 10px;
+  }
+  .bubble-icon-container {
+    opacity: 1 !important;
+    background-color: ${state === 'on' ? 'green' : 'darkred'} !important;
+  }
+```
+
+### How It Works
+
+**The main button.** It's a `state` button pointed at `switch.pi_hole`. Tapping the card toggles blocking on and off, and tapping the icon opens the more-info dialog. The state line shows the current state and when it last changed, which is the "On • 3 hours ago" text in my thumbnail.
+
+**The sub-buttons.** Each one calls the integration's [`pi_hole.disable`](https://www.home-assistant.io/integrations/pi_hole/#actions) action on the switch with a duration in `HH:MM:SS` format. Pi-hole runs the timer itself, so blocking comes back on after the time is up, even if Home Assistant isn't watching. Just like with the polling above, Home Assistant may need a few minutes to notice that blocking is back on. Change the durations or add more buttons however you like.
+
+**The styling.** For the "on" state, I changed the background and the border radius so the card matches the rest of my dashboard. The important bit is the `.bubble-icon-container` rule. It's a small JavaScript template that makes the icon background green when the switch is on and dark red when it isn't, and `opacity: 1 !important` keeps the icon fully opaque in both states. That's my red and green status light.
+
+I wanted the timer buttons to look like plain text, without a border or background color. In the video I did that with custom CSS for each sub-button. Now there's a documented `show_background: false` option for sub-buttons, so I've used that instead.
+
+### What Changed Since the Video
+
+If you copied my YAML from the video or from my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/homeassistant/dashboard), here's what's different:
+
+- **The 60m button.** My posted config had a duration of `"00:01:00"` on the 60m button, which is one minute, not sixty. It's `"01:00:00"` now.
+- **Action syntax.** Home Assistant [renamed services to actions](https://www.home-assistant.io/blog/2024/08/07/release-20248/) in 2024.8, so `call-service`, `service`, and `service_data` are now `perform-action`, `perform_action`, and `data`, per the [dashboard actions docs](https://www.home-assistant.io/dashboards/actions/). The old keys are backward compatible, but the new ones are what the docs use. I also removed the duplicate `entity_id` from the action data, since `target` already covers it.
+- **The state line.** Bubble Card [v3.4.0](https://github.com/Clooos/Bubble-Card/releases/tag/v3.4.0) replaced `show_state` and `show_last_changed` with a single `state_content` list. The old keys still work, and the editor rewrites them when you open the card. Back up your card configs before upgrading, since the release notes say migrated cards won't work properly on an older Bubble Card version.
+- **Sub-button backgrounds.** The old per-button CSS used `background: 00000;`, which isn't a valid CSS value. `show_background: false` does the job properly.
+
+Bubble Card also has a newer sub-button layout with `main` and `bottom` sections and groups. A plain list like the one above is still supported and is treated as the `main` section, so you don't need to change anything there.
+
+## The Mini Graph Card Stats
+
+The bottom half is three cards from [Mini Graph Card](https://github.com/kalkih/mini-graph-card). You could use the history graph built into Home Assistant for this, and that works too, but these are really pretty. The documentation covers the options and has a bunch of examples you can copy and tweak.
+
+Install it from HACS the same way. Search for **mini-graph-card** and download it. My config, with the sensor names updated for Pi-hole v6:
+
+```yaml
+type: horizontal-stack
+cards:
+  - type: custom:mini-graph-card
+    name: Queries
+    entities:
+      - sensor.pi_hole_dns_queries
+    hours_to_show: 3
+    points_per_hour: 10
+    update_interval: 10
+    aggregate_func: max
+    line_width: 8
+    line_color: blue
+    font_size: 70
+  - type: custom:mini-graph-card
+    name: Blocked
+    entities:
+      - sensor.pi_hole_ads_blocked
+    hours_to_show: 3
+    points_per_hour: 10
+    update_interval: 10
+    aggregate_func: max
+    line_width: 8
+    line_color: red
+    font_size: 70
+  - type: custom:mini-graph-card
+    name: Difference
+    entities:
+      - sensor.pi_hole_ads_percentage_blocked
+    hours_to_show: 3
+    points_per_hour: 10
+    update_interval: 10
+    aggregate_func: max
+    line_width: 8
+    line_color: orange
+    font_size: 70
+```
+
+If you're still on Pi-hole v5, the entities are `sensor.pi_hole_dns_queries_today`, `sensor.pi_hole_ads_blocked_today`, and `sensor.pi_hole_ads_percentage_blocked_today`.
+
+A few notes on the options, all from the [Mini Graph Card README](https://github.com/kalkih/mini-graph-card#options):
+
+- **`hours_to_show: 3`** is just for looks. This isn't critical information, I only wanted it to look nice, and three hours gives it a pleasant shape.
+- **`points_per_hour: 10`** is one point every six minutes. That lines up well with the integration's five-minute polling, so more points wouldn't add any detail.
+- **`update_interval: 10`** refreshes the history every 10 seconds instead of on every state change. Since the sensors only update every five minutes, a longer interval works just as well.
+- **`aggregate_func: max`** uses the highest value in each slice, which suits counters that only go up.
+- **`line_width`, `line_color`, and `font_size`** are personal taste. Change them to whatever you like.
+
+The "Difference" card is the percentage of queries that were blocked. On v5 these counters reset every day. The Home Assistant docs note that v6 counters don't have that daily distinction, which is why the "today" got dropped from the names.
+
+## Final Thoughts
+
+This card works well enough that I barely touch the Pi-hole dashboard anymore. Getting the integration running takes a couple of minutes, and having the timer buttons right in Home Assistant is really nice, since everybody in my house already uses it. When a site won't load for someone in my house, they open the app, tap 5, 30, or 60 minutes, and blocking comes back on by itself afterward.
+
+If you're on Pi-hole v6, the main thing to get right is the app password. After that, check your entity IDs, paste in the YAML, and customize it however you want. I still have some styling work to do on mine, and my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/homeassistant) has the rest of my Home Assistant configs, including the Bubble Card setup for my shades and my LocalTuya stuff. With all that, I do hope you have an absolutely beautiful day.
