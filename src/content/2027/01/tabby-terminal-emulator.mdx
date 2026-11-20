@@ -1,0 +1,189 @@
+export const title = "Tabby: A Modern Terminal Emulator for Linux, macOS, and Windows"
+export const description = "A quick tour of Tabby, the cross-platform terminal with split panes, deep theming, plugins, and a built-in SSH and SFTP connection manager, with current install steps and what changed with config sync."
+export const date = "2027-01-08"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Mac", "Windows", "Terminal", "Customization"]
+export const cover = "/docs-static/img/2027/01/tabby-terminal-emulator/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="w-f074YweOY" title="TechHut's Tabby terminal emulator walkthrough" />
+
+This is a quick one. I stumbled across a really good-looking terminal emulator called [Tabby](https://tabby.sh) and wanted to show it off. I recorded the video on macOS, but Tabby runs just as well on Linux and Windows. The project describes itself as "a terminal for a more modern age," and after using it for a while, I think it lives up to that.
+
+The video was published in December 2021, and I recorded it with Tabby 1.0.167 on an M1 MacBook Air. The install steps here are for [Tabby 1.0.238](https://github.com/Eugeny/tabby/releases/tag/v1.0.238), released October 6, 2026. The biggest change since then is that the hosted config sync service was shut down in 2023, so I've added a section on that. The screenshots and hands-on impressions are from the original recording.
+
+## What Tabby Is
+
+Tabby (formerly **Terminus**) is a free, open source terminal emulator plus SSH, Telnet, and serial client for Windows, macOS, and Linux. It's MIT licensed and developed on [GitHub](https://github.com/Eugeny/tabby). The README pitches it as a replacement for the standard Windows console, PuTTY, macOS Terminal.app, and iTerm, not as a new shell.
+
+What you get out of the box:
+
+| Feature | Details |
+|---|---|
+| Panes and tabs | Nested split panes, tabs on any side of the window, and it remembers your tabs |
+| Quake mode | Optional dockable window with a global hotkey |
+| Theming | Color schemes, themes, and fully configurable (multi-chord) hotkeys |
+| SSH | SSH2 client with a connection manager, SFTP panel, port and X11 forwarding, jump hosts, agent forwarding, and login scripts |
+| Other connections | Telnet client and a serial terminal with saved connections |
+| Shells | PowerShell, WSL, Git Bash, Cygwin, MSYS2, Cmder, and CMD on Windows, plus your normal shells on Linux and macOS |
+| Secrets | An encrypted Vault for SSH passwords, key passphrases, and optionally the whole config |
+| Extras | Zmodem file transfer, font ligatures, clickable URLs and IPs, plugins |
+
+One thing to know up front: Tabby is an Electron app. The README is honest about it and says Tabby isn't lightweight, so if RAM usage matters to you, the project itself points you at something like Alacritty. If you want a fast native terminal instead, I covered [Ghostty](/ghostty-best-terminal-emulator-linux-mac) separately.
+
+## Installing Tabby
+
+All downloads live on the [GitHub releases page](https://github.com/Eugeny/tabby/releases/latest). Version 1.0.238 ships these builds:
+
+| Platform | Files |
+|---|---|
+| Windows | `tabby-1.0.238-setup-x64.exe`, `tabby-1.0.238-setup-arm64.exe`, and portable zips |
+| macOS | `tabby-1.0.238-macos-arm64.dmg` (Apple silicon) and `tabby-1.0.238-macos-x86_64.dmg` (Intel) |
+| Linux | `.deb`, `.rpm`, `.pacman`, `.AppImage`, and `.tar.gz`, each for x64, arm64, and armv7l |
+
+### Windows
+
+Run the setup `.exe` for your architecture. If you'd rather not install anything, grab the portable zip, extract it, and create a folder named `data` next to `Tabby.exe`. Tabby then keeps its settings in that folder instead of your user profile, so you can carry it on a USB stick.
+
+### macOS
+
+Open the `.dmg` that matches your Mac and drag Tabby into Applications. If you use Homebrew, there's also a [cask](https://formulae.brew.sh/cask/tabby) that tracks the GitHub releases:
+
+```bash
+brew install --cask tabby
+```
+
+### Linux: Debian and Ubuntu
+
+The project publishes an apt repository on [packagecloud](https://packagecloud.io/eugeny/tabby/install). The setup script adds the repository's GPG key to `/etc/apt/keyrings/` and writes `/etc/apt/sources.list.d/eugeny_tabby.list`. Download it and read it before you run it as root:
+
+```bash
+curl -fsSL https://packagecloud.io/install/repositories/eugeny/tabby/script.deb.sh -o tabby-repo.sh
+less tabby-repo.sh
+sudo bash tabby-repo.sh
+sudo apt install tabby-terminal
+```
+
+The package is called `tabby-terminal`, and from then on it updates with the rest of your system.
+
+### Linux: Fedora, RHEL, and others
+
+The packagecloud RPM repository only carries builds for Enterprise Linux 8 and 9 and Oracle Linux 6 and 7. On those, the same pattern works with `script.rpm.sh`:
+
+```bash
+curl -fsSL https://packagecloud.io/install/repositories/eugeny/tabby/script.rpm.sh -o tabby-repo.sh
+sudo bash tabby-repo.sh
+sudo dnf install tabby-terminal
+```
+
+Fedora isn't in that repository, so download the `.rpm` from GitHub and install it directly. The same goes for an Ubuntu or Debian release the repo script doesn't recognize (use the `.deb`):
+
+```bash
+sudo dnf install ./tabby-1.0.238-linux-x64.rpm
+```
+
+For anything else, the AppImage works on most distros:
+
+```bash
+chmod +x tabby-1.0.238-linux-x64.AppImage
+./tabby-1.0.238-linux-x64.AppImage
+```
+
+<Note>
+Tabby's built-in auto-updater doesn't run on Linux. Use the packagecloud repo so updates come through your package manager, or download new packages from GitHub yourself.
+</Note>
+
+## Split Panes and Hotkeys
+
+The first time you launch Tabby, a welcome tab walks you through a few settings: language, light or dark mode, analytics, and the global hotkey. Make your choices and click **Close and never show again**.
+
+The tiling is what grabbed me first. In the video I hit Command+D, and Tabby split the current tab into a second terminal. Then I held Command and Shift and dragged the panes around to rearrange them, going from stacked to side by side. It's the tiling behavior you'd expect from a modern terminal emulator, and all of it can be driven from the keyboard.
+
+![Tabby from the video with the window split into two panes, neofetch on the left and htop on the right](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-split-panes.jpg)
+
+These are the current default hotkeys for the basics:
+
+| Action | macOS | Linux and Windows |
+|---|---|---|
+| Split right | Cmd+Shift+D | Ctrl+Shift+S |
+| Split down | Cmd+D | Ctrl+Shift+D |
+| Maximize pane | Cmd+Option+Enter | Ctrl+Alt+Enter |
+| Profile selector | Cmd+E | Ctrl+Shift+E |
+| Rearrange panes (hold and drag) | Ctrl+Shift | Ctrl+Shift |
+
+The rearrange modifier in the current defaults is Ctrl+Shift on every platform, so if Command+Shift doesn't work for you on a Mac like it did for me, that's why. Everything is remappable under **Settings > Hotkeys**: switching tabs, moving panes, and pretty much anything else.
+
+## Settings and Customization
+
+The settings tab is where you'll spend some time. **Application** has the language, an analytics toggle, and automatic updates, plus shell integration on macOS and Windows. Some of those you'll already have picked on the welcome tab.
+
+Appearance is probably the most important part of a terminal for a lot of us, and Tabby has a huge selection of color schemes. I'm using a customized version of Espresso Libre, and in the video I was only about halfway down the list. There's going to be one you like.
+
+![The Tabby Color scheme settings page from the video with a customized Espresso Libre scheme selected above the 3024 Day preview](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-color-scheme-settings.jpg)
+
+The one con I ran into in that macOS build was that after changing the color scheme I had to close Tabby and reopen it to see the change. That was the only real negative I found.
+
+A few other pages worth knowing:
+
+- **Window** has the theme, window frame style, opacity, dock position for the Quake-style drop-down, and tab placement.
+- **SSH** has global defaults for SSH connections.
+- **Vault** lets you set a master passphrase (more on that below).
+- **Config file** shows Tabby's `config.yaml` right inside the app. You can edit it, save, and apply without opening another terminal, finding the file, and opening it in nano. There's also a **Show defaults** button to see what every option is set to. If you'd rather edit it externally, it's in Tabby's user data folder, which is `~/.config/tabby/config.yaml` on Linux.
+
+## Plugins and Themes
+
+Hotkeys and color schemes are nice, but plugins are even better. **Settings > Plugins** lists everything available and installs it in one click. When I scrolled through, I saw things like title control, fit-to-screen, Docker, config sync, search-in-browser, and Clippy (an example plugin whose whole job is to annoy you). Themes install from the same place, including Hype, Relaxed, and Gruvbox.
+
+The plugin I noticed for clickable IPs is now built in. The bundled linkifier makes URLs, IP addresses, and file paths clickable without installing anything.
+
+Keep in mind that the plugin list is pulled from npm (packages tagged `tabby-plugin` or the older `terminus-plugin`), and almost all of them are third-party code running inside your terminal. Stick to plugins that are maintained and that you trust, especially if you keep SSH credentials in Tabby.
+
+## SSH Profiles and Connections
+
+This is a feature I'm going to be using a lot. Next to the new tab button is the profile list, where you can launch any shell Tabby found (sh, bash, zsh, and so on). SSH lives under advanced profiles, so you create a new profile for it:
+
+1. Open **Settings > Profiles & connections** and click **New profile**.
+2. Pick **SSH connection** as the base.
+3. Give it a name, then fill in the host, port (22 by default), and username.
+4. Choose an authentication method: Auto, Password, Key, Agent, or Interactive.
+5. Click **Save**.
+
+![The Tabby SSH profile editor from the video with the General tab open, port 22, and the Auto, Password, Key, Agent, and Interactive authentication options](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-ssh-profile-dialog.jpg)
+
+In the video I named mine after techhut.tv, set a password, left the ports and advanced options at their defaults, and saved it. It showed up in an Ungrouped section, and one click connected me. That's all there is to it. Other tabs in that dialog cover port forwarding, ciphers, and login scripts.
+
+Saved passwords go into your operating system's keychain, or into Tabby's Vault if you've enabled it. Even better, use **Key** or **Agent** authentication with an SSH key so there's no password to save at all.
+
+### SFTP
+
+Once you're connected, there's an **SFTP** button at the top of the session. Click it and you get a graphical file browser for the remote machine right inside the terminal. You can drag and drop to upload and click to download.
+
+![The Tabby SFTP panel from the video open on an SSH session to techhut.tv, listing the remote root folders](/docs-static/img/2027/01/tabby-terminal-emulator/tabby-sftp-panel.jpg)
+
+I've been getting really into homelabbing, with a few machines running websites and Nextcloud instances, so this is a big deal for me. In the video I ran `sudo apt upgrade` on the server in one tab and kept poking around Tabby's settings in another, all in the same window.
+
+### Lock Down the Machine Running Tabby
+
+If you save SSH profiles, anyone who gets into your computer gets into your servers too. Make your computer hard to get into and encrypt your installation. Inside Tabby, **Settings > Vault > Set master passphrase** turns on an always-encrypted container for SSH passwords and key passphrases, and Tabby asks for the passphrase when it needs to unlock it. Store that passphrase somewhere safe. The Vault is encrypted with a key derived from it, so if you lose it, your only option is to erase the Vault and re-enter your secrets.
+
+## Config Sync Changed
+
+The settings sidebar has a **Config sync** page. It used to point at a hosted Tabby Web service at app.tabby.sh. That service was [discontinued in October 2023](https://github.com/Eugeny/tabby/issues/9131). The developer said he couldn't afford to keep hosting it, and current Tabby versions clear the old host and token from your config automatically.
+
+Config sync now needs a sync host you run yourself:
+
+- [tabby-web](https://github.com/Eugeny/tabby-web) is the official self-hosted server. It also serves Tabby as a web app, and SSH and Telnet connections through it need a separate connection gateway. Its README currently says the maintainer doesn't have time to work on it or support it, though he still merges pull requests.
+- [rtabby-web-api](https://github.com/Clem-Fern/rtabby-web-api) is a third-party, Docker-based sync server that the developer pointed people to in the shutdown issue.
+- The [sync-config](https://github.com/starxg/terminus-sync-config) plugin from the plugin list syncs to a GitHub Gist or Gitee instead. It's third-party and hasn't had a code change since 2023, so test it before you rely on it.
+
+Whichever server you use, it gives you a **secret sync token** that you paste into Tabby along with the sync host. Use HTTPS for the sync host, since your config (and possibly your Vault) travels to it, and treat that token like a password. Don't paste it into screenshots, issues, or dotfile repos. Also note that if your config is encrypted with the Vault, Tabby can only sync it as a whole, not hotkeys or window settings separately.
+
+For one or two machines, copying `config.yaml` around (or keeping it in your own backups) is the simplest option.
+
+## My Take
+
+There's a lot I didn't cover. I've already found my use cases for Tabby: the tiling, and the SSH profiles with SFTP built right in. Being able to manage a server and tweak settings from the same window is great. It also looks fantastic, and it's my favorite cross-platform terminal.
+
+It's an Electron app, so don't expect it to be as light as a native terminal, and the hosted sync is gone. If you work with a lot of remote machines, though, it's well worth a try on whatever OS you're on. With all that, I do hope you have an absolutely beautiful day.
