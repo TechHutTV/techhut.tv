@@ -18,7 +18,7 @@ First I'll back up the audiobooks I purchased with [Libation](https://getlibatio
 
 Linode (part of Akamai) sponsored the video this article is based on.
 
-The video was recorded in January 2023. The written steps have been updated for [Audiobookshelf v2.37.1](https://github.com/advplyr/audiobookshelf/releases/tag/v2.37.1), released September 29, 2026, and [Libation 14.2.2](https://github.com/rmcrackan/Libation/releases/tag/v14.2.2), released September 16, 2026. The Compose file, the Docker command, Libation's download options, and the mobile app situation have all changed since then, and I've called those out as they come up. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
+The video was recorded in January 2023. The written steps have been updated for [Audiobookshelf v2.38.0](https://github.com/advplyr/audiobookshelf/releases/tag/v2.38.0), released November 17, 2026, and [Libation 14.2.2](https://github.com/rmcrackan/Libation/releases/tag/v14.2.2), released September 16, 2026. v2.38.0 is bugfixes and tighter permissions, and the install steps are the same. There is a v3 test image, and this guide stays on the stable 2.38.0 tag. The Compose file, the Docker command, Libation's download options, and the mobile app situation have all changed since then, and I've called those out as they come up. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
 
 ## What You Need
 
@@ -155,12 +155,12 @@ The Audiobookshelf docs are clear that `/config` must not be on a network share.
 
 ### Write the Compose File
 
-In the video, I created the file with `nano`, pasted in the example from the docs, and then changed the paths and the port. This is based on the [current Docker instructions](https://audiobookshelf.org/docs/documentation/install/docker/), pinned to v2.37.1:
+In the video, I created the file with `nano`, pasted in the example from the docs, and then changed the paths and the port. This is based on the [current Docker instructions](https://audiobookshelf.org/docs/documentation/install/docker/), pinned to v2.38.0:
 
 ```yaml
 services:
   audiobookshelf:
-    image: ghcr.io/advplyr/audiobookshelf:2.37.1
+    image: ghcr.io/advplyr/audiobookshelf:2.38.0
     container_name: audiobookshelf
     restart: unless-stopped
     ports:
@@ -312,7 +312,7 @@ If you also want ebooks, PDFs, and comics in the same place, my [BookOrbit artic
 - [Reverse proxy setup](https://audiobookshelf.org/docs/category/reverse-proxy/)
 - [API keys](https://audiobookshelf.org/guides/api-keys/)
 - [Audiobookshelf on GitHub](https://github.com/advplyr/audiobookshelf)
-- [Audiobookshelf v2.37.1 release](https://github.com/advplyr/audiobookshelf/releases/tag/v2.37.1)
+- [Audiobookshelf v2.38.0 release](https://github.com/advplyr/audiobookshelf/releases/tag/v2.38.0)
 - [Audiobookshelf mobile app repository](https://github.com/advplyr/audiobookshelf-app)
 - [Libation home](https://getlibation.com)
 - [Libation getting started](https://getlibation.com/docs/getting-started)
