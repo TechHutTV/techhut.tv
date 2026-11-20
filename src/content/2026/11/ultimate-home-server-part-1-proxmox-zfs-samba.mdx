@@ -31,7 +31,7 @@ Before clicking anything, this is the end result. Later parts of the series link
 
 | Piece | What it is | Used for |
 |---|---|---|
-| Boot drive (`local`) | The small NVMe Proxmox is installed on | ISO images, container templates. Nothing important lives here |
+| Boot drive (`local`) | The small NVMe Proxmox is installed on | Proxmox and host configuration, plus ISO images and container templates |
 | `flash` | ZFS **mirror** of two 1 TB NVMe SSDs | Container and VM root disks, plus the `/docker` mount point |
 | `tank` | ZFS **RAIDZ1** of six 4 TB hard drives | Bulk storage: media, image backups, archives. Holds the `/data` mount point |
 | CT `100` (`media`) | Unprivileged Ubuntu LXC | Owns `/data` and `/docker`, and runs Samba |
@@ -112,6 +112,8 @@ My repo also mentions the community [Proxmox VE Post Install script](https://com
 
 This one is completely optional, and only for a **fresh** install with the default ext4 layout. By default the boot drive is split into `local` (a directory for ISOs, templates, and backups) and `local-lvm` (a thin pool for VM and container disks). On my 256 GB drive, `local` had only 72 GB free while `local-lvm` had 151 GB.
 
+The simplest option is to leave it alone; creating separate ZFS pools doesn't require deleting `local-lvm`. If you're still in the installer and already know you won't use it, the [advanced LVM options](https://github.com/proxmox/pve-docs/blob/master/pve-installation.adoc#advanced-lvm-configuration-options) let you set `maxvz` to `0` to avoid creating the data volume. That doesn't automatically give all the space to `local`; `maxroot` controls the root volume's size. The commands below are the alternative for an existing fresh installation.
+
 I don't put any guest disks on the boot drive because the `flash` pool handles that, so `local-lvm` would sit unused. If you only have one SSD, skip this and keep `local-lvm`, since that's where your containers and VMs would go. There's also a [discussion in my repo](https://github.com/TechHutTV/homelab/issues/19) about installs that used advanced storage options, where these commands don't apply.
 
 <Warning>
@@ -129,6 +131,8 @@ resize2fs /dev/mapper/pve-root
 The first command deletes the logical volume behind `local-lvm`, the second gives all the free space to the root volume, and the third grows the ext4 filesystem to match. After that, `local` shows the full drive. I use it for ISO images and container templates.
 
 ### IOMMU for PCI Passthrough
+
+You can skip this section for the storage and Samba setup. It's only relevant when you want to pass PCI devices through to a VM.
 
 IOMMU is what lets you pass hard drives, graphics cards, and other PCI devices through to VMs. In the video I edited `/etc/default/grub` to add `intel_iommu=on` and ran `update-grub`. That's no longer necessary on current releases. According to the [Proxmox admin guide](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html), IOMMU is enabled by default with AMD CPUs, and on Intel it's on by default with kernel 6.8 or newer. Proxmox VE 9.2 ships kernel 7.0.
 
@@ -176,7 +180,7 @@ Run **Create: ZFS** again:
 - **RAID Level:** `RAIDZ`
 - **Add Storage:** checked
 
-RAIDZ (RAIDZ1) is roughly the ZFS equivalent of RAID 5. It survives one failed disk: replace it and you're safe. If two disks fail, the pool is gone. More parity (RAIDZ2, RAIDZ3, or mirrors) lets more disks fail but leaves less usable space. Look at your drive count, drive size, and how much storage you need, then pick the level that fits. And remember that RAID isn't a backup (more on that at the end).
+RAIDZ (RAIDZ1) is roughly the ZFS equivalent of RAID 5. This six-disk vdev tolerates one failed disk; it stays degraded until the replacement finishes resilvering. A second failed disk in that vdev loses the pool. RAIDZ2 tolerates any two failures in the vdev and RAIDZ3 tolerates three, at the cost of more capacity. A two-disk mirror tolerates one failure in that pair; multiple mirrored pairs can survive more failures only if no pair loses both disks. These are the [OpenZFS redundancy rules](https://openzfs.github.io/openzfs-docs/man/master/7/zpoolconcepts.7.html), and they're worth understanding before picking a layout. RAID still isn't a backup.
 
 ![The Create: ZFS dialog for the tank pool with all six 4 TB WD Red drives selected and RAID Level set to RAIDZ](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-tank-raidz.jpg)
 
@@ -192,6 +196,17 @@ zfs list
 ```
 
 On my six-drive RAIDZ pool, `zpool list` showed about 22 TB, and `zfs list` showed about 17 TB available. That's because the [OpenZFS pool properties](https://openzfs.github.io/openzfs-docs/man/master/7/zpoolprops.7.html) count raw physical space, while dataset space accounts for raidz parity and reserved space. Plan around the `zfs list` number.
+
+### Check Pool Health
+
+Before adding data, run this in the **Proxmox host shell**:
+
+```bash
+zpool status -v flash
+zpool status -v tank
+```
+
+Both pools and their member disks should be `ONLINE`, with no reported data errors. [`zpool status`](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-status.8.html) also shows resilver and scrub progress. Keep periodic [scrubs](https://openzfs.github.io/openzfs-docs/man/master/8/zpool-scrub.8.html) and working failure notifications in your maintenance plan: scrubs check stored data and can repair damaged blocks when a good redundant copy is available.
 
 ## Create the Media Container
 
@@ -212,7 +227,7 @@ Click **Create CT** in the top right. What I used:
 | General | CT ID | `100` |
 | General | Hostname | `media` |
 | General | Unprivileged container | Checked (better for security) |
-| General | Nesting | Checked |
+| General | Nesting | Leave at the Ubuntu template's default |
 | General | Password | A strong root password |
 | Template | Template | The Ubuntu template you downloaded |
 | Disks | Storage / size | `flash`, `64` GiB |
@@ -228,6 +243,8 @@ A few notes on those choices:
 - **64 GiB root disk:** media files don't go here, but app data does, and a Jellyfin or Plex config folder gets big with cover art on a large library. You can expand it later.
 - **CPU and RAM:** size these for what you'll run. My repo lists 6 cores and 8 GB for my own server.
 
+Keep this container unprivileged. [Nesting also affects systemd service isolation](https://github.com/proxmox/pve-docs/blob/master/pct.adoc#general-settings), so don't change it just because the storage folder is called `/docker`. That name doesn't install Docker. If you later run Docker inside LXC, [Proxmox documents additional feature requirements](https://github.com/proxmox/pve-docs/blob/master/generated/pct.conf.5-opts.adoc), including `keyctl`; for stronger isolation, use a VM for those workloads.
+
 Click **Finish**. Under the container's **Resources** tab, you'll see the root disk on `flash` as `subvol-100-disk-0` at 64 GB.
 
 ### Add the Data and Docker Mount Points
@@ -239,6 +256,7 @@ Now for the bulk storage. On the container, go to **Resources > Add > Mount Poin
 - **Storage:** `tank`
 - **Disk size (GiB):** as much as you want for media. I used `8000` in the video, and my repo uses about 28 TB on my larger pool.
 - **Path:** `/data`
+- **Backup:** checked, unless you've arranged and tested a separate file backup
 
 I like mounting this at `/data` in the root of the filesystem. It makes Docker setups and my own organization much simpler, and the rest of the series uses that path.
 
@@ -247,8 +265,9 @@ I like mounting this at `/data` in the root of the filesystem. It makes Docker s
 - **Storage:** `flash`, since these are small config files that I want on fast storage
 - **Disk size (GiB):** `32` was plenty for the video, and my repo now uses 128
 - **Path:** `/docker`
+- **Backup:** checked
 
-You can do the same thing from the Proxmox host shell. Sizes are in GiB:
+**Alternative to the GUI:** if you haven't added either mount point yet, these commands create them from the Proxmox host shell. Don't run them after creating the same mounts in the GUI. Sizes are in GiB:
 
 ```bash
 pct set 100 --mp0 tank:8000,mp=/data,backup=1
@@ -257,6 +276,8 @@ pct config 100
 ```
 
 These are storage-backed mount points, so each one becomes a ZFS dataset on its pool with a size limit that you can grow later. Unlike the GUI, `pct set` leaves mount points out of backups unless you add `backup=1`, which is why it's on both lines.
+
+Whichever method you use, run `pct config 100` on the host and confirm that `mp0` and `mp1` have the intended paths and `backup=1`. Under the container's **Options**, set **Start at boot** to **Yes** so the shares return after a host reboot. The [container configuration reference](https://github.com/proxmox/pve-docs/blob/master/generated/pct.conf.5-opts.adoc) documents this as `onboot`, which defaults to off.
 
 ![The media container Resources tab showing the 64G root disk on flash, the 8000G /data mount point on tank, and the 32G /docker mount point on flash](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/media-container-mount-points.jpg)
 
@@ -270,6 +291,7 @@ Start the container, open its **Console**, and log in as `root` with the contain
 
 ```bash
 apt update && apt upgrade -y
+apt install sudo
 ls /
 ```
 
@@ -286,10 +308,12 @@ su - youruser
 Creating the user also creates a group with the same name. Right now, if you `cd /data` and try `touch test.txt`, you'll get **permission denied**, because root owns the mount points. Make your user the owner of both:
 
 ```bash
-sudo chown -R youruser:youruser /data
-sudo chown -R youruser:youruser /docker
+sudo chown youruser:youruser /data /docker
+sudo chmod 0770 /data /docker
 touch /data/test.txt && ls /data
 ```
+
+Do this **inside the container**, on the fresh mount points. There's no need to change ownership recursively on empty volumes, and doing so later could overwrite ownership that applications need. The directory mode gives your user and group access while excluding other local users.
 
 ## Share It with Samba
 
@@ -299,8 +323,7 @@ In my 2024 series I used Cockpit's web interface for the network shares. That st
 
 ```bash
 sudo apt install samba
-cd /etc/samba
-sudo mv smb.conf smb.conf.old
+sudo cp -an /etc/samba/smb.conf /etc/samba/smb.conf.original
 ```
 
 Keep that original file. It's full of comments and printer examples that are worth checking later, and it's your rollback if something goes wrong.
@@ -311,53 +334,37 @@ Keep that original file. It's full of comments and printer examples that are wor
 sudo nano /etc/samba/smb.conf
 ```
 
-Paste this in, replacing `youruser` with your own username:
+Replace the file contents with this, changing `youruser` to your username and `10.0.0.0/24` to your client network. This is a shorter, single-user version of the video/repo config:
 
 ```ini
 [global]
    server string = Media
    workgroup = WORKGROUP
    security = user
-   map to guest = Bad User
-   name resolve order = bcast host
-   # Narrow this to your own LAN, for example 10.0.0.0/24
-   hosts allow = 192.168.0.0/16 10.0.0.0/8 172.16.0.0/12
-   hosts deny = 0.0.0.0/0
+   hosts allow = 127.0.0.1 10.0.0.0/24
+   hosts deny = ALL
+   create mask = 0660
+   directory mask = 0770
 
 [data]
    path = /data
-   force user = youruser
-   force group = youruser
-   create mask = 0774
-   force create mode = 0774
-   directory mask = 0775
-   force directory mode = 0775
-   browseable = yes
-   writable = yes
+   valid users = youruser
    read only = no
-   guest ok = no
 
 [docker]
    path = /docker
-   force user = youruser
-   force group = youruser
-   create mask = 0774
-   force create mode = 0774
-   directory mask = 0775
-   force directory mode = 0775
-   browseable = yes
-   writable = yes
+   valid users = youruser
    read only = no
-   guest ok = no
 ```
 
 What that does:
 
-- **`server string`:** a description of the server. I match it to the container hostname.
-- **`security = user` with `guest ok = no`:** you need a Samba username and password to open the shares. `map to guest = Bad User` turns logins with unknown usernames into guests, but neither share allows guests, so a guest can see the server and nothing else. Nobody in my house needs anonymous access. The [smb.conf documentation](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html) covers guest-readable or group folders if you need them.
-- **`hosts allow` / `hosts deny`:** deny everything except local addresses. In the video I allowed only my subnet, `10.0.0.0/24`. The repo now lists all three private ranges so it works on more networks. I'd still narrow it to yours. Keep comments on their own lines in this file.
-- **`force user` / `force group`:** files written through the share are owned by your user, matching the earlier `chown`.
-- **The masks:** new files get `0774`, so owner and group get full access and everyone else can only read. New directories get `0775`.
+- **`valid users`:** only this account can access each share. Writes use the authenticated user's identity, so `force user` and `force group` aren't needed here.
+- **`hosts allow` / `hosts deny`:** permit loopback and the example IPv4 LAN, deny other addresses. Add other trusted subnets or IPv6 ranges explicitly if you use them.
+- **The masks:** shared defaults cap new files at `0660` and directories at `0770`. Unlike the repo's `force create mode = 0774`, this doesn't force execute bits onto ordinary files.
+- **Defaults:** shares are browseable and guest access is disabled by default. `read only = no` enables writes; `writable = yes` means the same thing, so we only need one.
+
+These options are documented in the [Samba configuration reference](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html). This example deliberately gives the same account access to both shares. The `docker` share can contain application secrets, so don't give its credentials to someone who should only access media.
 
 ### Set a Samba Password and Start the Services
 
@@ -403,9 +410,13 @@ You can also connect directly with **Go > Connect to Server** (`Cmd+K`) and `smb
 
 The storage README also covers connecting from the Files app. While connected to your home network, open **Files > Browse**, tap the three-dot menu, and choose **Connect to Server**. Enter `smb://10.0.0.100`, choose **Registered User**, and sign in with the username and password you set with `smbpasswd`. Open `data` or `docker` from the server's share list. Use your container's IP if it differs from this example, and apply the Apple compatibility settings above if needed.
 
-### Windows and wsdd
+### Windows: Connect Directly First
 
-Windows is where discovery gets annoying. I booted a Windows VM, and under **Network** in File Explorer the only share it could see was my other server, not `media`. Windows 10 and 11 dropped the old NetBIOS-based discovery along with SMB1, so a Samba server doesn't appear automatically. The fix is [wsdd](https://github.com/christgau/wsdd), which advertises the server using Web Services Discovery, the method Windows uses now.
+Start with `\\10.0.0.100\data` in File Explorer and sign in with your Samba credentials. For a persistent drive letter, use **This PC > Map network drive**, enter that path, and check **Connect using different credentials**. This works without a discovery service and is the simplest way to use the share.
+
+### Optional: Windows Network Discovery with wsdd
+
+Windows is where discovery gets annoying. I booted a Windows VM, and under **Network** in File Explorer the only share it could see was my other server, not `media`. [wsdd](https://github.com/christgau/wsdd) advertises the server using Web Services Discovery so it appears there. It doesn't enable SMB access or resolve hostnames; the direct IP connection above works independently of it. You don't need to enable SMB1.
 
 On Ubuntu 22.04, as in the video, installing it was a single command, and `media` showed up in Windows almost immediately:
 
@@ -420,7 +431,7 @@ sudo apt install wsdd-server
 sudo systemctl enable --now wsdd-server
 ```
 
-Double-clicking it right away may give you an access error, because Windows hasn't asked for credentials yet. Type `\\media` (or `\\10.0.0.100`) in the File Explorer address bar, enter your Samba username and password, and choose to remember them. After that, **Network** browsing works. For a persistent drive letter, use **This PC > Map network drive** with `\\10.0.0.100\data` and **Connect using different credentials** checked.
+If double-clicking the discovered server fails, try `\\10.0.0.100\data` directly and enter your Samba credentials. `\\media` also works if your network can resolve that hostname. Discovery and hostname resolution are separate, so use the IP address to narrow down the problem.
 
 ![Windows File Explorer Network view listing MEDIA under Computer after wsdd was installed in the container](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/windows-network-media-share.jpg)
 
@@ -446,13 +457,20 @@ Test-NetConnection -ComputerName 10.0.0.100 -Port 445
 
 If that fails, check the container's IP, network path, and firewall. If it succeeds, try opening `\\10.0.0.100\data` directly in File Explorer. A working direct connection means you can use the share even when the server is missing from **Network**. Discovery normally stays within the local subnet; clients on another subnet may need the direct address even when routing allows SMB traffic.
 
-I didn't need any firewall changes. But if you've enabled `ufw` in the container, allow Samba (the `samba` package ships a ufw profile), plus wsdd's discovery ports, [UDP 3702 and TCP 5357](https://github.com/christgau/wsdd):
+I didn't need any firewall changes. If you've already enabled `ufw` in the container, allow SMB from your client subnet. Use your own network in place of `10.0.0.0/24`:
 
 ```bash
-sudo ufw allow Samba
-sudo ufw allow 3702/udp
-sudo ufw allow 5357/tcp
+sudo ufw allow from 10.0.0.0/24 to any port 445 proto tcp
 ```
+
+Only if you enabled wsdd, also allow its [discovery ports](https://github.com/christgau/wsdd#firewall-setup), UDP 3702 and TCP 5357, from that subnet:
+
+```bash
+sudo ufw allow from 10.0.0.0/24 to any port 3702 proto udp
+sudo ufw allow from 10.0.0.0/24 to any port 5357 proto tcp
+```
+
+These rules are for the container's firewall. If you've enabled Proxmox or network firewalls too, permit the same traffic there. Don't enable a new firewall as a troubleshooting shortcut; first allow any management access you rely on.
 
 If Windows says the network name isn't available, check that your client's IP is covered by `hosts allow`. A `192.168.x.x` client hitting a config that only allows `10.0.0.0/24` gets refused.
 
@@ -472,7 +490,7 @@ sudo pdbedit -L
 sudo smbpasswd -a youruser
 ```
 
-Use those credentials on the client. If login succeeds but writing fails, check ownership with `ls -ld /data /docker` and make sure it matches the `force user` and `force group` in your config. If direct access works but Windows discovery doesn't, check `sudo systemctl status wsdd-server` on Ubuntu 24.04, or `sudo systemctl status wsdd` on the 22.04 setup shown in the video.
+Use those credentials on the client. If login succeeds but writing fails, check ownership with `ls -ld /data /docker` and make sure the authenticated user owns and can write to those directories. If direct access works but Windows discovery doesn't, check `sudo systemctl status wsdd-server` on Ubuntu 24.04, or `sudo systemctl status wsdd` on the 22.04 setup shown in the video.
 
 And keep these shares on your LAN. Don't port forward SMB to the internet. If you need remote access, use a VPN. My [NetBird guide](/self-host-netbird-pocketid) is one way to do it.
 
