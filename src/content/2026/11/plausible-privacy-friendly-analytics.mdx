@@ -1,0 +1,270 @@
+export const title = "Plausible: Ditch Google Analytics for Privacy-Friendly, Open Source Stats"
+export const description = "A look at Plausible, the lightweight, cookie-free and open source Google Analytics alternative, plus how to self-host Plausible Community Edition with Docker Compose."
+export const date = "2026-11-19"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Self-Host", "Docker", "Homelab"]
+export const cover = "/docs-static/img/2026/11/plausible-privacy-friendly-analytics/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="P0T6VjTS7_Y" title="TechHut's Plausible walkthrough" />
+
+Website analytics sounds like a pretty boring topic, I know. The reason I care is that I've been trying to de-Googlify my life, and if you run a website, Google Analytics is usually one of the biggest Google pieces still sitting on it. [Plausible](https://plausible.io) is a free and open source alternative that tells you how much traffic you're getting and where it's coming from, without the tracking baggage.
+
+To test it, I ran Plausible and Google Analytics on techhut.tv at the same time for about two weeks before making the call. I'll go over what Plausible is, how it compared to Google Analytics for me, a tour of the dashboard, and how to self-host it yourself.
+
+The video was recorded in April 2021, and a lot has moved since then. The self-hosted version is now called **Plausible Community Edition (CE)** and lives in its own [community-edition repository](https://github.com/plausible/community-edition), so the self-hosting steps below are for [CE v3.2.1](https://github.com/plausible/analytics/releases/tag/v3.2.1), released May 15, 2026, which is still the current release. Google also shut down Universal Analytics in 2023, so the Google comparison below reflects Google Analytics 4. The tracking snippet and a few settings screens have changed too, and I've noted those where they come up. My hands-on impressions are from the recorded walkthrough of the hosted dashboard.
+
+## What Plausible Is
+
+Plausible is a web analytics tool. You add one small script to your site, and it gives you a single dashboard with visitors, page views, top pages, referral sources, locations, devices, and browsers. The core app is licensed [AGPL-3.0](https://github.com/plausible/analytics/blob/master/LICENSE.md), and the JavaScript tracker that goes on your site is [MIT licensed](https://github.com/plausible/analytics/blob/master/tracker/LICENSE.md) so it doesn't drag AGPL obligations onto your website.
+
+You have two ways to run it, which is kind of similar to how Bitwarden does things:
+
+- **Plausible Cloud**: the paid, hosted service at plausible.io. Subscriptions are how the project is funded. When I recorded, I was on the free trial, which is still [30 days with no credit card required](https://plausible.io). I'm not going to quote prices here, since they've changed since 2021. Check the [Plausible site](https://plausible.io) for the current plans. Back then I was planning to just pay for it, because it's a good service and paying for their servers is how you support the project.
+- **Plausible Community Edition**: the free, self-hosted version. You run it on your own server with Docker, and you never pay Plausible anything.
+
+They aren't identical, though. Plausible's own [comparison](https://plausible.io/self-hosted-web-analytics) lays out the differences:
+
+| | Plausible Cloud | Community Edition |
+|---|---|---|
+| Hosting and upkeep | Managed by Plausible | You handle installs, upgrades, backups, and uptime |
+| Release schedule | Updated continuously | Long-term releases, about twice a year |
+| Premium features | Everything in your plan | No marketing funnels, user journeys, ecommerce revenue goals, SSO, or Sites API |
+| Bot filtering | Advanced, including about 32K data center IP ranges | Basic, based on User-Agent and referrer spam lists |
+| Data location | EU-owned infrastructure, stored in Germany | Wherever you host it |
+| Raw data | Dashboard, CSV export, Stats API | Same, plus direct access to the ClickHouse database |
+| Support | From the Plausible team | Community only |
+
+So CE is the same core product, but you're trading a few premium features and some bot filtering for full control.
+
+## Plausible vs Google Analytics
+
+Plausible has a few pages on its site explaining why it's different from Google Analytics. In 2021, the gist was data ownership, open versus closed source, and visitor privacy. That still holds up, but GA4 has changed some details, so here's where things stand now.
+
+**Cookies and tracking.** GA4 sets [first-party `_ga` cookies](https://support.google.com/analytics/answer/11397207) that last two years by default and exist to tell users apart. Plausible [doesn't use cookies, browser cache, or local storage](https://plausible.io/data-policy). To count unique visitors, it hashes the IP address and User-Agent together with the site domain and a salt that's rotated and deleted every 24 hours. Raw IPs and User-Agents are never stored, and because the salt changes daily, the same person can't be followed from one day to the next.
+
+**IP addresses.** To be fair to Google, GA4 is better here than the old Universal Analytics was. Google says it [doesn't log or store IP addresses for EU, Swiss, and UK users](https://support.google.com/analytics/answer/12017362) and only uses them for coarse location. Plausible applies its no-raw-IP approach to everyone.
+
+**Open source.** Plausible's code is on [GitHub](https://github.com/plausible/analytics), and you can read it, audit it, or run it yourself. Google Analytics is closed.
+
+**Data retention.** GA4 standard properties keep user-level and event-level data for [either 2 or 14 months](https://support.google.com/analytics/answer/7667196). That only limits explorations and funnel reports, not the standard aggregated reports. With Plausible CE, the data sits in your own database for as long as you keep it.
+
+**Script size and blocking.** Plausible [says](https://plausible.io/vs-google-analytics) its script is about 2.5 KB gzipped, compared with 135 KB for the GA4 tag. Those are Plausible's numbers, but either way it's a much lighter thing to add to every page.
+
+The point I made in the video still applies: Plausible won't hand you, the site owner, sensitive information about your visitors, but it gives you enough to make reasonable decisions about your site. Plausible also says its approach means [you don't need a cookie consent banner](https://plausible.io/vs-google-analytics) for it. That's their position. Check your own legal requirements, especially if you run other trackers next to it.
+
+### My Side-by-Side Numbers
+
+Since I was running both on techhut.tv, I compared them. On my peak day, Thursday, April 22nd, Plausible reported **773 visitors**, while Google Analytics showed **667 users**. I wasn't sure if those were counted the same way, and they probably aren't, since Plausible counts visitors and Google counts users. There was a difference, but not one big enough to change what content I'd make.
+
+![The Plausible 7-day graph for techhut.tv with the Thursday, April 22nd peak of 773 visitors highlighted, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/dashboard-peak-day-graph.jpg)
+
+The realtime numbers were close too. Google showed six active users while Plausible reported seven.
+
+## A Tour of the Dashboard
+
+What I really liked about Plausible was the simplicity and visuals compared to Google Analytics. Google may give you more data, but most of that data isn't significant for me. What I want to know is where people are coming from, where in the world they are, and what devices they're on, so I can tailor the content and layout to them.
+
+### Realtime and Date Ranges
+
+The realtime view shows current visitors, the pages they're on, and where they came from. When I recorded, people were on my Cooler Master guide, the Ryzen temperature monitoring article, and one of my Pop!_OS posts. Google's realtime report can also show the source, it just took me a second to find it.
+
+![Plausible's realtime view showing current visitors, a 30-minute graph, and the top sources and pages people are on right now, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/realtime-view.jpg)
+
+The period picker switches between realtime, preset ranges, and a custom range. I'd only been running it for about two weeks, so the 30-day view didn't have much more than the 7-day one. A brand new site opens on today, then the default becomes [Last 28 days](https://github.com/plausible/analytics/blob/v3.2.1/CHANGELOG.md) the next day. The old 30-day range is still there, and the T shortcut opens it.
+
+### Top Stats
+
+Across the top you get unique visitors, total page views, bounce rate, and average visit duration, everything you'd expect from a good analytics tool. In the two weeks of testing, I had a little over 11,000 page views. There's also an [export option](https://plausible.io/docs/export-stats) that gives you a CSV of the data.
+
+### Sources, Pages, Locations, and Devices
+
+The tiles below the graph break things down into top sources, top pages, locations, and devices. The devices tile has tabs for browsers, operating systems, and device type (desktop, mobile, or tablet). Compared to most sites, a lot of my visitors use Firefox, which makes sense given that I push free and open source software and Linux. Most people come from desktops too, which is nice to know, since I can lay out guides and tutorials expecting a bigger screen.
+
+![The Top Sources, Top Pages, Countries, and Devices tiles in Plausible, with the browser tab showing Chrome and Firefox leading, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/sources-pages-countries-devices.jpg)
+
+### Entry and Exit Pages
+
+The pages tile also has entry and exit pages. In my case, the home page had a high exit count, but its entry count was a bit higher. So people coming to the site directly weren't just hitting the home page and leaving. Most of them were at least reading one article, which is exactly what I want to see.
+
+### Settings
+
+What I walked through in the video, along with what's changed:
+
+- **Theme.** I had dark mode on, switched to light to show it off, and it was absolutely blinding. Theme now lives under **Account Settings**, then **Preferences**, then **Dashboard Appearance**, and it [follows your system theme by default](https://plausible.io/docs/dashboard-appearance), with manual light and dark options.
+- **My Sites.** Clicking the logo takes you to your list of sites. I only had techhut.tv, but you can add as many as you want.
+- **Site settings.** The gear icon next to a site opens its settings: the tracking snippet, timezone, and domain.
+- **Visibility.** You can [make a dashboard public](https://plausible.io/docs/visibility) so anyone with the link can see your stats. I did that for techhut.tv at the time and linked it in the video description. You can also [embed the dashboard](https://plausible.io/docs/embed-dashboard) on another site or your own internal dashboard. Embedding now works from a shared link, which you can also limit to a specific segment of your traffic.
+- **Goals.** You can set up [goals](https://plausible.io/docs/goal-conversions) to track specific pages or custom events, like signups or button clicks.
+- **Search Console.** The [Google Search Console integration](https://plausible.io/docs/google-search-console-integration) pulls in the search terms that brought people to your site.
+- **Email reports.** Weekly or monthly [email reports](https://plausible.io/docs/email-reports) of your stats.
+- **Custom domain.** There was a custom domain option in 2021. Current versions don't have it. Instead, Plausible documents [proxying the script](https://plausible.io/docs/proxy/introduction) through your own domain if you want it served first-party.
+- **Danger zone.** This is where you reset all of a site's stats or delete the site from Plausible completely.
+
+![The Visibility page in Plausible's site settings with the public dashboard toggle enabled, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/site-settings-visibility.jpg)
+
+Since 2021, Plausible has also added things I didn't show in the video, such as acquisition channels, scroll depth, time on page, segments, and imports from Google Analytics 4. The [changelog](https://github.com/plausible/analytics/blob/master/CHANGELOG.md) has the full list.
+
+## Adding Plausible to Your Site
+
+Like Google Analytics, you enable it by putting a little script in your site's `<head>` tag. Since October 2025, [every site gets its own snippet](https://plausible.io/docs/script-update-guide). You can copy it from your site settings, under **General**, then **Tracking**, then **Review** next to **Site installation**. It looks like this, with your own site's script ID:
+
+```html
+<!-- Privacy-friendly analytics by Plausible -->
+<script async src="https://plausible.io/js/pa-XXXXXXXX.js"></script>
+<script>
+  window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+  plausible.init()
+</script>
+```
+
+On a self-hosted instance, the script URL points at your own domain instead of `plausible.io`. Older snippets keep working, but options like outbound link and file download tracking are now toggled from the same **Site installation** screen instead of by changing the script name. If you're on WordPress, the [official plugin](https://plausible.io/docs/wordpress-integration) handles this for you.
+
+## Self-Hosting Plausible Community Edition
+
+This is the part that's changed the most since the video. The official setup is the [plausible/community-edition](https://github.com/plausible/community-edition) repository, which contains a Docker Compose file with three services:
+
+- `plausible`: the app itself, `ghcr.io/plausible/community-edition:v3.2.1`
+- `plausible_db`: PostgreSQL 16 for users, sites, and settings
+- `plausible_events_db`: ClickHouse 24.12 for the analytics events, with config files tuned for small servers
+
+### Requirements
+
+- Docker with the Compose plugin
+- A CPU that supports **SSE 4.2** or **NEON**, which ClickHouse needs
+- At least **2 GB of RAM**, so ClickHouse doesn't run out of memory
+- A domain or subdomain with a DNS record pointing at your server, like `plausible.your-domain.com`
+
+### 1. Clone the Release
+
+Clone the branch for the current release:
+
+```bash
+git clone -b v3.2.1 --single-branch https://github.com/plausible/community-edition plausible-ce
+cd plausible-ce
+```
+
+### 2. Create the Environment File
+
+Only two variables are required. `BASE_URL` is the address you'll use to reach Plausible, and `SECRET_KEY_BASE` needs to be at least 64 bytes long:
+
+```bash
+cat > .env <<EOF
+BASE_URL=https://plausible.your-domain.com
+SECRET_KEY_BASE=$(openssl rand -base64 48)
+HTTP_PORT=80
+HTTPS_PORT=443
+EOF
+chmod 600 .env
+```
+
+When `HTTP_PORT` is `80` and `HTTPS_PORT` is `443`, Plausible gets and renews its own [Let's Encrypt certificate](https://github.com/plausible/community-edition/wiki/Configuration). For that to work, the domain in `BASE_URL` has to resolve to this server, and ports 80 and 443 need to be reachable from the internet.
+
+<Warning>
+Keep a copy of `.env` somewhere safe. `SECRET_KEY_BASE` signs dashboard sessions, and the key that encrypts two-factor secrets is derived from it unless you set `TOTP_VAULT_KEY` separately.
+</Warning>
+
+### 3. Expose the Ports
+
+Don't edit `compose.yml`. Put your changes in a `compose.override.yml` instead, which Git ignores, so pulling the next release won't conflict with them:
+
+```bash
+cat > compose.override.yml <<EOF
+services:
+  plausible:
+    ports:
+      - 80:80
+      - 443:443
+EOF
+```
+
+### 4. Start It
+
+```bash
+docker compose up -d
+docker compose logs -f plausible
+```
+
+On the first start, the container creates and migrates its databases before running the app. Then open `https://plausible.your-domain.com` and create your first account. After that, registration is [invite-only by default](https://github.com/plausible/community-edition/wiki/Configuration) (`DISABLE_REGISTRATION=invite_only`). Set it to `true` if you want to shut sign-ups off entirely.
+
+Add your site, copy the snippet, and paste it into your website's `<head>`. The script will be served from your instance.
+
+### Using Your Own Reverse Proxy
+
+If you already run a reverse proxy, like the Nginx Proxy Manager setup from my [SSL certificates guide](/ultimate-home-server-part-4-ssl-certificates), let it handle HTTPS instead. Remove `HTTPS_PORT` from `.env`, set `HTTP_PORT=8000`, and only publish that port:
+
+```yaml
+services:
+  plausible:
+    ports:
+      - 127.0.0.1:8000:8000
+```
+
+Then point your proxy at port `8000`. Binding to `127.0.0.1` only works if the proxy runs directly on the host. If your proxy runs in another container, put both on a shared Docker network or publish the port on the server's LAN IP instead. Plausible's [reverse proxy guide](https://github.com/plausible/community-edition/wiki/Reverse-Proxy) has Caddy, Nginx, and Apache examples. If you use Nginx, make sure WebSocket upgrades are passed through for `/live/websocket`.
+
+Just want to try it on your own machine? Set `BASE_URL=http://localhost:8000`, `HTTP_PORT=8000`, leave out `HTTPS_PORT`, and publish `8000:8000`.
+
+### Optional Configuration
+
+A few things from the dashboard tour need extra setup on CE. They're all [environment variables](https://github.com/plausible/community-edition/wiki/Configuration) in `.env`:
+
+| Feature | What to set |
+|---|---|
+| Email reports, invites, password resets | `MAILER_EMAIL` and `SMTP_HOST_ADDR`, `SMTP_HOST_PORT`, `SMTP_USER_NAME`, `SMTP_USER_PWD`, or set `MAILER_ADAPTER` to `Bamboo.PostmarkAdapter` with `POSTMARK_API_KEY`, `Bamboo.MailgunAdapter` with `MAILGUN_API_KEY` and `MAILGUN_DOMAIN`, `Bamboo.MandrillAdapter` with `MANDRILL_API_KEY`, or `Bamboo.SendGridAdapter` with `SENDGRID_API_KEY` |
+| City-level locations | `MAXMIND_LICENSE_KEY` for a free MaxMind GeoLite2 database. Without it, CE uses a bundled country-level database. |
+| Search Console and GA4 imports | `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from your own Google Cloud OAuth app. There's a [step-by-step guide](https://github.com/plausible/community-edition/wiki/Google-Integration). |
+
+Run `docker compose up -d` again after changing `.env` so the container picks it up.
+
+### Security, Upgrades, and Backups
+
+- **The databases aren't published.** The compose file uses the default `postgres` password for PostgreSQL, but neither database exposes a port to the host. Keep it that way, and don't add `ports:` to them in your override.
+- **Upgrade promptly.** Security fixes are [not backported](https://github.com/plausible/community-edition/wiki/Upgrade). v3.2.1 is a good example. It's a security release that fixes CVE-2026-8467, a possible remote code execution through the `/storybook` endpoint that affected v3.0.0 through v3.2.0. If you're on anything older, upgrade.
+- **How to upgrade.** Read the release notes first, especially for major versions. Then pull the new release branch and recreate the containers. The image tag is pinned in `compose.yml`, so this moves you to the new version:
+
+  ```bash
+  cd plausible-ce
+  git pull origin vX.Y.Z
+  docker compose up -d
+  ```
+
+  Swap `vX.Y.Z` for the new release, and watch the [releases page](https://github.com/plausible/analytics/releases) for announcements.
+- **Back it up.** Your data lives in the `db-data` (PostgreSQL), `event-data` (ClickHouse), and `plausible-data` volumes. Compose prefixes them with the project name, so they'll show up as `plausible-ce_db-data` and so on. Back those up along with your `.env` and `compose.override.yml`.
+
+If you get stuck, CE support happens in the [self-hosted discussions](https://github.com/plausible/analytics/discussions/categories/self-hosted-support) on GitHub.
+
+## Final Thoughts
+
+There's nothing too complicated about Plausible, and that's kind of the point. It gives me visitors, sources, locations, devices, and pages in one clean dashboard, without tracking people across the internet. After running it next to Google Analytics, the numbers were close enough that I didn't feel like I was losing anything I'd use, so my plan was to dump Google Analytics once the video was done.
+
+If you have a website, or know someone who does and needs an analytics recommendation, Plausible is the one I'd point them to. Paying for the cloud version supports the project directly. If you'd rather keep everything on your own hardware, Community Edition is a few commands away, as long as you're OK with keeping it updated.
+
+Analytics was just one step for me. The next thing on my list back then was finding an ad platform for the site that isn't as invasive as Google AdSense. With all that, I do hope you have an absolutely beautiful day.
+
+## Official References
+
+- [Plausible Analytics](https://plausible.io)
+- [Plausible Cloud vs Community Edition](https://plausible.io/self-hosted-web-analytics)
+- [Plausible vs Google Analytics](https://plausible.io/vs-google-analytics)
+- [Plausible data policy](https://plausible.io/data-policy)
+- [Add the tracking script](https://plausible.io/docs/plausible-script)
+- [Updated script guide (October 2025)](https://plausible.io/docs/script-update-guide)
+- [Public dashboards](https://plausible.io/docs/visibility)
+- [Embed the dashboard](https://plausible.io/docs/embed-dashboard)
+- [Google Search Console integration](https://plausible.io/docs/google-search-console-integration)
+- [Bypass ad blockers with a proxy](https://plausible.io/docs/proxy/introduction)
+- [Plausible Community Edition announcement](https://plausible.io/blog/community-edition)
+- [plausible/community-edition on GitHub](https://github.com/plausible/community-edition)
+- [CE wiki: configuration](https://github.com/plausible/community-edition/wiki/Configuration)
+- [CE wiki: reverse proxy](https://github.com/plausible/community-edition/wiki/Reverse-Proxy)
+- [CE wiki: upgrading](https://github.com/plausible/community-edition/wiki/Upgrade)
+- [CE wiki: Google integration](https://github.com/plausible/community-edition/wiki/Google-Integration)
+- [plausible/analytics on GitHub](https://github.com/plausible/analytics)
+- [v3.2.1 release notes](https://github.com/plausible/analytics/releases/tag/v3.2.1)
+- [Changelog](https://github.com/plausible/analytics/blob/master/CHANGELOG.md)
+- [Google Analytics: Universal Analytics shutdown](https://support.google.com/analytics/answer/11583528)
+- [Google Analytics: IP addresses in GA4](https://support.google.com/analytics/answer/12017362)
+- [Google Analytics: data retention](https://support.google.com/analytics/answer/7667196)
+- [Google Analytics: cookie usage](https://support.google.com/analytics/answer/11397207)

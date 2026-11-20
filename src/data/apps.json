@@ -1627,7 +1627,9 @@
     "name": "Plausible",
     "category": "Monitoring",
     "description": "View website traffic and referral analytics through a web dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/plausible-privacy-friendly-analytics"
+    ],
     "videos": [
       {
         "id": "P0T6VjTS7_Y",
@@ -1840,6 +1842,7 @@
     "coverage": [
       "/proxmox-backup-server-complete-guide",
       "/monitor-home-server-grafana-prometheus-influxdb",
+      "/ultimate-home-server-part-1-proxmox-zfs-samba",
       "/ultimate-home-server-part-2-jellyfin"
     ],
     "videos": [
@@ -2003,7 +2006,9 @@
     "name": "Samba",
     "category": "Files & Photos",
     "description": "Share Linux server folders with other computers using SMB.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-1-proxmox-zfs-samba"
+    ],
     "videos": [
       {
         "id": "qmSizZUbCOA",
