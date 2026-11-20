@@ -1,10 +1,10 @@
 export const title = "Run DeepSeek R1 Locally on a Raspberry Pi 5 with Ollama and Open WebUI"
 export const description = "Install Ollama on a Raspberry Pi 5, run DeepSeek R1's distilled 1.5B model completely offline, then add Open WebUI with Docker Compose for a browser chat interface on your home network."
-export const date = "2026-10-11"
+export const date = "2026-12-28"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["RaspberryPi", "AI", "Self-Host", "Docker", "Linux"]
-export const cover = "/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/cover.jpg"
+export const cover = "/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -33,7 +33,7 @@ The [`deepseek-r1` page in the Ollama library](https://ollama.com/library/deepse
 
 Bigger tags go all the way up to the 404GB full model. On a Pi, the 1.5B model is the one to use. I did try the 7B on the Pi, and I really wouldn't recommend it.
 
-![The deepseek-r1 page in the Ollama library with the 1.5b tag selected, showing its 1.1GB size and the ollama run command, as it looked in the video](/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/ollama-library-1-5b.jpg)
+![The deepseek-r1 page in the Ollama library with the 1.5b tag selected, showing its 1.1GB size and the ollama run command, as it looked in the video](/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/ollama-library-1-5b.jpg)
 
 One change since the video: back then, the default `deepseek-r1` tag was the 7B model. Today, a plain `ollama run deepseek-r1` pulls the 8B model built on the R1-0528 update. That's why every command in this guide spells out the `:1.5b` tag. If you run the plain tag on a Pi, you'll be downloading a model that's far too big for it.
 
@@ -99,11 +99,11 @@ The first time, Ollama downloads the model. At 1.1GB it doesn't take long. After
 
 I started with a simple "hello", and it thought about it for a bit and gave me a pretty generic response. Then I asked something a little more involved: why should I use a GPU with R1? It did exactly what you'd expect from a reasoning model and walked through its whole thought process before answering.
 
-![DeepSeek R1 1.5B in the terminal on the Pi, answering a quick hello and then starting its think-tag reasoning on a question about GPUs](/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/terminal-chat.jpg)
+![DeepSeek R1 1.5B in the terminal on the Pi, answering a quick hello and then starting its think-tag reasoning on a question about GPUs](/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/terminal-chat.jpg)
 
 While that was running, I opened a second terminal on the Pi to check the resources, and it was cooking. Every last bit of CPU it had went into that response. Still, it did pretty well. The first tokens take a bit, and then it writes faster than I can read along.
 
-![htop on the Raspberry Pi 5 showing all four CPU cores near 100% while the ollama runner generates a response](/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/htop-cpu.jpg)
+![htop on the Raspberry Pi 5 showing all four CPU cores near 100% while the ollama runner generates a response](/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/htop-cpu.jpg)
 
 If you want real numbers on your own hardware, add `--verbose` and Ollama prints timing stats after every response:
 
@@ -263,13 +263,13 @@ Your models are in the selector at the top left. Pick `deepseek-r1:1.5b` and cha
 
 To give it a real workout, I used one of the suggested prompts: a code snippet for a sticky website header in both CSS and JavaScript. With a second terminal open, you could see the Pi was definitely working. The reasoning shows up in a collapsible section above the answer. You can expand it to watch the model think, or hide it if you just want the result.
 
-![Open WebUI with deepseek-r1:1.5b selected and the expanded Thought for a few seconds section showing the model's reasoning about a sticky header](/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/open-webui-thinking.jpg)
+![Open WebUI with deepseek-r1:1.5b selected and the expanded Thought for a few seconds section showing the model's reasoning about a sticky header](/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/open-webui-thinking.jpg)
 
 It was not fast, though. For a comparison, I pasted the same prompt into the 7B model running locally on my M4 Mac Mini. That's a better model on much better hardware, and it finished in about 45 seconds. The Pi with the 1.5B model took something like three or four minutes. The 7B and 8B models both run perfectly well on that Mac Mini, and they generally give better results, they just need hardware the Pi doesn't have.
 
 Then I cleared the chat and tried the PDF upload I mentioned earlier. I grabbed the only PDF I had on that system, which happened to be a payment document, and asked it to summarize it. It took about three minutes, but it worked well. It correctly pulled out that the document described a payment from one company to another for a product, along with the total price. (I had to blur all of that in the video, for obvious reasons.)
 
-![A PDF attached in Open WebUI with a prompt asking deepseek-r1:1.5b to summarize the invoice](/docs-static/img/2026/10/deepseek-raspberry-pi-ollama-open-webui/open-webui-pdf-upload.jpg)
+![A PDF attached in Open WebUI with a prompt asking deepseek-r1:1.5b to summarize the invoice](/docs-static/img/2026/12/deepseek-raspberry-pi-ollama-open-webui/open-webui-pdf-upload.jpg)
 
 You don't have to go back to the terminal to try other models, either. As the admin, type a model name into the model selector in a new chat and Open WebUI will offer to pull it from Ollama. Keep it to the small ones on a Pi.
 
