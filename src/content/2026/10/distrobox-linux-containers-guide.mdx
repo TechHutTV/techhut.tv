@@ -20,9 +20,9 @@ Linode (part of Akamai) sponsored the video this article is based on.
 
 I recorded the walkthrough in July 2023. The written instructions have been updated for [Distrobox 1.8.2.5](https://github.com/89luca89/distrobox/releases/tag/1.8.2.5), the current stable release from April 27, 2026. There's also a Go rewrite, Distrobox v2, in public release candidates, which I cover briefly below. My hands-on impressions come from the recorded walkthrough, which used the version that was current back then.
 
-## What Distrobox Actually Does
+## What Distrobox does
 
-Under the hood, Distrobox is a wrapper around `podman`, `docker`, or `lilipod`. It creates a container from any OCI image you pick, then wires it into your host. According to the [official docs](https://distrobox.it/), that includes your home directory, the Wayland and X11 sockets, networking, removable devices like USB sticks, the systemd journal, the SSH agent, D-Bus, `/dev`, and more. Audio and GPU acceleration work too. For Intel and AMD GPUs, containers install their own Mesa drivers, and NVIDIA has its own flag that I'll get to.
+Distrobox is a wrapper around `podman`, `docker`, or `lilipod`. It creates a container from any OCI image you pick, then wires it into your host. According to the [official docs](https://distrobox.it/), that includes your home directory, the Wayland and X11 sockets, networking, removable devices like USB sticks, the systemd journal, the SSH agent, D-Bus, `/dev`, and more. Audio and GPU acceleration work too. For Intel and AMD GPUs, containers install their own Mesa drivers, and NVIDIA has its own flag that I'll get to.
 
 That integration is what makes some fun use cases possible:
 
@@ -32,9 +32,9 @@ That integration is what makes some fun use cases possible:
 - Installing software on a machine where you don't have root, like a locked-down school laptop that happens to run Linux, or on something like SteamOS.
 - Getting a mutable environment on an immutable OS.
 
-### It Is Not a Sandbox
+### This is not a sandbox
 
-This is the part I want to be really clear about before you start, because the integration that makes Distrobox great is also why it isn't a security boundary.
+Get this straight before you start. The integration that makes Distrobox useful is also why it isn't a security boundary.
 
 <Warning>
 Distrobox containers can read and write your home directory, external drives, and much of your desktop session. The project's own [security notes](https://distrobox.it/#security-implications) say not to expect the isolation of a plain Podman/Docker container or a Flatpak. Treat anything you install in a distrobox the same as something installed on your host. If you need real isolation, use a virtual machine or a tool that is designed for sandboxing.
@@ -52,11 +52,11 @@ Distrobox needs a container manager. The [compatibility docs](https://distrobox.
 | Docker | Through the `docker` group (no `sudo`) | Docker's own docs warn that the `docker` group [grants root-level privileges](https://docs.docker.com/engine/install/linux-postinstall/). |
 | Lilipod | Rootless | A small manager from the Distrobox author, useful for installs in your home folder. |
 
-The rootful vs rootless difference matters here. Upstream warns that with Docker, or with Podman/Lilipod using the `--root` flag, **root inside the container can modify things outside the container**. In rootful mode Distrobox asks you to set a user password the first time you enter, so the container isn't a passwordless gate to root. If any of that makes you nervous, stick with rootless Podman. The docs also say rootless Docker isn't working as intended yet.
+The rootful vs rootless difference matters here. Upstream warns that with Docker, or with Podman/Lilipod using the `--root` flag, **root inside the container can modify things outside the container**. In rootful mode Distrobox asks you to set a user password the first time you enter, so the container isn't a passwordless path to root. If any of that makes you nervous, stick with rootless Podman. The docs also say rootless Docker isn't working as intended yet.
 
 ### From Your Distro's Repositories
 
-If your distribution packages it, this is the easiest route. In the video I just ran `dnf install distrobox` on Fedora. Here's how that looks today, installing Podman alongside it:
+If your distribution packages it, this is the easiest route. In the video I just ran `dnf install distrobox` on Fedora. This is how that looks today, installing Podman alongside it:
 
 ```bash
 # Fedora / RHEL family (EPEL on RHEL, Alma, Rocky, CentOS Stream)
@@ -274,7 +274,7 @@ This is great for testing things. The risiOS developer, who also wrote the scrip
 
 ## Declare Containers with distrobox assemble
 
-This is something I didn't cover in the video, but it's worth knowing about. Instead of remembering a pile of `create` commands, you can describe your containers in a manifest and build them all at once. Here's a small `distrobox.ini` based on the [assemble docs](https://distrobox.it/usage/distrobox-assemble/):
+This is something I didn't cover in the video, but it's worth knowing about. Instead of remembering a pile of `create` commands, you can describe your containers in a manifest and build them all at once. A small `distrobox.ini` based on the [assemble docs](https://distrobox.it/usage/distrobox-assemble/):
 
 ```ini
 [aur]
@@ -303,7 +303,7 @@ Use `--file /path/to/distrobox.ini` if it lives elsewhere, `--dry-run` to see wh
 
 ### Developer Environments
 
-If you're a developer, Distrobox is a perfect fit for environments you don't actually want to run as your desktop. Say you work on something built for Red Hat Enterprise Linux 8. Nobody wants a RHEL 8 desktop with how old everything is, and the usual options are a RHEL test server or a VM. Instead, make a RHEL 8 container from Red Hat's freely available UBI toolbox image and develop in that. It works the other way too, if your project needs newer dependencies than your distro provides.
+If you're a developer, Distrobox works well for environments you don't want to run as your desktop. Say you work on something built for Red Hat Enterprise Linux 8. Nobody wants a RHEL 8 desktop with how old everything is, and the usual options are a RHEL test server or a VM. Instead, make a RHEL 8 container from Red Hat's freely available UBI toolbox image and develop in that. It works the other way too, if your project needs newer dependencies than your distro provides.
 
 ### Immutable Distros
 
@@ -331,7 +331,7 @@ If you want a GUI, [BoxBuddy](https://flathub.org/apps/io.github.dvlv.boxbuddyrs
 
 ## Final Thoughts
 
-Distrobox gives you a lot of flexibility. You can install one GUI app or a little terminal tool from another distro, set up a whole development environment, or boot into a completely different system, all without leaving the distro you actually like. The moment Pamac from an Arch container opened on my desktop like a native app is still what sold me on it.
+Distrobox gives you a lot of flexibility. You can install one GUI app or a little terminal tool from another distro, set up a whole development environment, or boot into a completely different system, all without leaving the distro you like. The moment Pamac from an Arch container opened on my desktop like a native app is still what sold me on it.
 
 Just remember what it is. It's an integration tool, not a sandbox. Use rootless Podman, keep an eye on what you install, and use `--home` if you want to keep your dotfiles tidy. If you haven't played with it yet, you definitely should. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
 
