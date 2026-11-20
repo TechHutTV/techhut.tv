@@ -17,7 +17,7 @@ I've been running OctoPrint for a while, but I'd also been printing just about e
 Brilliant sponsored the video this article is based on.
 
 <Note>
-The install steps below are for the current stable OctoPi image, OctoPi 1.1.0 with [OctoPrint 1.11.8](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8), released June 23, 2026. That OctoPrint release includes security fixes, so update older installs. When I recorded the video, Raspberry Pi 5 wasn't supported yet; [OctoPi 1.1.0](https://github.com/guysoft/OctoPi/releases/tag/1.1.0) added Pi 5 support a few days after the video went up. Raspberry Pi Imager has also moved to a new 2.x interface since then. My hands-on impressions come from the recorded walkthrough on a Raspberry Pi 4.
+The install steps below are for the current stable OctoPi image. [OctoPrint's download page](https://octoprint.org/download/) lists that as OctoPi 1.1.0 with [OctoPrint 2.0.1](https://github.com/OctoPrint/OctoPrint/releases/tag/2.0.1), released November 18, 2026. OctoPrint 2.0 needs Python 3.9 or newer, and plugins that ignored the old deprecation warnings can break, so take a backup before you update an existing install. When I recorded the video, Raspberry Pi 5 wasn't supported yet; [OctoPi 1.1.0](https://github.com/guysoft/OctoPi/releases/tag/1.1.0) added Pi 5 support a few days after the video went up. Raspberry Pi Imager has also moved to a new 2.x interface since then. My hands-on impressions come from the recorded walkthrough on a Raspberry Pi 4.
 </Note>
 
 ## The 5-inch Micro Rack
@@ -226,13 +226,13 @@ If you'd rather not run a VPN, OctoPrint maintains a list of [remote access plug
 
 ## Keeping It Updated
 
-OctoPrint's Software Update plugin tells you when a new version is available, and it's worth applying those promptly. As an example, 1.11.8 fixed an XSS issue that could be triggered by a specially crafted print file, along with a file exfiltration issue. Take a backup from **Settings** > **Backup & Restore** before major updates.
+OctoPrint's Software Update plugin tells you when a new version is available, and it's worth applying those promptly. Take a backup from **Settings** > **Backup & Restore** before a major update. OctoPrint 2.0 dropped Python 3.7 and 3.8, and it removed a pile of long-deprecated plugin APIs, so a plugin that has been quiet can stop working. [2.0.1](https://github.com/OctoPrint/OctoPrint/releases/tag/2.0.1) is the current stable release. It also fixes a low-severity leak where Classic Webcam snapshot credentials could be read by an account that only had settings-read permission. That leak was present from 1.11.0 through 2.0.0.
 
-OctoPrint 2.0 is in release candidate testing as I write this. Imager's stable OctoPi build still ships 1.11.8, and that's the one I'd use on a printer you depend on.
+The stable OctoPi image in Raspberry Pi Imager is the one I'd flash on a printer I depend on. The official Docker image has not published a 2.0 tag yet. As of November 19, 2026, `latest` and `1.11.8` are the same June 23 build, so the Compose file below stays on 1.11.8.
 
 ## Running OctoPrint in Docker Instead
 
-If you already have a Linux box near the printer, the official [`octoprint/octoprint`](https://github.com/OctoPrint/octoprint-docker) image works on `amd64`, `arm64`, and `arm/v7`. This Compose file is based on upstream's example, pinned to the current stable release:
+If you already have a Linux box near the printer, the official [`octoprint/octoprint`](https://github.com/OctoPrint/octoprint-docker) image works on `amd64`, `arm64`, and `arm/v7`. This Compose file is based on upstream's example, pinned to the newest version tag on Docker Hub:
 
 ```yaml
 services:
@@ -275,7 +275,10 @@ If you've found some great 5-inch or 10-inch rack models, I'd love to check them
 - [OctoPrint](https://octoprint.org/)
 - [OctoPrint download and install options](https://octoprint.org/download/)
 - [OctoPrint on GitHub](https://github.com/OctoPrint/OctoPrint)
+- [OctoPrint 2.0.1 release](https://github.com/OctoPrint/OctoPrint/releases/tag/2.0.1)
+- [OctoPrint 2.0.0 release](https://github.com/OctoPrint/OctoPrint/releases/tag/2.0.0)
 - [OctoPrint 1.11.8 release](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8)
+- [Plugin migration guide for 2.0.0](https://docs.octoprint.org/en/dev/plugins/migration_2_0_0.html)
 - [OctoPi on GitHub](https://github.com/guysoft/OctoPi)
 - [OctoPi 1.1.0 release](https://github.com/guysoft/OctoPi/releases/tag/1.1.0)
 - [OctoPi-UpToDate builds](https://github.com/OctoPrint/OctoPi-UpToDate/releases)
