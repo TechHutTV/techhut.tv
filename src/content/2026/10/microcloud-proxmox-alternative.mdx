@@ -14,11 +14,11 @@ import {YouTube} from "@/components/YouTube"
 
 The first time I signed into the web interface, it felt really familiar. If you've used Proxmox, you'll probably be comfortable here pretty quickly. The big difference is that you don't need a dedicated Proxmox machine. You can deploy MicroCloud on infrastructure you already run and start using it right away. That's what caught my attention, and I'll come back to the Proxmox question at the end.
 
-In this guide I'll build a three-node cluster, use the CLI to launch and expose a container, add storage, and tour the web UI. The video was published in January 2026. The written installation has been updated to follow Canonical's documentation as of October 2026, which pins snap channels, holds automatic updates, and raises the hardware recommendations. My hands-on impressions come from the recorded walkthrough, and I've called out the places where things have changed.
+I'll build a three-node cluster, use the CLI to launch and expose a container, add storage, and walk through the web UI. The video was published in January 2026. The install steps follow Canonical's documentation as of October 2026, which pins snap channels, holds automatic updates, and raises the hardware recommendations. My hands-on impressions come from the recorded walkthrough, and I've called out the places where things have changed.
 
 ## What MicroCloud Is Made Of
 
-MicroCloud is really a set of Canonical projects that get wired together for you:
+MicroCloud is a set of Canonical projects that get wired together for you:
 
 | Component | Job |
 |---|---|
@@ -134,7 +134,7 @@ Pick one machine to act as the initiator and run:
 sudo microcloud init
 ```
 
-After the services start, it walks you through a series of prompts. The menus use the arrow keys to move, Space to select, and Enter to confirm. Here's how I answered them, and how they line up with the [initialization guide](https://canonical.com/microcloud/docs/latest/how-to/initialize/).
+After the services start, it walks you through a series of prompts. The menus use the arrow keys to move, Space to select, and Enter to confirm. This is how I answered them, and how they line up with the [initialization guide](https://canonical.com/microcloud/docs/latest/how-to/initialize/).
 
 1. **More than one cluster member?** I said yes. For a single node, say no. You can always add machines later with `microcloud add`.
 2. **Address for internal traffic.** Because of my bridge, this listed the bridge addresses. I selected mine and hit Enter.
@@ -313,7 +313,7 @@ To show a real use case, I made a Jellyfin container. I didn't set up hardware t
 
 ![The Select base image dialog in the MicroCloud web UI listing OpenWrt, Oracle, Rocky Linux, Slackware, and Ubuntu Desktop images](/docs-static/img/2026/10/microcloud-proxmox-alternative/lxd-ui-select-base-image.jpg)
 
-Here's the same container from the CLI:
+The same container from the CLI:
 
 ```bash
 lxc launch ubuntu:24.04 jellyfin -c limits.cpu=2 -c limits.memory=2GiB
@@ -339,11 +339,11 @@ When it finished, the Jellyfin service was active. The container was on micro on
 
 Overall, I really enjoy this product. Setup was one interactive command on the first node plus a join on the others, and I ended up with replicated storage and overlay networking across three machines. Everything I did in the terminal was also available in the web UI, and the configuration is all YAML underneath.
 
-To be fair, Proxmox is much more mature. It also has a big community around it, with things like helper scripts that MicroCloud doesn't really have yet. But if you already have an Ubuntu server, or really any Linux server, in production and you want to start using LXD containers and virtual machines, MicroCloud is a really efficient way to do it. You don't have to rebuild that machine as a dedicated hypervisor first.
+Proxmox is much more mature. It also has a big community around it, with things like helper scripts that MicroCloud doesn't really have yet. But if you already have an Ubuntu server, or really any Linux server, in production and you want to start using LXD containers and virtual machines, MicroCloud is a really efficient way to do it. You don't have to rebuild that machine as a dedicated hypervisor first.
 
 There are two things I still want to figure out: hardware acceleration, which shouldn't be too hard, and OVN well enough to really understand the networking. Once I have both, I'd be pretty comfortable with it. My plan after this video was a proper cluster on three ZimaBoard 2 boards, with hardware transcoding and a few VMs.
 
-Right now I have Proxmox on a Minisforum mini PC, and I might just put Ubuntu and MicroCloud on it. I don't have many services left on that box since a lot of my media stuff moved to Unraid and a lot of my proxy stuff moved to my bare-metal Linux server. That server might honestly be a good place for MicroCloud too. Time will tell.
+Right now I have Proxmox on a Minisforum mini PC, and I might just put Ubuntu and MicroCloud on it. I don't have many services left on that box since a lot of my media stuff moved to Unraid and a lot of my proxy stuff moved to my bare-metal Linux server. That server might be a good place for MicroCloud too. I'll find out.
 
 Let me know in the video comments whether you could see yourself using it, or even replacing something like Proxmox with it. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
 
