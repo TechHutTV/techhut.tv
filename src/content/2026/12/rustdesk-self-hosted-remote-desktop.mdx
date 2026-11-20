@@ -1,10 +1,10 @@
 export const title = "RustDesk: Self-Host Your Own TeamViewer and AnyDesk Alternative"
 export const description = "Run your own RustDesk ID and relay server with Docker Compose or a Proxmox helper script, connect Linux and Windows clients with your server key, and lock down unattended access."
-export const date = "2026-10-09"
+export const date = "2026-12-21"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Docker", "Proxmox", "Linux", "Windows"]
-export const cover = "/docs-static/img/2026/10/rustdesk-self-hosted-remote-desktop/cover.jpg"
+export const cover = "/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -29,7 +29,7 @@ The open-source RustDesk server is two programs, and it helps to know which does
 
 According to the docs, hole punching works most of the time, so the relay often isn't used at all. When it is, though, all of your screen and input data goes through it. That's the main reason I like having my own relay. If hole punching fails between two machines in the same building, I don't want that session going out to someone else's server and back.
 
-![RustDesk's diagram of the hbbs signaling server and hbbr relay server, showing a direct hole-punched connection and the relay fallback](/docs-static/img/2026/10/rustdesk-self-hosted-remote-desktop/hbbs-hbbr-diagram.jpg)
+![RustDesk's diagram of the hbbs signaling server and hbbr relay server, showing a direct hole-punched connection and the relay fallback](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/hbbs-hbbr-diagram.jpg)
 
 These are the ports involved:
 
@@ -183,7 +183,7 @@ I went into the advanced settings to give it a bit more room than the defaults:
 
 I kept the remaining options at their defaults and let the container build. The defaults are probably enough, given RustDesk's own hardware guidance, but I gave it a little more room anyway.
 
-![The Proxmox helper script's settings summary for the RustDesk LXC with a 4 GB disk, 2 CPU cores, and 1024 MiB of RAM](/docs-static/img/2026/10/rustdesk-self-hosted-remote-desktop/helper-script-advanced-settings.jpg)
+![The Proxmox helper script's settings summary for the RustDesk LXC with a 4 GB disk, 2 CPU cores, and 1024 MiB of RAM](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/helper-script-advanced-settings.jpg)
 
 The install now asks whether you want to add the RustDesk API web UI. It defaults to **No**, and the prompt itself notes the project has been unmaintained since September 2025. The RustDesk clients don't need it, so I'd skip it. When the script finishes, it also prints a `:21114/_admin/` URL, which only matters if you said yes. The server address and public key are saved to `~/rustdesk.creds` inside the container.
 
@@ -240,7 +240,7 @@ A fresh client says something like "Ready, for faster connection, please set up 
 
 This `Key` is the server's public key, not a Pro license key. In the video, I entered only the ID Server and Key fields, using the LAN IP of the container I'd just created. After clicking OK, the client said it was successful. Back on the home screen, the status just said **Ready**, without the public-server notice.
 
-![The ID/Relay server dialog in RustDesk's Network settings with the ID server set to the container's LAN IP](/docs-static/img/2026/10/rustdesk-self-hosted-remote-desktop/id-relay-server-settings.jpg)
+![The ID/Relay server dialog in RustDesk's Network settings with the ID server set to the container's LAN IP](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/id-relay-server-settings.jpg)
 
 I set up my Fedora desktop first, then installed the Windows client on a Windows VM in Proxmox and entered the same settings there. Typing the key by hand inside a VM console isn't much fun, and I copied it over to double-check. The client also has **Export Server Config** and **Import Server Config** buttons in the same Network settings, which lets you copy the configuration from one client to another instead of typing it.
 
@@ -264,7 +264,7 @@ The one-time password works for a quick session, but it changes. If the machine 
 
 I closed the session and returned to the Windows VM through Proxmox. In RustDesk, I went to **Settings > Security**, clicked **Unlock Security Settings**, and used **Set permanent password**. My first password was weaker than I wanted, so I made it stronger before clicking OK. After that, I could connect with that password even after a reboot.
 
-![The Set password dialog under Security in the RustDesk client on the Windows VM, with its digit, uppercase, lowercase, and length checks](/docs-static/img/2026/10/rustdesk-self-hosted-remote-desktop/set-permanent-password.jpg)
+![The Set password dialog under Security in the RustDesk client on the Windows VM, with its digit, uppercase, lowercase, and length checks](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/set-permanent-password.jpg)
 
 The same section has password modes for one-time only, permanent only, or both. A permanent password is effectively unattended access to that machine, so make it long and unique and keep it in a password manager.
 
