@@ -406,7 +406,9 @@
     "name": "Deluge",
     "category": "Media",
     "description": "Manage torrent transfers with a client that can run behind a VPN container.",
-    "coverage": [],
+    "coverage": [
+      "/gluetun-vpn-docker-containers"
+    ],
     "videos": [
       {
         "id": "_tz2wUFT8VQ",
@@ -700,7 +702,9 @@
     "name": "Gluetun",
     "category": "Networking",
     "description": "Route Docker container traffic through a VPN connection.",
-    "coverage": [],
+    "coverage": [
+      "/gluetun-vpn-docker-containers"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1734,7 +1738,8 @@
     "category": "Server Management",
     "description": "Deploy and manage Docker containers through a web interface.",
     "coverage": [
-      "/self-host-immich-photo-backup"
+      "/self-host-immich-photo-backup",
+      "/gluetun-vpn-docker-containers"
     ],
     "videos": [
       {

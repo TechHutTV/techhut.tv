@@ -1,0 +1,401 @@
+export const title = "Gluetun: Route Your Docker Containers Through a VPN"
+export const description = "Set up the Gluetun VPN container with WireGuard, route Deluge through it in the same compose stack, attach a container from outside the stack, and verify your containers use the VPN's IP."
+export const date = "2026-11-27"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux", "RaspberryPi"]
+export const cover = "/docs-static/img/2026/11/gluetun-vpn-docker-containers/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="_tz2wUFT8VQ" title="TechHut's Gluetun VPN container walkthrough" />
+
+When I made this video, a Raspberry Pi 5 was about to become the new home of my \*arr stack. One of the most important parts of any download stack is privacy. When a torrent client downloads Linux ISOs, everyone in the swarm can see your public IP address. And if you want to seed Hannah Montana Linux, that's nobody's business but yours.
+
+The fix is [Gluetun](https://github.com/passteque/gluetun), a VPN client that runs as its own Docker container. Other containers can borrow its network, so everything they send goes out through the VPN. Gluetun also has a built-in firewall kill switch that only allows traffic through the VPN, so if the tunnel drops, it's designed to block their traffic rather than send it out over your home connection. It's still worth testing, which is why this guide checks the public IP from inside the containers.
+
+I'll prep a Pi with Docker, set up Gluetun with WireGuard, route the Deluge torrent client through it, attach a second container from outside the compose file, and test that it's all working. Use this for content you have the rights to, and check your local laws.
+
+The video isn't sponsored. RasTech sent over the Raspberry Pi 5 starter kit I used in it.
+
+The video was published in July 2024. The written steps have been updated for [Gluetun v3.41.3](https://github.com/passteque/gluetun/releases/tag/v3.41.3), released July 30, 2026, and [Deluge 2.2.0](https://deluge-torrent.org/). Since I recorded, Gluetun's GitHub repository has moved from `qdm12/gluetun` to [`passteque/gluetun`](https://github.com/passteque/gluetun) (the Docker image name didn't change), the health check has been reworked, and the HTTP control server now requires authentication. Portainer and the LinuxServer Firefox image have changed too. The hands-on walkthrough and impressions come from the original recording, and I've noted the differences as they come up.
+
+## What Gluetun Does
+
+Gluetun is a lightweight VPN client for Docker, MIT licensed, built on Alpine, and made for amd64, ARM (64-bit and 32-bit), and a few other architectures. According to the [README](https://github.com/passteque/gluetun#features), it gives you:
+
+- Support for a long list of providers, including AirVPN, Mullvad, NordVPN, Private Internet Access, ProtonVPN, Surfshark, Windscribe, and more
+- OpenVPN for every listed provider, and WireGuard for many of them (plus a custom provider for your own WireGuard config)
+- A built-in firewall kill switch that only allows traffic through the VPN, to the VPN server, and to LAN devices you allow
+- DNS over TLS, with DNS blocking of malicious hostnames
+- Optional built-in HTTP and Shadowsocks proxies
+- An HTTP control server for checking and changing its state while it runs
+
+The piece I care about here is that other containers can share Gluetun's network stack. Once they do, they don't have any network path of their own. Everything goes through the tunnel.
+
+<Note>
+The README warns that its GitHub repository and the [Gluetun wiki](https://github.com/qdm12/gluetun-wiki) are the only official Gluetun websites, and that other sites claiming to be official are scams. The wiki still lives at `qdm12/gluetun-wiki`.
+</Note>
+
+## Prep the Pi: Ubuntu Server and Docker
+
+Everything here runs in Docker, so you can use whatever Linux machine and distribution you like. This is what I did on the Pi.
+
+### Flash Ubuntu Server
+
+I used the [Raspberry Pi Imager](https://www.raspberrypi.com/software/), which runs on Windows, macOS, and Linux. Choose **Raspberry Pi 5** as the device, then **Other general-purpose OS > Ubuntu** and the latest Ubuntu Server LTS (26.04 LTS is [certified for the Pi 5](https://ubuntu.com/download/raspberry-pi) at the time of writing). Pick your SD card.
+
+Before writing, edit the customization settings. Setting a username and password there makes everything substantially easier. I named mine `dockerpi`, skipped Wi-Fi (a server should be plugged into Ethernet), set my time zone, and enabled SSH under **Services**. You can paste in a public key there if you prefer key authentication.
+
+![Raspberry Pi Imager's OS Customisation dialog with the hostname set to dockerpi and a username and password filled in](/docs-static/img/2026/11/gluetun-vpn-docker-containers/raspberry-pi-imager-os-customisation.jpg)
+
+Boot the Pi, find its IP address on your router, and SSH in with the credentials you just created. Then update everything:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Mine pulled in a kernel update, so I rebooted before going further.
+
+### Install Docker
+
+I used Docker's [convenience script](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script). It's from Docker, so it's fine, but if you're going to run random scripts on anything, at least skim the code first. You can open [get.docker.com](https://get.docker.com) in a browser to read it, or do a dry run:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh --dry-run
+sudo sh get-docker.sh
+```
+
+Docker's docs do say the script is meant for testing and development machines. For a long-lived server, the [apt repository method](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository) on the same page is the more conservative route.
+
+Then add yourself to the `docker` group so you don't need `sudo` for every command, and apply the change to your current shell:
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+id
+```
+
+You should see `docker` in the list of groups. Keep in mind that membership in this group is effectively root on that machine. If any of this is new to you, my [7 Docker basics for beginners](/7-docker-basics-for-beginners) guide covers non-root users, networks, and bind mounts.
+
+### Install Portainer (Optional)
+
+I used [Portainer](https://docs.portainer.io/start/install-ce/server/docker/linux) for a GUI to deploy compose files as stacks. Create its volume and start it:
+
+```bash
+docker volume create portainer_data
+docker run -d -p 9443:9443 --name portainer --restart=always \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainer/portainer-ce:lts
+```
+
+In the video I swapped the tag for the short-term support (`sts`) release to get slightly newer features. Portainer's docs now use `lts` in the install command, which is what I'd pick for a server. Its docs also add `-p 8000:8000`, which is only needed for Edge agents, so I left it out.
+
+Open `https://YOUR_PI_IP:9443`, accept the self-signed certificate, and create your admin user. That part has changed since I recorded: new Portainer instances (since 2.43 and 2.39.4) now ask for a **setup token** first. Grab it from the logs:
+
+```bash
+docker logs portainer 2>&1 | grep setup_token
+```
+
+You have to create the user within five minutes, or Portainer times out for security reasons. After that, click **Get Started** to manage the local Docker environment.
+
+Portainer mounts the Docker socket, which gives it full control of Docker on the host. Don't expose port 9443 to the internet.
+
+## How the Compose File Works
+
+My compose file and notes for this setup live in my [homelab repo under `media/`](https://github.com/TechHutTV/homelab/tree/main/media). That folder has grown into the full \*arr stack since then, so here I'm only showing the two pieces this video focused on: Gluetun and Deluge. Deluge is my general preference for a torrent client. I've had good luck with it.
+
+The key ideas:
+
+- **`cap_add: NET_ADMIN`** gives the container control over the network stack, which is kind of important for a VPN. Gluetun needs it to create the tunnel and set up its firewall.
+- **`devices: /dev/net/tun`** passes the host's TUN device in. My original compose left this out, but every current example in the Gluetun README and wiki includes it, and the wiki's [TUN errors page](https://github.com/qdm12/gluetun-wiki/blob/main/errors/tun.md) is mostly about not having it.
+- **Ports live on Gluetun.** Gluetun itself doesn't need any published ports. The ones listed under it are really pass-through ports for the containers using its network. Deluge's web UI port goes under `gluetun`, not under `deluge`.
+- **`network_mode: service:gluetun`** on Deluge is what puts it inside Gluetun's network. A container with this setting can't publish ports of its own.
+
+## Create the Folders
+
+I give every container its own config folder in my home directory, since this Pi is only going to be a little Docker server. For downloads, I recommend keeping everything (downloads, movies, shows, and so on) in a single share or folder. That makes life much easier when you add the rest of the \*arr apps later.
+
+```bash
+mkdir -p ~/docker/gluetun ~/docker/deluge
+sudo mkdir -p /media/data/downloads/deluge/{completed,incomplete,torrents}
+sudo chown -R "$(id -u):$(id -g)" /media/data
+```
+
+My `/media/data` is a network share from my Unraid server, mounted through `/etc/fstab`. If you're doing the same, it looks something like this (install `cifs-utils` first, and keep the credentials in a separate file with `600` permissions rather than in fstab):
+
+```text
+//192.168.1.10/data /media/data cifs credentials=/home/your_user/.smbcredentials,uid=1000,gid=100,iocharset=utf8 0 0
+```
+
+On a network mount, the `chown` above doesn't apply. Ownership comes from the `uid` and `gid` mount options instead.
+
+### User and Group IDs
+
+The LinuxServer images run as the `PUID` and `PGID` you give them, so downloaded files end up owned by that user. Check yours:
+
+```bash
+id your_user
+```
+
+On most single-user installs that's `1000` and `1000`. In the video I used `PGID=100` instead of my own group ID, because the files land on the Unraid share and `1000:100` is the user and group that share is mounted with. Match whatever owns your download location.
+
+## Get Your VPN Details
+
+Chances are you already have a VPN provider. The Gluetun wiki has a [setup page for each supported provider](https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers), and each one gives you an example compose file with exactly the variables that provider needs. Some support both WireGuard and OpenVPN, while others don't have a native WireGuard option, so depending on what you use, you may need to adjust the example below. If your provider hands you a WireGuard config file but isn't natively supported for WireGuard, the [custom provider page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md) covers it.
+
+I was using AirVPN when I recorded, using WireGuard. AirVPN isn't a sponsor. I found them because they're one of the predefined providers in Gluetun, and their website looks like something I would have designed in eighth grade, which for some reason makes me like it more. This is what that looked like, following the wiki's [AirVPN page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/airvpn.md):
+
+1. In the **Client Area**, open the **Config Generator**. Choose **Linux**, select **WireGuard**, and pick a server. I picked one in Vancouver. Scroll down and click **Generate**, then open the resulting config file.
+2. Back in the **Client Area**, open **Ports** and add a port. This is the forwarded port your torrent client will listen on.
+
+![AirVPN's Config Generator with Linux selected as the OS and the WireGuard protocol toggled on](/docs-static/img/2026/11/gluetun-vpn-docker-containers/airvpn-config-generator-wireguard.jpg)
+
+From the generated file you need three values:
+
+| Gluetun variable | Where it comes from |
+|---|---|
+| `WIREGUARD_PRIVATE_KEY` | `PrivateKey` in the `[Interface]` section |
+| `WIREGUARD_PRESHARED_KEY` | `PresharedKey` in the `[Peer]` section |
+| `WIREGUARD_ADDRESSES` | The IPv4 address from the `Address` line (add the IPv6 one only if you've [set up IPv6](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/ipv6.md) for Gluetun) |
+
+The forwarded port is what makes incoming peer connections work for the torrent client. Some providers don't need this step. Others, like Private Internet Access and ProtonVPN, assign ports through Gluetun's [native port forwarding](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/vpn-port-forwarding.md) with `VPN_PORT_FORWARDING=on`, and that port can change between connections, so you'd have to keep your client's listening port in sync with it. With a static port like AirVPN's, you just add it to `FIREWALL_VPN_INPUT_PORTS`.
+
+<Warning>
+Your WireGuard private key is a password for your VPN account. Don't commit it to a public repo or paste it into a screenshot. Also, don't forward this port on your home router. The forwarded port lives on the VPN server, not on your home connection.
+</Warning>
+
+## Deploy Gluetun and Deluge
+
+Put the secrets in environment variables instead of the compose file itself. If you're using the Docker CLI, make a project folder with a `.env` file next to the compose file:
+
+```bash
+mkdir -p ~/docker/vpn-stack && cd ~/docker/vpn-stack
+cat > .env <<'EOF'
+WIREGUARD_PRIVATE_KEY=YOUR_PRIVATE_KEY
+WIREGUARD_PRESHARED_KEY=YOUR_PRESHARED_KEY
+WIREGUARD_ADDRESSES=10.x.x.x/32
+FORWARDED_PORT=12345
+EOF
+chmod 600 .env
+```
+
+In Portainer, go to **Stacks > Add stack**, paste the compose file into the web editor, and add those four values as environment variables below it. Portainer substitutes `${...}` values the same way Compose does.
+
+The `compose.yaml` is below. Replace `your_user`, the IDs, and the time zone with your own:
+
+```yaml
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.41.3
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8112:8112     # Deluge web UI
+      # - 58846:58846 # Deluge daemon, only needed for desktop thin clients
+    volumes:
+      - /home/your_user/docker/gluetun:/gluetun
+    environment:
+      - TZ=America/Los_Angeles
+      - VPN_SERVICE_PROVIDER=airvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - WIREGUARD_PRESHARED_KEY=${WIREGUARD_PRESHARED_KEY}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES}
+      - FIREWALL_VPN_INPUT_PORTS=${FORWARDED_PORT}
+      # Optional server filters:
+      # - SERVER_COUNTRIES=Canada
+      # - SERVER_CITIES=Vancouver
+    restart: unless-stopped
+
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Los_Angeles
+    volumes:
+      - /home/your_user/docker/deluge:/config
+      - /media/data:/data
+    restart: unless-stopped
+```
+
+A few notes on what changed from the file in the video:
+
+- **`container_name: gluetun` is required** if you want to attach containers from outside this compose file later. The README's own example has it commented out for that reason.
+- **The image is pinned to a release.** Plain `qmcgaw/gluetun` means `:latest`, which the wiki explains [tracks the development branch](https://github.com/qdm12/gluetun-wiki/blob/main/setup/docker-image-tags.md). `:v3` follows the newest stable release if you'd rather not pin. The image is also published as `ghcr.io/qdm12/gluetun`.
+- **No custom health check.** My old compose had a `ping` health check on Gluetun. The image already ships a Docker health check backed by Gluetun's own monitoring, which v3.41.0 reworked to dial `cloudflare.com:443` and `github.com:443` and ping `1.1.1.1` and `8.8.8.8`, restarting the tunnel internally if they fail. Overriding it just throws that away. The [health check options](https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/healthcheck.md) let you change the targets.
+- **`depends_on` is optional.** The wiki says it isn't needed for a container in the same compose file. I like it because Deluge waits until the VPN is healthy before starting.
+- **Deluge's own torrent port isn't published.** The LinuxServer README maps `6881` for inbound traffic, but behind Gluetun, inbound peers arrive through the VPN on your forwarded port, so nothing needs to be published on the host.
+- **The web UI is on host port `8112`.** In the video I mapped it to `8888` on the host. Using Deluge's default port on both sides is less confusing, but any free host port works.
+- **The server filters are optional.** I set Canada and Vancouver to match the server I generated. If Gluetun can't find a matching server, comment them out.
+
+Deploy it with **Deploy the stack** in Portainer, or from the project folder:
+
+```bash
+docker compose up -d
+docker logs gluetun
+```
+
+In the logs, look for the line reporting your public IP address and location. It should be the VPN server, not you.
+
+## Test the VPN
+
+My repo has a couple of quick tests. First, the one from the Gluetun wiki's [test your setup](https://github.com/qdm12/gluetun-wiki/blob/main/setup/test-your-setup.md) page, which runs a throwaway container on Gluetun's network and asks ipinfo.io where it is:
+
+```bash
+docker run --rm --network=container:gluetun alpine:3.22 sh -c "apk add wget && wget -qO- https://ipinfo.io"
+```
+
+Mine came back as Vancouver, British Columbia, which is not where I am.
+
+![The ipinfo.io test from the video (run on an older Alpine tag) going through Gluetun's network and returning a Vancouver, British Columbia address](/docs-static/img/2026/11/gluetun-vpn-docker-containers/gluetun-ipinfo-test-vancouver.jpg)
+
+Then test from inside the actual torrent client. Jump into Deluge's shell and run the same request:
+
+```bash
+docker exec -it deluge bash
+wget -qO- https://ipinfo.io
+```
+
+Same result: Vancouver. If either one shows your home IP or location, stop and fix that before you download anything.
+
+## Set Up Deluge
+
+Open `http://YOUR_PI_IP:8112`. The LinuxServer image starts with the web UI password `deluge`, so change it first under **Preferences > Interface > Password**. If the Connection Manager pops up, select the local daemon and click **Connect**.
+
+Then go through a few preferences:
+
+| Preference | Setting |
+|---|---|
+| **Downloads > Download to** | `/data/downloads/deluge/incomplete` |
+| **Downloads > Move completed to** | `/data/downloads/deluge/completed` |
+| **Downloads > Copy of .torrent files to** | `/data/downloads/deluge/torrents` |
+| **Network > Incoming Port** | Uncheck **Use Random Port** and enter your forwarded port |
+| **Plugins** | Enable **Label** (the \*arr apps use it later) |
+
+![Deluge's Downloads preferences with the incomplete, completed, and torrent-file folders set under /data/downloads/deluge](/docs-static/img/2026/11/gluetun-vpn-docker-containers/deluge-preferences-download-folders.jpg)
+
+Apply it, and play with the rest of the settings as you see fit. To test, I went to Linux Tracker, grabbed a heavily seeded torrent, and added it through **Add > URL**. It was rocking and rolling right away.
+
+The video shows Deluge 2.1.1. Deluge 2.2.0, released in April 2025, came after it. Its [changelog](https://git.deluge-torrent.org/deluge/plain/CHANGELOG.md) includes several web UI security fixes, which is a good reason to make sure you're on a current image. The web UI also gained the option to bind to a network interface by name.
+
+## Route a Container From Outside the Stack
+
+Containers don't have to live in the same compose file to use the VPN, as long as they're on the same machine and Gluetun is already running. The [wiki](https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md) lists three options:
+
+| Where the container is | What to add |
+|---|---|
+| Same compose file | `network_mode: "service:gluetun"` |
+| Another compose file | `network_mode: "container:gluetun"` |
+| `docker run` | `--network=container:gluetun` |
+
+In every case, the container's ports still get published on the `gluetun` service, not on the container itself.
+
+To show this off, I ran the [LinuxServer Firefox image](https://docs.linuxserver.io/images/docker-firefox/) with `docker run`. It gives you a browser in a browser tab, always going through the VPN, which is handy.
+
+First, add its port to the `gluetun` service and update the stack (in Portainer: **Stacks**, open the stack, **Editor**, then **Update the stack**):
+
+```yaml
+    ports:
+      - 8112:8112     # Deluge web UI
+      - 3001:3001     # Firefox (HTTPS)
+```
+
+In the video I added both `3000` (HTTP) and `3001` (HTTPS). The Firefox image has since moved to LinuxServer's Selkies base, and its README now says the HTTP port is only meant to sit behind a reverse proxy, so `3001` is the one to publish.
+
+The current image also has no authentication by default, and its web interface includes a terminal with passwordless `sudo` inside the container. Set a login with an env file so the password isn't in your shell history:
+
+```bash
+mkdir -p ~/docker/firefox
+cat > ~/docker/firefox.env <<'EOF'
+CUSTOM_USER=your_user
+PASSWORD=CHANGE_ME_TO_A_STRONG_PASSWORD
+EOF
+chmod 600 ~/docker/firefox.env
+```
+
+Then start Firefox on Gluetun's network. There's no `-p` flag here, because Docker won't publish ports on a container that uses another container's network:
+
+```bash
+docker run -d \
+  --name=firefox \
+  --network=container:gluetun \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=America/Los_Angeles \
+  --env-file ~/docker/firefox.env \
+  -v /home/your_user/docker/firefox:/config \
+  --shm-size="1gb" \
+  --restart unless-stopped \
+  lscr.io/linuxserver/firefox:latest
+```
+
+In Portainer it shows up under **Containers**, not part of any stack. Open `https://YOUR_PI_IP:3001`, accept the self-signed certificate warning, and log in. Then visit any "what is my IP" site. Mine showed Vancouver, British Columbia again.
+
+![The LinuxServer Firefox container on Gluetun's network reporting a Vancouver, British Columbia public IP on What's My IP](/docs-static/img/2026/11/gluetun-vpn-docker-containers/firefox-whats-my-ip-vancouver.jpg)
+
+So now I have one VPN connection shared by a torrent client in the same compose file and a Firefox container outside of it.
+
+<Note>
+The Gluetun wiki's [health check FAQ](https://github.com/qdm12/gluetun-wiki/blob/main/faq/healthcheck.md) points out that containers connected to Gluetun lose their connection when Gluetun itself restarts. Gluetun's internal auto-healing avoids most full restarts, but if you update or recreate the stack, restart Firefox afterward with `docker restart firefox`, or remove and re-run it if it won't start.
+</Note>
+
+## The Control Server (Updated)
+
+I didn't use it in the video, but Gluetun runs an [HTTP control server](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md) on port `8000` inside the container. It can report the VPN status and public IP, read the forwarded port, and start or stop the VPN. Two things to know:
+
+- It's only reachable from your network if you publish `8000` on the `gluetun` service. You don't need to for anything in this guide.
+- **All routes now require authentication.** Gluetun v3.40.0 added role-based auth, and current versions have no public routes left. If something used to talk to it unauthenticated, it'll stop working until you configure auth.
+
+If you do want it, the simplest setup is an API key as the default role. Generate one:
+
+```bash
+docker run --rm qmcgaw/gluetun:v3.41.3 genkey
+```
+
+Add it to your `.env` as `GLUETUN_API_KEY`, then add this to the `gluetun` service, publishing the port on localhost only:
+
+```yaml
+    ports:
+      - 127.0.0.1:8000:8000/tcp
+    environment:
+      - 'HTTP_CONTROL_SERVER_AUTH_DEFAULT_ROLE={"auth":"apikey","apikey":"${GLUETUN_API_KEY}"}'
+```
+
+Now you can query it from the host:
+
+```bash
+curl -H "X-API-Key: YOUR_API_KEY" http://127.0.0.1:8000/v1/publicip/ip
+```
+
+For finer control, the wiki shows how to bind mount a `config.toml` to `/gluetun/auth/config.toml` and give different routes different credentials. Never use `{"auth":"none"}` on a port your network can reach. The wiki calls it highly discouraged, and the control server can stop your VPN.
+
+## Troubleshooting
+
+- **`dependency failed to start: container gluetun is unhealthy`**: run `docker logs gluetun`. The usual causes are a typo in a key, a leftover placeholder, or a server filter that doesn't match anything.
+- **TUN device errors**: check the [TUN errors page](https://github.com/qdm12/gluetun-wiki/blob/main/errors/tun.md). Proxmox LXC containers need the device passed in.
+- **Deluge can't reach something on your LAN** (like a NAS or a separate app): Gluetun's firewall blocks outbound LAN traffic by default. Add the subnet with `FIREWALL_OUTBOUND_SUBNETS`, for example `192.168.1.0/24`, as described in the [firewall options](https://github.com/qdm12/gluetun-wiki/blob/main/setup/options/firewall.md).
+- **32-bit OS on a Pi**: the wiki has a [32-bit prerequisites page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/prerequisites/32bit.md). A 64-bit Ubuntu Server install doesn't need it.
+
+## Final Thoughts
+
+Gluetun is one of those containers I think everybody running a download client should have. Once it's configured, you basically forget about it, and every container you point at it gets the same protection and the same kill switch. Passing containers through is a single line, whether they're in the same compose file or not.
+
+The part that takes the most care is the VPN provider side: generating the right WireGuard config, copying the keys correctly, and setting up a forwarded port if your client needs one. Take your time there, and always run the IP tests before you trust it.
+
+The [Gluetun wiki](https://github.com/qdm12/gluetun-wiki) covers everything else, including every option, the health check, port forwarding, and OpenVPN. My [media README](https://github.com/TechHutTV/homelab/tree/main/media) has my own setup notes and the fixes I've collected.
+
+## Next Up
+
+This was the foundation. In [Ultimate Home Server Part 3: The Automated \*arr Stack](/ultimate-home-server-part-3-arr-stack), I build the full download stack on top of Gluetun, with qBittorrent, NZBGet, Prowlarr, Sonarr, Radarr, Lidarr, Bazarr, and Seerr, all on static IPs and feeding Jellyfin. With all that, I do hope you found this helpful. Have a great one.
