@@ -1,6 +1,6 @@
 export const title = "Ultimate Home Server Part 3: The Automated *arr Stack"
 export const description = "Deploy my Docker Compose media automation stack with Gluetun, qBittorrent, NZBGet, Prowlarr, Sonarr, Radarr, Bazarr, and Seerr, all wired together on static IPs and feeding Jellyfin."
-export const date = "2026-11-26"
+export const date = "2026-11-20"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
@@ -31,42 +31,44 @@ The compose file and docs live in my [homelab repo under `media/`](https://githu
 
 | Service | What it does | Web UI port | How other apps reach it |
 |---|---|---|---|
-| Gluetun | VPN client that the download side of the stack routes through | none | `172.39.0.2` |
-| qBittorrent | Torrent client (runs inside Gluetun's network) | `8080` | `172.39.0.2:8080` |
-| NZBGet | Usenet client (runs inside Gluetun's network) | `6789` | `172.39.0.2:6789` |
-| Prowlarr | Manages indexers and syncs them to the other apps (inside Gluetun) | `9696` | `172.39.0.2:9696` |
-| FlareSolverr | Optional helper for Prowlarr (inside Gluetun) | `8191` | `172.39.0.2:8191` |
-| Sonarr | TV shows | `8989` | `172.39.0.3:8989` |
-| Radarr | Movies | `7878` | `172.39.0.4:7878` |
-| Lidarr | Music | `8686` | `172.39.0.5:8686` |
-| Bazarr | Subtitles for Sonarr and Radarr | `6767` | `172.39.0.6:6767` |
-| Seerr | Requests and discovery for you and your users | `5055` | `172.39.0.7:5055` |
+| Gluetun | VPN client that the download side of the stack routes through | none | `172.30.50.2` |
+| qBittorrent | Torrent client (runs inside Gluetun's network) | `8080` | `172.30.50.2:8080` |
+| NZBGet | Usenet client (runs inside Gluetun's network) | `6789` | `172.30.50.2:6789` |
+| Prowlarr | Manages indexers and syncs them to the other apps (inside Gluetun) | `9696` | `172.30.50.2:9696` |
+| FlareSolverr | Optional helper API for Prowlarr (inside Gluetun) | none needed | `172.30.50.2:8191` |
+| Sonarr | TV shows | `8989` | `172.30.50.3:8989` |
+| Radarr | Movies | `7878` | `172.30.50.4:7878` |
+| Lidarr | Music | `8686` | `172.30.50.5:8686` |
+| Bazarr | Subtitles for Sonarr and Radarr | `6767` | `172.30.50.6:6767` |
+| Seerr | Requests and discovery for you and your users | `5055` | `172.30.50.7:5055` |
 
-You open each web UI at your server's LAN IP and the port in that table. The `172.39.0.x` addresses are for the apps talking to each other.
+You open each web UI at your server's LAN IP and the port in that table. The `172.30.50.x` addresses are for the apps talking to each other.
 
 ## How the Compose File Is Laid Out
 
 I spent a lot of time making this compose file as easy to use as I could. A few ideas are worth understanding before you run it.
 
-Everything sits on a `servarrnetwork` bridge, and each service gets a fixed address from `.env`. People used to have apps disconnect from each other when Docker handed out new internal IPs. Pinning the addresses fixes that, and you always know what to type when you connect one app to another.
+Everything sits on a `servarrnetwork` bridge, and each service gets a fixed address from `.env`. That's how the repo's examples connect the apps, so we'll keep that layout. Static addresses aren't a Docker requirement: a [user-defined bridge provides service-name resolution](https://docs.docker.com/engine/network/drivers/bridge/), so `http://radarr:7878` and `http://gluetun:9696` are alternatives for containers on this network. Use Gluetun's name or address for services sharing its network, rather than expecting each of them to have a separate address.
 
-qBittorrent, NZBGet, Prowlarr, and FlareSolverr don't publish ports or get their own IPs. They use `network_mode: service:gluetun`, which puts them inside Gluetun's network stack, so their ports are listed under the `gluetun` service and they all share its `172.39.0.2` address. If the VPN isn't up, Gluetun's firewall keeps their traffic from leaving.
+qBittorrent, NZBGet, Prowlarr, and FlareSolverr don't publish ports or get their own IPs. They use `network_mode: service:gluetun`, which puts them inside Gluetun's network stack, so their ports are listed under the `gluetun` service and they all share its `172.30.50.2` address. If the VPN isn't up, Gluetun's firewall keeps their traffic from leaving.
 
-The containers behind Gluetun wait for it to report healthy before starting, and `restart: true` in their `depends_on` blocks means Compose restarts them whenever it restarts or recreates Gluetun. qBittorrent also has a ping health check and a `deunhealth.restart.on.unhealthy=true` label. The small [deunhealth](https://github.com/qdm12/deunhealth) container restarts anything with that label when it goes unhealthy, which covers the annoying case where the VPN blips and the torrent client just sits there stalled. Do note that deunhealth mounts the Docker socket, which gives it root-level control of Docker on that host.
+Sonarr, Radarr, Lidarr, Bazarr, and Seerr use the ordinary bridge network for their own outbound traffic. They don't inherit Gluetun's VPN connection just by being in the same Compose project.
 
-Every container that touches media gets the same `/data:/data` bind mount instead of separate `/movies`, `/tv`, and `/downloads` volumes. The [Servarr Docker guide](https://wiki.servarr.com/docker-guide) explains why. Separate volumes look like separate file systems inside the containers, even when they're one disk outside, which rules out [hardlinks and instant moves](https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/). Using one path everywhere also means Radarr and the download clients agree on where every file lives, so you don't need remote path mappings.
+The containers behind Gluetun wait for it to report healthy during `docker compose up`. Their `depends_on` setting `restart: true` applies to [explicit Compose operations](https://docs.docker.com/compose/how-tos/startup-order/), such as `docker compose restart gluetun`; it doesn't automatically restart dependents after every VPN reconnect or Docker-managed restart. qBittorrent also has a ping health check and a `deunhealth.restart.on.unhealthy=true` label. The [deunhealth](https://github.com/qdm12/deunhealth) helper restarts labeled containers when they become unhealthy. A successful ping checks connectivity, not whether qBittorrent is downloading, so it won't detect every stall. The helper mounts the Docker socket, which gives it root-level control of Docker on this VM.
 
-Each service keeps its config in a folder named after it (`./gluetun`, `./radarr`, and so on) in the directory you run Compose from. Unless your folder layout differs from mine, you shouldn't need to edit `compose.yaml` at all. Almost everything you change lives in `.env`.
+Every container that touches media gets the same `/data:/data` bind mount instead of separate `/movies`, `/tv`, and `/downloads` volumes. The [Servarr Docker guide](https://wiki.servarr.com/docker-guide) explains why. Separate mounts prevent hardlinks across them, even when the files live on the same disk outside the container. A shared path avoids remote path mappings, but hardlinks and instant moves still depend on the underlying filesystem, permissions, and SMB server support. The storage test below checks that instead of assuming it works over our network share.
+
+Each service keeps its config in a folder named after it (`./gluetun`, `./radarr`, and so on) in the directory you run Compose from. Most user settings live in `.env`. The steps below also make a few targeted changes to the downloaded Compose file: the subnet, Gluetun's health check and published ports, and Seerr's init setting.
 
 <Note>
-`172.39.0.0/24` is technically outside the [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) private range (172.16.0.0/12 stops at 172.31). It works fine for Docker, but the host can't reach real internet addresses in that range. If that matters to you, pick an unused private subnet and update both the `subnet` line in `compose.yaml` and every `SET_IP_` value in `.env`.
+The repo currently uses `172.39.0.0/24`, which is outside the [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) private ranges and can mask real public destinations. This article uses `172.30.50.0/24` instead. Before using it, check that it doesn't overlap your LAN, VPN routes, or another Docker network. The download steps below change the subnet and every `SET_IP_` value together. If you choose a different unused private range, use it consistently in these steps and the apps' settings.
 </Note>
 
 ### What's Changed Since I Recorded
 
 If you're following along with the video, here's what's different:
 
-- **The network moved from `172.69.0.0/24` to `172.39.0.0/24`.** The static IPs now come from `SET_IP_` variables in `.env`, so wherever the video shows `172.69.0.x`, use `172.39.0.x`.
+- **The repo's network moved from `172.69.0.0/24` to `172.39.0.0/24`.** Both are public ranges. We change the downloaded examples to the private `172.30.50.0/24` range here, so wherever the video shows `172.69.0.x`, use `172.30.50.x`.
 - **The repo ships `.env.example` instead of `.env`.** You copy it to `.env` and lock down its permissions (shown below).
 - **Seerr is now part of this stack.** In the video I added Jellyseerr to my Jellyfin compose and mentioned I might move it over. I did, and Jellyseerr and Overseerr have since merged into [Seerr](https://docs.seerr.dev). My [Seerr migration guide](/seerr-overseerr-migration) covers moving an existing install.
 - **FlareSolverr was added**, routed through Gluetun like Prowlarr.
@@ -85,17 +87,20 @@ id your_user
 
 On most single-user Linux installs, that's `uid=1000` and `gid=1000`. Whatever IDs you use need to be able to read and write everything under `/data`.
 
-In Part 2, I mounted the Samba share at `/data` with `uid=1000,gid=1000` in the mount options, so ownership is already correct there. If `/data` is a local folder instead, give your user ownership:
+In Part 2, the Samba share is mounted at `/data` with the VM user's numeric IDs in the mount options. Use those same IDs for `PUID` and `PGID`; the Samba credentials must still have write permission on the server. Before creating folders, trigger the mount and verify it:
 
 ```bash
-sudo chown -R 1000:1000 /data
+ls /data
+findmnt --mountpoint /data --types cifs
 ```
+
+The last command must show the Part 1 share mounted as `cifs`, not just an empty local folder. Keep Part 2's Docker mount dependency so the daemon waits for the share at boot. If your `/data` is local storage instead, check its ownership and grant access to the account you intend to use; don't recursively change ownership of an existing media collection as a blanket fix.
 
 I keep all my Docker projects in a root `/docker` directory on the VM, not on the network share. Jellyfin and a few other apps don't like having their configs on SMB. Make a folder for this stack:
 
 ```bash
 sudo mkdir -p /docker/servarr
-sudo chown -R "$(id -u):$(id -g)" /docker/servarr
+sudo chown "$(id -u):$(id -g)" /docker/servarr
 cd /docker/servarr
 ```
 
@@ -103,13 +108,15 @@ I call mine `servarr`, but you can name it whatever you like.
 
 ## Download the Compose File and .env
 
-From inside that folder, grab the compose file and the environment template, then make your private copy:
+For a new installation, use the empty project folder above to download the Compose file and environment template, then make your private copy. For an existing stack, back up its files first and compare changes rather than overwriting its `.env` or downloading duplicate filenames:
 
 ```bash
 wget https://github.com/TechHutTV/homelab/raw/refs/heads/main/media/compose.yaml
 wget https://github.com/TechHutTV/homelab/raw/refs/heads/main/media/.env.example
 cp .env.example .env
 chmod 600 .env
+sed -i 's/172\.39\.0\./172.30.50./g' compose.yaml .env
+sed -i '/^HEALTH_VPN_DURATION_INITIAL=/d' .env
 ```
 
 The `.env` file is going to hold your WireGuard private key, so keep it at `600` and never commit it anywhere public.
@@ -121,11 +128,26 @@ mkdir -p seerr
 sudo chown 1000:1000 seerr
 ```
 
-The Seerr docs also recommend running the container with an init process. If you want to follow that, add `init: true` under the `seerr` service in `compose.yaml`.
+Add `init: true` under the `seerr` service in `compose.yaml`, as its Docker docs recommend. Seerr's fixed UID `1000` is independent of the `PUID` and `PGID` values used by the LinuxServer images.
+
+The repo also overrides Gluetun's built-in health check with a ping. Replace **only Gluetun's** `healthcheck` block with the image's own checker so dependent services wait on Gluetun's internal health state:
+
+```yaml
+healthcheck:
+  test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+  interval: 20s
+  timeout: 10s
+  retries: 5
+  start_period: 30s
+```
+
+This uses the [health-check command shipped in the Gluetun image](https://github.com/qdm12/gluetun/blob/master/Dockerfile). Leave qBittorrent's separate check in place for deunhealth.
+
+For this AirVPN setup, remove the `6881:6881` and `8191:8191` entries from Gluetun's `ports` list. The torrent's incoming connection arrives through the VPN tunnel, and Prowlarr reaches FlareSolverr inside their shared network namespace. Neither needs a published port on the VM. Keep the `8080`, `6789`, and `9696` mappings for the web interfaces you use.
 
 ## Set Up the VPN with Gluetun
 
-Gluetun is the most important piece to get right, because everything on the download side depends on it. I use [AirVPN](https://airvpn.org/). They've never sponsored me or reached out. I picked it after reading through the providers on the Gluetun wiki, and I've been happy with the speeds and the server selection. If you already have a VPN, check Gluetun's [provider list](https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers). Proton, Mullvad, Surfshark, PIA, and plenty of others have their own instructions, and only the VPN section of `.env` changes.
+Gluetun is the most important piece to get right, because everything on the download side depends on it. I use [AirVPN](https://airvpn.org/). They've never sponsored me or reached out. I picked it after reading through the providers on the Gluetun wiki, and I've been happy with the speeds and the server selection. For another provider, follow its page in [Gluetun's provider list](https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers). Not every provider supports forwarded ports or the same variables; this article's port settings are specifically for AirVPN.
 
 For AirVPN, here's what I did.
 
@@ -170,7 +192,7 @@ A few notes on those values:
 - `FIREWALL_VPN_INPUT_PORTS` is the port number you just opened. Gluetun allows it in from the VPN side, and the compose file hands it to qBittorrent as its listening port.
 - The private key comes from the `[Interface]` section, while the public and preshared keys come from `[Peer]`. Gluetun's [AirVPN page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/airvpn.md) only requires the private key, preshared key, and address, so the public key line is optional. If you keep it, use the real key, because Gluetun rejects an invalid value like a leftover placeholder.
 - For `WIREGUARD_ADDRESSES`, copy the IPv4 address from the `Address` line. Only include the IPv6 one too if you've set up IPv6 for Gluetun.
-- Leave the `SET_IP_` lines alone unless you changed the subnet.
+- The earlier replacement updates all `SET_IP_` values to our private subnet. Check that each address still belongs to the `subnet` in `compose.yaml`.
 
 Do not forward this port, or any of the stack's ports, on your router. The forwarded port lives on the VPN server, not on your home connection.
 
@@ -205,17 +227,19 @@ data
 
 ## Launch the Stack and Test the VPN
 
-Back in the stack folder, bring everything up:
+Back in the stack folder, validate the Compose file without printing its resolved environment, then start **only Gluetun**:
 
 ```bash
 cd /docker/servarr
-docker compose up -d
+docker compose config --quiet
+docker compose up -d gluetun
+docker compose ps gluetun
 ```
 
-The first pull takes a minute since there are quite a few images. Then check Gluetun's logs:
+Fix any validation errors before continuing. The first image pull takes a minute. Check Gluetun's logs:
 
 ```bash
-docker logs gluetun
+docker logs --tail=100 gluetun
 ```
 
 You're looking for the public IP line. In the video it showed Vancouver, British Columbia, which matched the server I picked. To be extra sure, spin up a throwaway container on Gluetun's network and ask [ipinfo.io](https://ipinfo.io) where it thinks you are. This is the test from the [Gluetun wiki](https://github.com/qdm12/gluetun-wiki/blob/main/setup/test-your-setup.md):
@@ -224,14 +248,22 @@ You're looking for the public IP line. In the video it showed Vancouver, British
 docker run --rm --network=container:gluetun alpine:3.22 sh -c "apk add wget && wget -qO- https://ipinfo.io"
 ```
 
-You can also check from inside one of the containers that's routed through Gluetun, like qBittorrent:
+Confirm that the public IP matches Gluetun's reported VPN IP and differs from your home connection. Location labels alone aren't enough, and this is a connectivity check rather than a complete DNS or IPv6 leak test. The linked Gluetun page has additional DNS checks.
+
+Once Gluetun is healthy and that test passes, start the remaining services:
 
 ```bash
-docker exec -it qbittorrent bash
-wget -qO- https://ipinfo.io
+docker compose up -d
+docker compose ps
 ```
 
-Both should report the VPN server's location, not your home IP.
+You can now check from inside one of the containers routed through Gluetun, like qBittorrent:
+
+```bash
+docker exec qbittorrent wget -qO- https://ipinfo.io
+```
+
+It should report the same VPN public IP. Don't paste a resolved `docker compose config` into an issue: it can contain the WireGuard keys loaded from `.env`.
 
 If Compose reports `dependency failed to start: container gluetun is unhealthy`, run `docker logs gluetun`, make sure every placeholder in `.env` was replaced, and comment out `SERVER_COUNTRIES`/`SERVER_CITIES` if you set them. Also check that `/dev/net/tun` exists on the host. My [media README](https://github.com/TechHutTV/homelab/tree/main/media) has more troubleshooting, including the extra config Proxmox LXC containers need for the TUN device.
 
@@ -248,7 +280,7 @@ Log in, go to **Settings > WebUI**, and set your own username and password under
 Then work through a few settings:
 
 - **Connection:** confirm the listening port matches the `FIREWALL_VPN_INPUT_PORTS` value from `.env`.
-- **Advanced:** set **Network interface** to `tun0`. This binds qBittorrent to the VPN tunnel, and it's the first fix in my README for qBittorrent stalling after a VPN hiccup.
+- **Advanced:** set **Network interface** to `tun0`, the VPN interface in this Gluetun setup. Check it exists with `docker exec gluetun ip address show tun0`; if your provider configuration uses another interface, select that one. This binding is separate from Gluetun's firewall.
 - **Downloads:** the default save path is `/downloads`, but that path isn't mounted in this container. Point it at the folders we just made:
 
 | Setting | Path |
@@ -265,7 +297,8 @@ Usenet isn't used as often, and I'm not getting into that whole topic here, but 
 
 1. **Settings > Security:** change `ControlUsername` and `ControlPassword`, save, and reload. Log in again with the new credentials.
 2. **Settings > Incoming NZBs:** set `AppendCategoryDir` to **No**. Sonarr and Radarr handle categories themselves, and this avoids "directory does not appear to exist" errors.
-3. **Settings > Paths:** set these, save, and reload.
+3. **Settings > News-Servers:** add your Usenet provider's hostname, credentials, TLS port, and connection limit. Use the provider's published settings and test the connection; installing NZBGet alone doesn't provide Usenet access.
+4. **Settings > Paths:** set these, save, and reload.
 
 | Setting | Value |
 |---|---|
@@ -273,7 +306,7 @@ Usenet isn't used as often, and I'm not getting into that whole topic here, but 
 | `DestDir` | `${MainDir}/completed` |
 | `InterDir` | `${MainDir}/intermediate` |
 
-One tip if your `/data` is a network share like ours: if the NAS goes offline, NZBGet can create its folders on the VM's local disk and fill it up. The README suggests pointing `InterDir` at a local path such as `/docker/nzbget/intermediate` so only the finished move goes to the share. For that path to exist inside the container, you'll also need to add a matching bind mount to the `nzbget` service.
+The README also discusses local intermediate storage. If unpacking on the share is slow, the [LinuxServer instructions](https://docs.linuxserver.io/images/docker-nzbget/) show how to add a local bind mount such as `./nzbget-intermediate:/intermediate` and set `InterDir` to `/intermediate`. Allow enough local disk space for unpacking. This is an optional I/O trade-off; it doesn't protect against an absent `/data` mount. Keep the mount check from Part 2, and pause downloads during a storage outage.
 
 ## Prowlarr
 
@@ -281,20 +314,20 @@ Prowlarr manages your indexers in one place and syncs them to Sonarr, Radarr, an
 
 **Indexers** are the one thing I can't show you. Find your own, do your research, and use sources that comply with the laws where you live and the rights on the content. Once you add one under **Indexers**, the "no indexers" health warning under **System** goes away.
 
-Next, add the **download clients** under **Settings > Download Clients**. These are what Prowlarr uses when you grab something straight from its own search page. Both clients share Gluetun's network, so I use Gluetun's address, `172.39.0.2`, instead of `localhost`:
+Next, add the **download clients** under **Settings > Download Clients**. These are what Prowlarr uses when you grab something straight from its own search page. I use Gluetun's address, `172.30.50.2`, for consistency with the other apps. Prowlarr and both clients share the same network namespace, so `127.0.0.1` also works for these particular connections; Sonarr and Radarr need Gluetun's network address or name.
 
-- **NZBGet:** host `172.39.0.2`, port `6789`, plus the credentials you set. I changed the default category to movies. Test, then save.
-- **qBittorrent:** host `172.39.0.2`, port `8080`, plus your credentials. Test, then save.
+- **NZBGet:** host `172.30.50.2`, port `6789`, plus the credentials you set. I changed the default category to movies. Test, then save.
+- **qBittorrent:** host `172.30.50.2`, port `8080`, plus your credentials. Test, then save.
 
 Then connect the apps under **Settings > Apps**. They all work the same way, so I'll show Radarr. First open Radarr at `http://YOUR_SERVER_IP:7878`, set up its login the same way, then go to **Settings > General** and copy the **API Key**. In Prowlarr, add a **Radarr** application:
 
 | Field | Value |
 |---|---|
-| Prowlarr Server | `http://172.39.0.2:9696` |
-| Radarr Server | `http://172.39.0.4:7878` |
+| Prowlarr Server | `http://172.30.50.2:9696` |
+| Radarr Server | `http://172.30.50.4:7878` |
 | API Key | Radarr's API key |
 
-Test and save. Sonarr is the same with `http://172.39.0.3:8989`, and Lidarr uses `http://172.39.0.5:8686`. There are a lot more options on that screen, and the [Prowlarr settings page](https://wiki.servarr.com/prowlarr/settings) on the Servarr wiki explains them all. After this, you rarely need to open Prowlarr again.
+Test and save. Sonarr is the same with `http://172.30.50.3:8989`, and Lidarr uses `http://172.30.50.5:8686`. There are a lot more options on that screen, and the [Prowlarr settings page](https://wiki.servarr.com/prowlarr/settings) on the Servarr wiki explains them all. After this, you rarely need to open Prowlarr again.
 
 The current compose also includes FlareSolverr, which Prowlarr can use as an indexer proxy for sites behind Cloudflare challenges. It wasn't in the stack when I recorded the video. If you need it, the [media README](https://github.com/TechHutTV/homelab/tree/main/media) explains how to connect it. Otherwise you can remove that service.
 
@@ -316,15 +349,32 @@ This is one of the cool things about these apps, especially in Sonarr when you h
 
 ### Add a Download Client
 
-Under **Settings > Download Clients**, add qBittorrent with host `172.39.0.2`, port `8080`, and your credentials. If you use Usenet, add NZBGet at `172.39.0.2:6789` too. Test and save. In the video, I'd forgotten this step at first, and Radarr showed a "missing download client" warning until I added it.
+Under **Settings > Download Clients**, add qBittorrent with host `172.30.50.2`, port `8080`, and your credentials. If you use Usenet, add NZBGet at `172.30.50.2:6789` too. Use distinct categories for each manager, such as `radarr`, `sonarr`, and `lidarr`, so they don't process each other's downloads. Configure the corresponding categories in the clients, then test and save each connection. Adding clients in Prowlarr doesn't replace this step. In the video, I'd forgotten it at first, and Radarr showed a "missing download client" warning until I added it.
+
+For Lidarr, use an artist/album library rooted at `/data/music` and add its own download-client category. If artist lookup or imports fail while the other apps work, check the [official Lidarr README](https://github.com/Lidarr/Lidarr#readme) for metadata-service status before changing the Docker network or VPN settings.
 
 ### Test It with Something Legal
 
-To test the full pipeline, I added *The Gold Rush*, Charlie Chaplin's 1925 film. Under US law, the original version [definitively entered the public domain](https://en.wikipedia.org/wiki/The_Gold_Rush) in 2021, 95 years after its release. I added it with **Search** unchecked, fixed the download client, and then searched from the movie's page. Radarr sent the release to qBittorrent, which downloaded it into `incomplete` and moved it to `completed`. Radarr then imported it into `/data/movies/` with my rename format applied.
+To test the full pipeline, I added *The Gold Rush*, Charlie Chaplin's 1925 film. Duke's [Public Domain Day 2021 overview](https://law.duke.edu/cspd/publicdomainday/2021/) explains that the original film was already in the US public domain because its copyright wasn't renewed. Check the particular edition and your location; later soundtracks or restorations can have separate rights. I added it with **Search** unchecked, fixed the download client, and then searched from the movie's page. Radarr sent the release to qBittorrent, which downloaded it into `incomplete` and moved it to `completed`. Radarr then imported it into `/data/movies/` with my rename format applied.
 
 ![The Radarr add dialog for The Gold Rush (1925) with the /data/movies root folder and Movie Only monitoring](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/radarr-add-the-gold-rush.jpg)
 
 Radarr hardlinks imports when your storage supports it and copies them when it doesn't, so seeding torrents can keep their original files either way. Then I opened Jellyfin on port `8096`, the server from [Part 2](/ultimate-home-server-part-2-jellyfin), and *The Gold Rush* was sitting in my movies library. Will you look at that.
+
+To check hardlink support across the actual download and library paths, use a disposable file inside the Radarr container. Run as the numeric `PUID:PGID` you configured, replacing `1000:1000` if needed:
+
+```bash
+docker exec --user 1000:1000 radarr sh -c '
+  set -eu
+  source=$(mktemp /data/downloads/qbittorrent/completed/.hardlink-test.XXXXXX)
+  target_dir=$(mktemp -d /data/movies/.hardlink-test.XXXXXX)
+  trap "rm -f \"$source\" \"$target_dir/link\"; rmdir \"$target_dir\"" EXIT
+  ln "$source" "$target_dir/link"
+  ls -li "$source" "$target_dir/link"
+'
+```
+
+If `ln` fails, check the error before expecting hardlinks from Radarr. Cross-device errors mean these paths aren't linkable as mounted; permission errors need an ownership/access fix. Copy-based imports still work, but consume additional space while the torrent is retained. A working test doesn't change files you've already imported.
 
 ### Quality Definitions and File Sizes
 
@@ -336,33 +386,39 @@ To keep file sizes reasonable, go to **Settings > Quality**. Each quality has a 
 
 Bazarr finds subtitles for everything Sonarr and Radarr manage. You'll need an account with a subtitle provider such as OpenSubtitles. Open `http://YOUR_SERVER_IP:6767`.
 
-1. **Settings > Radarr:** enable it, set the host to `172.39.0.4`, port `7878`, and paste Radarr's API key. Click **Test**, and you should see Radarr's version. Save it, and Bazarr starts syncing your movies. Do the same under **Settings > Sonarr** with `172.39.0.3` and port `8989`.
-2. **Settings > Languages:** set your language filter (I used English), add a languages profile containing that language, and save.
+1. **Settings > Radarr:** enable it, set the host to `172.30.50.4`, port `7878`, and paste Radarr's API key. Click **Test**, and you should see Radarr's version. Save it, and Bazarr starts syncing your movies. Do the same under **Settings > Sonarr** with `172.30.50.3` and port `8989`.
+2. **Settings > Languages:** set your language filter (I used English), add a languages profile containing that language, and save. Assign it as the default for new series/movies, then apply it to existing items from their library pages. Creating a profile alone doesn't assign it to your library.
 3. **Settings > Providers:** enable your subtitle provider and sign in.
 
 Bazarr didn't ask me to create a login on first run the way the Servarr apps did. Under **Settings > General > Security**, set the authentication type to **Forms** so anyone on your network can't open it. I didn't have every Bazarr setting dialed in on my own server yet, so for anything beyond the basics, follow the [Bazarr setup guide](https://wiki.bazarr.media/Getting-Started/Setup-Guide/).
 
 ## Seerr for Requests and Discovery
 
-The last piece is the request front end. In the video, I used Jellyseerr from my Jellyfin compose, so it had to reach Radarr through the server's LAN IP. Today it's [Seerr](https://docs.seerr.dev), the merged Overseerr/Jellyseerr project. It's already in this compose at `172.39.0.7`, and it works with Jellyfin, Plex, and Emby. The setup steps match what I showed in the video, though a screen or two may look a little different.
+The last piece is the request front end. In the video, I used Jellyseerr from my Jellyfin compose, so it had to reach Radarr through the server's LAN IP. Today it's [Seerr](https://docs.seerr.dev), the merged Overseerr/Jellyseerr project. It's already in this compose at `172.30.50.7`, and it works with Jellyfin, Plex, and Emby. The setup steps match what I showed in the video, though a screen or two may look a little different.
 
 1. Open `http://YOUR_SERVER_IP:5055` and choose your media server. I picked Jellyfin.
 2. Enter your Jellyfin URL. Jellyfin runs in its own compose, so use the server's LAN address, for example `http://YOUR_SERVER_IP:8096`. Then enter an email address and your Jellyfin username and password.
 3. Select your Movies and Shows libraries and start the scan.
-4. Add a Radarr server: host `172.39.0.4`, port `7878`, and Radarr's API key. Mark it as the default server and click **Test**. That loads your quality profiles. I picked **Any**, set minimum availability to **Released**, and added the server.
-5. Add Sonarr the same way with `172.39.0.3` and port `8989`, then finish setup.
+4. Add a Radarr server: host `172.30.50.4`, port `7878`, and Radarr's API key. Mark it as the default server and click **Test**. That loads your quality profiles. I picked **Any**, set minimum availability to **Released**, and added the server.
+5. Add Sonarr the same way with `172.30.50.3` and port `8989`, then finish setup.
 
 I use Seerr to find something to watch. You can share it with other people, or just use it yourself, to browse what's popular and filter by streaming service, genre, rating, and whatnot. I filtered for Apple TV titles, since I don't subscribe to it, and limited results to titles with a user score of 8 or higher. When something catches your eye, **Request** sends it straight to Radarr or Sonarr.
 
 ![Jellyseerr's Discover page as shown in the video, with The Gold Rush at the front of Recently Added](/docs-static/img/2026/11/ultimate-home-server-part-3-arr-stack/jellyseerr-discover.jpg)
 
-I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I went shopping for a DVD so I could buy a copy and put it on the server, and the listing I found only offered streaming, no physical copy. Very disappointing. When a company won't sell you a copy you can own, there's no legitimate way to put it on your own server, and you're just out of luck. They'd rather keep the movie inside their own app.
+I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I went shopping for a DVD so I could buy a copy and put it on the server, and the listing I found only offered streaming, no physical copy. Very disappointing. I couldn't find a copy to buy for my own library. I'd much rather have that option than keep switching between streaming apps.
 
 ## Keep It Locked Down
 
 - Change every default credential, set a login on every app (including Bazarr), and keep `.env` at `chmod 600`.
 - Don't port-forward any of these web UIs on your router. For remote access, use a VPN like [NetBird](/self-host-netbird-pocketid) or a proper reverse proxy, which is where Part 4 comes in.
 - Every image uses the `latest` tag, so skim the release notes before a `docker compose pull`.
+
+## Back Up and Update the Stack
+
+Keep `.env`, `compose.yaml`, and each service's configuration directory in a protected backup on separate storage. Stop the stack with `docker compose down` before making a file copy of its databases; preserve ownership and permissions. Record the image versions, and keep the media/download backup separate from the local application configuration. Don't use `down -v` as an update step.
+
+After the backup and release-note review, pull the intended images with `docker compose pull`. Start Gluetun first and repeat the VPN test above before bringing up the rest. Use `docker compose ps` and service logs to check startup, then test client connections, a disposable import, subtitles, and a Seerr request. A migrated database may need its matching old image and pre-upgrade backup to roll back, so test recovery in an isolated VM before relying on it.
 
 ## Final Thoughts
 

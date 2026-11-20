@@ -240,6 +240,11 @@
       "stars": 740,
       "fetchedAt": "2026-09-06T14:22:17.871Z"
     },
+    "lidarr/lidarr": {
+      "repository": "lidarr/lidarr",
+      "stars": 5835,
+      "fetchedAt": "2026-11-20T16:30:50.270Z"
+    },
     "lizardbyte/sunshine": {
       "repository": "lizardbyte/sunshine",
       "stars": 40925,
@@ -287,8 +292,8 @@
     },
     "morpheus65535/bazarr": {
       "repository": "morpheus65535/bazarr",
-      "stars": 4365,
-      "fetchedAt": "2026-10-18T03:14:46.221Z"
+      "stars": 4432,
+      "fetchedAt": "2026-11-20T16:30:54.352Z"
     },
     "mrvladus/errands": {
       "repository": "mrvladus/errands",
@@ -347,8 +352,8 @@
     },
     "nzbgetcom/nzbget": {
       "repository": "nzbgetcom/nzbget",
-      "stars": 767,
-      "fetchedAt": "2026-10-18T03:14:49.335Z"
+      "stars": 795,
+      "fetchedAt": "2026-11-20T16:30:58.769Z"
     },
     "octoprint/octoprint": {
       "repository": "octoprint/octoprint",

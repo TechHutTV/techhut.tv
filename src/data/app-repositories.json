@@ -539,6 +539,18 @@
       "https://api.github.com/repos/rmcrackan/Libation"
     ]
   },
+  "lidarr": {
+    "repository": "lidarr/lidarr",
+    "label": "Lidarr",
+    "link": "https://github.com/Lidarr/Lidarr",
+    "reason": "Official music-library manager repository linked by lidarr.audio. The README identifies the covered application, lists supported platforms, and links the GPL-3.0 license. GitHub reports the repository is not archived.",
+    "sources": [
+      "https://lidarr.audio/",
+      "https://github.com/Lidarr/Lidarr#readme",
+      "https://api.github.com/repos/Lidarr/Lidarr",
+      "https://github.com/Lidarr/Lidarr/blob/develop/LICENSE.md"
+    ]
+  },
   "linked": {
     "repository": "lostdesign/linked",
     "label": "Linked",

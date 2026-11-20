@@ -498,7 +498,9 @@
       "/copyparty-file-server-linux",
       "/dockhand-docker-manager",
       "/proxmox-backup-server-complete-guide",
-      "/bookorbit-self-hosted-library"
+      "/bookorbit-self-hosted-library",
+      "/ultimate-home-server-part-2-jellyfin",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
@@ -912,7 +914,9 @@
     "name": "Jellyfin",
     "category": "Media",
     "description": "Organize and stream your own movies, shows and music.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-2-jellyfin"
+    ],
     "videos": [
       {
         "id": "Vwtx_dfYrtA",
@@ -1112,6 +1116,18 @@
     "iconDark": "/app-icons/libation-light.png",
     "details": {
       "href": "/apps/libation"
+    }
+  },
+  {
+    "id": "lidarr",
+    "name": "Lidarr",
+    "category": "Media",
+    "description": "Organize a music library and connect indexers and download clients for automated imports.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "details": {
+      "href": "/apps/lidarr"
     }
   },
   {
@@ -1667,7 +1683,9 @@
     "name": "Plausible",
     "category": "Monitoring",
     "description": "View website traffic and referral analytics through a web dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/plausible-privacy-friendly-analytics"
+    ],
     "videos": [
       {
         "id": "P0T6VjTS7_Y",
@@ -1886,7 +1904,9 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/ultimate-home-server-part-1-proxmox-zfs-samba",
+      "/ultimate-home-server-part-2-jellyfin"
     ],
     "videos": [
       {
@@ -1903,6 +1923,11 @@
         "id": "LuCXHHc2u18",
         "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
         "published": "2021-12-01"
+      },
+      {
+        "id": "Vwtx_dfYrtA",
+        "title": "DITCH Netflix and Disney - the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.2",
+        "published": "2025-05-12"
       }
     ],
     "icon": "/app-icons/proxmox-ve.png",
@@ -2047,7 +2072,9 @@
     "name": "Samba",
     "category": "Files & Photos",
     "description": "Share Linux server folders with other computers using SMB.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-1-proxmox-zfs-samba"
+    ],
     "videos": [
       {
         "id": "qmSizZUbCOA",

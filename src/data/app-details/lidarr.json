@@ -1,0 +1,41 @@
+{
+  "summary": "Manage artists, albums, and music downloads in a self-hosted library.",
+  "overview": "Lidarr connects music-library management with indexers and download clients. It can import an existing collection, monitor artists and albums, apply quality profiles, and rename imported tracks. The TechHut media stack gives it the same data mount as the download clients so completed files can be imported into the music library without a separate path translation.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Windows",
+    "macOS",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/Lidarr/Lidarr/blob/develop/LICENSE.md"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://lidarr.audio/"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://wiki.servarr.com/lidarr"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/Lidarr/Lidarr"
+    }
+  ],
+  "features": [
+    "Artist and album monitoring",
+    "Music library imports and renaming",
+    "Quality profiles",
+    "Indexer and download-client integration"
+  ],
+  "sources": [
+    "https://lidarr.audio/",
+    "https://github.com/Lidarr/Lidarr#readme",
+    "https://github.com/Lidarr/Lidarr/blob/develop/LICENSE.md"
+  ]
+}
