@@ -1,10 +1,10 @@
 export const title = "The Ultimate LocalTuya Guide: Holiday Lights in Home Assistant"
 export const description = "Get Tuya-based smart string lights like XMCOSY's into Home Assistant with the LocalTuya fork, a Tuya developer project, and custom scenes, so they're controlled locally instead of through the cloud."
-export const date = "2026-10-15"
+export const date = "2026-12-17"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Homelab", "Self-Host"]
-export const cover = "/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/cover.jpg"
+export const cover = "/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -24,7 +24,7 @@ The main lights are the **Smart RGBCW Acrylic String Lights**. They have that fa
 
 They also sent a pack of globe-style string lights and a two-pack of smart wall lights. I didn't set the wall lights up for this one because I didn't feel like doing electrical work that day.
 
-![The box for the XMCOSY Smart RGBCW Acrylic String Lights, a 30-bulb, 96-foot set with faceted acrylic bulbs](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/acrylic-string-lights-box.jpg)
+![The box for the XMCOSY Smart RGBCW Acrylic String Lights, a 30-bulb, 96-foot set with faceted acrylic bulbs](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/acrylic-string-lights-box.jpg)
 
 All of these connect over **2.4 GHz Wi-Fi**. Mine live on my IoT network, and I gave each one a reserved IP address so I could keep track of them. In the Tuya app and in Home Assistant I named them by bulb style and count, like `XMcosy Acrylic (24)`, `XMcosy Acrylic (30)`, and `XMcosy Rounded (30)`.
 
@@ -92,7 +92,7 @@ Restart Home Assistant, then go to **Settings** > **Devices & services** > **Add
 
 Now add the fork as a custom repository. When you search HACS for "Local Tuya," you'll see the original listed by default. That's not the one we want.
 
-![HACS search results in the video showing two Local Tuya entries, the default original and the fork updated two days earlier](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/hacs-two-localtuya-entries.jpg)
+![HACS search results in the video showing two Local Tuya entries, the default original and the fork updated two days earlier](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/hacs-two-localtuya-entries.jpg)
 
 1. Open **HACS**, click the three-dot menu in the top-right corner, and choose **Custom repositories**.
 2. Paste `https://github.com/xZetsubou/hass-localtuya`, set the type to **Integration**, and click **Add**.
@@ -110,11 +110,11 @@ While Home Assistant restarts, head over to [platform.tuya.com](https://platform
 3. Set **Industry** to **Smart Home** and **Development Method** to **Smart Home**.
 4. Pick the **Data Center** that matches your app account's region. I'm in the western US, so I picked Western America. Click **Create**.
 
-![The Tuya Create Cloud Project dialog with the project named Casa and the Industry dropdown open on Smart Home](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/tuya-create-cloud-project.jpg)
+![The Tuya Create Cloud Project dialog with the project named Casa and the Industry dropdown open on Smart Home](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/tuya-create-cloud-project.jpg)
 
 Next comes the **Authorize API Services** step. Tuya's guide now says to select **Industry Basic Service**, **Smart Home Basic Service**, and **Device Status Notification**, then click **Authorize**. In the video, the wizard's list looked a little different. I added **Device Log Query** on top of the defaults because I use the device logs later for scenes, and it was already labeled deprecated at the time. If it's still offered, adding it doesn't hurt. If it's gone, use Tuya's current list.
 
-![The Authorize API Services step in the Tuya cloud project wizard as it looked in the video, with the deprecated Device Log Query service being added](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/tuya-authorize-api-services.jpg)
+![The Authorize API Services step in the Tuya cloud project wizard as it looked in the video, with the deprecated Device Log Query service being added](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/tuya-authorize-api-services.jpg)
 
 ### Link Your Tuya App Account
 
@@ -182,7 +182,7 @@ After the connection succeeds, LocalTuya asks how to set up the entities. With t
 
 The light form shows every DP the device reports along with its code, which makes this a lot less painful than it sounds.
 
-![The LocalTuya Configure entity form with the DP dropdown open, listing codes like switch_led, work_mode, bright_value, temp_value, colour_data and rgbic_linerlight_scene](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/localtuya-light-dp-list.jpg)
+![The LocalTuya Configure entity form with the DP dropdown open, listing codes like switch_led, work_mode, bright_value, temp_value, colour_data and rgbic_linerlight_scene](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/localtuya-light-dp-list.jpg)
 
 This is how I mapped my 24-bulb acrylic string. Check your own device's DPs, because they can differ between models:
 
@@ -201,7 +201,7 @@ This is how I mapped my 24-bulb acrylic string. Check your own device's DPs, bec
 
 The brightness range is the one to watch. The form defaulted the lower value to `29`, but the device's real range was different. To check, go to **Debug Device** > **Device Debugging** on the Tuya platform and look at the **Standard Instruction Set**. On my lights, `bright_value` runs from `10` to `1000` and `temp_value` from `0` to `1000`, so I set the brightness range to match.
 
-![The Tuya Device Debugging page showing the Standard Instruction Set with bright_value ranging from 10 to 1000 and temp_value from 0 to 1000](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/tuya-standard-instruction-set.jpg)
+![The Tuya Device Debugging page showing the Standard Instruction Set with bright_value ranging from 10 to 1000 and temp_value from 0 to 1000](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/tuya-standard-instruction-set.jpg)
 
 Leave **Scene values** empty for now. I wanted to make sure the basics worked first. I also left music mode off because I haven't tested it and probably won't use it.
 
@@ -237,7 +237,7 @@ To add them:
 
 Now the light has an **Effect** dropdown in Home Assistant with every scene you added. I flipped through Halloween, Flower Harbor, and Forest Day, and they all played exactly like they do in the app.
 
-![The XMcosy Acrylic (24) light in Home Assistant with the effect list open, showing Christmas, Christmas eve, Fathers Day, Flower harbor and Football Day](/docs-static/img/2026/10/localtuya-home-assistant-holiday-lights/home-assistant-effect-scenes.jpg)
+![The XMcosy Acrylic (24) light in Home Assistant with the effect list open, showing Christmas, Christmas eve, Fathers Day, Flower harbor and Football Day](/docs-static/img/2026/12/localtuya-home-assistant-holiday-lights/home-assistant-effect-scenes.jpg)
 
 ## Capturing Your Own Scenes
 
