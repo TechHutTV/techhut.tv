@@ -1,10 +1,10 @@
 export const title = "Cloudreve: The Self-Hosted Cloud Drive That Caught Me Off Guard"
 export const description = "Deploy Cloudreve, a self-hosted file management and sharing server, with Docker Compose, then tour its web interface, remote downloads, sharing, admin dashboard, Windows client, and the line between the Community and Pro editions."
-export const date = "2026-10-11"
+export const date = "2026-12-09"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/cover.jpg"
+export const cover = "/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -204,7 +204,7 @@ The first time I opened the dashboard through my new domain, Cloudreve asked whe
 
 After uploading a few things, my storage meter said I had a terabyte available. The LXC only had about 200 GB of disk. That number is a **group quota**, not your disk size. The default Admin group gets 1 TB and the default User group gets 1 GB. You change it under **Dashboard → Groups**. I set mine to about 200 GB, refreshed, and the meter looked much more honest. Set your quotas so the total fits on the disk.
 
-![Editing the Admin group in the Cloudreve dashboard with the initial storage quota changed to 200 GB](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/admin-group-storage-quota.jpg)
+![Editing the Admin group in the Cloudreve dashboard with the initial storage quota changed to 200 GB](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/admin-group-storage-quota.jpg)
 
 ## Using Cloudreve
 
@@ -212,7 +212,7 @@ After uploading a few things, my storage meter said I had a terabyte available. 
 
 The first thing I did was drag a folder of NetBird assets into the browser. It uploaded really quickly. Double-clicking an image asks which app to open it with. Choose the built-in image viewer and select **Always**, and from then on images of that type open directly. It even handled GIFs nicely. Hovering over a file gives a slightly bigger preview at its full aspect ratio, which is a nice touch.
 
-![The Cloudreve web interface showing the uploaded NetBird Assets folder as a grid of image thumbnails](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/netbird-assets-file-grid.jpg)
+![The Cloudreve web interface showing the uploaded NetBird Assets folder as a grid of image thumbnails](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/netbird-assets-file-grid.jpg)
 
 The left sidebar also groups everything by type into Photos, Videos, Music, and Documents.
 
@@ -222,7 +222,7 @@ Beyond images, the [file apps docs](https://docs.cloudreve.org/usage/file-apps) 
 
 Under **New**, there's a **Remote download** option where you paste a link and the server downloads it for you. I pasted in the Proxmox ISO link and a task was created. It sat at processing for a bit before it figured out what it was doing, and the progress bar only refreshed when it felt like it rather than in real time. Once the download finished, it transferred the ISO into my files. It's a really nice way to get big files onto the server without downloading them to your own machine first.
 
-![The Cloudreve New menu with upload options, New remote download, and new file types like Markdown, draw.io, and Excalidraw](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/new-menu-options.jpg)
+![The Cloudreve New menu with upload options, New remote download, and new file types like Markdown, draw.io, and Excalidraw](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/new-menu-options.jpg)
 
 There's also a seeding option, so you can use this as a torrent client too. The [remote download docs](https://docs.cloudreve.org/usage/remote-download) explain that the official image runs Aria2 inside the container, which is why port `6888` is in the compose file. You can also connect qBittorrent instead. Only download things you're allowed to share and store.
 
@@ -236,7 +236,7 @@ Under **New** you can also create files directly. I made a new Markdown file cal
 
 Clicking **Share** on a file gives you options to password-protect the link or have it expire after a number of downloads. I opened the link for my Proxmox ISO in another browser and got a clean share page showing the file. If you want to share files with people outside your network, put the instance behind a reverse proxy with HTTPS first.
 
-![The Cloudreve Create share link dialog with options to protect with a password, expire automatically, or expire after being downloaded](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/create-share-link-dialog.jpg)
+![The Cloudreve Create share link dialog with options to protect with a password, expire automatically, or expire after being downloaded](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/create-share-link-dialog.jpg)
 
 The rest of the sidebar covers **Shared with me**, **Shared by me**, **Trash**, and **Background tasks**, where my remote download showed up.
 
@@ -254,7 +254,7 @@ For security, you get two-factor authentication and passkeys. Passkeys need HTTP
 
 The dashboard opens with some nice stats about your instance. Mine showed one user and 63 files. There are also links to the project site and version change information.
 
-![The Cloudreve admin dashboard Summary page with the admin sidebar and a trend chart of users, files, and shares](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/admin-dashboard-summary.jpg)
+![The Cloudreve admin dashboard Summary page with the admin sidebar and a trend chart of users, files, and shares](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/admin-dashboard-summary.jpg)
 
 The main sections:
 
@@ -285,7 +285,7 @@ To test the desktop client, I fired up the Windows VM I keep on Proxmox for Rufu
 
 The setup was smooth. Add a drive, enter your Cloudreve URL (I used my NetBird proxy domain), and it bounces you to the browser to authorize the app. Then choose what to mount, which was My Files in my case, and pick a local folder. I made a new one called `cloudreve`. After that my files showed up in File Explorer, and it looks really nice.
 
-![Windows File Explorer in the mounted Cloudreve folder, with NetBird Assets, blankgif, the Proxmox ISO, and test.md all marked online-only in the Status column](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/windows-file-explorer-mount.jpg)
+![Windows File Explorer in the mounted Cloudreve folder, with NetBird Assets, blankgif, the Proxmox ISO, and test.md all marked online-only in the Status column](/docs-static/img/2026/12/cloudreve-self-hosted-cloud-storage/windows-file-explorer-mount.jpg)
 
 Then I hit some rough edges. Right-clicking gave me options like **View online** and **Sync selected now**, but the sync button wasn't working for me. In the client's settings, I couldn't find an option to automatically keep everything synced and downloaded for offline use, and that's a setting I'd want.
 
