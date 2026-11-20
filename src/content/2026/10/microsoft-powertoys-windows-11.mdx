@@ -1,5 +1,5 @@
 export const title = "Microsoft PowerToys: The Windows 11 Utilities Worth Installing Right Now"
-export const description = "Install Microsoft PowerToys on Windows 11 and tour the utilities I tried, from FancyZones and Color Picker to Text Extractor and PowerToys Run, updated for PowerToys 0.101 and Command Palette."
+export const description = "Install Microsoft PowerToys on Windows 11 and tour the utilities I tried, from FancyZones and Color Picker to Text Extractor and PowerToys Run, updated for PowerToys 0.102 and Command Palette."
 export const date = "2026-10-17"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
@@ -16,13 +16,13 @@ I'm always digging through GitHub looking for projects to cover, and Microsoft P
 
 Windows isn't my daily driver, so I did all of this in a Windows 11 virtual machine, connected through Microsoft Remote Desktop from my Mac. That matters for a couple of the keyboard shortcuts below, since I was pressing them on a Mac keyboard.
 
-The video was published in September 2022. I recorded it right after PowerToys 0.62 came out, which is the release that added Screen Ruler, Quick Accent, and Text Extractor. The install steps, default shortcuts, and feature notes below are for [PowerToys 0.101](https://github.com/microsoft/PowerToys/releases/tag/v0.101.2362.0) (v0.101.2362.0), released August 25, 2026. Since then, Video Conference Mute has been removed, Command Palette has arrived as the next generation of PowerToys Run, and more than a dozen new utilities have been added. The screenshots and hands-on impressions come from the original recording, and I've noted where things work differently now.
+The video was published in September 2022. I recorded it right after PowerToys 0.62 came out, which is the release that added Screen Ruler, Quick Accent, and Text Extractor. The install steps, default shortcuts, and feature notes below are for [PowerToys 0.102](https://github.com/microsoft/PowerToys/releases/tag/v0.102.3101) (v0.102.3101.0), released November 6, 2026. That build is a hotfix on top of [0.102.2933.0](https://github.com/microsoft/PowerToys/releases/tag/v0.102.2933.0), which added the new utilities below. Since then, Video Conference Mute has been removed, Command Palette has arrived as the next generation of PowerToys Run, and more than a dozen new utilities have been added. The screenshots and hands-on impressions come from the original recording, and I've noted where things work differently now.
 
 ## What PowerToys Is
 
 | | Details |
 |---|---|
-| Latest release | 0.101 (v0.101.2362.0), August 25, 2026 |
+| Latest release | 0.102 (v0.102.3101.0), November 6, 2026 |
 | Requirements | Windows 11, or Windows 10 version 2004 (build 19041) or newer |
 | CPU | 64-bit x64 or ARM64 |
 | License | [MIT](https://github.com/microsoft/PowerToys/blob/main/LICENSE), open source |
@@ -51,12 +51,12 @@ winget install --scope machine Microsoft.PowerToys -s winget
 
 ### Option 2: The installer from GitHub
 
-Go to the [releases page](https://github.com/microsoft/PowerToys/releases), open **Assets**, and grab the installer that matches your machine. For 0.101 the files are:
+Go to the [releases page](https://github.com/microsoft/PowerToys/releases), open **Assets**, and grab the installer that matches your machine. For 0.102 the files are:
 
 | Installer | x64 | ARM64 |
 |---|---|---|
-| Per user | `PowerToysUserSetup-0.101.2362.0-x64.exe` | `PowerToysUserSetup-0.101.2362.0-arm64.exe` |
-| Machine wide | `PowerToysSetup-0.101.2362.0-x64.exe` | `PowerToysSetup-0.101.2362.0-arm64.exe` |
+| Per user | `PowerToysUserSetup-0.102.3101.0-x64.exe` | `PowerToysUserSetup-0.102.3101.0-arm64.exe` |
+| Machine wide | `PowerToysSetup-0.102.3101.0-x64.exe` | `PowerToysSetup-0.102.3101.0-arm64.exe` |
 
 The README says x64 per-user is the right pick for most devices. Per-user installs to `%userprofile%\AppData\Local\Programs`, and machine-wide goes to `%ProgramFiles%`. Both get updates the same way. The release page lists SHA-256 hashes for each file if you want to check your download.
 
@@ -66,7 +66,7 @@ PowerToys is also on the [Microsoft Store](https://aka.ms/getPowertoys). Chocola
 
 When I installed it, the download was about 125 MB, and it came down in a couple of seconds, faster than my NAS moves files sometimes. Back then the installer was still labeled "PowerToys (Preview)." It asked for a restart when it finished, and since it was a VM, I just let it reboot.
 
-The installer pulls in the Microsoft Edge WebView2 Runtime if you need it. Once PowerToys is installed, it checks for updates on its own and shows a notification when a new version is out. In 0.101 you can also pick a **Stable** or **Insider** update channel under **Settings > General**.
+The installer pulls in the Microsoft Edge WebView2 Runtime if you need it. Once PowerToys is installed, it checks for updates on its own and shows a notification when a new version is out. In 0.102 you can also pick a **Stable** or **Insider** update channel under **Settings > General**.
 
 <Note>
 PowerToys has to be running in the background for its shortcuts and remaps to work. If you want it to work with apps that run as administrator, such as an elevated Terminal or Task Manager, you need to run PowerToys as administrator too.
@@ -183,7 +183,7 @@ PowerToys Run is a quick launcher. The default shortcut is **Alt+Space**, which 
 
 It's basically Ulauncher, just built into Windows. You also get settings for which monitor it opens on and its theme, which I switched to dark. It also found my TechHut OneDrive folders, which was a nice touch.
 
-PowerToys Run still ships in 0.101, and it has picked up more plugins since the video. Each plugin has an activation prefix, for example `=` for the calculator, `??` for a web search, `>` for shell commands, `$` for Windows settings, `%%` for unit conversion, and `<` to switch to an open window.
+PowerToys Run still ships in 0.102, and it has picked up more plugins since the video. Each plugin has an activation prefix, for example `=` for the calculator, `??` for a web search, `>` for shell commands, `$` for Windows settings, `%%` for unit conversion, and `<` to switch to an open window.
 
 **Command Palette** is the bigger change. It arrived in 0.90, and Microsoft calls it the evolution of PowerToys Run. Its default shortcut is **Win+Alt+Space**. It launches apps, searches files, runs commands, and also does things like WinGet app installs, clipboard history, a system performance monitor, a Dock you can pin commands to, and an Extension Gallery for community extensions.
 
@@ -242,7 +242,11 @@ A lot has shown up since 0.62. The short version, using Microsoft's own descript
 - **Light Switch:** automatic light and dark theme switching based on the time of day.
 - **Power Display:** brightness, contrast, volume, input, and color temperature controls for external monitors.
 - **Grab And Move:** hold a modifier key and drag anywhere in a window to move or resize it.
-- **Window Hopper:** new in 0.101, it cycles through the windows of the current app with **Alt+\`**.
+- **Window Hopper:** added in 0.101, it cycles through the windows of the current app with **Alt+\`**.
+- **Mouse Button Lock:** new in 0.102. Hold a mouse button for a moment, let go, and Windows keeps treating it as held until you click again.
+- **CursorHide:** also new in 0.102. It hides the pointer while you type, after you stop moving the mouse, or both, and shows it again when you move.
+- **Command Palette quick-access shelf:** in compact mode, pins sit under the search box. **Alt+1** through **Alt+9** launch them.
+- **ZoomIt snip dictation:** hold **Space** while you drag a snip and ZoomIt transcribes what you say on the device, then one paste gives you the screenshot and the text.
 
 ## My Take
 
@@ -258,7 +262,8 @@ PowerToys is free, open source, and modular, so you can install it and turn on o
 - [Install PowerToys](https://learn.microsoft.com/en-us/windows/powertoys/install)
 - [PowerToys on GitHub](https://github.com/microsoft/PowerToys)
 - [PowerToys releases](https://github.com/microsoft/PowerToys/releases)
-- [PowerToys 0.101.2362.0 release notes](https://github.com/microsoft/PowerToys/releases/tag/v0.101.2362.0)
+- [PowerToys 0.102.3101 release notes](https://github.com/microsoft/PowerToys/releases/tag/v0.102.3101)
+- [PowerToys 0.102.2933.0 release notes](https://github.com/microsoft/PowerToys/releases/tag/v0.102.2933.0)
 - [PowerToys 0.90.0 release notes (Command Palette)](https://github.com/microsoft/PowerToys/releases/tag/v0.90.0)
 - [PowerToys 0.88.0 release notes (Video Conference Mute removed)](https://github.com/microsoft/PowerToys/releases/tag/v0.88.0)
 - [PowerToys 0.62.0 release notes](https://github.com/microsoft/PowerToys/releases/tag/v0.62.0)
