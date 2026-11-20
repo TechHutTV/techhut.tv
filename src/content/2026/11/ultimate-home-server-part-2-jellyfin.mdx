@@ -1,10 +1,10 @@
 export const title = "Ultimate Home Server Part 2: A Jellyfin Media Server VM on Proxmox"
 export const description = "Create an Ubuntu Server VM on Proxmox, pass through Intel Quick Sync, mount the Samba data share, and run Jellyfin with Docker Compose and hardware transcoding."
-export const date = "2026-10-11"
+export const date = "2026-11-23"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Homelab", "Self-Host", "Docker", "Linux", "Virtualization"]
-export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/cover.jpg"
+export const cover = "/docs-static/img/2026/11/ultimate-home-server-part-2-jellyfin/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -78,7 +78,7 @@ Before booting the VM, give it the Intel graphics built into the CPU. That's wha
 3. Choose **Raw Device** and select the Intel graphics device. On my machine it showed up as the Intel Alder Lake graphics controller. Yours may have a different name or number, but it usually mentions graphics.
 4. Check **All Functions** and click **Add**.
 
-![The Proxmox Add: PCI Device dialog with Raw Device selected and the Intel Alder Lake-UP3 GT2 Iris Xe graphics at the top of the device list](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/proxmox-add-pci-device-intel-graphics.jpg)
+![The Proxmox Add: PCI Device dialog with Raw Device selected and the Intel Alder Lake-UP3 GT2 Iris Xe graphics at the top of the device list](/docs-static/img/2026/11/ultimate-home-server-part-2-jellyfin/proxmox-add-pci-device-intel-graphics.jpg)
 
 A few things to know before you rely on this:
 
@@ -348,11 +348,11 @@ The [setup wizard](https://jellyfin.org/docs/general/post-install/setup-wizard) 
 5. **Remote access.** I enabled automatic port mapping in the video. Jellyfin's current setup guide recommends keeping it disabled unless you specifically need it because it relies on UPnP, which has security concerns. I'd leave it off.
 6. Click **Finish** and sign in.
 
-![The Jellyfin setup wizard library step with a Movies library pointing to /data/movies, as shown in the video](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-wizard-media-libraries.jpg)
+![The Jellyfin setup wizard library step with a Movies library pointing to /data/movies, as shown in the video](/docs-static/img/2026/11/ultimate-home-server-part-2-jellyfin/jellyfin-wizard-media-libraries.jpg)
 
 Once it dropped me into the dashboard, my movies and shows were there, and it looks absolutely beautiful.
 
-![The Jellyfin home screen in the video with Next Up shows and recently added movies pulled from the mounted share](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-home-libraries.jpg)
+![The Jellyfin home screen in the video with Next Up shows and recently added movies pulled from the mounted share](/docs-static/img/2026/11/ultimate-home-server-part-2-jellyfin/jellyfin-home-libraries.jpg)
 
 ## Test Permissions and Hardware Transcoding
 
@@ -372,7 +372,7 @@ In Jellyfin, open the **Dashboard** and go to **Playback > Transcoding**:
 2. Set the QSV device to the render node, `/dev/dri/renderD128`.
 3. Leave the rest at the defaults for now and click **Save**.
 
-![Jellyfin Transcoding settings in the video with Intel QuickSync (QSV) selected and the QSV device set to /dev/dri/renderD128](/docs-static/img/2026/10/ultimate-home-server-part-2-jellyfin/jellyfin-transcoding-intel-qsv.jpg)
+![Jellyfin Transcoding settings in the video with Intel QuickSync (QSV) selected and the QSV device set to /dev/dri/renderD128](/docs-static/img/2026/11/ultimate-home-server-part-2-jellyfin/jellyfin-transcoding-intel-qsv.jpg)
 
 There are a lot more settings on that page. Jellyfin's [Intel guide](https://jellyfin.org/docs/general/post-install/transcoding/hardware-acceleration/intel) recommends unchecking codecs your GPU can't decode, and it explains low-power encoding. That mode is on by default on Linux for 12th-generation (Alder Lake) and newer GPUs, while some older generations need extra firmware setup.
 
