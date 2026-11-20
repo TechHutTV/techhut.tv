@@ -2640,7 +2640,9 @@
     "name": "Zerobyte",
     "category": "Backup & Virtualization",
     "description": "Schedule and manage encrypted backups across storage destinations.",
-    "coverage": [],
+    "coverage": [
+      "/zerobyte-home-server-backups"
+    ],
     "videos": [
       {
         "id": "vAQdYEhI04A",
