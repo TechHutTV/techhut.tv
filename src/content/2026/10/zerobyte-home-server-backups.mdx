@@ -21,22 +21,22 @@ I'll install it with Docker Compose, back up my Immich library from an Unraid SM
 Floppydata sponsored the video this article is based on.
 
 <Note>
-The video was recorded in December 2025. The install steps below are for [Zerobyte v0.43.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.43.2), released October 3, 2026. Since then, the compose file has gained two required variables, `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP volumes, multiple users, OIDC single sign-on, and encrypted configuration exports. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
+The video was recorded in December 2025. The install steps below are for [Zerobyte v0.44.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.44.2), released November 9, 2026. The compose file requires `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP sources, multiple users, OIDC single sign-on, and encrypted configuration exports. In [v0.44.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.44.0) the interface renamed Volumes to Sources. The docs pages still say volumes. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
 </Note>
 
 ## How Zerobyte Is Organized
 
 Zerobyte has three building blocks, and once you understand them the rest of the UI makes sense:
 
-- **Volumes** are the data you want to back up. That can be a directory mounted into the container or a share Zerobyte mounts itself.
+- **Sources** are the data you want to back up. That can be a directory mounted into the container or a share Zerobyte mounts itself. The sidebar used to call these Volumes, and the docs still do.
 - **Repositories** are where the backups go. Each one is a Restic repository, encrypted before anything leaves the machine.
-- **Backups** are jobs that connect one volume to one repository on a schedule, with a retention policy.
+- **Backups** are jobs that connect one source to one repository on a schedule, with a retention policy.
 
 What the [current documentation](https://zerobyte.app/docs/concepts/repositories) lists:
 
 | | Supported types |
 |---|---|
-| Volumes (sources) | Directory, NFS, SMB/CIFS, WebDAV, SFTP, rclone |
+| Sources | Directory, NFS, SMB/CIFS, WebDAV, SFTP, rclone |
 | Repositories (destinations) | Local, S3-compatible, Cloudflare R2, Google Cloud Storage, Azure Blob Storage, rclone, Restic REST server, SFTP |
 | Schedules | Manual only, hourly, daily, weekly, specific days, custom cron |
 | Retention | Keep last, daily, weekly, monthly, and yearly |
@@ -66,7 +66,7 @@ Then create `compose.yaml`:
 ```yaml
 services:
   zerobyte:
-    image: ghcr.io/nicotsx/zerobyte:v0.43
+    image: ghcr.io/nicotsx/zerobyte:v0.44
     container_name: zerobyte
     restart: unless-stopped
     cap_add:
@@ -87,8 +87,8 @@ services:
 
 What each part is doing:
 
-- **`image`**: `v0.43` is the tag upstream uses in its docs. It picks up 0.43.x patch releases but won't move you to 0.44 on its own. Because this is a 0.x project, read the [release notes](https://github.com/nicotsx/zerobyte/releases) before changing that tag.
-- **`cap_add: SYS_ADMIN` and `/dev/fuse`**: These let Zerobyte mount remote shares from inside the container. SMB, NFS, and WebDAV need `SYS_ADMIN`; SFTP and rclone volumes also need `/dev/fuse`. If you only back up folders that are already bind-mounted into the container, you can drop both. Upstream documents a [reduced-privilege setup](https://zerobyte.app/docs/installation#simplified-installation-no-remote-mounts) for that, and all repository types still work.
+- **`image`**: `v0.44` is the tag upstream uses in its docs. It picks up 0.44.x patch releases but won't move you to 0.45 on its own. Because this is a 0.x project, read the [release notes](https://github.com/nicotsx/zerobyte/releases) before changing that tag.
+- **`cap_add: SYS_ADMIN` and `/dev/fuse`**: These let Zerobyte mount remote shares from inside the container. SMB, NFS, and WebDAV need `SYS_ADMIN`; SFTP and rclone sources also need `/dev/fuse`. If you only back up folders that are already bind-mounted into the container, you can drop both. Upstream documents a [reduced-privilege setup](https://zerobyte.app/docs/installation#simplified-installation-no-remote-mounts) for that, and all repository types still work.
 - **`4096`**: The web UI port.
 - **`TZ`**: This sets the time zone used for the backup schedules. If you leave it out, schedules run in UTC.
 - **`BASE_URL`**: The address you will use to reach Zerobyte. For LAN access, that's `http://` plus the server IP and port. Behind a reverse proxy, use your HTTPS address, such as `https://backup.your-domain.com`, which also turns on secure cookies.
@@ -130,20 +130,20 @@ Back up your `.env` somewhere safe as well, because losing `APP_SECRET` means Ze
 
 ## Back Up an SMB Share to a Local Repository
 
-Once you're in, one of the first things you'll notice is that this is a seriously good-looking piece of software. The sidebar has **Volumes**, **Repositories**, **Backups**, **Notifications**, and **Settings**.
+Once you're in, one of the first things you'll notice is that this is a seriously good-looking piece of software. The sidebar has **Sources**, **Repositories**, **Backups**, **Notifications**, and **Settings**. In the video that first item was Volumes.
 
 My first job was a second copy of my Immich library, which lives on my Unraid server. That gives me two copies on two different machines locally before anything goes offsite.
 
-### Add the Volume
+### Add the Source
 
-Under **Volumes**, create a new volume, choose **SMB**, and fill in:
+Under **Sources**, click **Create Source**, choose **SMB**, and fill in:
 
 - a name;
 - your server's IP address;
 - the share name; and
 - the share username and password.
 
-Test the connection, and if it's successful, create the volume. The volume page then shows the share's capacity and usage, and you can browse its files to confirm Zerobyte is looking at the right thing.
+Test the connection, and if it's successful, create the source. The source page then shows the share's capacity and usage, and you can browse its files to confirm Zerobyte is looking at the right thing.
 
 You'll need the share set up on your NAS first. The current SMB form also has guest mode, protocol version, port, and a **Read Only** option. Read-only is a nice safety net for backups, but you won't be able to restore back into that share while it's enabled.
 
@@ -161,7 +161,7 @@ The repository page then shows its settings and snapshots. The current version a
 
 Under **Backups**, create a backup job:
 
-1. Pick the volume.
+1. Pick the source.
 2. Give the job a name and choose the repository.
 3. Set the frequency. I used **Daily** at **1:00 AM**.
 4. Choose the backup paths. For Immich, I only selected the `library` folder because that's the raw data, and it's neatly organized.
@@ -319,13 +319,13 @@ If you'd rather keep your offsite copy on hardware you control, Zerobyte also su
 
 ## How It Compares
 
-**[Duplicati](/duplicati-encrypted-backups)** is what I came from. It's more mature, runs as a desktop or server app on Windows, macOS, and Linux, and uses its own encrypted block format. Zerobyte is a server-side, Docker-based web UI that uses standard Restic repositories. You can open those repositories with the Restic CLI, and Zerobyte can import repositories created elsewhere. To me, Zerobyte's volume, repository, and job model is easier to follow, but Duplicati has been around much longer.
+**[Duplicati](/duplicati-encrypted-backups)** is what I came from. It's more mature, runs as a desktop or server app on Windows, macOS, and Linux, and uses its own encrypted block format. Zerobyte is a server-side, Docker-based web UI that uses standard Restic repositories. You can open those repositories with the Restic CLI, and Zerobyte can import repositories created elsewhere. To me, Zerobyte's source, repository, and job model is easier to follow, but Duplicati has been around much longer.
 
 **[Proxmox Backup Server](/proxmox-backup-server-complete-guide)** solves a different problem. It's for backing up Proxmox VMs and containers, and hosts through its client. Zerobyte is for file-level backups of shares and folders. Running both is completely reasonable.
 
 ## Final Thoughts
 
-So far, Zerobyte is working great for me. It's a beautiful app, and the volume-repository-job model makes sense right away. Restic does the heavy lifting underneath. The SMB share, local repository, Google Drive repository, and Slack notifications all worked in the video, and the restore options were right where I expected them. Mirror repositories are the feature I'm most excited to use.
+So far, Zerobyte is working great for me. It's a beautiful app, and the source-repository-job model makes sense right away. Restic does the heavy lifting underneath. The SMB share, local repository, Google Drive repository, and Slack notifications all worked in the video, and the restore options were right where I expected them. Mirror repositories are the feature I'm most excited to use.
 
 The caveat is the same one I opened with. This is early software, and its own README still says to expect major changes between versions. Since I recorded the video, it has had several breaking changes, including two new required compose variables. Keep another backup method running alongside it, read release notes before upgrading, and test your restores.
 
@@ -336,7 +336,7 @@ The developer seems passionate about it, it's open source under AGPL-3.0, and it
 - [Zerobyte on GitHub](https://github.com/nicotsx/zerobyte)
 - [Zerobyte documentation](https://zerobyte.app/)
 - [Installation](https://zerobyte.app/docs/installation)
-- [Volumes](https://zerobyte.app/docs/concepts/volumes)
+- [Sources](https://zerobyte.app/docs/concepts/volumes)
 - [Repositories](https://zerobyte.app/docs/concepts/repositories)
 - [Backups, schedules, and retention](https://zerobyte.app/docs/concepts/backups)
 - [Recovery keys and repository passwords](https://zerobyte.app/docs/guides/recovery-key-and-repository-passwords)
