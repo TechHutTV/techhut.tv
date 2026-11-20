@@ -270,6 +270,25 @@
     }
   },
   {
+    "id": "cloudflare-ddns",
+    "name": "Cloudflare DDNS",
+    "category": "Networking",
+    "description": "Keep Cloudflare DNS records updated with your home's public IP from a Docker container.",
+    "coverage": [
+      "/ultimate-home-server-part-4-ssl-certificates"
+    ],
+    "videos": [
+      {
+        "id": "79e6KBYcVmQ",
+        "title": "SSL Certificates on EVERYTHING! (DDNS, Local Domains, Cloudflare) - Full Walkthrough Guide Pt.4",
+        "published": "2024-10-13"
+      }
+    ],
+    "details": {
+      "href": "/apps/cloudflare-ddns"
+    }
+  },
+  {
     "id": "cloudreve",
     "name": "Cloudreve",
     "category": "Files & Photos",
@@ -500,7 +519,8 @@
       "/proxmox-backup-server-complete-guide",
       "/bookorbit-self-hosted-library",
       "/ultimate-home-server-part-2-jellyfin",
-      "/ultimate-home-server-part-3-arr-stack"
+      "/ultimate-home-server-part-3-arr-stack",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
@@ -845,7 +865,9 @@
     "name": "Home Assistant",
     "category": "Automation",
     "description": "Connect devices and build automations on your own home server.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-4-ssl-certificates"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
@@ -915,7 +937,8 @@
     "category": "Media",
     "description": "Organize and stream your own movies, shows and music.",
     "coverage": [
-      "/ultimate-home-server-part-2-jellyfin"
+      "/ultimate-home-server-part-2-jellyfin",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "videos": [
       {
@@ -1426,7 +1449,8 @@
       "/split-dns-homelab",
       "/self-host-netbird-pocketid",
       "/fedora-44-post-install-guide",
-      "/fedora-server-guide-cockpit-zfs-podman"
+      "/fedora-server-guide-cockpit-zfs-podman",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "icon": "/app-icons/netbird.png",
     "videos": [
@@ -1517,13 +1541,19 @@
     "category": "Networking",
     "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
     "coverage": [
-      "/split-dns-homelab"
+      "/split-dns-homelab",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "videos": [
       {
         "id": "DFUmfHqQWyg",
         "title": "DITCH Microsoft and Google with Nextcloud AIO - FULL GUIDE with Domain Setup",
         "published": "2025-05-30"
+      },
+      {
+        "id": "79e6KBYcVmQ",
+        "title": "SSL Certificates on EVERYTHING! (DDNS, Local Domains, Cloudflare) - Full Walkthrough Guide Pt.4",
+        "published": "2024-10-13"
       }
     ],
     "icon": "/app-icons/nginx-proxy-manager.png",
