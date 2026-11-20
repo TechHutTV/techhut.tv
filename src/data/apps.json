@@ -483,7 +483,8 @@
     "category": "Gaming & Compatibility",
     "description": "Run applications from other Linux distributions inside integrated containers.",
     "coverage": [
-      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox",
+      "/distrobox-linux-containers-guide"
     ],
     "videos": [
       {
@@ -1803,7 +1804,8 @@
     "description": "Run containers as part of a Fedora Server homelab.",
     "coverage": [
       "/fedora-server-guide-cockpit-zfs-podman",
-      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox"
+      "/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox",
+      "/distrobox-linux-containers-guide"
     ],
     "icon": "/app-icons/podman.png",
     "videos": [
