@@ -2320,7 +2320,9 @@
     "name": "synth-shell",
     "category": "Terminal",
     "description": "Customize a Bash prompt with colors and status information.",
-    "coverage": [],
+    "coverage": [
+      "/synth-shell-fancy-bash-prompt"
+    ],
     "videos": [
       {
         "id": "jS-QZKjAd-U",
