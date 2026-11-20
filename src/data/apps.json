@@ -75,7 +75,9 @@
     "name": "AppImage Pool",
     "category": "Desktop",
     "description": "Browse and download AppImage applications through a desktop interface.",
-    "coverage": [],
+    "coverage": [
+      "/appimage-pool-linux-app-store"
+    ],
     "videos": [
       {
         "id": "l_OCZrEPQgs",
