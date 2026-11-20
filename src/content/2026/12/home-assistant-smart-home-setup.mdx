@@ -1,10 +1,10 @@
 export const title = "Home Assistant: Building My Smart Home on a ZimaBoard"
 export const description = "Install Home Assistant OS on a ZimaBoard or other x86-64 machine, pair Zigbee shades through a USB coordinator, and get them into Alexa with Emulated Hue, with the steps updated for Home Assistant 2026.11."
-export const date = "2026-10-11"
+export const date = "2026-12-16"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/home-assistant-smart-home-setup/cover.jpg"
+export const cover = "/docs-static/img/2026/12/home-assistant-smart-home-setup/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -26,7 +26,7 @@ Zigbee is an open protocol smart devices use to talk to each other and to a coor
 
 Zigbee needs a coordinator, so I picked up a Sonoff Zigbee 3.0 USB Dongle Plus from Amazon. Home Assistant talks to the dongle, and the dongle talks to the shades.
 
-![The Sonoff Zigbee 3.0 USB Dongle Plus with its antenna plugged into the ZimaBoard](/docs-static/img/2026/10/home-assistant-smart-home-setup/zimaboard-sonoff-dongle.jpg)
+![The Sonoff Zigbee 3.0 USB Dongle Plus with its antenna plugged into the ZimaBoard](/docs-static/img/2026/12/home-assistant-smart-home-setup/zimaboard-sonoff-dongle.jpg)
 
 ## Choose an Installation Type
 
@@ -87,7 +87,7 @@ This is Method 1 in the docs, the recommended one, and what I did.
 5. Select the downloaded image, choose **Start Restoring…**, and confirm with **Restore**.
 6. When it finishes, shut down and remove the USB drive.
 
-![GNOME Disks in the live Ubuntu session restoring a Home Assistant OS image to the ZimaBoard's built-in eMMC, shown with the older 11.4 image from the video](/docs-static/img/2026/10/home-assistant-smart-home-setup/gnome-disks-restore-image.jpg)
+![GNOME Disks in the live Ubuntu session restoring a Home Assistant OS image to the ZimaBoard's built-in eMMC, shown with the older 11.4 image from the video](/docs-static/img/2026/12/home-assistant-smart-home-setup/gnome-disks-restore-image.jpg)
 
 If Disks reports **Error unmounting filesystem** or **target is busy**, you probably booted the installer instead of the live session, or a swap partition on the target disk is in use. Boot again with **Try Ubuntu**, or select the swap partition in Disks, stop it, and try again.
 
@@ -140,7 +140,7 @@ This was my very first time in Home Assistant, so everything after this point wa
 
 When I did this, Home Assistant had already found compatible devices on my network, including the Zigbee dongle I'd plugged in, which showed up as **Zigbee Home Automation**. It picked up my Elgato lights and pulled in a bunch of my Google devices right away. My Synology showed up under discovered devices too.
 
-![The Home Assistant onboarding screen listing compatible devices found on the network, including Zigbee Home Automation, Elgato Light, Apple TV, and Synology DSM](/docs-static/img/2026/10/home-assistant-smart-home-setup/onboarding-compatible-devices.jpg)
+![The Home Assistant onboarding screen listing compatible devices found on the network, including Zigbee Home Automation, Elgato Light, Apple TV, and Synology DSM](/docs-static/img/2026/12/home-assistant-smart-home-setup/onboarding-compatible-devices.jpg)
 
 ## Pair Zigbee Devices
 
@@ -169,11 +169,11 @@ Placement matters more than I expected. The docs recommend a shielded USB extens
 2. Put the device in pairing mode. For the shades, I had to dig out the manual and do a little button routine on the motor.
 3. When the device shows up, rename it and assign an area. There are predefined areas like Kitchen, or you can create your own.
 
-![Two SmartWings shades paired through ZHA in the video, each renamed and assigned to an area under The device is ready to use](/docs-static/img/2026/10/home-assistant-smart-home-setup/zha-shades-paired.jpg)
+![Two SmartWings shades paired through ZHA in the video, each renamed and assigned to an area under The device is ready to use](/docs-static/img/2026/12/home-assistant-smart-home-setup/zha-shades-paired.jpg)
 
 Pair mains-powered Zigbee devices before battery ones when you can. Mains-powered devices act as routers and extend the mesh. My first shade came in as "kitchen shade," and then I repeated the process for the other three. One small gripe: there's no save button in the device dialog. I would have liked some confirmation that what I typed stuck. It did, and in a new tab all four shades showed up with up, down, and stop controls.
 
-![The Home Assistant overview from the video with up, stop, and down controls for the kitchen, bedroom, and living room shades next to the Elgato lights](/docs-static/img/2026/10/home-assistant-smart-home-setup/dashboard-shades.jpg)
+![The Home Assistant overview from the video with up, stop, and down controls for the kitchen, bedroom, and living room shades next to the Elgato lights](/docs-static/img/2026/12/home-assistant-smart-home-setup/dashboard-shades.jpg)
 
 ### If You Choose Zigbee2MQTT Instead
 
@@ -198,7 +198,7 @@ Some lessons from ordering and installing:
 
 Installation itself is easy. Two screws hold each bracket into the frame, and the shade slides and pops in. It just takes longer with kids running around. They shipped pre-paired with the included remote, so I could raise and lower them before Home Assistant was even involved. SmartWings' lineup and options may have changed since I ordered, so check [their site](https://www.smartwingshome.com/) for what's currently available.
 
-![Brandon pressing a SmartWings roller shade cassette into its brackets at the top of a kitchen window](/docs-static/img/2026/10/home-assistant-smart-home-setup/installing-smartwings-shade.jpg)
+![Brandon pressing a SmartWings roller shade cassette into its brackets at the top of a kitchen window](/docs-static/img/2026/12/home-assistant-smart-home-setup/installing-smartwings-shade.jpg)
 
 ## A First Look at the Dashboard
 
