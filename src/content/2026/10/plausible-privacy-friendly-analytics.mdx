@@ -12,9 +12,9 @@ import {YouTube} from "@/components/YouTube"
 
 Website analytics sounds like a pretty boring topic, I know. The reason I care is that I've been trying to de-Googlify my life, and if you run a website, Google Analytics is usually one of the biggest Google pieces still sitting on it. [Plausible](https://plausible.io) is a free and open source alternative that tells you how much traffic you're getting and where it's coming from, without the tracking baggage.
 
-To actually test it, I ran Plausible and Google Analytics on techhut.tv at the same time for about two weeks before making the call. In this article I'll go over what Plausible is, how it compared to Google Analytics for me, a tour of the dashboard, and how to self-host it yourself.
+To test it, I ran Plausible and Google Analytics on techhut.tv at the same time for about two weeks before making the call. I'll go over what Plausible is, how it compared to Google Analytics for me, a tour of the dashboard, and how to self-host it yourself.
 
-The video was recorded in April 2021, and a lot has moved since then. The self-hosted version is now called **Plausible Community Edition (CE)** and lives in its own [community-edition repository](https://github.com/plausible/community-edition), so the self-hosting section is written for [CE v3.2.1](https://github.com/plausible/analytics/releases/tag/v3.2.1), the current release from May 2026. Google also shut down Universal Analytics in 2023, so the Google comparison below reflects Google Analytics 4. The tracking snippet and a few settings screens have changed too, and I've noted those where they come up. My hands-on impressions are from the recorded walkthrough of the hosted dashboard.
+The video was recorded in April 2021, and a lot has moved since then. The self-hosted version is now called **Plausible Community Edition (CE)** and lives in its own [community-edition repository](https://github.com/plausible/community-edition), so the self-hosting steps below are for [CE v3.2.1](https://github.com/plausible/analytics/releases/tag/v3.2.1), the current release from May 2026. Google also shut down Universal Analytics in 2023, so the Google comparison below reflects Google Analytics 4. The tracking snippet and a few settings screens have changed too, and I've noted those where they come up. My hands-on impressions are from the recorded walkthrough of the hosted dashboard.
 
 ## What Plausible Is
 
@@ -22,7 +22,7 @@ Plausible is a web analytics tool. You add one small script to your site, and it
 
 You have two ways to run it, which is kind of similar to how Bitwarden does things:
 
-- **Plausible Cloud**: the paid, hosted service at plausible.io. Subscriptions are how the project is funded. When I recorded, I was on the free trial, which is still [30 days with no credit card required](https://plausible.io/docs/plausible-script). I'm not going to quote prices here, since they've changed since 2021. Check the [Plausible site](https://plausible.io) for the current plans. Back then I was planning to just pay for it, because it's a good service and paying for their servers is the best way to support the project.
+- **Plausible Cloud**: the paid, hosted service at plausible.io. Subscriptions are how the project is funded. When I recorded, I was on the free trial, which is still [30 days with no credit card required](https://plausible.io/docs/plausible-script). I'm not going to quote prices here, since they've changed since 2021. Check the [Plausible site](https://plausible.io) for the current plans. Back then I was planning to just pay for it, because it's a good service and paying for their servers is how you support the project.
 - **Plausible Community Edition**: the free, self-hosted version. You run it on your own server with Docker, and you never pay Plausible anything.
 
 They aren't identical, though. Plausible's own [comparison](https://plausible.io/self-hosted-web-analytics) lays out the differences:
@@ -91,7 +91,7 @@ The pages tile also has entry and exit pages. In my case, the home page had a hi
 
 ### Settings
 
-Here's what I walked through in the video, along with what's changed:
+What I walked through in the video, along with what's changed:
 
 - **Theme.** I had dark mode on, switched to light to show it off, and it was absolutely blinding. Theme now lives under **Account Settings**, then **Preferences**, then **Dashboard Appearance**, and it [follows your system theme by default](https://plausible.io/docs/dashboard-appearance), with manual light and dark options.
 - **My Sites.** Clicking the logo takes you to your list of sites. I only had techhut.tv, but you can add as many as you want.
@@ -237,11 +237,11 @@ If you get stuck, CE support happens in the [self-hosted discussions](https://gi
 
 ## Final Thoughts
 
-There's nothing too complicated about Plausible, and that's kind of the point. It gives me visitors, sources, locations, devices, and pages in one clean dashboard, without tracking people across the internet. After running it next to Google Analytics, the numbers were close enough that I didn't feel like I was losing anything I'd actually use, so my plan was to dump Google Analytics once the video was done.
+There's nothing too complicated about Plausible, and that's kind of the point. It gives me visitors, sources, locations, devices, and pages in one clean dashboard, without tracking people across the internet. After running it next to Google Analytics, the numbers were close enough that I didn't feel like I was losing anything I'd use, so my plan was to dump Google Analytics once the video was done.
 
 If you have a website, or know someone who does and needs an analytics recommendation, Plausible is the one I'd point them to. Paying for the cloud version supports the project directly. If you'd rather keep everything on your own hardware, Community Edition is a few commands away, as long as you're OK with keeping it updated.
 
-Analytics was just one step for me. The next thing on my list back then was finding an ad platform for the site that isn't as invasive as Google AdSense. With all that said, I do hope you found this helpful.
+Analytics was just one step for me. The next thing on my list back then was finding an ad platform for the site that isn't as invasive as Google AdSense. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
