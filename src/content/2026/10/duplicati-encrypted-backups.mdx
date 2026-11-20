@@ -10,13 +10,13 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="eD7ULX7AK6M" title="TechHut's Duplicati walkthrough" />
 
-I have the misfortune of paying for Google Workspace. I need it for business, and it comes with 4 TB of storage. The thing is, I really don't like uploading my files and photos to a big cloud platform where they can be read. So I started using that space for something it can't look inside of: encrypted backups made with [Duplicati](https://duplicati.com).
+I have the misfortune of paying for Google Workspace. I need it for business, and it comes with 4 TB of storage. I really don't like uploading my files and photos to a big cloud platform where they can be read. So I started using that space for something it can't look inside of: encrypted backups made with [Duplicati](https://duplicati.com).
 
 If you open my Duplicati folder in Google Drive, you'll find a folder for my Immich backup and another for my Nextcloud backup. Inside those, it's just a pile of encrypted, compressed chunks of about 50 MB each. No photos, no file names, nothing useful to anyone without the passphrase. The best part is that getting to this point was really easy.
 
 ![The duplicati/immich folder in Google Drive filled with encrypted dblock volumes of about 49 MB each](/docs-static/img/2026/10/duplicati-encrypted-backups/google-drive-encrypted-chunks.jpg)
 
-In this guide I'll go over how I have it set up, how to install it with Docker or on a desktop, how a backup and a restore actually work, and the couple of things I don't love about it.
+I'll go over how I have it set up, how to install it with Docker or on a desktop, how a backup and a restore work, and the couple of things I don't love about it.
 
 MOVA sponsored the video this article is based on.
 
@@ -96,7 +96,7 @@ services:
       - /path/to/source:/source
 ```
 
-Here's what each piece does:
+Each piece does this:
 
 | Setting | What it's for |
 |---|---|
@@ -183,7 +183,7 @@ The [Google Drive page](https://docs.duplicati.com/backup-destinations/file-sync
 
 Because my source mount points at the root of all my shares, I can just browse to the Immich share and select its library. There are filters and exclude options too, like skipping temporary files.
 
-If you're backing up Immich specifically, select the whole `UPLOAD_LOCATION` folder rather than just `library`. Immich's [backup guide](https://docs.immich.app/administration/backup-and-restore/#filesystem) lists `library`, `upload`, and `profile` as the folders holding original content. `library` is only used when the storage template is enabled, so on many setups the originals actually live in `upload`. Immich also writes automatic database dumps to `UPLOAD_LOCATION/backups`, and it recommends backing up the database along with the files. Restoring photos without the database is a much worse day.
+If you're backing up Immich specifically, select the whole `UPLOAD_LOCATION` folder, not only `library`. Immich's [backup guide](https://docs.immich.app/administration/backup-and-restore/#filesystem) lists `library`, `upload`, and `profile` as the folders holding original content. `library` is only used when the storage template is enabled, so on many setups the originals live in `upload`. Immich also writes automatic database dumps to `UPLOAD_LOCATION/backups`, and it recommends backing up the database along with the files. Restoring photos without the database is a much worse day.
 
 ### 4. Schedule
 
@@ -231,7 +231,7 @@ By default, file permissions aren't restored, since the original users and group
 
 ### When the Original Machine Is Gone
 
-This is the restore that actually matters. If the server dies, a fresh Duplicati install can do a **direct restore from backup files**. It only needs the destination details, like a new Google Drive AuthID and the folder path, plus your passphrase. It's slower because Duplicati has to rebuild information from the remote files first, but it works. A few other things help here:
+This is the restore that matters. If the server dies, a fresh Duplicati install can do a **direct restore from backup files**. It only needs the destination details, like a new Google Drive AuthID and the folder path, plus your passphrase. It's slower because Duplicati has to rebuild information from the remote files first, but it works. A few other things help here:
 
 - **Export your job configurations.** Click **Export** on each backup, then encrypt the file or leave the passwords out. You can import it later instead of rebuilding the job by hand.
 - **Stored configs (2.4).** Encrypted backups now save their own job configuration at the destination by default, with secrets stripped. That means you can recover the job setup from the backup itself.
@@ -259,7 +259,7 @@ So my advice is to look closely at what's inside your home folder before selecti
 
 The Console is the part I have mixed feelings about. It's a cloud dashboard at [app.duplicati.com](https://app.duplicati.com) that lets you see all of your Duplicati machines in one place. You connect a machine with **Click to register** in the top-right corner of its local UI and approve it on your account. After I registered the MacBook, both machines showed up as online, with their backups listed.
 
-It's honestly really cool. I just wish I could self-host it. Since every machine runs its own Duplicati instance, the Console is how you tie them together. It's a hosted service, though, and the company has to make money somewhere, so I get why it's locked down.
+It's really cool. I just wish I could self-host it. Since every machine runs its own Duplicati instance, the Console is how you tie them together. It's a hosted service, though, and the company has to make money somewhere, so I get why it's locked down.
 
 When I recorded, the free tier covered five machines. That has changed. The [current pricing](https://duplicati.com/pricing) gives you monitoring for **up to 2 machines** for free. Remote management, missed backup alerts, and longer history are part of the paid Pro plan, and agent-based deployment needs Enterprise. Your first connected machine also starts a [30-day Pro trial](https://docs.duplicati.com/duplicati-console/using-the-duplicati-console) automatically, which explains the trial badge I saw in the video.
 
@@ -267,7 +267,7 @@ You don't need the Console at all. Each instance runs its own schedule and has i
 
 ## Final Thoughts
 
-Duplicati turned storage I'm already paying for into something I'm actually comfortable using. Google gets a folder full of encrypted 50 MB chunks, and I get versioned, incremental backups of my photos and files with a schedule I don't have to think about. Setup took a few minutes, the new UI is clean, and the restore did what it was supposed to.
+Duplicati turned storage I'm already paying for into something I'm comfortable using. Google gets a folder full of encrypted 50 MB chunks, and I get versioned, incremental backups of my photos and files with a schedule I don't have to think about. Setup took a few minutes, the new UI is clean, and the restore did what it was supposed to.
 
 What I don't love is the per-machine model. I'd really like to install it once on my server and connect lightweight clients from my desktops, or at least self-host the Console. Right now every computer is its own island unless you use their cloud dashboard.
 
