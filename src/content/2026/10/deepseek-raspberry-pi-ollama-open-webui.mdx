@@ -16,7 +16,7 @@ So we're putting DeepSeek R1 on a Raspberry Pi 5. We'll use [Ollama](https://oll
 
 A Pi is not the fastest way to run this. The exact same steps work on a regular Linux desktop or server, and Ollama also runs on Windows and macOS. Chances are you'll get much better performance on any of those. I'm doing it on a Pi partly because it makes a nice tutorial, and partly to show that the smallest distilled model really does run on one. You'll get answers. They just won't arrive quickly.
 
-The written steps have been updated for [Ollama v0.40.3](https://github.com/ollama/ollama/releases/tag/v0.40.3) (released October 11, 2026) and [Open WebUI v0.12.0](https://github.com/open-webui/open-webui/releases/tag/v0.12.0) (released October 10, 2026). The video was recorded in January 2025, and my speed impressions and the walkthrough come from that recording.
+The written steps have been updated for [Ollama v0.40.16](https://github.com/ollama/ollama/releases/tag/v0.40.16) (released November 9, 2026) and [Open WebUI v0.13.4](https://github.com/open-webui/open-webui/releases/tag/v0.13.4) (released November 17, 2026). The install script and the Compose file are the same. The video was recorded in January 2025, and my speed impressions and the walkthrough come from that recording.
 
 ## Which DeepSeek R1 Are We Running?
 
@@ -200,7 +200,7 @@ services:
 
 Walking through this real quick:
 
-- **`image`** pulls Open WebUI from GitHub's container registry. The `:main` tag is the one the docs recommend. If you'd rather pin a release, versioned tags like `:v0.12.0` exist too.
+- **`image`** pulls Open WebUI from GitHub's container registry. The `:main` tag is the one the docs recommend. If you'd rather pin a release, versioned tags like `:v0.13.4` exist too.
 - **`volumes`** creates a `data` folder right next to the compose file (`./` just means the current directory) and maps it to where Open WebUI stores its database, chats, users, and uploads. This is the folder to back up.
 - **`ports`** is `host:container`. The `3000` on the left is the port you'll use in the browser, and you can change it. Leave the `8080` on the right alone, since that's what the app listens on inside the container.
 - **`extra_hosts`** makes `host.docker.internal` resolve to the Pi itself, and **`OLLAMA_BASE_URL`** tells Open WebUI to find Ollama there. Two lines this compose file has that mine in the video didn't: `OLLAMA_BASE_URL` (Open WebUI's image already falls back to this exact URL, I'm just making it explicit) and `WEBUI_SECRET_KEY`, which the current docs ask for.
