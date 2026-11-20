@@ -23,11 +23,11 @@ Late in 2024 I put out a Part 1 for my Proxmox home server build, and since then
 
 This part is the foundation everything else sits on. We install Proxmox VE, run through the post-install steps I always do, build two ZFS storage pools (a fast **flash** pool and a big **tank** pool), create our first container, give it storage, and share that storage with every computer on the home network using Samba. The later parts of the series build on exactly this layout, so it's worth getting right.
 
-The written companion to this video lives in my repo at [storage/README.md](https://github.com/TechHutTV/homelab/tree/main/storage), and I keep updating it as people find better ways to do things. The steps below have been updated for **Proxmox VE 9.2**, released May 21, 2026 (the video was recorded on the 8.x release line), and I've called out the places where the current procedure differs from what you'll see on screen.
+The written companion to this video lives in my repo at [storage/README.md](https://github.com/TechHutTV/homelab/tree/main/storage), and I keep updating it as people find better ways to do things. The steps below are for **Proxmox VE 9.2**, released May 21, 2026 (the video was recorded on the 8.x release line), and I've called out the places where the current procedure differs from what you'll see on screen.
 
 ## The Layout We're Building
 
-Before clicking anything, here's the end result. Later parts of the series link back to this table, so keep it handy.
+Before clicking anything, this is the end result. Later parts of the series link back to this table, so keep it handy.
 
 | Piece | What it is | Used for |
 |---|---|---|
@@ -73,7 +73,7 @@ Then walk through the installer:
 1. Choose **Install Proxmox VE (Graphical)** and accept the license agreement.
 2. **Target hard disk:** pick the correct drive. I chose the smallest one (238 GB), my boot NVMe. I hadn't installed the other NVMe drives yet, so it was the only option. If you have several drives connected, double-check the selection, because the installer wipes it. Keep the default ext4 filesystem if you want to follow the optional `local-lvm` step below.
 3. **Location and time zone.**
-4. **Password and email:** use a strong root password. The email address is where Proxmox sends notifications, so use one you actually read.
+4. **Password and email:** use a strong root password. The email address is where Proxmox sends notifications, so use one you read.
 5. **Network:** plug in Ethernet *before* you start the installer so it can detect the active interface. It's marked with a green dot.
 6. **Hostname:** this is how the machine appears on your network and on the login screen. The default is `pve.lan`. I used `pve-guide.local` for the video (PVE stands for Proxmox Virtual Environment). Set a static IP here if you want a specific one, and the gateway and DNS server can usually stay as detected.
 7. Review the summary and click **Install**. The system reboots when it finishes.
@@ -86,7 +86,7 @@ The node in the sidebar (`pve-guide` for me) is the machine you just installed. 
 
 ### Switch to the No-Subscription Repository
 
-Proxmox enables the enterprise repositories by default, and those require a paid subscription. Without one, updates fail. Here's the fix:
+Proxmox enables the enterprise repositories by default, and those require a paid subscription. Without one, updates fail. The fix:
 
 1. Select your node and go to **Updates > Repositories**.
 2. Select the `pve-enterprise` entry and click **Disable**. On Proxmox VE 9 there's also a Ceph enterprise entry, so disable that one too.
@@ -182,7 +182,7 @@ Finally, check **Datacenter > Storage** and confirm both `flash` and `tank` have
 
 ### Why the Free Space Looks Wrong
 
-After creating `tank`, the size in the GUI looked too big, and that's normal. The GUI is showing you `zpool list`, which reports raw pool capacity including parity. `zfs list` shows what you can actually write:
+After creating `tank`, the size in the GUI looked too big, and that's normal. The GUI is showing you `zpool list`, which reports raw pool capacity including parity. `zfs list` shows what you can write:
 
 ```bash
 zpool list
@@ -203,7 +203,7 @@ In the video I picked **Ubuntu 22.04** because it seemed better supported on Pro
 
 ### Container Settings
 
-Click **Create CT** in the top right. Here's what I used:
+Click **Create CT** in the top right. What I used:
 
 | Tab | Setting | Value |
 |---|---|---|
@@ -349,7 +349,7 @@ Paste this in, replacing `youruser` with your own username:
    guest ok = no
 ```
 
-Here's what that does:
+What that does:
 
 - **`server string`:** a description of the server. I match it to the container hostname.
 - **`security = user` with `guest ok = no`:** you need a Samba username and password to open the shares. `map to guest = Bad User` turns logins with unknown usernames into guests, but neither share allows guests, so a guest can see the server and nothing else. Nobody in my house needs anonymous access. The [smb.conf documentation](https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html) covers guest-readable or group folders if you need them.
@@ -446,7 +446,7 @@ And keep these shares on your LAN. Don't port forward SMB to the internet. If yo
 
 Proxmox handles the hardware, ZFS handles the disks, and one plain Ubuntu container owns the data and shares it with everything else. A lot of the improvements over my older version came from people filing issues and sending commits to the repo, like checking **Add Storage** on the pools instead of adding directories. The guide is much better for it.
 
-Pick your RAID level based on your actual drives and how much risk you're comfortable with, and plan a real backup before you fill `tank` with things you can't replace. Parity protects you from a dead disk, not from deleting the wrong folder. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) is a good next step for that.
+Pick your RAID level based on your drives and how much risk you're comfortable with, and plan a real backup before you fill `tank` with things you can't replace. Parity protects you from a dead disk, not from deleting the wrong folder. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) is a good next step for that.
 
 If you find a better way to do any of this, open an issue on the [homelab repo](https://github.com/TechHutTV/homelab). I'll test it and update the docs.
 
