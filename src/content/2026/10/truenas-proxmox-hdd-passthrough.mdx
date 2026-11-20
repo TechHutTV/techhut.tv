@@ -15,7 +15,7 @@ import {YouTube} from "@/components/YouTube"
 That's exactly what I did with my homelab at the time, which was my old desktop with three 4 TB hard drives added. I could have installed TrueNAS on the whole machine and gotten a lot of the same features. But I like keeping things separated: I already had a container running Portainer and another VM running a suite of apps, and I wanted my main NAS to be its own thing next to them. The trick is getting the drives into the VM properly, including their serial numbers, because TrueNAS is not a fan of disks it can't tell apart.
 
 <Note>
-I recorded the video in February 2023 with **TrueNAS CORE 13.0-U3.1** on **Proxmox VE 7.3**. TrueNAS has changed a lot since then. CORE is no longer under active development, and the free edition is now **TrueNAS Community Edition**, which is Linux-based. The steps below target [TrueNAS 25.10.7](https://www.truenas.com/software-status/), released September 2, 2026 (the version TrueNAS recommends for general use), and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap). The disk passthrough commands have been checked against the current Proxmox wiki. My hands-on impressions and the screenshots come from the original recording, and I've labeled the ones that show the old CORE interface.
+I recorded the video in February 2023 with **TrueNAS CORE 13.0-U3.1** on **Proxmox VE 7.3**. TrueNAS has changed a lot since then. CORE is no longer under active development, and the free edition is now **TrueNAS Community Edition**, which is Linux-based. The steps below target [TrueNAS 25.10.8](https://www.truenas.com/software-status/), released November 5, 2026 (the version TrueNAS recommends for general use). 25.10.7 remains the Mission Critical recommendation. The Proxmox side is [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap). The disk passthrough commands have been checked against the current Proxmox wiki. My hands-on impressions and the screenshots come from the original recording, and I've labeled the ones that show the old CORE interface.
 </Note>
 
 ## CORE, SCALE, and Community Edition
@@ -26,10 +26,10 @@ If you watched the video, you saw me download TrueNAS CORE. This is what happene
 |---|---|---|
 | TrueNAS CORE (13.x) | FreeBSD | [No longer under active development](https://www.truenas.com/software-status/). Its final listed releases are 13.0-U6.8 and 13.3-U1.2. |
 | TrueNAS SCALE | Debian Linux | Renamed. With 25.04 in April 2025, [SCALE became TrueNAS Community Edition](https://www.truenas.com/blog/truenas-community-edition-release-2504/). Nothing changed but the name. |
-| TrueNAS Community Edition 25.10 | Debian Linux | Current stable branch. 25.10.7 is the General recommendation. |
+| TrueNAS Community Edition 25.10 | Debian Linux | Current stable branch. 25.10.8 is the General recommendation. |
 | TrueNAS 27 | Debian Linux | Release candidate. The release that was tested as "TrueNAS 26" was [renamed 27](https://www.truenas.com/blog/truenas-27-is-here/) at RC.1 on October 6, 2026, with 27.0 planned for early December 2026. |
 
-So for a new install you want **Community Edition 25.10**. Don't be thrown off by the file name: the ISO is still called `TrueNAS-SCALE-25.10.7.iso`. Stay off the 27 release candidate unless you're specifically testing it.
+So for a new install you want **Community Edition 25.10**. Don't be thrown off by the file name: the ISO is still called `TrueNAS-SCALE-25.10.8.iso`. Stay off the 27 release candidate unless you're specifically testing it.
 
 There's one practical difference from the video worth knowing up front. CORE was FreeBSD, which is why I said in the video that it's "technically FreeBSD, but Linux is going to be fine" when picking the guest OS type. Community Edition is Linux now, so that choice is simply correct.
 
@@ -71,18 +71,18 @@ The data drives must not be in use on the Proxmox host. No ZFS pool, LVM, or dir
 
 In the video I downloaded the ISO on my desktop and uploaded it to the `local` storage under **ISO Images > Upload**. That still works. The quicker way is to let Proxmox fetch it directly:
 
-1. Go to the [TrueNAS download page](https://www.truenas.com/download/) and find the current Community Edition release (25.10.7 at the time of writing). You can skip the newsletter sign-up.
+1. Go to the [TrueNAS download page](https://www.truenas.com/download/) and find the current Community Edition release (25.10.8 at the time of writing). You can skip the newsletter sign-up.
 2. In Proxmox, select your `local` storage, then **ISO Images > Download from URL**.
 3. Paste the ISO link and click **Query URL**:
 
 ```text
-https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.7/TrueNAS-SCALE-25.10.7.iso
+https://download.sys.truenas.net/TrueNAS-SCALE-Goldeye/25.10.8/TrueNAS-SCALE-25.10.8.iso
 ```
 
-4. Expand **Advanced**, choose **SHA-256**, and paste the checksum published on the download page for 25.10.7:
+4. Expand **Advanced**, choose **SHA-256**, and paste the checksum published on the download page for 25.10.8:
 
 ```text
-54ce9441ce66966a392e28f63604ca3c2c083d0bec4db7bb5af2f74f7a007c8e
+af5c8cea73d6258429aa0cad4b1a30732bd85db36b1ce9ce14a55be8f419d7bc
 ```
 
 Proxmox verifies the file after downloading it. If a newer maintenance release is out when you read this, grab its link and checksum from the download page instead.
