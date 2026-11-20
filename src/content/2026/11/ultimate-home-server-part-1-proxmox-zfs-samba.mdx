@@ -1,10 +1,10 @@
 export const title = "Ultimate Home Server Part 1: Proxmox, ZFS Pools, and Samba Shares"
 export const description = "Build the foundation of a Proxmox home server: install Proxmox VE, create mirrored and RAIDZ ZFS pools, set up an Ubuntu LXC with storage mount points, and share it across your network with Samba."
-export const date = "2026-10-11"
+export const date = "2026-11-20"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Homelab", "Self-Host", "Virtualization", "Linux"]
-export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/cover.jpg"
+export const cover = "/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -52,7 +52,7 @@ You can install Proxmox on just about anything: a mini PC, a NAS box that lets y
 
 For this video I'm using a ZimaCube with six 4 TB hard drives and three NVMe drives: a small one to boot Proxmox, and two 1 TB WD Blue drives mirrored for container and VM storage. An old desktop is honestly the most flexible option, though, since PCIe cards can add more SATA ports or NVMe slots.
 
-![The ZimaCube used in the video, with one of its six WD Red 4 TB drives sliding out of the front bays](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/zimacube-drive-bays.jpg)
+![The ZimaCube used in the video, with one of its six WD Red 4 TB drives sliding out of the front bays](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/zimacube-drive-bays.jpg)
 
 <Warning>
 ZFS needs direct access to the disks. Do not put ZFS on top of a hardware RAID controller. If you need more ports, use a plain HBA (for example an LSI card flashed to IT mode), as the [Proxmox ZFS docs](https://pve.proxmox.com/wiki/ZFS_on_Linux) recommend.
@@ -93,7 +93,7 @@ Proxmox enables the enterprise repositories by default, and those require a paid
 3. Click **Add**, acknowledge the subscription notice, choose **No-Subscription**, and click **Add**.
 4. Go to **Updates**, click **Refresh** (that's an `apt update`), then **Upgrade**.
 
-![The Proxmox Repositories page after adding the No-Subscription repository, with the Ceph enterprise entry disabled, on Proxmox VE 8.4 as shown in the video](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/proxmox-no-subscription-repository.jpg)
+![The Proxmox Repositories page after adding the No-Subscription repository, with the Ceph enterprise entry disabled, on Proxmox VE 8.4 as shown in the video](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/proxmox-no-subscription-repository.jpg)
 
 When the upgrade finishes, you should see a message that your system is up to date. If you prefer the shell, Proxmox's [system update docs](https://pve.proxmox.com/pve-docs/chapter-sysadmin.html) say to use `full-upgrade`, never plain `apt upgrade`:
 
@@ -163,7 +163,7 @@ Go to **Disks > ZFS > Create: ZFS**:
 
 Click **Create**, and `flash` shows up online.
 
-![The Create: ZFS dialog for the flash pool with both 1 TB WD Blue NVMe drives selected and RAID Level set to Mirror](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-flash-mirror.jpg)
+![The Create: ZFS dialog for the flash pool with both 1 TB WD Blue NVMe drives selected and RAID Level set to Mirror](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-flash-mirror.jpg)
 
 ### The Tank Pool (RAIDZ)
 
@@ -176,7 +176,7 @@ Run **Create: ZFS** again:
 
 RAIDZ (RAIDZ1) is roughly the ZFS equivalent of RAID 5. It survives one failed disk: replace it and you're safe. If two disks fail, the pool is gone. More parity (RAIDZ2, RAIDZ3, or mirrors) lets more disks fail but leaves less usable space. Look at your drive count, drive size, and how much storage you need, then pick the level that fits. And remember that RAID isn't a backup (more on that at the end).
 
-![The Create: ZFS dialog for the tank pool with all six 4 TB WD Red drives selected and RAID Level set to RAIDZ](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-tank-raidz.jpg)
+![The Create: ZFS dialog for the tank pool with all six 4 TB WD Red drives selected and RAID Level set to RAIDZ](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/create-zfs-tank-raidz.jpg)
 
 Finally, check **Datacenter > Storage** and confirm both `flash` and `tank` have the **Disk image, Container** content types.
 
@@ -256,7 +256,7 @@ pct config 100
 
 These are storage-backed mount points, so each one becomes a ZFS dataset on its pool with a size limit that you can grow later. Unlike the GUI, `pct set` leaves mount points out of backups unless you add `backup=1`, which is why it's on both lines.
 
-![The media container Resources tab showing the 64G root disk on flash, the 8000G /data mount point on tank, and the 32G /docker mount point on flash](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/media-container-mount-points.jpg)
+![The media container Resources tab showing the 64G root disk on flash, the 8000G /data mount point on tank, and the 32G /docker mount point on flash](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/media-container-mount-points.jpg)
 
 <Warning>
 In the video I unchecked **Backup** on both mount points and said I'd cover backups in a future video. Only do that if the data is covered by a separate, tested backup. Unchecked mount points are left out of container backups entirely. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers backing up containers, and the [backup section of my storage README](https://github.com/TechHutTV/homelab/tree/main/storage#backups) covers what needs a file-level backup.
@@ -414,7 +414,7 @@ sudo systemctl enable --now wsdd-server
 
 Double-clicking it right away may give you an access error, because Windows hasn't asked for credentials yet. Type `\\media` (or `\\10.0.0.100`) in the File Explorer address bar, enter your Samba username and password, and choose to remember them. After that, **Network** browsing works. For a persistent drive letter, use **This PC > Map network drive** with `\\10.0.0.100\data` and **Connect using different credentials** checked.
 
-![Windows File Explorer Network view listing MEDIA under Computer after wsdd was installed in the container](/docs-static/img/2026/10/ultimate-home-server-part-1-proxmox-zfs-samba/windows-network-media-share.jpg)
+![Windows File Explorer Network view listing MEDIA under Computer after wsdd was installed in the container](/docs-static/img/2026/11/ultimate-home-server-part-1-proxmox-zfs-samba/windows-network-media-share.jpg)
 
 I edited the same text file from Windows, then copied a big file over at plain gigabit speed. I really need to upgrade my network stack eventually.
 
