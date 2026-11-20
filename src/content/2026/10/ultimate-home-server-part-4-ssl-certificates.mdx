@@ -19,16 +19,16 @@ import {YouTube} from "@/components/YouTube"
 4. **Part 4: SSL certificates on everything**
 </Note>
 
-By this point in the series the server is doing real work: storage, Jellyfin, and the \*arr apps. But every one of them still lives at an IP address and a port number, and half of them greet you with a browser warning. In this part I'm getting rid of all of that. Every service gets a proper domain name and a valid Let's Encrypt certificate, so Proxmox shows a padlock instead of a "your connection is not private" page and I never have to remember another port.
+By this point in the series the server is doing real work: storage, Jellyfin, and the \*arr apps. But every one of them still lives at an IP address and a port number, and half of them greet you with a browser warning. I'm getting rid of all of that. Every service gets a proper domain name and a valid Let's Encrypt certificate, so Proxmox shows a padlock instead of a "your connection is not private" page and I never have to remember another port.
 
-There are really two setups here:
+There are two setups here:
 
-- A **public domain** for the handful of things I actually want reachable from the internet (a test page and Jellyfin in this guide), using [Nginx Proxy Manager](https://nginxproxymanager.com/), [Cloudflare](https://www.cloudflare.com/), and a dynamic DNS container.
+- A **public domain** for the handful of things I want reachable from the internet (a test page and Jellyfin here), using [Nginx Proxy Manager](https://nginxproxymanager.com/), [Cloudflare](https://www.cloudflare.com/), and a dynamic DNS container.
 - A **local domain** for everything else. It gets real certificates too, but it only resolves to an address inside my network, so it's useless unless you're at home or connected through a VPN-style tool.
 
-A quick honesty note: I recorded this video in 2024 for my earlier Proxmox series (it was Part 3 back then) and later listed it as Part 4 of this 2025 series, so a few names, IPs, and container layouts differ from Parts 1-3. The concepts carry over directly. Twingate sponsored the video, and I used it at the end for remote access to the local domain.
+I recorded this video in 2024 for my earlier Proxmox series (it was Part 3 back then) and later listed it as Part 4 of this 2025 series, so a few names, IPs, and container layouts differ from Parts 1-3. The concepts carry over directly. Twingate sponsored the video, and I used it at the end for remote access to the local domain.
 
-The written steps below have been updated for [Nginx Proxy Manager v2.16.0](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0), released September 24, 2026, and [cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) 1.17.1. The biggest visible change since the video is the first login, which I cover below. Everything I describe *doing* comes from the recorded walkthrough. My companion notes and compose file are in the [proxy folder of my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy).
+The steps below are for [Nginx Proxy Manager v2.16.0](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0), released September 24, 2026, and [cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) 1.17.1. The biggest visible change since the video is the first login, which I cover below. Everything I describe *doing* comes from the recorded walkthrough. My companion notes and compose file are in the [proxy folder of my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy).
 
 ## How the Pieces Fit Together
 
@@ -63,7 +63,7 @@ In the video I set **Zone Resources** to all zones. I'd tighten that now. Cloudf
 
 ## The Docker Compose Stack
 
-My stack has three services: Nginx Proxy Manager, the [favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) updater, and a tiny hello world container for testing. My repo version also includes an optional NetBird client, which I'll get to later. Here's the stack with the image tags pinned and the token pulled from an environment variable:
+My stack has three services: Nginx Proxy Manager, the [favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) updater, and a tiny hello world container for testing. My repo version also includes an optional NetBird client, which I'll get to later. The stack with the image tags pinned and the token pulled from an environment variable:
 
 ```yaml
 services:
@@ -119,7 +119,7 @@ In the video I pasted this into a Portainer stack named `proxy`, which works too
 
 I'm a sucker for a good web GUI, and this is one of the easiest containers you'll ever deploy. The one decision that matters is networking. I run it with `network_mode: host` because that has worked best for me, especially for containers on the same machine, where `localhost:8888` just works. The catch is that it takes ports 80, 81, and 443 directly on the host, which is another reason to give it its own LXC or VM.
 
-In bridge mode you publish and remap ports yourself. Here's the bridge example from my repo:
+In bridge mode you publish and remap ports yourself. The bridge example from my repo:
 
 ```yaml
   proxy:
@@ -282,9 +282,9 @@ Now repeat the certificate step for `example.net` and `*.example.net`, using a D
 
 That's the moment from the thumbnail: `https://proxmox.example.net` with a real Let's Encrypt certificate. No more browser warning, and no more remembering which IP Proxmox is on.
 
-### What a Local Domain with a Public Certificate Actually Exposes
+### What a local domain with a public certificate exposes
 
-This setup is convenient, but "local" doesn't mean invisible. Here's what is public:
+This setup is convenient, but "local" doesn't mean invisible. What is public:
 
 - **Certificate names.** [Let's Encrypt submits every certificate to public Certificate Transparency logs](https://letsencrypt.org/docs/ct-logs/), and anyone can search those logs. Because I use a wildcard, the logs show `example.net` and `*.example.net`, not `proxmox.example.net`. Per-host certificates would list every service name.
 - **Your internal addressing.** Anyone can look up the local domain and see the private IP of your proxy. That's not a way in by itself, but it does reveal part of your internal network.
@@ -327,7 +327,7 @@ The other open item is the streaming subdomain. It's DNS-only, so it shows my ho
 
 That's the whole build. [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) set up Proxmox, ZFS, and shared storage. [Part 2](/ultimate-home-server-part-2-jellyfin) added Jellyfin. [Part 3](/ultimate-home-server-part-3-arr-stack) automated the library. This part gave all of it real names and real certificates. The local domain in particular turned out to be pretty easy to set up, and not clicking through certificate warnings or remembering IP addresses anymore is worth the effort.
 
-With all of this configured, from VMs to containers to the proxy's data volume, make sure it's backed up. Rebuilding 19 proxy hosts from memory is nobody's idea of fun. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers that. If you're starting fresh, head back to [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba). With all that, I do hope you found this useful. Have a great one.
+With all of this configured, from VMs to containers to the proxy's data volume, make sure it's backed up. Rebuilding 19 proxy hosts from memory is nobody's idea of fun. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers that. If you're starting fresh, head back to [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba). With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
