@@ -1,10 +1,10 @@
 export const title = "Plausible: Ditch Google Analytics for Privacy-Friendly, Open Source Stats"
 export const description = "A look at Plausible, the lightweight, cookie-free and open source Google Analytics alternative, plus how to self-host Plausible Community Edition with Docker Compose."
-export const date = "2026-10-17"
+export const date = "2026-11-19"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Self-Host", "Docker", "Homelab"]
-export const cover = "/docs-static/img/2026/10/plausible-privacy-friendly-analytics/cover.jpg"
+export const cover = "/docs-static/img/2026/11/plausible-privacy-friendly-analytics/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -14,7 +14,7 @@ Website analytics sounds like a pretty boring topic, I know. The reason I care i
 
 To test it, I ran Plausible and Google Analytics on techhut.tv at the same time for about two weeks before making the call. I'll go over what Plausible is, how it compared to Google Analytics for me, a tour of the dashboard, and how to self-host it yourself.
 
-The video was recorded in April 2021, and a lot has moved since then. The self-hosted version is now called **Plausible Community Edition (CE)** and lives in its own [community-edition repository](https://github.com/plausible/community-edition), so the self-hosting steps below are for [CE v3.2.1](https://github.com/plausible/analytics/releases/tag/v3.2.1), the current release from May 2026. Google also shut down Universal Analytics in 2023, so the Google comparison below reflects Google Analytics 4. The tracking snippet and a few settings screens have changed too, and I've noted those where they come up. My hands-on impressions are from the recorded walkthrough of the hosted dashboard.
+The video was recorded in April 2021, and a lot has moved since then. The self-hosted version is now called **Plausible Community Edition (CE)** and lives in its own [community-edition repository](https://github.com/plausible/community-edition), so the self-hosting steps below are for [CE v3.2.1](https://github.com/plausible/analytics/releases/tag/v3.2.1), released May 15, 2026, which is still the current release. Google also shut down Universal Analytics in 2023, so the Google comparison below reflects Google Analytics 4. The tracking snippet and a few settings screens have changed too, and I've noted those where they come up. My hands-on impressions are from the recorded walkthrough of the hosted dashboard.
 
 ## What Plausible Is
 
@@ -22,7 +22,7 @@ Plausible is a web analytics tool. You add one small script to your site, and it
 
 You have two ways to run it, which is kind of similar to how Bitwarden does things:
 
-- **Plausible Cloud**: the paid, hosted service at plausible.io. Subscriptions are how the project is funded. When I recorded, I was on the free trial, which is still [30 days with no credit card required](https://plausible.io/docs/plausible-script). I'm not going to quote prices here, since they've changed since 2021. Check the [Plausible site](https://plausible.io) for the current plans. Back then I was planning to just pay for it, because it's a good service and paying for their servers is how you support the project.
+- **Plausible Cloud**: the paid, hosted service at plausible.io. Subscriptions are how the project is funded. When I recorded, I was on the free trial, which is still [30 days with no credit card required](https://plausible.io). I'm not going to quote prices here, since they've changed since 2021. Check the [Plausible site](https://plausible.io) for the current plans. Back then I was planning to just pay for it, because it's a good service and paying for their servers is how you support the project.
 - **Plausible Community Edition**: the free, self-hosted version. You run it on your own server with Docker, and you never pay Plausible anything.
 
 They aren't identical, though. Plausible's own [comparison](https://plausible.io/self-hosted-web-analytics) lays out the differences:
@@ -31,7 +31,7 @@ They aren't identical, though. Plausible's own [comparison](https://plausible.io
 |---|---|---|
 | Hosting and upkeep | Managed by Plausible | You handle installs, upgrades, backups, and uptime |
 | Release schedule | Updated continuously | Long-term releases, about twice a year |
-| Premium features | Everything in your plan | No marketing funnels, ecommerce revenue goals, SSO, or Sites API |
+| Premium features | Everything in your plan | No marketing funnels, user journeys, ecommerce revenue goals, SSO, or Sites API |
 | Bot filtering | Advanced, including about 32K data center IP ranges | Basic, based on User-Agent and referrer spam lists |
 | Data location | EU-owned infrastructure, stored in Germany | Wherever you host it |
 | Raw data | Dashboard, CSV export, Stats API | Same, plus direct access to the ClickHouse database |
@@ -59,7 +59,7 @@ The point I made in the video still applies: Plausible won't hand you, the site 
 
 Since I was running both on techhut.tv, I compared them. On my peak day, Thursday, April 22nd, Plausible reported **773 visitors**, while Google Analytics showed **667 users**. I wasn't sure if those were counted the same way, and they probably aren't, since Plausible counts visitors and Google counts users. There was a difference, but not one big enough to change what content I'd make.
 
-![The Plausible 7-day graph for techhut.tv with the Thursday, April 22nd peak of 773 visitors highlighted, as shown in the video](/docs-static/img/2026/10/plausible-privacy-friendly-analytics/dashboard-peak-day-graph.jpg)
+![The Plausible 7-day graph for techhut.tv with the Thursday, April 22nd peak of 773 visitors highlighted, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/dashboard-peak-day-graph.jpg)
 
 The realtime numbers were close too. Google showed six active users while Plausible reported seven.
 
@@ -71,9 +71,9 @@ What I really liked about Plausible was the simplicity and visuals compared to G
 
 The realtime view shows current visitors, the pages they're on, and where they came from. When I recorded, people were on my Cooler Master guide, the Ryzen temperature monitoring article, and one of my Pop!_OS posts. Google's realtime report can also show the source, it just took me a second to find it.
 
-![Plausible's realtime view showing current visitors, a 30-minute graph, and the top sources and pages people are on right now, as shown in the video](/docs-static/img/2026/10/plausible-privacy-friendly-analytics/realtime-view.jpg)
+![Plausible's realtime view showing current visitors, a 30-minute graph, and the top sources and pages people are on right now, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/realtime-view.jpg)
 
-The period picker switches between realtime, preset ranges, and a custom range. I'd only been running it for about two weeks, so the 30-day view didn't have much more than the 7-day one. Current versions [default to Last 28 days](https://github.com/plausible/analytics/blob/master/CHANGELOG.md) instead of 30, though the old 30-day range is still there.
+The period picker switches between realtime, preset ranges, and a custom range. I'd only been running it for about two weeks, so the 30-day view didn't have much more than the 7-day one. A brand new site opens on today, then the default becomes [Last 28 days](https://github.com/plausible/analytics/blob/v3.2.1/CHANGELOG.md) the next day. The old 30-day range is still there, and the T shortcut opens it.
 
 ### Top Stats
 
@@ -83,7 +83,7 @@ Across the top you get unique visitors, total page views, bounce rate, and avera
 
 The tiles below the graph break things down into top sources, top pages, locations, and devices. The devices tile has tabs for browsers, operating systems, and device type (desktop, mobile, or tablet). Compared to most sites, a lot of my visitors use Firefox, which makes sense given that I push free and open source software and Linux. Most people come from desktops too, which is nice to know, since I can lay out guides and tutorials expecting a bigger screen.
 
-![The Top Sources, Top Pages, Countries, and Devices tiles in Plausible, with the browser tab showing Chrome and Firefox leading, as shown in the video](/docs-static/img/2026/10/plausible-privacy-friendly-analytics/sources-pages-countries-devices.jpg)
+![The Top Sources, Top Pages, Countries, and Devices tiles in Plausible, with the browser tab showing Chrome and Firefox leading, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/sources-pages-countries-devices.jpg)
 
 ### Entry and Exit Pages
 
@@ -103,7 +103,7 @@ What I walked through in the video, along with what's changed:
 - **Custom domain.** There was a custom domain option in 2021. Current versions don't have it. Instead, Plausible documents [proxying the script](https://plausible.io/docs/proxy/introduction) through your own domain if you want it served first-party.
 - **Danger zone.** This is where you reset all of a site's stats or delete the site from Plausible completely.
 
-![The Visibility page in Plausible's site settings with the public dashboard toggle enabled, as shown in the video](/docs-static/img/2026/10/plausible-privacy-friendly-analytics/site-settings-visibility.jpg)
+![The Visibility page in Plausible's site settings with the public dashboard toggle enabled, as shown in the video](/docs-static/img/2026/11/plausible-privacy-friendly-analytics/site-settings-visibility.jpg)
 
 Since 2021, Plausible has also added things I didn't show in the video, such as acquisition channels, scroll depth, time on page, segments, and imports from Google Analytics 4. The [changelog](https://github.com/plausible/analytics/blob/master/CHANGELOG.md) has the full list.
 
