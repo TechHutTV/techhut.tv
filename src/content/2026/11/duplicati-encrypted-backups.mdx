@@ -1,0 +1,274 @@
+export const title = "Duplicati: Easy, Fully Encrypted Open Source Backups"
+export const description = "Set up Duplicati with Docker or a desktop installer, send encrypted and incremental backups to Google Drive or any other destination, and restore files when you need them."
+export const date = "2026-11-30"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux", "Windows", "Mac"]
+export const cover = "/docs-static/img/2026/11/duplicati-encrypted-backups/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="eD7ULX7AK6M" title="TechHut's Duplicati walkthrough" />
+
+I have the misfortune of paying for Google Workspace. I need it for business, and it comes with 4 TB of storage. I really don't like uploading my files and photos to a big cloud platform where they can be read. So I started using that space for something it can't look inside of: encrypted backups made with [Duplicati](https://duplicati.com).
+
+If you open my Duplicati folder in Google Drive, you'll find a folder for my Immich backup and another for my Nextcloud backup. Inside those, it's just a pile of encrypted, compressed chunks of about 50 MB each. No photos, no file names, nothing useful to anyone without the passphrase. The best part is that getting to this point was really easy.
+
+![The duplicati/immich folder in Google Drive filled with encrypted dblock volumes of about 49 MB each](/docs-static/img/2026/11/duplicati-encrypted-backups/google-drive-encrypted-chunks.jpg)
+
+I'll go over how I have it set up, how to install it with Docker or on a desktop, how a backup and a restore work, and the couple of things I don't love about it.
+
+The video was published in December 2025. The written installation has been updated for [Duplicati 2.4.1.0](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29), the current stable release, published October 29, 2026. Duplicati now enforces a stricter data folder permission check (added in 2.3.1.0), and the 2.4 line adds a new sync (plain copy) mode and saving the job configuration alongside encrypted backups. 2.4.1.0 also updates the local database format, so read the release notes before you downgrade. The folder-backup steps below are the same. Duplicati's free cloud dashboard has also changed since recording. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
+
+## What Duplicati Does
+
+Duplicati is a backup client. You pick some folders, pick a destination, set a schedule, and it takes care of the rest. Before anything leaves your machine, it:
+
+- Splits your files into blocks and deduplicates them, so unchanged data isn't uploaded again
+- Compresses the blocks and packs them into remote volumes, which are [50 MB by default](https://docs.duplicati.com/technical-details/understanding-backup/backup-size-parameters)
+- Encrypts each volume with [AES-256 (built in) or GPG](https://docs.duplicati.com/technical-details/understanding-backup/encryption-algorithms)
+- Keeps versions according to a retention policy you choose
+
+Since the first backup is the only full upload, every run after that only sends what changed. The client is [MIT licensed](https://github.com/duplicati/duplicati) and runs on Windows, macOS, and Linux. Everything is managed through a web UI, which is on port `8200` by default.
+
+There are a lot of [supported destinations](https://docs.duplicati.com/backup-destinations/destination-overview): a local or network folder, SMB shares, WebDAV, SFTP, FTP, S3-compatible storage, Backblaze B2, Google Drive, OneDrive, Dropbox, Storj, rclone, and more. So if you're paying for some cloud storage like I am, odds are you can point Duplicati at it.
+
+There is a company behind the project too. [Duplicati Inc.](https://docs.duplicati.com/duplicati-programs/license/duplicati-inc-and-open-source) runs an open core model: the client stays open source and free to use, while the hosted Console and some enterprise features are paid. A few newer modules, such as full disk imaging and Microsoft 365 backup, are source-available rather than MIT. None of that is needed for what I'm doing here.
+
+## How I Have It Set Up
+
+My main instance runs on Unraid in Docker. The container setup is pretty simple:
+
+- The web UI on port `8200`
+- A **backups** path, which is its own share I made just for this. Eventually I want to use it to move data around between my storage pools.
+- A **source** path that points at the root of all my shares, so I can pick basically anything from inside Duplicati
+- A settings encryption key and a web UI password
+
+I have two cloud backups set up right now, both going to Google Drive and both encrypted: Immich, which is all of my photos, and Nextcloud, which holds the files and documents that don't fit into my media shares. They're the stuff I'd be really upset to lose.
+
+![The Duplicati home page listing the Immich and Nextcloud backups to Google Drive with their sizes and version counts](/docs-static/img/2026/11/duplicati-encrypted-backups/duplicati-home-backups.jpg)
+
+## Install Duplicati with Docker Compose
+
+This uses the [official `duplicati/duplicati` image](https://hub.docker.com/r/duplicati/duplicati), following the [official Docker guide](https://docs.duplicati.com/platform-specific-guides/using-duplicati-from-docker). I've pinned it to `2.4.1.0`. The `latest` and `stable` tags follow the newest stable release if you'd rather float, and there are also `beta` and `canary` tags. Images are built for amd64, arm64, and 32-bit ARMv7.
+
+Create a project folder and a `.env` file for the two secrets:
+
+```bash
+sudo mkdir -p /srv/duplicati
+sudo chown "$(id -u):$(id -g)" /srv/duplicati
+cd /srv/duplicati
+
+cat > .env <<'EOF'
+SETTINGS_ENCRYPTION_KEY=REPLACE_WITH_RANDOM_VALUE
+DUPLICATI_UI_PASSWORD=REPLACE_WITH_RANDOM_VALUE
+EOF
+chmod 600 .env
+```
+
+Generate a separate value for each one and paste them in:
+
+```bash
+openssl rand -hex 32  # SETTINGS_ENCRYPTION_KEY
+openssl rand -hex 24  # DUPLICATI_UI_PASSWORD
+```
+
+Then create `docker-compose.yml`:
+
+```yaml
+services:
+  duplicati:
+    image: duplicati/duplicati:2.4.1.0
+    container_name: duplicati
+    restart: unless-stopped
+    ports:
+      - "8200:8200"
+    environment:
+      SETTINGS_ENCRYPTION_KEY: ${SETTINGS_ENCRYPTION_KEY}
+      DUPLICATI__WEBSERVICE_PASSWORD: ${DUPLICATI_UI_PASSWORD}
+      # Only needed if you reach the UI by hostname instead of IP:
+      # DUPLICATI__WEBSERVICE_ALLOWED_HOSTNAMES: backup.your-domain.com
+    volumes:
+      - ./data:/data
+      - /path/to/backups:/backups
+      - /path/to/source:/source
+```
+
+Each piece does this:
+
+| Setting | What it's for |
+|---|---|
+| `./data:/data` | The server database, job settings, and per-backup local databases. Keep this. |
+| `/path/to/backups:/backups` | Optional local destination, like my backups share. Pick `/backups/...` as a file system destination in the UI. |
+| `/path/to/source:/source` | Whatever you want to back up. Everything you select in the UI lives under `/source`. |
+| `SETTINGS_ENCRYPTION_KEY` | Encrypts the secrets stored in the server database, like your backup passphrases and cloud credentials. |
+| `DUPLICATI__WEBSERVICE_PASSWORD` | The password for the web UI. |
+| `DUPLICATI__WEBSERVICE_ALLOWED_HOSTNAMES` | Duplicati blocks requests that use a hostname unless it's listed here. Separate multiple names with `;`. |
+
+The source mount is read-write here on purpose. If you restore to the original location, Duplicati needs to write back into `/source`. If you only ever restore to the backups folder, you can mount the source with `:ro`.
+
+Start it up:
+
+```bash
+docker compose up -d
+docker compose logs -f duplicati
+```
+
+Then open `http://YOUR_SERVER_IP:8200` and sign in with the UI password. If you leave the password variable out, the logs show a one-time sign-in link instead, and it expires a few minutes after startup.
+
+<Warning>
+The settings encryption key is not your backup passphrase, but it does protect the secrets saved in Duplicati's database. Save both it and every backup passphrase in a password manager. The docs are blunt about it: if you lose a backup passphrase, nothing in that backup can be recovered.
+</Warning>
+
+A few more notes:
+
+- **Don't expose port 8200 to the internet.** This UI can read everything you mounted. Keep it on your LAN or a VPN. I've got a [guide for self-hosting NetBird with Pocket ID](/self-host-netbird-pocketid) if you want remote access done properly.
+- **Data folder permissions are enforced since 2.3.1.0.** Duplicati now refuses to start if its data folder isn't locked down to its own user. A fresh install creates the folder correctly, so most people won't notice. If an older setup or an unusual mount hits an `InsecureDataFolderPermissions` error, fix the permissions or set `DUPLICATI__ALLOW_INSECURE_DATAFOLDER: "true"` as [documented](https://docs.duplicati.com/database-and-storage/the-server-database).
+- **Prefer Docker secrets?** The Docker guide also covers loading these values from a preload file or a secret provider rather than plain environment variables.
+- **Third-party images.** The popular [linuxserver/duplicati](https://hub.docker.com/r/linuxserver/duplicati) image uses a different layout (`/config`, `/backups`, `/source`, plus `PUID` and `PGID`). If you pick that one, follow its own README for paths.
+
+## Install on Windows, macOS, or Linux
+
+Duplicati doesn't work like a server you install clients for. I expected something like Nextcloud, where one central instance sits on Unraid and lightweight apps on each computer connect to it. That isn't how it works. **Every machine runs its own copy of Duplicati and manages its own backups.**
+
+On a desktop, the normal install is the GUI package. It puts a tray icon (a menu bar icon on macOS) next to your clock and opens the web UI in your browser. Grab it from the [download page](https://duplicati.com/download). Use **Other versions** for alternate packages, or get them from the [GitHub releases](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29):
+
+| Platform | Package | Architectures |
+|---|---|---|
+| Windows | `.msi` | x64, Arm64, x86 |
+| macOS | `.dmg` (or `.pkg` for managed rollouts) | Apple Silicon (Arm64), Intel (x64) |
+| Debian, Ubuntu, Mint | `.deb` | x64, Arm64, Arm7 |
+| Fedora, RHEL, openSUSE | `.rpm` | x64, Arm64 |
+| Other Linux | `.zip` or `.AppImage` | x64, Arm64, Arm7 |
+
+On Linux, install the package you downloaded with your package manager:
+
+```bash
+# Debian / Ubuntu
+sudo apt install ./duplicati-2.4.1.0_stable_2026-10-29-linux-x64-gui.deb
+
+# Fedora / RHEL
+sudo dnf install ./duplicati-2.4.1.0_stable_2026-10-29-linux-x64-gui.rpm
+```
+
+On macOS, open the DMG and drag Duplicati into Applications. Keep in mind that the DMG version doesn't start at login on its own. On Windows, the 2.4 installer now has checkboxes for running Duplicati as a service and turning on HTTPS.
+
+If you want a headless Linux box without Docker, the `.deb` and `.rpm` packages also ship a `duplicati.service` systemd unit. The [Linux guide](https://docs.duplicati.com/platform-specific-guides/using-duplicati-with-linux) explains how to set it up.
+
+## Creating a Backup
+
+This is the same five-step flow on every platform. I'll go through the Immich backup on my server, since it shows off most of the options. You start a new one from **Add backup**, and the pencil icon on an existing job takes you back through the same steps.
+
+### 1. Name and Encryption
+
+Give the backup a name, like "Immich Backup." Then pick the encryption method and passphrase. The built-in option is AES-256. Duplicati has a passphrase generator and a strength meter, so use them, and then put that passphrase somewhere safe.
+
+### 2. Destination
+
+For me, this is Google Drive. You click the **AuthID** link, sign in with Google, and it fills in the token for you. You don't need to create API keys or a Google Cloud project, which is nice. I set the path to `duplicati/immich`.
+
+![The Backup destination step in Duplicati with Google Drive selected and the folder path set to duplicati/immich](/docs-static/img/2026/11/duplicati-encrypted-backups/google-drive-destination.jpg)
+
+Hit **Test destination** before continuing. When I set up my MacBook backup it got a little weird on the first try, and then offered to create the missing folder on the second. That's normal.
+
+<Note>
+Every backup job needs its own destination folder. If two jobs share a folder, they keep breaking each other. That's why I use `duplicati/immich`, `duplicati/nextcloud`, and so on.
+</Note>
+
+The [Google Drive page](https://docs.duplicati.com/backup-destinations/file-synchronization-providers/googledrive-destination) has one extra thing worth reading. By default, Duplicati only gets limited access, meaning it can only see the files it created. Google sometimes resets that access, and fixing it takes some manual work. That isn't a reason to avoid Google Drive, but you should know about it.
+
+### 3. Source Data
+
+Because my source mount points at the root of all my shares, I can just browse to the Immich share and select its library. There are filters and exclude options too, like skipping temporary files.
+
+If you're backing up Immich specifically, select the whole `UPLOAD_LOCATION` folder, not only `library`. Immich's [backup guide](https://docs.immich.app/administration/backup-and-restore/#filesystem) lists `library`, `upload`, and `profile` as the folders holding original content. `library` is only used when the storage template is enabled, so on many setups the originals live in `upload`. Immich also writes automatic database dumps to `UPLOAD_LOCATION/backups`, and it recommends backing up the database along with the files. Restoring photos without the database is a much worse day.
+
+### 4. Schedule
+
+Mine runs every day at 11 PM. You can also hit **Start** on a job at any time. I do that after a big bulk upload when I want it backed up right away.
+
+### 5. Options and Retention
+
+**Remote volume size** is the size of each chunk you'll see at the destination. I left it at 50 MB. The docs suggest about 50 to 500 MB for cloud storage and larger for a fast local network. The trade-off is that restoring even one small file means downloading the whole volume it lives in.
+
+For retention, I use **Smart backup retention**. It's the policy `1W:1D,4W:1W,12M:1M`, which keeps:
+
+- One backup per day for the last week
+- One per week for the last four weeks
+- One per month for the last twelve months
+
+![The Options step in Duplicati with a 50 MB remote volume size and Smart backup retention selected](/docs-static/img/2026/11/duplicati-encrypted-backups/options-smart-retention.jpg)
+
+That seems pretty good to me. There's also a pile of [advanced options](https://docs.duplicati.com/configuration-and-management/retention-settings) if you want to get really nitty-gritty. Hit **Submit** and you're done.
+
+### New UI, Old UI
+
+There's a **Use old UI** link in the sidebar if you want the classic interface back. When I first saw the old one I really wasn't a fan, and the new UI looks a lot cleaner. Both are still there in 2.4.
+
+## How Incremental Backups Look in Practice
+
+In the restore view for my Nextcloud backup, the latest version was 263 GB, and one from a couple of days earlier was 262 GB. Duplicati didn't upload another full 260-odd gigabytes for that new version. It only sent the changed blocks, so daily backups don't eat up a crazy amount of space.
+
+![The restore version dropdown for the Nextcloud backup showing versions of 263.27 GB and 262.24 GB](/docs-static/img/2026/11/duplicati-encrypted-backups/restore-version-list.jpg)
+
+## Restoring Files
+
+A backup you can't restore is just wasted storage, so here's how it works.
+
+1. Go to **Restore** and pick the backup you want. For a job that's already configured, Duplicati reads its local database, so browsing is fast.
+2. Choose the version from the dropdown. It defaults to the latest.
+3. Browse to the files and select them. In the video, I grabbed some demo footage out of my Nextcloud backup.
+4. Choose where they go. You can restore to the **original location** or pick a **different location**, which I did by browsing into my appdata folder through the source mount. If the target folder isn't empty, you can also have Duplicati add a timestamp to restored file names instead of overwriting.
+5. Hit **Submit** and watch the progress.
+
+This part takes a minute, since Duplicati has to pull the volumes from the cloud, decrypt them, and rebuild the files. The live log shows a `get` for each volume it downloads, along with when it finishes. Once it was done, I browsed to the appdata share and there was the file, and it opened fine.
+
+![The restore log in Duplicati showing Backend event Get entries as encrypted dblock volumes are downloaded](/docs-static/img/2026/11/duplicati-encrypted-backups/restore-log-get-events.jpg)
+
+By default, file permissions aren't restored, since the original users and groups might not exist on the machine you're restoring to.
+
+### When the Original Machine Is Gone
+
+This is the restore that matters. If the server dies, a fresh Duplicati install can do a **direct restore from backup files**. It only needs the destination details, like a new Google Drive AuthID and the folder path, plus your passphrase. It's slower because Duplicati has to rebuild information from the remote files first, but it works. A few other things help here:
+
+- **Export your job configurations.** Click **Export** on each backup, then encrypt the file or leave the passwords out. You can import it later instead of rebuilding the job by hand.
+- **Stored configs (2.4).** Encrypted backups now save their own job configuration at the destination by default, with secrets stripped. That means you can recover the job setup from the backup itself.
+- **Recovery tools.** If things are badly broken, there's a standalone [RecoveryTool](https://docs.duplicati.com/duplicati-programs/command-line-interface-cli-1/recoverytool) and a Python restore script that don't need the normal client.
+
+None of that works without the passphrase. I'll say it one more time because it's the one thing that can't be fixed later.
+
+## Backing Up a Mac
+
+To show the desktop side, I set up a backup of my MacBook. Yes, I'm on macOS right now. Don't judge me.
+
+I downloaded the macOS build, opened it, and it launched a fresh Duplicati instance in a new browser tab. This instance is completely separate from the one on Unraid. Then:
+
+1. **Add backup**, name it "MacBook Backup," and set an encryption passphrase.
+2. For the destination I picked Google Drive again with the path `duplicati/MacBook`, and signed in for a new AuthID. It also could have been the local file system, an SMB share, WebDAV, SSH, or anything else on the list.
+3. For the source, macOS asked me to grant access to folders a few times. I allowed it all and selected my whole home folder.
+4. I scheduled it for 1 PM, since my laptop is usually open around then.
+5. I kept smart retention and submitted it.
+
+Then I ran it manually, and this is where it went wrong. My home folder includes my Nextcloud sync folder, so I was about to back up a bunch of data that's already backed up from the server. I aborted it, edited the job, and only selected the folders I really want, mostly stuff on my desktop. That brought it down to about 57 GB, which isn't nearly as bad as it was about to be.
+
+So my advice is to look closely at what's inside your home folder before selecting all of it. Synced cloud folders, VM images, and caches add up fast.
+
+## The Duplicati Console
+
+The Console is the part I have mixed feelings about. It's a cloud dashboard at [app.duplicati.com](https://app.duplicati.com) that lets you see all of your Duplicati machines in one place. You connect a machine with **Click to register** in the top-right corner of its local UI and approve it on your account. After I registered the MacBook, both machines showed up as online, with their backups listed.
+
+It's really cool. I just wish I could self-host it. Since every machine runs its own Duplicati instance, the Console is how you tie them together. It's a hosted service, though, and the company has to make money somewhere, so I get why it's locked down.
+
+When I recorded, the free tier covered five machines. That has changed. The [current pricing](https://duplicati.com/pricing) gives you monitoring for **up to 2 machines** for free. Remote management, missed backup alerts, and longer history are part of the paid Pro plan, and agent-based deployment needs Enterprise. Your first connected machine also starts a [30-day Pro trial](https://docs.duplicati.com/duplicati-console/using-the-duplicati-console) automatically, which explains the trial badge I saw in the video.
+
+You don't need the Console at all. Each instance runs its own schedule and has its own UI either way.
+
+## Final Thoughts
+
+Duplicati turned storage I'm already paying for into something I'm comfortable using. Google gets a folder full of encrypted 50 MB chunks, and I get versioned, incremental backups of my photos and files with a schedule I don't have to think about. Setup took a few minutes, the new UI is clean, and the restore did what it was supposed to.
+
+What I don't love is the per-machine model. I'd really like to install it once on my server and connect lightweight clients from my desktops, or at least self-host the Console. Right now every computer is its own island unless you use their cloud dashboard.
+
+I also don't consider this my whole backup strategy. It's my cloud copy, an encrypted one, on storage I'm already paying for. For the real offsite setup, I said in the video that I was planning a bare-metal Proxmox Backup Server box at a family member's house. That series has since started with my [complete Proxmox Backup Server guide](/proxmox-backup-server-complete-guide), so go check that out if you want the full 3-2-1 picture.
+
+If you've got some cloud storage you don't trust with your raw files, give Duplicati a shot. Start with one small folder, do a test restore, and save that passphrase somewhere safe. With all that, I do hope you found this helpful. Have a great one.
