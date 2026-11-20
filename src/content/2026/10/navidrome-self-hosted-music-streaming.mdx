@@ -14,11 +14,11 @@ Streaming services were supposed to save us from cable. Now there are so many of
 
 Navidrome is a personal streaming service for music you already own. You point it at your library, it gives you a clean web player that looks a lot like Spotify, and it works with a huge list of mobile and desktop apps. Jellyfin and Plex can technically do music too, but Navidrome is built for it.
 
-In this guide I'll install Navidrome with Docker Compose on an Ubuntu server, get some music onto it, go over the tagging and permission issues I ran into, and then stream everything from my phone.
+I'll install Navidrome with Docker Compose on an Ubuntu server, get some music onto it, go over the tagging and permission issues I ran into, and then stream everything from my phone.
 
 Linode (part of Akamai) sponsored the video this article is based on.
 
-The video was published in August 2022. The written installation has been updated for [Navidrome v0.64.2](https://github.com/navidrome/navidrome/releases/tag/v0.64.2), released September 24, 2026. The official image name, the Compose file, the Docker install steps, and the permission advice have all changed since then, and Navidrome has picked up features like multiple libraries and an experimental Jellyfin API. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
+The video was published in August 2022. The install steps below are for [Navidrome v0.64.2](https://github.com/navidrome/navidrome/releases/tag/v0.64.2), released September 24, 2026. The official image name, the Compose file, the Docker install steps, and the permission advice have all changed since then, and Navidrome has picked up features like multiple libraries and an experimental Jellyfin API. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
 
 ## What Navidrome Does
 
@@ -188,7 +188,7 @@ Now open `http://your-server-ip:4533` in a browser. On first launch, Navidrome a
 
 On my cloud server, port `4533` was reachable as soon as the container started, with no firewall changes. If you can't connect, check your provider's firewall or your network.
 
-Here's something worth knowing that I didn't get into in the video: Docker's own docs [warn](https://docs.docker.com/engine/install/ubuntu/) that published container ports bypass `ufw` and `firewalld` rules. So on a cloud server, Navidrome is on the internet the moment it starts, even if `ufw` is set to deny everything.
+One thing I didn't get into in the video: Docker's own docs [warn](https://docs.docker.com/engine/install/ubuntu/) that published container ports bypass `ufw` and `firewalld` rules. So on a cloud server, Navidrome is on the internet the moment it starts, even if `ufw` is set to deny everything.
 
 As you can see in the address bar, it's also plain HTTP, so your password goes over the network unencrypted. The [security docs](https://www.navidrome.org/docs/usage/admin/security/) recommend putting Navidrome behind a reverse proxy like Caddy, Nginx, or Traefik and handling SSL there. If the proxy runs on the same machine, publish the port on localhost only so the proxy is the only way in:
 
@@ -226,7 +226,7 @@ After an hour or two of playing around, I had some music in there: Tom Petty's W
 
 ![The Navidrome Artists list cluttered with featured artists like Jay-Z & Kanye West and Big Sean as separate entries, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/artists-list-features.jpg)
 
-At the time I blamed my naming schemes and figured I had to clean up the folder names. Navidrome's [tagging guidelines](https://www.navidrome.org/docs/usage/library/tagging/) explain what's actually going on: it organizes your library **entirely** from the metadata tags in your files. Folder names don't matter. So the fixes are:
+At the time I blamed my naming schemes and figured I had to clean up the folder names. Navidrome's [tagging guidelines](https://www.navidrome.org/docs/usage/library/tagging/) explain what's going on: it organizes your library **entirely** from the metadata tags in your files. Folder names don't matter. So the fixes are:
 
 - **Set Album Artist consistently.** Every track on an album should have the same Album Artist (Tom Petty and the Heartbreakers, for example). The Artist tag can still list features per track.
 - **Use multi-valued artist tags** (`ARTISTS` and `ALBUMARTISTS`) for collaborations, so Navidrome can link each artist without guessing. It can split names on separators like " feat. " or " / " as a fallback.
@@ -275,9 +275,9 @@ Navidrome has a [built-in backup](https://www.navidrome.org/docs/usage/admin/bac
 
 ## Final Thoughts
 
-Navidrome is a really good way to get started on your self-hosted music streaming journey. The install is a single Compose file, the web interface is clean and modern, and pairing it with a client like Substreamer gives you the things I actually use Spotify for, including offline downloads, on music you already own.
+Navidrome is a really good way to start self-hosting your music. The install is a single Compose file, the web player looks a lot like Spotify, and pairing it with a client like Substreamer gives you the things I use Spotify for, including offline downloads, on music you already own.
 
-The real work isn't the server, it's your library. If your files are tagged messily like mine were, expect to spend some time cleaning things up before every album has its art and every artist shows up where you expect. Get the tags right, sort out the file permissions, and put it behind HTTPS before you expose it to the internet. With all that, I hope you found this helpful. Have an absolutely beautiful day.
+The real work isn't the server, it's your library. If your files are tagged messily like mine were, expect to spend some time cleaning things up before every album has its art and every artist shows up where you expect. Get the tags right, sort out the file permissions, and put it behind HTTPS before you expose it to the internet. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
