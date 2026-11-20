@@ -1,10 +1,10 @@
 export const title = "LSD (LSDeluxe): Make Your Linux ls Command Awesome"
 export const description = "Install LSD, the Rust rewrite of ls with colors, icons and a tree view, set up a Nerd Font, learn the flags worth knowing, alias it to ls in bash or zsh, and customize it with config.yaml, colors.yaml and icons.yaml."
-export const date = "2026-10-17"
+export const date = "2027-01-03"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Terminal", "Customization"]
-export const cover = "/docs-static/img/2026/10/lsd-lsdeluxe-ls-command/cover.jpg"
+export const cover = "/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -22,7 +22,7 @@ LSD is a rewrite of GNU `ls` that's heavily inspired by [colorls](https://github
 
 Out of the box, running `lsd` instead of `ls` gives you a more compact grid with an icon next to every entry. Folders get folder icons, images get picture icons, HTML files get the little HTML5 logo, Markdown files get their own icon, and generic files like ISOs get a plain file icon.
 
-![The ls and lsd commands side by side in a terminal on ArcoLinux, with lsd showing folder and file type icons in the Downloads folder](/docs-static/img/2026/10/lsd-lsdeluxe-ls-command/ls-vs-lsd-arcolinux.jpg)
+![The ls and lsd commands side by side in a terminal on ArcoLinux, with lsd showing folder and file type icons in the Downloads folder](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/ls-vs-lsd-arcolinux.jpg)
 
 Most of the familiar `ls` flags work, though not every single one. Run `lsd --help` to see the full list.
 
@@ -129,7 +129,7 @@ In the video, I started with `lsd -a` in my home directory. It's the same list `
 
 It gets more useful in a folder with actual files in it. In my Downloads folder you could see the sizes color-coded: small files in a light tan, medium files a bit warmer, and multi-gigabyte ISOs in a darker orange. That makes the big stuff jump out right away.
 
-![lsd -Fl output in the home and Downloads folders, with colored permissions, dates and file sizes where the 2.5 GB ISOs stand out in orange](/docs-static/img/2026/10/lsd-lsdeluxe-ls-command/lsd-fl-long-listing.jpg)
+![lsd -Fl output in the home and Downloads folders, with colored permissions, dates and file sizes where the 2.5 GB ISOs stand out in orange](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/lsd-fl-long-listing.jpg)
 
 I didn't get to the tree view in the video, but it's one of the best reasons to use LSD. This shows two levels of a project folder with directories first:
 
@@ -153,7 +153,7 @@ nano ~/.bashrc
 
 On my ArcoLinux install, the file already had a `#list` section with aliases for `ls`. I commented out the existing `alias ls='ls --color=auto'` line with a `#` and added mine. My first attempt was `lsd -Fla`.
 
-![The .bashrc file in nano on ArcoLinux, with the default ls alias commented out and alias ls='lsd -Fla' added under the list section](/docs-static/img/2026/10/lsd-lsdeluxe-ls-command/bashrc-ls-alias.jpg)
+![The .bashrc file in nano on ArcoLinux, with the default ls alias commented out and alias ls='lsd -Fla' added under the list section](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/bashrc-ls-alias.jpg)
 
 Commenting out the old line is good housekeeping. If you leave both, whichever alias comes last in the file wins. A reasonable set to add at the end of the file:
 
