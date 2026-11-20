@@ -10,9 +10,9 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="QGONe-NTWuI" title="TechHut's Glance walkthrough" />
 
-Dashboards are one of my favorite parts of running a home server. They don't do any of the heavy lifting, but having every service, a few handy widgets, and the stuff you check every day on one page is the cherry on top of the whole setup.
+Dashboards are one of my favorite parts of running a home server. They don't run the services, but having every service, a few handy widgets, and the stuff you check every day on one page is the part I like.
 
-I've gone through plenty of them. Homepage, Heimdall (a longtime favorite), and most recently Homarr, which has a ton of features and integrates really well with the \*arr apps. The one I actually switched to, and the one I open more than any other, is [Glance](https://github.com/glanceapp/glance). It's beautiful, and the whole thing is configured with YAML. It gives you a quick *glance* at your entire home server. Sorry, I had to.
+I've gone through plenty of them. Homepage, Heimdall (a longtime favorite), and most recently Homarr, which has a ton of features and integrates really well with the \*arr apps. The one I switched to, and the one I open more than any other, is [Glance](https://github.com/glanceapp/glance). It's beautiful, and the whole thing is configured with YAML. It gives you a quick *glance* at your entire home server. Sorry, I had to.
 
 YESOUL sponsored the video this article is based on and sent over the exercise bike featured in it.
 
@@ -28,7 +28,7 @@ Everything is organized the same way:
 - **Columns** live inside a page. Each page can have up to three, either `small` (a fixed 300px sidebar) or `full` (takes the remaining width), and you need one or two `full` columns.
 - **Widgets** go inside columns: RSS, YouTube, Hacker News, Reddit, weather, markets, search, service monitoring, DNS stats, GitHub releases, Docker containers, bookmarks, and a `custom-api` widget for pulling JSON from just about anything, among others.
 
-It's not as feature rich as something like Homarr, at least not yet. What it does have is implemented really well, it's mobile friendly, and there are plenty of color schemes to pick from. If you want to read through everything before installing, the [configuration docs](https://github.com/glanceapp/glance/blob/main/docs/configuration.md) are one long Markdown file with every widget and property.
+Homarr has more features, at least for now. What Glance has is done really well, it's mobile friendly, and there are plenty of color schemes to pick from. If you want to read through everything before installing, the [configuration docs](https://github.com/glanceapp/glance/blob/main/docs/configuration.md) are one long Markdown file with every widget and property.
 
 ## The Dashboard I'm Running
 
@@ -72,7 +72,7 @@ That leaves you with this layout:
 
 The `assets` folder is also where you can drop your own icons and images.
 
-Here's the template's compose file, with one change: I pinned the image to the current release instead of the floating default tag, so an update only happens when you decide to do one.
+The template's compose file is below, with one change. I pinned the image to the current release instead of the floating default tag, so an update only happens when you decide to do one.
 
 ```yaml
 services:
@@ -91,7 +91,7 @@ services:
     env_file: .env
 ```
 
-The `/etc/localtime` mount lets the container use the host's timezone. Leave the Docker socket line commented out unless you actually want the Docker containers widget, since it gives Glance access to your Docker API.
+The `/etc/localtime` mount lets the container use the host's timezone. Leave the Docker socket line commented out unless you want the Docker containers widget, since it gives Glance access to your Docker API.
 
 The template's `.env` ships with a sample `MY_SECRET_TOKEN=123456` line. Delete it, and add your own values once you start configuring widgets that need them.
 
@@ -126,7 +126,7 @@ My own instance came from the [community-scripts Glance script](https://communit
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/glance.sh)"
 ```
 
-This is a community project, not something the Glance developer maintains, so here's what the [install script](https://github.com/community-scripts/ProxmoxVE/blob/main/install/glance-install.sh) actually does. It creates an unprivileged LXC with Debian 13 or Alpine 3.24 (you choose), downloads the official prebuilt Glance binary from the GitHub releases into `/opt/glance`, writes a small starter config, and sets up a systemd service on Debian or an OpenRC service on Alpine. No extra services are bundled. Glance is then on port 8080 at the container's IP.
+This is a community project, not something the Glance developer maintains, so this is what the [install script](https://github.com/community-scripts/ProxmoxVE/blob/main/install/glance-install.sh) does. It creates an unprivileged LXC with Debian 13 or Alpine 3.24 (you choose), downloads the official prebuilt Glance binary from the GitHub releases into `/opt/glance`, writes a small starter config, and sets up a systemd service on Debian or an OpenRC service on Alpine. No extra services are bundled. Glance is then on port 8080 at the container's IP.
 
 One thing changed since my video. Back then the config lived at `/opt/glance/glance.yml`, which is the file I opened with nano. New installs now keep it at `/opt/glance_data/glance.yml`, and the script's update routine moves older installs over to that location. After editing it, you don't need to restart anything. More on that in a minute.
 
@@ -158,7 +158,7 @@ Two rules save a lot of head scratching:
 
 ## Rebuild My Startpage
 
-I didn't write my config from scratch. I took the [Startpage from the preconfigured pages](https://github.com/glanceapp/glance/blob/main/docs/preconfigured-pages.md#startpage), added the sidebar, and edited the heck out of it. Here's a trimmed version of the page from the video, updated for current Glance. Save it as `config/startpage.yml`:
+I didn't write my config from scratch. I took the [Startpage from the preconfigured pages](https://github.com/glanceapp/glance/blob/main/docs/preconfigured-pages.md#startpage), added the sidebar, and edited the heck out of it. A trimmed version of the page from the video, updated for current Glance, is below. Save it as `config/startpage.yml`:
 
 ```yaml
 - name: Startpage
@@ -262,14 +262,14 @@ Glance reloads the YAML files on its own, but it only reads `.env` when the cont
 
 This is probably the widget you'll use more than any other. Each site has a `title`, a `url`, and an `icon`, and Glance sends a request to it and shows OK and the response time when it gets a 200 back. A few properties made my setup work:
 
-- **`check-url`**: My `url` is the proxied domain, which is what opens when I click the service. The `check-url` is the service's local IP and port, and that's what Glance actually checks.
+- **`check-url`**: My `url` is the proxied domain, which is what opens when I click the service. The `check-url` is the service's local IP and port, and that's what Glance checks.
 - **`alt-status-codes`**: Some apps answer an unauthenticated request with a 401 or 403. NZBGet was one that wasn't cooperating, and Plex gave me trouble too because of how its authentication works. Listing those codes makes Glance count them as up.
 - **`allow-insecure`**: Skips certificate validation, which is handy for self-signed certificates like the Proxmox web UI's.
 - **`icon`**: `di:` pulls from [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons), which is what I use. `si:` (Simple Icons), `sh:` (selfh.st icons), and `mdi:` (Material Design Icons) also work, or you can point at an image in your assets folder.
 
 ![The Glance monitor widget listing homelab services like Proxmox, Plex, Immich, and Jellyfin, each with an OK status and response time](/docs-static/img/2026/10/glance-home-server-dashboard/services-monitor-widget.jpg)
 
-I actually have two monitor widgets, one for core services and one for the media stack. There's also `show-failing-only: true`, which only lists services that are down, and `style: compact` for a tighter layout. A small failing-only monitor at the bottom of a page is a neat way to only see something when there's a problem.
+I have two monitor widgets, one for core services and one for the media stack. There's also `show-failing-only: true`, which only lists services that are down, and `style: compact` for a tighter layout. A small failing-only monitor at the bottom of a page is a neat way to only see something when there's a problem.
 
 ### Pi-hole: DNS Stats
 
@@ -312,7 +312,7 @@ I used my ZIP code with `imperial` units. The weather data comes from Open-Meteo
 
 ### Live Reload
 
-Here's my favorite part. In the video I removed SPY from the markets widget. Open `home.yml`, find the markets widget in the last column, and delete the entry:
+This is my favorite part. In the video I removed SPY from the markets widget. Open `home.yml`, find the markets widget in the last column, and delete the entry:
 
 ```yaml
         - type: markets
@@ -393,7 +393,7 @@ server:
   proxied: true
 ```
 
-Only set `proxied: true` when a proxy is actually in front of Glance and passing `X-Forwarded-For`. Recreate the container with `docker compose up -d` so it picks up the new `.env` value.
+Only set `proxied: true` when a proxy is in front of Glance and passing `X-Forwarded-For`. Recreate the container with `docker compose up -d` so it picks up the new `.env` value.
 
 ## Final Thoughts
 
