@@ -1,0 +1,231 @@
+export const title = "GNOME Boxes and Connections: Simple Virtual Machines and Remote Desktops on Linux"
+export const description = "Install Boxes and Connections from Flathub, create a virtual machine from an ISO or a download, use express install, and connect to Windows and Linux desktops over RDP or VNC, plus where the Boxes rewrite stands."
+export const date = "2027-01-02"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Gnome", "Virtualization", "Windows"]
+export const cover = "/docs-static/img/2027/01/gnome-boxes-connections-guide/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="ZU-W3XCRuPI" title="TechHut's GNOME Boxes and Connections walkthrough" />
+
+Right after my Fedora 35 and GNOME 41 video, I wanted to spend more time on two apps I only skimmed there: **Connections** and **Boxes**. Other than maybe Disks, these are two of my favorite GNOME apps. Connections is a remote desktop client for RDP and VNC. Boxes is the easy way to spin up a virtual machine. They share a lot of DNA, too. Connections was built on the same remote-display code that used to live inside Boxes, and the interfaces look almost identical.
+
+I recorded the video in September 2021 on GNOME 41, when Connections was brand new. A lot has happened since then, so the written steps have been updated:
+
+- **Connections** is still maintained in the [GNOME/gnome-connections](https://gitlab.gnome.org/GNOME/gnome-connections) repository. Flathub currently ships version 50.0, and upstream tagged 51.0 on September 14, 2026.
+- **Boxes** stable is version 50.0 (March 14, 2026) on Flathub. That's still the original GTK3 app, but its repository is now in low-maintenance mode. Active development moved to a **rewrite** at [felipeborges/boxes](https://gitlab.gnome.org/felipeborges/boxes), which is in beta. I cover what that means below.
+
+The screenshots and hands-on impressions come from the original recording. Where the current UI is different, I say so.
+
+## What These Two Apps Are For
+
+| | Boxes | Connections |
+|---|---|---|
+| What it does | Creates and runs local virtual machines | Views and controls another computer's desktop |
+| Under the hood | QEMU/KVM and libvirt (session mode), SPICE display | gtk-frdp (FreeRDP), gtk-vnc, spice-gtk |
+| Protocols | Local VMs only | RDP, VNC, and SPICE |
+| Official install | [Flathub](https://flathub.org/apps/org.gnome.Boxes) | [Flathub](https://flathub.org/apps/org.gnome.Connections) |
+| License | LGPL-2.1+ (stable); GPL-3.0-or-later (rewrite) | GPL-3.0-or-later |
+
+Boxes isn't trying to be virt-manager or VirtualBox. Its whole point is to be simple. It's great for testing a distro, checking that an app runs on another platform, or keeping a throwaway environment around. Connections does one thing, connecting to a remote desktop, and it does it well.
+
+## Installing Both from Flathub
+
+Both apps are on Flathub. Boxes' maintainer has also made Flathub the only officially supported way to get it, so use the Flatpak even if your distro packages its own build. If Flathub isn't set up yet, follow the [Flathub setup guide](https://flathub.org/setup) for your distro, then run:
+
+```bash
+flatpak install flathub org.gnome.Boxes
+flatpak install flathub org.gnome.Connections
+```
+
+Both are available for x86_64 and aarch64. The Boxes Flatpak bundles QEMU and libvirt, so you don't need to install any system virtualization packages. You do need a CPU with hardware virtualization (Intel VT-x or AMD-V) turned on in your firmware. Boxes has a built-in check:
+
+```bash
+flatpak run org.gnome.Boxes --checks
+```
+
+You want "yes" for the CPU being capable of virtualization and the KVM module being loaded. If either says "no", reboot into your BIOS or UEFI setup and enable the virtualization option. It's often called Intel Virtualization Technology, SVM, or AMD-V.
+
+## Connections: Remote Desktops Over RDP and VNC
+
+### Prepare the remote machine first
+
+Connections is only a client. The machine you want to reach needs a remote desktop server running, and that's where most of the actual setup happens.
+
+For the video, I fired up a Windows VM in VirtualBox on my main computer and connected to it from my laptop. On the Windows side, I had to enable remote connections and allow them through the firewall. I also had to switch the VirtualBox network adapter to **Bridged Adapter** so the VM got its own address on my local network.
+
+For a Windows machine, here's the current route from [Microsoft's docs](https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/remotepc/remote-desktop-allow-access):
+
+1. Open **Settings > System > Remote Desktop**.
+2. Turn on **Enable Remote Desktop** and confirm.
+3. Add any extra accounts under **Remote Desktop users**. Administrators can connect by default.
+
+<Note>
+Windows Home editions can't act as Remote Desktop hosts. You need Windows Pro, Enterprise, Education, or Server on the machine you're connecting to.
+</Note>
+
+For a GNOME desktop on Linux, open **Settings > System > Remote Desktop**, turn on **Desktop Sharing**, and turn on **Remote Control** if you want to drive the mouse and keyboard, not only watch the screen. The **How to Connect** and **Login Details** sections show the address, port, and the username and password to use. GNOME's built-in sharing uses RDP. Per the [GNOME help page](https://help.gnome.org/users/gnome-help/stable/sharing-desktop.html), it uses port 3389 unless Remote Login is also on, in which case Desktop Sharing moves to another port such as 3390. Other Linux machines can run any VNC server.
+
+<Warning>
+Enabling RDP or VNC opens a port that lets people log in to the machine. Keep it on your local network, use strong passwords, and don't port-forward it to the internet. If you need access from outside, put it behind a VPN like the one in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid), or use a tool built for remote access like [RustDesk](/rustdesk-self-hosted-remote-desktop).
+</Warning>
+
+### Create a connection
+
+The first thing I did in the video was open the hamburger menu and check **Help**. At the time there was really only one help page, "Connect to another computer", which tells you everything you need to know. That's still true.
+
+To connect:
+
+1. Click **+** in the top left.
+2. Enter the address of the remote machine. An IP address works. If the service is on a non-default port, add it, for example `192.168.1.50:3390`.
+3. Pick the **Connection Type**: RDP, VNC, or SPICE.
+4. Click **Connect**, then enter the username and password when prompted.
+
+I typed in my Windows VM's IP, left it on RDP, and signed in with the same account I use on that Windows machine. That was it.
+
+![The Connections new-connection popover from the video with an IP address entered and the RDP and VNC connection types](/docs-static/img/2027/01/gnome-boxes-connections-guide/connections-new-rdp-connection.jpg)
+
+In the 2021 version, the dialog only had RDP ("standard for connecting to Windows") and VNC ("standard for connecting to Linux"). Current versions add a third option, **SPICE**, for connecting to remote virtual machines. Version 51 rewords these as RDP (standard, high performance), VNC (legacy), and SPICE (virtual machines). RDP isn't just for Windows anymore, since GNOME's own Remote Desktop uses it.
+
+### Using a remote session
+
+Once I was connected, it felt responsive. Opening apps and hovering over icons was close to instant, though that's partly because this was all on my local network. One thing to know: since this is a remote connection, resizing the Connections window doesn't change the remote machine's resolution the way it does in a VM.
+
+One reason I keep a Windows machine around at all is ArcGIS Pro, a Windows-only app I needed for school. I'd been reaching it from my MacBook with Chrome Remote Desktop, and doing it from GNOME with a native client was great.
+
+![A Windows desktop over RDP in GNOME Connections from the video, with ArcGIS Pro starting up](/docs-static/img/2027/01/gnome-boxes-connections-guide/connections-rdp-windows-arcgis.jpg)
+
+The header bar while you're connected gives you:
+
+- **Keyboard shortcuts** menu: send Ctrl+Alt+Del, Ctrl+Alt+Backspace, or Ctrl+Alt+F1/F2/F3/F7 to the remote machine.
+- **Disconnect** (the power icon) closes the session.
+- The **display menu** (three dots): **Take Screenshot**, **Fullscreen**, and **Properties**.
+
+**Properties** lets you rename the connection and see its address. For RDP you can also choose **Fit window** or **Original size**. VNC connections have more options: view only, show the local pointer, enable audio, a bandwidth setting (high quality or fast refresh), and scale mode, including **Resize desktop**.
+
+Back in the main window, every saved connection appears as a thumbnail. You can keep several and right-click one to delete it or open its properties. It's a simple app, and that's what I want. In my testing it just worked, which is exactly what I want from a Linux utility.
+
+## Boxes: Virtual Machines Without the Fuss
+
+### What happened to Boxes since the video
+
+Before the walkthrough, a quick note on where Boxes stands today, because it's in the middle of a big change.
+
+- The original codebase, [GNOME/gnome-boxes](https://gitlab.gnome.org/GNOME/gnome-boxes), says it's in low-maintenance mode and no longer gets feature updates. Its last release was 50.0, and that's what Flathub installs as `org.gnome.Boxes` today.
+- Maintainer Felipe Borges spent two years [rewriting Boxes](https://blogs.gnome.org/feborges/future-of-boxes/) with GTK4, libadwaita, and a new display widget, libmks. The new code lives at [felipeborges/boxes](https://gitlab.gnome.org/felipeborges/boxes). He announced the beta on August 3, 2026, and the project still calls it early development.
+- In a [follow-up post](https://blogs.gnome.org/feborges/decoupling-boxes-from-the-os-release-cycle/), he proposed taking Boxes out of GNOME's core release cycle. It would drop "GNOME" from its name, ship only on Flathub, and keep the `org.gnome.Boxes` app ID so existing installs carry over. The target is GNOME 52 in March 2027, if it's approved for GNOME Circle in time. Distros on GNOME 51 can keep shipping Boxes 50.
+
+So for now, the stable Flathub app is the one that looks and works like the one in my video. The steps below are for that version.
+
+### Welcome screen
+
+The first time you open Boxes, a short welcome tutorial shows up. It covers the three things Boxes is built around:
+
+- **Express Installation**: Boxes fills in install options for you, so supported operating systems install hands-off.
+- **Easy Downloads**: pick an OS and Boxes downloads it for you.
+- **Drag and Drop**: drop files onto the VM window to send them to the guest. They land in the guest's Downloads folder.
+
+What I really like about Boxes compared to VirtualBox is the guest integration. With VirtualBox you usually have to install the Guest Additions before you get automatic resizing and drag and drop. In Boxes that's been mostly automatic for me, even with Windows. Window resizing just works.
+
+### Create a VM (2021 versus now)
+
+In the 2021 version, the **+** button opened a **Create a Virtual Machine** dialog. Since I was on Fedora, it listed featured downloads at the top (Fedora 34 Workstation, Fedora Silverblue, and Red Hat Enterprise Linux). Below those were two sources: **Operating System Download** and **Operating System Image File**.
+
+![The 2021 Boxes Create a Virtual Machine dialog from the video with featured Fedora and RHEL downloads and the two OS source options](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-create-virtual-machine-2021.jpg)
+
+In Boxes 50, the **+** button opens a small menu with two choices:
+
+- **Install from File**: pick an `.iso` or an existing `.qcow2` disk image.
+- **Download OS**: search a long list of operating systems and let Boxes download one.
+
+When I opened the download list in the video, it had Debian, GNOME OS nightly builds, openSUSE, Manjaro, FreeBSD, Ubuntu, CentOS, NetBSD, and plenty more. The list comes from the libosinfo database, which Flathub updates through a separate extension. Downloads go into a downloads popover, and you get a notification with an **Install** button when they're finished.
+
+Most of the time you'll just use an ISO you already have. That's what I did. I grabbed a Zorin OS 16 Pro ISO from my backup drive. Boxes couldn't identify it, so I picked **Ubuntu LTS** as the template, since Zorin is based on Ubuntu. Current Boxes does the same thing in the **New Virtual Machine** dialog: if detection fails, it says "Operating System not found" and lets you pick the closest match under **Operating System**. Choosing the right base OS matters because Boxes uses it to set sensible defaults.
+
+### Resources and express install
+
+The next step is where you set resources.
+
+![The Boxes Review and Create page from the video with memory raised to 8 GiB and the maximum disk size slider](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-review-and-create-resources.jpg)
+
+In the video, this was a **Review and Create** page with a **Customize** button for **Memory** and **Maximum Disk Size**. I bumped memory up to 8 GB. Current Boxes puts these on the same **New Virtual Machine** page:
+
+- **Name** for the box.
+- **Memory** and **Storage limit**. If Boxes knows the OS, it uses the vendor's recommended values. The storage limit is a maximum, and the disk file only grows as the guest uses space.
+- **Firmware** (BIOS or UEFI), shown when the installer supports both.
+- **Express Installation**, shown when the media supports it. Turn it on and enter a username and password (and a product key for Windows), and Boxes installs the OS unattended. Flathub's description lists automatic installs for CentOS Stream, Debian, Fedora, Microsoft Windows, openSUSE, Red Hat Enterprise Linux, and Ubuntu.
+
+Back in 2021, my main complaint was that the creation step only let you set memory and disk. I wanted CPU cores and 3D acceleration. Boxes still doesn't ask about those when you create a VM, but you can change them later in **Preferences** (covered below). And again, Boxes was never meant for running Adobe-class apps or heavy stuff like the ArcGIS Pro I mentioned earlier. It's for development, distro testing, and checking that things work on other platforms.
+
+Click **Create** and the VM boots. The first time, Boxes may ask to inhibit system keyboard shortcuts so keys go to the guest. I allowed it.
+
+### Running the VM
+
+Zorin booted to its live menu, I picked **Try Zorin OS**, and it came up in a live session. Resizing the window resized the guest display automatically. That's partly thanks to Zorin being a polished distro, and partly because Boxes works well with modern guests. In the guest's System Monitor, I could see all of my CPU threads and about 1.3 GB of memory in use out of the 8 GB I gave it.
+
+![Zorin OS 16 Pro running in a Boxes window in the video, with System Monitor showing 16 CPU threads and 7.8 GiB of memory](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-zorin-os-system-monitor.jpg)
+
+If you go back to the main Boxes view, the VM keeps running in the background. My host's System Monitor showed about 10 GB of memory in use, since 8 GB was reserved for the guest. You can keep several VMs running without them cluttering your desktop, and clicking a thumbnail jumps straight back in.
+
+For automatic resizing, a shared clipboard, and file transfers, the guest needs the SPICE guest tools. If those features don't work, the [Boxes help](https://help.gnome.org/gnome-boxes/) says to install the agent like this:
+
+```bash
+# Fedora, RHEL, CentOS Stream
+sudo dnf install spice-vdagent
+
+# Debian, Ubuntu, Linux Mint
+sudo apt install spice-vdagent
+```
+
+On openSUSE, use `sudo zypper install spice-vdagent`. For Windows guests, install the **spice-guest-tools** package from the [SPICE downloads page](https://www.spice-space.org/download.html).
+
+The VM window's header bar has these controls:
+
+- **Fullscreen**. In fullscreen mode, move your mouse to the top of the screen to bring the toolbar back.
+- **Keyboard shortcuts** for sending key combinations such as Ctrl+Alt+Del to the guest.
+- The **actions menu**: **Send File…**, **Take Screenshot**, **Force Shutdown**, **Restart**, **Clone**, **Open in New Window**, and **Preferences**.
+
+In the video I wasn't sure where screenshots ended up. They went into my Pictures folder. In Boxes 50 they go to `~/Pictures/Screenshots`, the same folder GNOME Shell uses.
+
+### Preferences and the libvirt XML
+
+In 2021 this menu item was called **Properties**. Its System tab showed CPU, I/O, and network graphs, the restart and force shutdown buttons, and an option to edit the VM's libvirt XML directly. I scrolled through mine and spotted the vCPU placement set to `static` with 16 vCPUs. That's where you'd change the core count by hand.
+
+In Boxes 50 it's called **Preferences**, and it's better organized:
+
+- **Resources**: name, IP address, **CPUs**, **Memory**, **Storage limit**, **3D acceleration** (Linux guests only, when supported), and **Allow running in background**. **Troubleshooting Logs** and **Edit Configuration** (the libvirt domain XML) are here too.
+- **Devices & Shares**: USB device redirection, the CD/DVD drive, and shared folders.
+- **Snapshots**: save the VM's state and roll back to it later.
+
+<Warning>
+Editing the XML is powerful, and it's also an easy way to break a VM. Take a snapshot or back up the disk image first. For the Flathub build, disk images live in `~/.var/app/org.gnome.Boxes/data/gnome-boxes/images/`.
+</Warning>
+
+Back in the main view, you can switch between grid and list views and search, which helps once you have a lot of VMs.
+
+### Trying the Boxes rewrite
+
+If you want to see where Boxes is going, the rewrite is available as a nightly Flatpak. According to the [nightly page](https://nightly.gnomeboxes.org), it can already create VMs from ISOs, IMGs, and existing qcow2 disks, and install Windows 11 with Secure Boot and a virtual TPM set up automatically. It supports BIOS or UEFI, clipboard sharing and file sending through spice-vdagent, snapshots, port forwarding (SSH and HTTP for now), and a VSOCK SSH proxy for guests running systemd v256 or newer. It also has a built-in virsh console and an XML editor. In the announcement thread, the maintainer said USB redirection isn't supported yet, and the nightly page doesn't list express installs or OS downloads.
+
+```bash
+flatpak remote-add --if-not-exists gnome-nightly https://nightly.gnome.org/gnome-nightly.flatpakrepo
+flatpak install gnome-nightly org.gnome.Boxes.Devel
+```
+
+It installs next to the stable app as a separate `org.gnome.Boxes.Devel` app.
+
+<Warning>
+The project says the rewrite is beta software that may lose VM data. You can point it at an existing qcow2 disk to bring over a VM, but copy the disk first, and never let the stable and nightly apps use the same disk file at the same time.
+</Warning>
+
+## When You Need More Than Boxes
+
+Boxes covers quick local VMs. If you want full control over CPU topology, networking, and devices on your desktop, [virt-manager](https://virt-manager.org/) is the next step up. I mentioned it in the video as the GUI way to tweak what Boxes hides. For always-on VMs on a home server, look at Proxmox. My [Ultimate Home Server part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) covers the setup, and the [Proxmox GPU passthrough guide](/proxmox-gpu-passthrough-windows-11) covers a Windows 11 VM with a real GPU. And if you only need another distro's packages, not a whole OS, [Distrobox](/distrobox-linux-containers-guide) is a lot lighter than a VM.
+
+## Final Thoughts
+
+I've really grown attached to GNOME and its built-in tools, and these two alone are reason enough. Connections is simple and does exactly what a remote desktop client should. Boxes makes spinning up a VM about as easy as it gets, it performed well in my testing, and the guest integration beat what I was used to in VirtualBox. I use it for quick VMs. Heavy workloads belong on Proxmox or virt-manager.
+
+If you're installing today, grab both from Flathub. The stable Boxes there still matches what I showed in the video, and the rewrite is worth keeping an eye on (or testing on a spare VM) until it becomes the stable release. With all that, I do hope you have an absolutely beautiful day.
