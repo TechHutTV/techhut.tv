@@ -12,8 +12,6 @@ import {YouTube} from "@/components/YouTube"
 
 If you've been wanting to try Docker but the terminal side of it feels like a wall, [Yacht](https://github.com/Yacht-sh/Yacht) is an easy way in. It's a web UI for managing containers, and its whole focus is templates and one-click deployments. You pick an app from a library, look over a pre-filled form, hit deploy, and you have a running container. It's a nice way to learn what containers, images, volumes, and ports are without having to memorize a pile of flags first.
 
-Linode sponsored the video this article is based on.
-
 <Note>
 I recorded the video in December 2021, when Yacht was labeled alpha software and was SelfhostedPro's project under the SelfhostedPro GitHub account. That's not who runs it now. The active repository is [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), under the Yacht-sh organization, and it's maintained by a different developer, wickedyoda. Its [changes.md](https://github.com/Yacht-sh/Yacht/blob/master/changes.md) describes the code as a fork of SelfhostedPro's 2021 code, and the license files have been rewritten since then (more on that below). The latest release is [Yacht v1.1](https://github.com/Yacht-sh/Yacht/releases/tag/1.1), published September 2, 2026. The old `SelfhostedPro/Yacht` URL is now a separate fork with an outdated README, and the TypeScript rewrite that README points to ([yacht-nuxt](https://github.com/Yacht-sh/yacht-nuxt)) was archived on August 30, 2026. The install steps below are for the current Yacht-sh project. The hands-on footage and my impressions come from the original recording of SelfhostedPro's 2021 alpha, not the current build.
 </Note>
@@ -47,7 +45,7 @@ A few facts about the current project:
 
 ## Where I Ran It
 
-In the video I didn't touch the terminal at all. I used the sponsor's one-click marketplace image on a small cloud server running Debian 10, filled in a Yacht email and password, left compose support on and the theme at default, and it installed Docker and published the Yacht container for me.
+In the video I didn't touch the terminal at all. I used a one-click marketplace image on a small cloud server running Debian 10, filled in a Yacht email and password, left compose support on and the theme at default, and it installed Docker and published the Yacht container for me.
 
 You don't need a cloud server for any of this, though. If you want to do it locally, one of the easiest routes is Ubuntu Server. You can enable the Docker snap package during that install, and from there you can run Yacht the same way. Basically anything that can run Docker works.
 
