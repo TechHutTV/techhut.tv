@@ -15,12 +15,12 @@ import {YouTube} from "@/components/YouTube"
 That's exactly what I did with my homelab at the time, which was my old desktop with three 4 TB hard drives added. I could have installed TrueNAS on the whole machine and gotten a lot of the same features. But I like keeping things separated: I already had a container running Portainer and another VM running a suite of apps, and I wanted my main NAS to be its own thing next to them. The trick is getting the drives into the VM properly, including their serial numbers, because TrueNAS is not a fan of disks it can't tell apart.
 
 <Note>
-**What's been updated.** I recorded the video in February 2023 with **TrueNAS CORE 13.0-U3.1** on **Proxmox VE 7.3**. TrueNAS has changed a lot since then. CORE is no longer under active development, and the free edition is now **TrueNAS Community Edition**, which is Linux-based. The written steps target [TrueNAS 25.10.7](https://www.truenas.com/software-status/), released September 2, 2026 (the version TrueNAS recommends for general use), and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap). The disk passthrough commands have been checked against the current Proxmox wiki. My hands-on impressions and the screenshots come from the original recording, and I've labeled the ones that show the old CORE interface.
+I recorded the video in February 2023 with **TrueNAS CORE 13.0-U3.1** on **Proxmox VE 7.3**. TrueNAS has changed a lot since then. CORE is no longer under active development, and the free edition is now **TrueNAS Community Edition**, which is Linux-based. The steps below target [TrueNAS 25.10.7](https://www.truenas.com/software-status/), released September 2, 2026 (the version TrueNAS recommends for general use), and [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap). The disk passthrough commands have been checked against the current Proxmox wiki. My hands-on impressions and the screenshots come from the original recording, and I've labeled the ones that show the old CORE interface.
 </Note>
 
 ## CORE, SCALE, and Community Edition
 
-If you watched the video, you saw me download TrueNAS CORE. Here's what happened to the lineup since:
+If you watched the video, you saw me download TrueNAS CORE. This is what happened to the lineup since:
 
 | Name | Base | Status today |
 |---|---|---|
@@ -31,13 +31,13 @@ If you watched the video, you saw me download TrueNAS CORE. Here's what happened
 
 So for a new install you want **Community Edition 25.10**. Don't be thrown off by the file name: the ISO is still called `TrueNAS-SCALE-25.10.7.iso`. Stay off the 27 release candidate unless you're specifically testing it.
 
-There's one practical difference from the video worth knowing up front. CORE was FreeBSD, which is why I said in the video that it's "technically FreeBSD, but Linux is going to be fine" when picking the guest OS type. Community Edition actually is Linux now, so that choice is simply correct.
+There's one practical difference from the video worth knowing up front. CORE was FreeBSD, which is why I said in the video that it's "technically FreeBSD, but Linux is going to be fine" when picking the guest OS type. Community Edition is Linux now, so that choice is simply correct.
 
 If you followed the original video and still have a CORE VM running, TrueNAS has a [migration guide](https://www.truenas.com/docs/scale/gettingstarted/migrate/migrate-community/). Moving from CORE to the Linux-based versions is a one-way operation, so read it and back up your config first.
 
 ## Before You Start: Disks vs. the Whole Controller
 
-I want to be upfront about this, because it's the most important decision in this guide.
+I want to be upfront about this, because it's the most important decision here.
 
 There are two ways to give a TrueNAS VM real drives:
 
