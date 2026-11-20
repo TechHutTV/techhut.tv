@@ -1,10 +1,10 @@
 export const title = "Podgrab: A Self-Hosted Podcast Downloader for Docker and Unraid"
 export const description = "Install Podgrab with Docker Compose or Unraid Community Apps, lock it down with a password, and use it to automatically download and archive podcast episodes on your own server."
-export const date = "2026-10-17"
+export const date = "2026-12-04"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab"]
-export const cover = "/docs-static/img/2026/10/podgrab-self-hosted-podcasts/cover.jpg"
+export const cover = "/docs-static/img/2026/12/podgrab-self-hosted-podcasts/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -138,7 +138,7 @@ This is how I installed it in the video, and the template is still in Community 
 
 That's all the template asks for. It's really just a little GUI on top of a Docker run command, and Unraid shows you the full command once it's done. If you record your screen like I do, remember that command includes your password in plain text.
 
-![The Podgrab template in Unraid with WebUI port 8080, a 240-minute check frequency, a masked password, and the appdata and podcasts paths filled in](/docs-static/img/2026/10/podgrab-self-hosted-podcasts/unraid-podgrab-template.jpg)
+![The Podgrab template in Unraid with WebUI port 8080, a 240-minute check frequency, a masked password, and the appdata and podcasts paths filled in](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/unraid-podgrab-template.jpg)
 
 One cosmetic thing: the template doesn't define an icon, so Podgrab shows up as a question mark in the Docker tab. Click it, choose **WebUI**, and log in as `podgrab` with your password.
 
@@ -172,7 +172,7 @@ Once you log in, Podgrab looks like a really simple, almost WordPress-style site
 
 The settings page also has a small **Disk Stats** table showing how much space your downloads use and how much is still pending. Hit save, and you're ready to add something.
 
-![Podgrab's settings page with the download options, Use Dark Mode checked, the Disk Stats table, and the Backups and OPML export buttons](/docs-static/img/2026/10/podgrab-self-hosted-podcasts/podgrab-settings-page.jpg)
+![Podgrab's settings page with the download options, Use Dark Mode checked, the Disk Stats table, and the Backups and OPML export buttons](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-settings-page.jpg)
 
 Podgrab also backs up its database every two days into the config folder. You can find them with the **Backups** button on the settings page, and they're worth including in your normal server backups.
 
@@ -182,7 +182,7 @@ Go to **Add Podcast**. You can paste an RSS feed URL, upload an OPML file export
 
 It said the podcast was added successfully, and on the **Episodes** page I could see it pulling episodes right away. The artwork hadn't shown up yet at that point.
 
-![Podgrab search results for linux from iTunes, with LINUX Unplugged marked Already Added and a Podcast added successfully notice](/docs-static/img/2026/10/podgrab-self-hosted-podcasts/podgrab-search-linux-unplugged-added.jpg)
+![Podgrab search results for linux from iTunes, with LINUX Unplugged marked Already Added and a Podcast added successfully notice](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-search-linux-unplugged-added.jpg)
 
 Click a podcast from the home page, and you get its full episode list. Each episode can be:
 
@@ -198,7 +198,7 @@ You can also tag podcasts into groups and play an entire tag as a playlist.
 
 The player works. I hit play on an episode, and it started right up in the browser. I skipped ahead to about 23 minutes, went back to the episode list, and opened the same episode again to see whether it remembered my spot. It didn't, and it started over.
 
-![Podgrab's built-in web player playing a LINUX Unplugged episode at the 23-minute mark](/docs-static/img/2026/10/podgrab-self-hosted-podcasts/podgrab-built-in-player.jpg)
+![Podgrab's built-in web player playing a LINUX Unplugged episode at the 23-minute mark](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-built-in-player.jpg)
 
 That's fine for me, because I'm not planning to use Podgrab as my podcast player. I see it as a collection tool. Its job is getting episodes onto my server, and something else can handle the listening.
 
@@ -208,7 +208,7 @@ Podgrab does have one feature that could help here, though I didn't try it in th
 
 I wanted to see how it organizes files, so I opened the podcasts folder in my data share. Each show gets a folder named after the podcast, so LINUX Unplugged had its own folder with the episode files inside and a `folder.jpg` with the show's artwork. It's clean and easy for other apps to read.
 
-![The Unraid file browser showing the LINUX Unplugged folder Podgrab created, with numbered MP3 episodes and folder.jpg](/docs-static/img/2026/10/podgrab-self-hosted-podcasts/podgrab-episodes-on-disk.jpg)
+![The Unraid file browser showing the LINUX Unplugged folder Podgrab created, with numbered MP3 episodes and folder.jpg](/docs-static/img/2026/12/podgrab-self-hosted-podcasts/podgrab-episodes-on-disk.jpg)
 
 Because it's just audio files in folders, you can point another media server at that directory. When I recorded, I hadn't decided between Plex and Audiobookshelf for listening. Audiobookshelf [keeps progress per user, syncs it across devices](https://www.audiobookshelf.org/docs/), and has companion mobile apps, which is exactly what the Podgrab player is missing. It can also search for and auto-download podcasts on its own, so if you already run it, you might not need Podgrab at all. My [Audiobookshelf guide](/audiobookshelf-self-host-audible-library) walks through setting it up with Docker Compose.
 
