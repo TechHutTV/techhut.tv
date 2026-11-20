@@ -93,7 +93,9 @@
     "name": "Audiobookshelf",
     "category": "Media",
     "description": "Host and organize your audiobook and podcast libraries.",
-    "coverage": [],
+    "coverage": [
+      "/audiobookshelf-self-host-audible-library"
+    ],
     "videos": [
       {
         "id": "V1-TbY5k0PQ",
@@ -1127,7 +1129,9 @@
     "name": "Libation",
     "category": "Media",
     "description": "Back up an Audible library for use with a personal audiobook server.",
-    "coverage": [],
+    "coverage": [
+      "/audiobookshelf-self-host-audible-library"
+    ],
     "videos": [
       {
         "id": "V1-TbY5k0PQ",

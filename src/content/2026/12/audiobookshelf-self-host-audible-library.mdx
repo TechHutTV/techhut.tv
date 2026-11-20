@@ -1,0 +1,301 @@
+export const title = "Ditch Audible: Back Up Your Library and Self-Host Audiobookshelf"
+export const description = "Back up the Audible audiobooks you bought with Libation, then stream them from your own server with Audiobookshelf, Docker Compose, and the companion mobile app."
+export const date = "2026-12-03"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab"]
+export const cover = "/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="V1-TbY5k0PQ" title="TechHut's Audiobookshelf and Libation walkthrough" />
+
+I finally got tired of Audible. I cancelled my plan, but I still wanted to listen to everything I had bought over the years, and I wanted to stream it from my own server. That's why I set up [Audiobookshelf](https://audiobookshelf.org/).
+
+Audiobookshelf is an open source server for audiobooks and podcasts. It handles multiple users, series, and chapters, and it pulls in metadata and cover art for you. The part I care about most is the mobile app.
+
+First I'll back up the audiobooks I purchased with [Libation](https://getlibation.com), so I'm not downloading them from Audible one at a time. Then I'll install Audiobookshelf with Docker Compose, add the books, and go through the features I showed in the video.
+
+The video was recorded in January 2023. The written steps have been updated for [Audiobookshelf v2.38.0](https://github.com/advplyr/audiobookshelf/releases/tag/v2.38.0), released November 17, 2026, and [Libation 14.2.2](https://github.com/rmcrackan/Libation/releases/tag/v14.2.2), released September 16, 2026. v2.38.0 is bugfixes and tighter permissions, and the install steps are the same. There is a v3 test image, and this guide stays on the stable 2.38.0 tag. The Compose file, the Docker command, Libation's download options, and the mobile app situation have all changed since then, and I've called those out as they come up. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
+
+## What You Need
+
+- **Audiobooks you bought on Audible.** This is about backing up your own purchases for your own listening, not about sharing a library or grabbing books you don't own.
+- **A computer for Libation.** It runs on Windows, macOS, and Linux.
+- **A machine running Docker for Audiobookshelf.** I run mine on my Synology NAS. For the video, I spun up a small Ubuntu cloud server to show the install from scratch. It's light: on my Synology, it was using under 100 MB of RAM and almost no CPU, so it can share a box with your other services.
+- **A way to copy files to the server.** I used FileZilla over SFTP. Anything that gets files into the right folder works.
+
+<Note>
+Libation removes the DRM from the books it downloads, and the rules for doing that vary by country. Libation's site says to use it at your own risk. Keep the files for your own listening, and check the law where you live.
+</Note>
+
+## Back Up Your Audible Library with Libation
+
+Audible does let you download the books you purchased. In the video I showed downloading a couple from my library page, and that's fine for a handful. But if you have 100, 200, or 500 audiobooks, clicking download on each one isn't going to be your best bet.
+
+[Libation](https://github.com/rmcrackan/Libation) is a free, GPL-3.0 desktop app that imports your Audible library and backs up every book in one go. It also grabs the companion PDFs that some books come with, lets you tag books, and has search and saved filters for bigger libraries.
+
+### Install Libation
+
+Grab the latest build from the [releases page](https://github.com/rmcrackan/Libation/releases/latest). As of 14.2.2, the downloads are:
+
+| Platform | Files | Notes |
+|---|---|---|
+| Windows | `-setup.exe` installer or portable `.zip` | x64 and Arm64. There's also a Windows-only "Classic" variant. |
+| macOS | `.dmg` | `arm64` for Apple Silicon, `x64` for Intel. Requires macOS 13 or newer. |
+| Debian, Ubuntu | `.deb` | amd64 and arm64 |
+| Fedora, RHEL | `.rpm` | amd64 and arm64 |
+| Arch | AUR package `libation` | Community package, listed in the official docs |
+
+In the video I was on Windows and used the zip. It isn't an installer, so I made a new folder named Libation, dragged everything from the archive into it, and ran the `.exe` from there. Windows SmartScreen blocked it the first time, so I clicked **More info** and then **Run anyway**.
+
+That still works, but the [getting started guide](https://getlibation.com/docs/getting-started) now recommends the `-setup.exe` installer on Windows, with the zip as the portable option. Either way, don't install it into Program Files.
+
+On Linux, the [official instructions](https://getlibation.com/docs/installation/linux) download the package and install it with your package manager:
+
+```bash
+# Debian / Ubuntu (use arm64 instead of amd64 on ARM)
+wget -O libation.deb https://github.com/rmcrackan/Libation/releases/download/v14.2.2/Libation.14.2.2-linux-chardonnay-amd64.deb
+sudo apt install ./libation.deb
+
+# Fedora
+wget -O libation.rpm https://github.com/rmcrackan/Libation/releases/download/v14.2.2/Libation.14.2.2-linux-chardonnay-amd64.rpm
+sudo dnf install ./libation.rpm
+```
+
+On macOS, open the DMG and drag Libation into Applications. Check the [Mac guide](https://getlibation.com/docs/installation/mac) if Gatekeeper gets in the way.
+
+### First Run and Your Audible Account
+
+The first time Libation opens, it asks whether you're a new or returning user. I picked **New user**, which opens the settings. The main one is the **Books location**, where your backed-up books will go. The default folder in my user directory was fine, so I saved and moved on.
+
+Next, add your Audible account under **Import**. You can add more than one account if you have them. For each one:
+
+1. Enter your Audible email address.
+2. Pick your locale. Mine is US.
+3. Add a nickname if you want one. It's optional.
+
+Libation can ask for your password and show a CAPTCHA, but I found the external browser login easier and more reliable. It's a little weird the first time:
+
+1. Choose the option to log in through your browser, and copy the URL Libation gives you.
+2. Paste it into your browser and log in to Amazon.
+3. When you're done, you'll land on an Amazon error page. Don't worry, that means the login worked.
+4. Copy the full URL of that error page, paste it back into Libation, and submit.
+
+After that, your books start loading in. You get the title, authors, narrators, length, series, description, categories, and cover for each one, along with its backup status. Use **Import > Scan Library** whenever you want to pull in new purchases. Libation also rescans accounts periodically on its own.
+
+![Libation in the video with the imported Audible library showing covers, titles, authors, narrators, lengths, and red stoplight backup icons](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/libation-library.jpg)
+
+### Liberate Your Books
+
+To start the downloads, open the **Liberate** menu. In the video, the options were:
+
+- **Begin Book and PDF Backups**, which downloads every book plus any companion PDFs
+- **Begin PDF Only Backups**
+- **Convert all M4b to Mp3**
+- **Liberate Visible Books**, which only processes the books matching your current filter
+
+I went with the full book and PDF backup. You can also click the stoplight icon on a single title to back up just that one book.
+
+![The Liberate menu in Libation from the video with Begin Book and PDF Backups, Begin PDF Only Backups, Convert all M4b to Mp3, and Liberate Visible Books](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/libation-liberate-menu.jpg)
+
+There's no need to convert to MP3 for Audiobookshelf. It handles the `.m4b` files really well and picks up all the chapters on its own.
+
+Once the queue starts, you can watch each book download in the process queue on the right. If there's something you don't want, hit the **X** next to it to skip that backup. The [getting started guide](https://getlibation.com/docs/getting-started) warns that the very first decrypt takes a while, so be patient on a big library.
+
+When it's done, your books location has a folder for each book, named with the title and its Audible ID in brackets. Inside is the `.m4b` file and a `.cue` file that lists the chapter breaks. I didn't need the `.cue` file, since Audiobookshelf reads the chapters straight from the M4B.
+
+### What's Changed in Libation
+
+A few things are worth knowing about current Libation before you start:
+
+- **There's a built-in [Audiobookshelf upload](https://getlibation.com/docs/features/audiobookshelf) now.** I copied files to my server manually in the video, but Libation can now upload each book to an Audiobookshelf library right after it finishes. It needs your server's base URL and an [Audiobookshelf API key](https://audiobookshelf.org/guides/api-keys/), which an admin creates under **Settings > Users > API Keys**. It copies files, never deletes your local backups, and skips books already on the server. Books you backed up before enabling it need the `libationcli abs upload` command.
+- **No spatial audio.** The [FAQ](https://getlibation.com/docs/frequently-asked-questions) says Libation can't download Dolby Atmos or spatial versions, so those titles come down in stereo.
+- **Subscription catalog titles aren't purchases.** Books from an Audible subscription catalog can only be downloaded while that subscription is active.
+- **Audible changes break things sometimes.** The FAQ mentions license refusals after Audible changes in early September 2026, along with recovery steps: deregistering the Libation devices in your Amazon account and re-adding the account in Libation. Removing the account keeps your library and downloaded files.
+
+If you'd rather not keep a desktop app around, Libation also has a [headless Docker image](https://getlibation.com/docs/installation/docker) that scans and downloads on a schedule. It's built around copying your account settings from a desktop install, so set it up on a desktop first.
+
+## Why Not Just Use Plex?
+
+I tried this in Plex first. It works, but Plex isn't built for audiobooks. It's a normal music library, so the album is the book and the artist is the author. Plex does remember where you left off, so you can make it work. Overall, though, it's a messy way to listen to books.
+
+I believe Jellyfin and Emby handle audiobooks better, but nothing like what you get from Audiobookshelf. If you do want to go the Plex route, the [Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide) I linked in the video covers getting book covers, author images, and proper metadata into Plex.
+
+## Install Audiobookshelf with Docker Compose
+
+Audiobookshelf runs on Synology, a home server, or a cloud server, and you can manage the container however you like. Portainer, Yacht, Synology's Container Manager, and plain Compose on the command line all work. The project also has native [Debian, RPM, NixOS, and Windows installs](https://audiobookshelf.org/docs/category/installation/), but Docker is the recommended route, and it's what I used both on my NAS and in the video.
+
+### Create the Folders
+
+Audiobookshelf needs four folders on the host:
+
+| Container path | What goes there |
+|---|---|
+| `/audiobooks` | Your audiobook library |
+| `/podcasts` | Podcast downloads |
+| `/metadata` | Covers, cache, and backups. This can live anywhere. |
+| `/config` | The SQLite database. Keep this on the server's local disk. |
+
+In the video I put them under `/home/brandon/media`. Same idea, in a dedicated project folder:
+
+```bash
+sudo mkdir -p /srv/audiobookshelf/{audiobooks,podcasts,config,metadata}
+sudo chown -R "$(id -u):$(id -g)" /srv/audiobookshelf
+cd /srv/audiobookshelf
+```
+
+If your books already live on a NAS share that's mounted on the Docker host, point the `audiobooks` volume at that folder instead.
+
+<Warning>
+The Audiobookshelf docs are clear that `/config` must not be on a network share. It holds the server's SQLite database, and running it from a NAS mount will hurt performance and can eventually corrupt the database. Keep each mount in its own directory, too, and don't nest one mount inside another.
+</Warning>
+
+### Write the Compose File
+
+In the video, I created the file with `nano`, pasted in the example from the docs, and then changed the paths and the port. This is based on the [current Docker instructions](https://audiobookshelf.org/docs/documentation/install/docker/), pinned to v2.38.0:
+
+```yaml
+services:
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:2.38.0
+    container_name: audiobookshelf
+    restart: unless-stopped
+    ports:
+      - "13378:80"
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./audiobooks:/audiobooks
+      - ./podcasts:/podcasts
+      - ./metadata:/metadata
+      - ./config:/config
+    # Optional: run as a specific user instead of root.
+    # user: "1000:1000"
+```
+
+Set `TZ` to your own time zone. The image is built for amd64 and arm64, and you can use the `latest` tag if you'd rather not pin a version.
+
+About the port: the container listens on `80` internally, and `13378` is the default on the host side. Only change the left number. I changed mine to `4000` in the video because that's what my main server uses, so the line was `"4000:80"`.
+
+<Note>
+The Compose example I pasted in 2023 set `AUDIOBOOKSHELF_UID` and `AUDIOBOOKSHELF_GID` environment variables. Those are gone. The docs now say Audiobookshelf doesn't use PUID or PGID-style variables, so use the `user:` line if you want the container to run as a specific user. That user needs read and write access to all four folders.
+</Note>
+
+### Start It Up
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+In the video I ran `sudo docker-compose up -d`. The standalone `docker-compose` command is the old Compose v1, and current Docker uses `docker compose` with a space.
+
+Then open `http://YOUR_SERVER_IP:13378` in a browser. On the first visit, Audiobookshelf asks you to create the root user. That's your admin account, so give it a strong password.
+
+To update later, the docs say to pull the new image and recreate the container. If you pinned a version, change the tag in the Compose file first:
+
+```bash
+docker compose pull
+docker compose down
+docker compose up -d
+```
+
+### Remote Access
+
+In the video, I opened the port on a public cloud server and connected over plain HTTP, which was fine for a quick demo. For a server you keep using, don't leave it that way. Your login and listening history go over that connection.
+
+Put it behind a reverse proxy with HTTPS (Audiobookshelf has [reverse proxy examples](https://audiobookshelf.org/docs/category/reverse-proxy/), and I cover certificates in [Ultimate Home Server Part 4](/ultimate-home-server-part-4-ssl-certificates)), or keep it on your LAN and reach it over a VPN like the one in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid).
+
+## Organize and Upload Your Books
+
+The Audiobookshelf docs include a [directory structure guide](https://audiobookshelf.org/docs/documentation/libraries/book-library/directory-structure/), and it's worth reading before you copy hundreds of books over. The short version:
+
+- Every book is a folder. The one exception is a single-file book, which can sit in the library root.
+- The ideal layout is `Author/Book` or `Author/Series/Book`.
+- Series numbers, publish years, and narrators can go in the folder name, like `Vol 1 - 1994 - Wizards First Rule {Sam Tsoutsouvas}`.
+- An Audible ASIN in brackets, like `[B002V0QK4C]`, helps with matching against Audible.
+
+```text
+audiobooks/
+├── Terry Goodkind/
+│   ├── Heart of Black Ice - Sister of Darkness/
+│   │   └── Audio File.m4a
+│   └── Sword of Truth/
+│       ├── Vol 1 - 1994 - Wizards First Rule {Sam Tsoutsouvas}/
+│       │   ├── Audio Track 1.mp3
+│       │   ├── Audio Track 2.mp3
+│       │   └── Cover.jpg
+│       └── Vol 2 - 1995 - Stone of Tears/
+│           └── Audiobook.m4b
+└── Ender's Game.m4b
+```
+
+On my Synology, the audiobooks folder has a folder for each author, a folder for each book inside that, and then the audio file plus a cover and a metadata file. Those last two were created by Audiobookshelf, so you don't have to make them yourself.
+
+![Synology File Station showing the Media/audiobooks share with one folder per author](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/synology-author-folders.jpg)
+
+For the video, I connected to the server with [FileZilla](https://filezilla-project.org/) over SFTP and dragged my Libation book folders straight into `audiobooks`, without making author folders. It would be better to sort them by author first, but if you have hundreds of books, you probably won't want to create all those folders by hand. I wanted to show that dropping the book folders in works fine, and it did. If you set up the Libation upload above, you can skip this step entirely.
+
+## Create Your Library
+
+With the files in place, click to add your first library:
+
+1. Name it. I called mine **Audiobooks** and picked the books icon.
+2. Set the **metadata provider**. I chose **Audible**, since that's where all of my books came from.
+3. Browse for the folder. Select `/audiobooks`, the path inside the container, not the folder on your host.
+4. Check the other settings. The **Schedule** tab can run automatic library scans. I left that disabled for now.
+5. Create the library.
+
+One small gotcha I hit in the video: after browsing to the folder, make sure the path got added to the library before you click create. I had to go back and grab the folder path the first time.
+
+![The Audiobookshelf New Library dialog as shown in the 2023 video, with Books media type, the name Audiobooks, and Audible.com as the metadata provider](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-new-library.jpg)
+
+Then go to the library and hit **Scan**. Mine pulled things in really quickly, and when it finished, all 16 audiobooks had been added.
+
+![The Audiobookshelf library in the video after the first scan, showing 16 books with their covers and bracketed Audible IDs still in the titles](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-library-grid.jpg)
+
+## Clean Up the Metadata
+
+The first thing you'll probably notice is that the authors have no pictures. That's easy to fix. On the **Authors** page, use the match option and Audiobookshelf finds the photos for you.
+
+If an author is wrong or doesn't match, open the edit dialog and fill in the details yourself. You can add an ASIN and run a quick match again with that extra context, and it will find who you're looking for.
+
+![The Audiobookshelf home page in the video with Continue Listening, Recently Added books, and matched author photos on the bookshelf view](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-home-shelf.jpg)
+
+Books work the same way. When I opened David Goggins' book, it had a single audio track, but Audiobookshelf had pulled in all of the chapters with the proper names. The one thing I fixed was the title, which still had the bracketed Audible code from the Libation folder name. I removed that in the edit screen, saved, and it looked a lot better.
+
+## What Else Audiobookshelf Does
+
+There's a lot packed into this app. From a book's page, you can:
+
+- Download the files directly
+- Edit chapters: rename them, change the timestamps, or look them up if something's off
+- Mark it as finished
+- Add it to a collection or a playlist
+- Open an RSS feed for it
+
+It also supports collections and series. I didn't have any series in my test library, so I couldn't really show that part. The [feature list](https://audiobookshelf.org/docs/) also includes podcast search and auto-downloads, scheduled backups, tools for embedding metadata and merging multiple files into one M4B, and basic ebook support with sending to devices like a Kindle.
+
+### Users and Listening Sessions
+
+Under **Settings**, you can add more users if you want to give people access to your libraries. I do have to say that giving other people access to books you bought gets into a legal gray area, so I can't really endorse that too much.
+
+You also get stats similar to Plex. **Listening Sessions** shows who listened to what, for how long, and when it was last updated. Mine showed that I'd been listening on my Google Pixel 6. There's also backups, logs, and notifications. All of it is specific to audiobooks, and that's really what I like. You can listen to audiobooks through other media servers, but none of them are built around how you listen to an audiobook.
+
+## The Mobile App
+
+The mobile app was a big part of why I picked Audiobookshelf. It syncs your progress with the server and supports offline listening. The situation is a bit different by platform:
+
+- **Android:** The [Audiobookshelf app](https://play.google.com/store/apps/details?id=com.audiobookshelf.app) is on the Google Play Store. The project still labels it a beta, and the latest release at the time of writing is v0.14.2-beta.
+- **iOS:** The app is distributed through a [TestFlight beta](https://testflight.apple.com/join/wiic7QIW), and that beta is full. Apple caps TestFlight at 10,000 testers, so new iPhone users may not be able to join right now. The [app repository](https://github.com/advplyr/audiobookshelf-app) says updates are posted in the project's Discord.
+
+Either way, the app connects to your server's address, so it needs to be able to reach it from wherever you are listening. That's another reason to sort out HTTPS or a VPN before you rely on it away from home.
+
+## My Take
+
+Audiobookshelf is one of my newest favorite additions to my home lab. It's free, open source, and fun to poke around in. Libation handled the annoying part of getting my purchases off Audible, and Audiobookshelf turned them into an audiobook app. Plex felt like a music library.
+
+If you're paying for Audible mostly to listen to books you already own, back them up with Libation and point Audiobookshelf at the folder. Start with a few books, get the folder layout right, and then let the scanner do the rest.
+
+If you also want ebooks, PDFs, and comics in the same place, my [BookOrbit article](/bookorbit-self-hosted-library) covers a self-hosted library that handles all of them, including audiobooks.
