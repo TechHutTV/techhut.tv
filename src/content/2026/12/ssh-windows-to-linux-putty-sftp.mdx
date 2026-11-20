@@ -1,10 +1,10 @@
 export const title = "SSH from Windows to Linux: OpenSSH, PuTTY, and SFTP File Transfers"
 export const description = "Control a Linux server from Windows with the built-in OpenSSH client or PuTTY, move files with FileZilla or the sftp command, and set up SSH keys so you can stop typing passwords."
-export const date = "2026-10-17"
+export const date = "2026-12-26"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Windows", "Terminal", "Homelab"]
-export const cover = "/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/cover.jpg"
+export const cover = "/docs-static/img/2026/12/ssh-windows-to-linux-putty-sftp/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -74,7 +74,7 @@ Windows has its own OpenSSH client, and it's the quickest way to get a terminal 
 
 In the video I already had it. You can check under **Optional features** in Settings. On most Windows 10 and 11 PCs, **OpenSSH Client** will already be in the installed list. Microsoft's [documentation](https://learn.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse) still treats it as an optional feature on desktop Windows, though, so it might be missing on yours.
 
-![The Windows 10 Optional features page in the video with OpenSSH Client already installed](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/windows-optional-features-openssh-client.jpg)
+![The Windows 10 Optional features page in the video with OpenSSH Client already installed](/docs-static/img/2026/12/ssh-windows-to-linux-putty-sftp/windows-optional-features-openssh-client.jpg)
 
 The quickest test is to open PowerShell, Command Prompt, or Windows Terminal and type:
 
@@ -111,7 +111,7 @@ If the `SHA256:` string matches what Windows is showing, type `yes`. If it doesn
 
 Then enter your Linux user's password, the same one you use for `sudo`. Nothing shows up while you type, and that's normal. Press Enter and you're in. In the video I got the Ubuntu 20.04 welcome banner, and from there the Windows window was a full terminal on my media server. `ls`, `cd media`, and even `htop` all worked like I was sitting at the machine.
 
-![htop running on the Ubuntu media server inside a Windows Command Prompt SSH session](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/htop-over-ssh-command-prompt.jpg)
+![htop running on the Ubuntu media server inside a Windows Command Prompt SSH session](/docs-static/img/2026/12/ssh-windows-to-linux-putty-sftp/htop-over-ssh-command-prompt.jpg)
 
 Type `exit` when you're done.
 
@@ -146,7 +146,7 @@ FileZilla asks if you want to remember passwords. I chose to save them in the vi
 
 Your local files show up on the left and your server's home folder on the right. Hidden files show up too, so expect a bunch of dotfiles. To upload, drag a file from the left side, or straight from File Explorer, onto the right. To download, drag the other way. In the video I made a quick `test.txt` and dropped it on the server, and it uploaded right away.
 
-![FileZilla connected over SFTP with the Quickconnect bar filled in, local Windows files on the left and the server's home folder on the right](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/filezilla-sftp-connected.jpg)
+![FileZilla connected over SFTP with the Quickconnect bar filled in, local Windows files on the left and the server's home folder on the right](/docs-static/img/2026/12/ssh-windows-to-linux-putty-sftp/filezilla-sftp-connected.jpg)
 
 ### Save it in the Site Manager
 
@@ -175,7 +175,7 @@ Open PuTTY. On the **Session** screen:
 2. Leave **Port** at `22` and **Connection type** on **SSH**.
 3. Click **Open**.
 
-![The PuTTY Configuration Session screen with a local IP in Host Name, port 22, and SSH selected](/docs-static/img/2026/10/ssh-windows-to-linux-putty-sftp/putty-configuration-session.jpg)
+![The PuTTY Configuration Session screen with a local IP in Host Name, port 22, and SSH selected](/docs-static/img/2026/12/ssh-windows-to-linux-putty-sftp/putty-configuration-session.jpg)
 
 On the first connection, PuTTY shows a security alert because it doesn't know the host key yet. Compare the fingerprint it shows with the server's, the same way as above, then click **Accept** to trust it and cache the key. Then log in at the `login as:` prompt with your username and password, the same as in the terminal.
 
