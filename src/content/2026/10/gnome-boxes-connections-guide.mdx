@@ -66,7 +66,7 @@ For a Windows machine, here's the current route from [Microsoft's docs](https://
 Windows Home editions can't act as Remote Desktop hosts. You need Windows Pro, Enterprise, Education, or Server on the machine you're connecting to.
 </Note>
 
-For a GNOME desktop on Linux, open **Settings > System > Remote Desktop**, turn on **Desktop Sharing**, and turn on **Remote Control** if you want to use the mouse and keyboard and not just watch. The **How to Connect** and **Login Details** sections show the address, port, and the username and password to use. GNOME's built-in sharing uses RDP. Per the [GNOME help page](https://help.gnome.org/users/gnome-help/stable/sharing-desktop.html), it uses port 3389 unless Remote Login is also on, in which case Desktop Sharing moves to another port such as 3390. Other Linux machines can run any VNC server.
+For a GNOME desktop on Linux, open **Settings > System > Remote Desktop**, turn on **Desktop Sharing**, and turn on **Remote Control** if you want to drive the mouse and keyboard, not only watch the screen. The **How to Connect** and **Login Details** sections show the address, port, and the username and password to use. GNOME's built-in sharing uses RDP. Per the [GNOME help page](https://help.gnome.org/users/gnome-help/stable/sharing-desktop.html), it uses port 3389 unless Remote Login is also on, in which case Desktop Sharing moves to another port such as 3390. Other Linux machines can run any VNC server.
 
 <Warning>
 Enabling RDP or VNC opens a port that lets people log in to the machine. Keep it on your local network, use strong passwords, and don't port-forward it to the internet. If you need access from outside, put it behind a VPN like the one in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid), or use a tool built for remote access like [RustDesk](/rustdesk-self-hosted-remote-desktop).
@@ -105,7 +105,7 @@ The header bar while you're connected gives you:
 
 **Properties** lets you rename the connection and see its address. For RDP you can also choose **Fit window** or **Original size**. VNC connections have more options: view only, show the local pointer, enable audio, a bandwidth setting (high quality or fast refresh), and scale mode, including **Resize desktop**.
 
-Back in the main window, every saved connection appears as a thumbnail. You can keep several and right-click one to delete it or open its properties. It's not a complicated app, and that's the point. In my testing it just worked, which is exactly what I want from a simple Linux utility.
+Back in the main window, every saved connection appears as a thumbnail. You can keep several and right-click one to delete it or open its properties. It's a simple app, and that's what I want. In my testing it just worked, which is exactly what I want from a Linux utility.
 
 ## Boxes: Virtual Machines Without the Fuss
 
@@ -142,7 +142,7 @@ In Boxes 50, the **+** button opens a small menu with two choices:
 
 When I opened the download list in the video, it had Debian, GNOME OS nightly builds, openSUSE, Manjaro, FreeBSD, Ubuntu, CentOS, NetBSD, and plenty more. The list comes from the libosinfo database, which Flathub updates through a separate extension. Downloads go into a downloads popover, and you get a notification with an **Install** button when they're finished.
 
-Honestly, most of the time you'll just use an ISO you already have. That's what I did. I grabbed a Zorin OS 16 Pro ISO from my backup drive. Boxes couldn't identify it, so I picked **Ubuntu LTS** as the template, since Zorin is based on Ubuntu. Current Boxes does the same thing in the **New Virtual Machine** dialog: if detection fails, it says "Operating System not found" and lets you pick the closest match under **Operating System**. Choosing the right base OS matters because Boxes uses it to set sensible defaults.
+Most of the time you'll just use an ISO you already have. That's what I did. I grabbed a Zorin OS 16 Pro ISO from my backup drive. Boxes couldn't identify it, so I picked **Ubuntu LTS** as the template, since Zorin is based on Ubuntu. Current Boxes does the same thing in the **New Virtual Machine** dialog: if detection fails, it says "Operating System not found" and lets you pick the closest match under **Operating System**. Choosing the right base OS matters because Boxes uses it to set sensible defaults.
 
 ### Resources and express install
 
@@ -226,9 +226,9 @@ Boxes covers quick local VMs. If you want full control over CPU topology, networ
 
 ## Final Thoughts
 
-I've really grown attached to GNOME and its built-in tools, and these two alone are reason enough. Connections is simple and does exactly what a remote desktop client should. Boxes makes spinning up a VM about as easy as it gets, it performed well in my testing, and the guest integration beat what I was used to in VirtualBox. It's not built for heavy workloads, and that's fine.
+I've really grown attached to GNOME and its built-in tools, and these two alone are reason enough. Connections is simple and does exactly what a remote desktop client should. Boxes makes spinning up a VM about as easy as it gets, it performed well in my testing, and the guest integration beat what I was used to in VirtualBox. I use it for quick VMs. Heavy workloads belong on Proxmox or virt-manager.
 
-If you're installing today, grab both from Flathub. The stable Boxes there still matches what I showed in the video, and the rewrite is worth keeping an eye on (or testing on a spare VM) until it becomes the stable release.
+If you're installing today, grab both from Flathub. The stable Boxes there still matches what I showed in the video, and the rewrite is worth keeping an eye on (or testing on a spare VM) until it becomes the stable release. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
