@@ -16,7 +16,7 @@ So I went digging through Reddit threads and search results, looking for somethi
 
 Linode sponsored the video this article is based on.
 
-The video was published in December 2023, and I installed Podgrab on Unraid through Community Apps. The written steps below have been checked against the current upstream project in October 2026, and I've added a generic Docker Compose install alongside the Unraid route. My hands-on impressions all come from the original recording.
+The video was published in December 2023, and I installed Podgrab on Unraid through Community Apps. The steps below are checked against the current upstream project in October 2026, and I've added a generic Docker Compose install alongside the Unraid route. My hands-on impressions all come from the original recording.
 
 ## Is Podgrab Still Maintained?
 
@@ -70,7 +70,7 @@ Port 8080 is the big one to watch for. A lot of containers default to it, so the
 
 ### Docker Compose
 
-The upstream [docker-compose.yml](https://github.com/akhilrex/podgrab/blob/master/docker-compose.yml) still has a `version: "2.1"` line, which current Docker Compose ignores. Here's a cleaned-up version that also turns on the password and runs the container as a regular user instead of root.
+The upstream [docker-compose.yml](https://github.com/akhilrex/podgrab/blob/master/docker-compose.yml) still has a `version: "2.1"` line, which current Docker Compose ignores. This cleaned-up version also turns on the password and runs the container as a regular user instead of root.
 
 First, make the folders and give them to your user. Check your IDs with `id -u` and `id -g`; I'm using `1000` here.
 
@@ -160,7 +160,7 @@ For remote access without opening ports, my [NetBird and Pocket ID guide](/self-
 
 ## Settings to Change First
 
-Once you log in, Podgrab looks like a really simple, almost WordPress-style site. The home page even tells you to visit the settings before adding any podcasts, and the README says the same thing. Here's what's in there:
+Once you log in, Podgrab looks like a really simple, almost WordPress-style site. The home page even tells you to visit the settings before adding any podcasts, and the README says the same thing. What's in there:
 
 - **Download episodes whenever a new podcast is added**, and **how many** to grab when you do. It defaults to 5, which seemed good to me.
 - **Automatically download new episodes** to disk.
@@ -218,9 +218,9 @@ Because it's just audio files in folders, you can point another media server at 
 
 Podgrab does what I was looking for. You add a podcast, it downloads the episodes, and they sit on your own storage in tidy folders. Setup on Unraid took a couple of minutes, and it's just as simple with Compose. If you're a data hoarder like me, it's a nice little podcast aggregation tool.
 
-The catch is the maintenance situation. It was already quiet when I made the video, and it's been quiet ever since. It still works, but it isn't getting new features or security fixes. Set a password, keep it on your local network, and pair it with a better player if you want to actually listen to what it collects.
+The catch is the maintenance situation. It was already quiet when I made the video, and it's been quiet ever since. It still works, but it isn't getting new features or security fixes. Set a password, keep it on your local network, and pair it with a better player if you want to listen to what it collects.
 
-If you know of other self-hosted podcast tools, especially ones that are actively developed, let me know. With all that, I do hope you found this helpful. Have a great one.
+If you know of other self-hosted podcast tools, especially ones that are actively developed, let me know. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
