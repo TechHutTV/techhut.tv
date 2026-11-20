@@ -1,10 +1,10 @@
 export const title = "Ditch Audible: Back Up Your Library and Self-Host Audiobookshelf"
 export const description = "Back up the Audible audiobooks you bought with Libation, then stream them from your own server with Audiobookshelf, Docker Compose, and the companion mobile app."
-export const date = "2026-10-15"
+export const date = "2026-12-03"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab"]
-export const cover = "/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/cover.jpg"
+export const cover = "/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -84,7 +84,7 @@ Libation can ask for your password and show a CAPTCHA, but I found the external 
 
 After that, your books start loading in. You get the title, authors, narrators, length, series, description, categories, and cover for each one, along with its backup status. Use **Import > Scan Library** whenever you want to pull in new purchases. Libation also rescans accounts periodically on its own.
 
-![Libation in the video with the imported Audible library showing covers, titles, authors, narrators, lengths, and red stoplight backup icons](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/libation-library.jpg)
+![Libation in the video with the imported Audible library showing covers, titles, authors, narrators, lengths, and red stoplight backup icons](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/libation-library.jpg)
 
 ### Liberate Your Books
 
@@ -97,7 +97,7 @@ To start the downloads, open the **Liberate** menu. In the video, the options we
 
 I went with the full book and PDF backup. You can also click the stoplight icon on a single title to back up just that one book.
 
-![The Liberate menu in Libation from the video with Begin Book and PDF Backups, Begin PDF Only Backups, Convert all M4b to Mp3, and Liberate Visible Books](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/libation-liberate-menu.jpg)
+![The Liberate menu in Libation from the video with Begin Book and PDF Backups, Begin PDF Only Backups, Convert all M4b to Mp3, and Liberate Visible Books](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/libation-liberate-menu.jpg)
 
 There's no need to convert to MP3 for Audiobookshelf. It handles the `.m4b` files really well and picks up all the chapters on its own.
 
@@ -233,7 +233,7 @@ audiobooks/
 
 On my Synology, the audiobooks folder has a folder for each author, a folder for each book inside that, and then the audio file plus a cover and a metadata file. Those last two were created by Audiobookshelf, so you don't have to make them yourself.
 
-![Synology File Station showing the Media/audiobooks share with one folder per author](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/synology-author-folders.jpg)
+![Synology File Station showing the Media/audiobooks share with one folder per author](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/synology-author-folders.jpg)
 
 For the video, I connected to the server with [FileZilla](https://filezilla-project.org/) over SFTP and dragged my Libation book folders straight into `audiobooks`, without making author folders. It would be better to sort them by author first, but if you have hundreds of books, you probably won't want to create all those folders by hand. I wanted to show that dropping the book folders in works fine, and it did. If you set up the Libation upload above, you can skip this step entirely.
 
@@ -249,11 +249,11 @@ With the files in place, click to add your first library:
 
 One small gotcha I hit in the video: after browsing to the folder, make sure the path got added to the library before you click create. I had to go back and grab the folder path the first time.
 
-![The Audiobookshelf New Library dialog as shown in the 2023 video, with Books media type, the name Audiobooks, and Audible.com as the metadata provider](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/abs-new-library.jpg)
+![The Audiobookshelf New Library dialog as shown in the 2023 video, with Books media type, the name Audiobooks, and Audible.com as the metadata provider](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-new-library.jpg)
 
 Then go to the library and hit **Scan**. Mine pulled things in really quickly, and when it finished, all 16 audiobooks had been added.
 
-![The Audiobookshelf library in the video after the first scan, showing 16 books with their covers and bracketed Audible IDs still in the titles](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/abs-library-grid.jpg)
+![The Audiobookshelf library in the video after the first scan, showing 16 books with their covers and bracketed Audible IDs still in the titles](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-library-grid.jpg)
 
 ## Clean Up the Metadata
 
@@ -261,7 +261,7 @@ The first thing you'll probably notice is that the authors have no pictures. Tha
 
 If an author is wrong or doesn't match, open the edit dialog and fill in the details yourself. You can add an ASIN and run a quick match again with that extra context, and it will find who you're looking for.
 
-![The Audiobookshelf home page in the video with Continue Listening, Recently Added books, and matched author photos on the bookshelf view](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/abs-home-shelf.jpg)
+![The Audiobookshelf home page in the video with Continue Listening, Recently Added books, and matched author photos on the bookshelf view](/docs-static/img/2026/12/audiobookshelf-self-host-audible-library/abs-home-shelf.jpg)
 
 Books work the same way. When I opened David Goggins' book, it had a single audio track, but Audiobookshelf had pulled in all of the chapters with the proper names. The one thing I fixed was the title, which still had the bracketed Audible code from the Libation folder name. I removed that in the edit screen, saved, and it looked a lot better.
 
