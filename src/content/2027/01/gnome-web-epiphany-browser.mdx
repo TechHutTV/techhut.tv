@@ -1,10 +1,10 @@
 export const title = "GNOME Web (Epiphany): Is GNOME's Browser Actually Good Now?"
 export const description = "A look at GNOME Web, also known as Epiphany: where it came from, what the GTK 4 and libadwaita port changed, how WebKitGTK holds it back, and how to install it and try its experimental WebExtensions support today."
-export const date = "2026-10-17"
+export const date = "2027-01-14"
 export const authors = ["Cameron Knauff"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Gnome", "Apps"]
-export const cover = "/docs-static/img/2026/10/gnome-web-epiphany-browser/cover.jpg"
+export const cover = "/docs-static/img/2027/01/gnome-web-epiphany-browser/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -59,7 +59,7 @@ I had dark mode under 41 in the video, but the release notes put system dark sty
 
 The GTK 4 and libadwaita port brought the new GNOME look to the app. I couldn't spot many changes beyond the theme. Poking around with the GTK inspector, I could see some new widgets, like `AdwTabBar` for the tabs and the libadwaita-style preferences page. Between 43 and 44, though, the interface differences were pretty minor.
 
-![The GTK inspector from the video showing GNOME Web 44's widget tree with AdwTabBar selected](/docs-static/img/2026/10/gnome-web-epiphany-browser/gtk-inspector-adwtabbar.jpg)
+![The GTK inspector from the video showing GNOME Web 44's widget tree with AdwTabBar selected](/docs-static/img/2027/01/gnome-web-epiphany-browser/gtk-inspector-adwtabbar.jpg)
 
 The bigger change was in the engine. Between patches landing upstream in WebKit and the GTK 4 port, general browsing in Web 44 was so much faster. YouTube videos opened.
 
@@ -75,7 +75,7 @@ WebKit has an interesting family tree. It started as KHTML, a KDE project. Apple
 
 The trouble is that Web felt slower than Chromium and Firefox and also fell behind on standards tests. In my HTML5 test run for the video, it scored 454, while Firefox scored 515 and Chromium 526. To be fair, WebKit intentionally blocks some features to prevent fingerprinting, and you probably won't notice most of them.
 
-![HTML5test results from the video: Chrome 111 scoring 526, Firefox 111 scoring 515, and GNOME Web scoring 454 out of 555](/docs-static/img/2026/10/gnome-web-epiphany-browser/html5test-chrome-firefox-gnome-web.jpg)
+![HTML5test results from the video: Chrome 111 scoring 526, Firefox 111 scoring 515, and GNOME Web scoring 454 out of 555](/docs-static/img/2027/01/gnome-web-epiphany-browser/html5test-chrome-firefox-gnome-web.jpg)
 
 WebKit is also the browser engine web developers have complained about most since Internet Explorer died, since they often have to write code specifically for Safari. I don't think many of them would bother if WebKit weren't the only engine allowed on iOS. That has started to change: Apple now lets [alternative browser engines run for EU users](https://developer.apple.com/support/alternative-browser-engines/) on iOS 17.4 and iPadOS 18 or later. Still, WebKit remains the engine behind most iPhone browsers.
 
@@ -130,7 +130,7 @@ Restart Web, then:
 
 To turn it back off, set the key to `false` with the same command.
 
-![The Extensions page in GNOME Web's preferences from the video, with Add New Extension and Return YouTube Dislike installed and enabled](/docs-static/img/2026/10/gnome-web-epiphany-browser/webextensions-preferences-page.jpg)
+![The Extensions page in GNOME Web's preferences from the video, with Add New Extension and Return YouTube Dislike installed and enabled](/docs-static/img/2027/01/gnome-web-epiphany-browser/webextensions-preferences-page.jpg)
 
 <Warning>
 This is still an experimental feature. Many extensions won't work properly, and you're installing extension files by hand, so stick to well-known extensions from addons.mozilla.org. Keep Web updated, too. Version 51.rc fixed a path traversal bug (CVE-2026-77679) in how extension files were unpacked.
