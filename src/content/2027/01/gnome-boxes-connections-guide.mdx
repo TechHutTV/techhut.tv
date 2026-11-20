@@ -1,10 +1,10 @@
 export const title = "GNOME Boxes and Connections: Simple Virtual Machines and Remote Desktops on Linux"
 export const description = "Install Boxes and Connections from Flathub, create a virtual machine from an ISO or a download, use express install, and connect to Windows and Linux desktops over RDP or VNC, plus where the Boxes rewrite stands."
-export const date = "2026-10-17"
+export const date = "2027-01-02"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Gnome", "Virtualization", "Windows"]
-export const cover = "/docs-static/img/2026/10/gnome-boxes-connections-guide/cover.jpg"
+export const cover = "/docs-static/img/2027/01/gnome-boxes-connections-guide/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -85,7 +85,7 @@ To connect:
 
 I typed in my Windows VM's IP, left it on RDP, and signed in with the same account I use on that Windows machine. That was it.
 
-![The Connections new-connection popover from the video with an IP address entered and the RDP and VNC connection types](/docs-static/img/2026/10/gnome-boxes-connections-guide/connections-new-rdp-connection.jpg)
+![The Connections new-connection popover from the video with an IP address entered and the RDP and VNC connection types](/docs-static/img/2027/01/gnome-boxes-connections-guide/connections-new-rdp-connection.jpg)
 
 In the 2021 version, the dialog only had RDP ("standard for connecting to Windows") and VNC ("standard for connecting to Linux"). Current versions add a third option, **SPICE**, for connecting to remote virtual machines. Version 51 rewords these as RDP (standard, high performance), VNC (legacy), and SPICE (virtual machines). RDP isn't just for Windows anymore, since GNOME's own Remote Desktop uses it.
 
@@ -95,7 +95,7 @@ Once I was connected, it felt responsive. Opening apps and hovering over icons w
 
 One reason I keep a Windows machine around at all is ArcGIS Pro, a Windows-only app I needed for school. I'd been reaching it from my MacBook with Chrome Remote Desktop, and doing it from GNOME with a native client was great.
 
-![A Windows desktop over RDP in GNOME Connections from the video, with ArcGIS Pro starting up](/docs-static/img/2026/10/gnome-boxes-connections-guide/connections-rdp-windows-arcgis.jpg)
+![A Windows desktop over RDP in GNOME Connections from the video, with ArcGIS Pro starting up](/docs-static/img/2027/01/gnome-boxes-connections-guide/connections-rdp-windows-arcgis.jpg)
 
 The header bar while you're connected gives you:
 
@@ -133,7 +133,7 @@ What I really like about Boxes compared to VirtualBox is the guest integration. 
 
 In the 2021 version, the **+** button opened a **Create a Virtual Machine** dialog. Since I was on Fedora, it listed featured downloads at the top (Fedora 34 Workstation, Fedora Silverblue, and Red Hat Enterprise Linux). Below those were two sources: **Operating System Download** and **Operating System Image File**.
 
-![The 2021 Boxes Create a Virtual Machine dialog from the video with featured Fedora and RHEL downloads and the two OS source options](/docs-static/img/2026/10/gnome-boxes-connections-guide/boxes-create-virtual-machine-2021.jpg)
+![The 2021 Boxes Create a Virtual Machine dialog from the video with featured Fedora and RHEL downloads and the two OS source options](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-create-virtual-machine-2021.jpg)
 
 In Boxes 50, the **+** button opens a small menu with two choices:
 
@@ -148,7 +148,7 @@ Most of the time you'll just use an ISO you already have. That's what I did. I g
 
 The next step is where you set resources.
 
-![The Boxes Review and Create page from the video with memory raised to 8 GiB and the maximum disk size slider](/docs-static/img/2026/10/gnome-boxes-connections-guide/boxes-review-and-create-resources.jpg)
+![The Boxes Review and Create page from the video with memory raised to 8 GiB and the maximum disk size slider](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-review-and-create-resources.jpg)
 
 In the video, this was a **Review and Create** page with a **Customize** button for **Memory** and **Maximum Disk Size**. I bumped memory up to 8 GB. Current Boxes puts these on the same **New Virtual Machine** page:
 
@@ -165,7 +165,7 @@ Click **Create** and the VM boots. The first time, Boxes may ask to inhibit syst
 
 Zorin booted to its live menu, I picked **Try Zorin OS**, and it came up in a live session. Resizing the window resized the guest display automatically. That's partly thanks to Zorin being a polished distro, and partly because Boxes works well with modern guests. In the guest's System Monitor, I could see all of my CPU threads and about 1.3 GB of memory in use out of the 8 GB I gave it.
 
-![Zorin OS 16 Pro running in a Boxes window in the video, with System Monitor showing 16 CPU threads and 7.8 GiB of memory](/docs-static/img/2026/10/gnome-boxes-connections-guide/boxes-zorin-os-system-monitor.jpg)
+![Zorin OS 16 Pro running in a Boxes window in the video, with System Monitor showing 16 CPU threads and 7.8 GiB of memory](/docs-static/img/2027/01/gnome-boxes-connections-guide/boxes-zorin-os-system-monitor.jpg)
 
 If you go back to the main Boxes view, the VM keeps running in the background. My host's System Monitor showed about 10 GB of memory in use, since 8 GB was reserved for the guest. You can keep several VMs running without them cluttering your desktop, and clicking a thumbnail jumps straight back in.
 
