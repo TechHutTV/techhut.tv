@@ -10,12 +10,12 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="__38-ehaYYs" title="TechHut's Yacht walkthrough" />
 
-If you've been wanting to try Docker but the terminal side of it feels like a wall, [Yacht](https://github.com/Yacht-sh/Yacht) is one of the easiest ways in. It's a web UI for managing containers, and its whole focus is templates and one-click deployments. You pick an app from a library, look over a pre-filled form, hit deploy, and you have a running container. It's a nice way to learn what containers, images, volumes, and ports actually are without having to memorize a pile of flags first.
+If you've been wanting to try Docker but the terminal side of it feels like a wall, [Yacht](https://github.com/Yacht-sh/Yacht) is an easy way in. It's a web UI for managing containers, and its whole focus is templates and one-click deployments. You pick an app from a library, look over a pre-filled form, hit deploy, and you have a running container. It's a nice way to learn what containers, images, volumes, and ports are without having to memorize a pile of flags first.
 
 Linode sponsored the video this article is based on.
 
 <Note>
-I recorded the video in December 2021, when Yacht was labeled alpha software and was SelfhostedPro's project under the SelfhostedPro GitHub account. That's not who runs it now. The active repository is [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), under the Yacht-sh organization, and it's maintained by a different developer, wickedyoda. Its [changes.md](https://github.com/Yacht-sh/Yacht/blob/master/changes.md) describes the code as a fork of SelfhostedPro's 2021 code, and the license files have been rewritten since then (more on that below). The latest release is [Yacht v1.1](https://github.com/Yacht-sh/Yacht/releases/tag/1.1), published September 2, 2026. The old `SelfhostedPro/Yacht` URL is now a separate fork with an outdated README, and the TypeScript rewrite that README points to ([yacht-nuxt](https://github.com/Yacht-sh/yacht-nuxt)) was archived on August 30, 2026. The written installation below has been updated for the current Yacht-sh project. The hands-on footage and my impressions come from the original recording of SelfhostedPro's 2021 alpha, not the current build.
+I recorded the video in December 2021, when Yacht was labeled alpha software and was SelfhostedPro's project under the SelfhostedPro GitHub account. That's not who runs it now. The active repository is [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), under the Yacht-sh organization, and it's maintained by a different developer, wickedyoda. Its [changes.md](https://github.com/Yacht-sh/Yacht/blob/master/changes.md) describes the code as a fork of SelfhostedPro's 2021 code, and the license files have been rewritten since then (more on that below). The latest release is [Yacht v1.1](https://github.com/Yacht-sh/Yacht/releases/tag/1.1), published September 2, 2026. The old `SelfhostedPro/Yacht` URL is now a separate fork with an outdated README, and the TypeScript rewrite that README points to ([yacht-nuxt](https://github.com/Yacht-sh/yacht-nuxt)) was archived on August 30, 2026. The install steps below are for the current Yacht-sh project. The hands-on footage and my impressions come from the original recording of SelfhostedPro's 2021 alpha, not the current build.
 </Note>
 
 ## What Yacht Is (and Isn't)
@@ -30,7 +30,7 @@ Yacht sits on top of Docker and talks to it through the Docker socket. From the 
 
 Yacht reads Portainer-style templates, so a lot of existing template lists work with it.
 
-When I recorded, I was clear that this wasn't the tool I'd pick for production. For things you actually plan to put on the web, I recommended [Portainer](https://docs.portainer.io/start/install-ce), which is a lot more developed and has many more features. Yacht's sweet spot is dipping your toes into Docker, and for that it's fantastic.
+When I recorded, I was clear that this wasn't the tool I'd pick for production. For things you plan to put on the web, I recommended [Portainer](https://docs.portainer.io/start/install-ce), which is a lot more developed and has many more features. Yacht's sweet spot is dipping your toes into Docker, and for that it works well.
 
 A few facts about the current project:
 
@@ -161,7 +161,7 @@ The example I used was [Homer](https://github.com/bastienwirtz/homer), a simple 
 Click **Deploy** and Yacht walks you through a form:
 
 1. **Basics.** You can change the container name. The image is the Docker Hub location, and the restart policy decides what happens when the server reboots or the container fails (none, always, on failure, or unless stopped). I kept the default of unless stopped.
-2. **Networking.** Make sure the network is set to **bridge** so the container actually connects properly. The template also fills in a label (I kept "web UI") and the host and container ports. In the current template, Homer's web UI maps host port `8902` to container port `8080`.
+2. **Networking.** Make sure the network is set to **bridge** so the container connects properly. The template also fills in a label (I kept "web UI") and the host and container ports. In the current template, Homer's web UI maps host port `8902` to container port `8080`.
 3. **Volumes.** This is where the app's data lives. For Homer, the config folder holds its assets and `config.yml`. Generally you can leave these where they are.
 4. **Environment variables.** Homer doesn't need any, but you can add them with the plus button.
 5. **Deploy.** You get a little progress bar, and that's it.
@@ -174,7 +174,7 @@ The volumes step is what I like most. If you look at Homer's Docker Hub page, th
 Homer's own README now mounts a single folder at `/www/assets` and keeps `config.yml` inside it, while the old template still lists a separate `/www/config.yml` mount. If Homer doesn't pick up your config, edit the volumes to match [Homer's current Docker instructions](https://github.com/bastienwirtz/homer).
 </Note>
 
-After deploying, you land on the **Applications** page. Homer and Yacht are both listed with their images, creation dates, and status. Clicking the web UI link opened my new Homer instance. To actually customize Homer, I'd need to hop into the CLI and edit its configuration files. Yacht helps here too: the app's storage info shows where each of those files lives on the host.
+After deploying, you land on the **Applications** page. Homer and Yacht are both listed with their images, creation dates, and status. Clicking the web UI link opened my new Homer instance. To customize Homer, I'd need to hop into the CLI and edit its configuration files. Yacht helps here too: the app's storage info shows where each of those files lives on the host.
 
 ## Resources: Images, Volumes, and Networks
 
@@ -194,7 +194,7 @@ Template variables are the thing to set up early. Templates use placeholders tha
 
 ## What's New Since the Video
 
-If you watched the video and are installing Yacht now, here's what's different:
+If you watched the video and are installing Yacht now, this is what's different:
 
 - **New home and maintainer.** The project lives at [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), maintained by wickedyoda rather than SelfhostedPro, with versioned releases starting at 1.0. The README no longer carries the alpha warning that was there when I recorded.
 - **License.** SelfhostedPro's original releases were MIT licensed ("Copyright 2020 SelfhostedPro"). The current repo's `LICENSE.md` is a Creative Commons Attribution 4.0 license reading "Copyright 2025 wickedyoda", and a GPLv3 `LICENSE` file was added on August 30, 2026 in [commit 2a63782](https://github.com/Yacht-sh/Yacht/commit/2a637828a9932d2e30fbb8f74ce4b2908be8f550), which also switched the README's license line to GPLv3. If licensing matters for how you use it, read both files yourself.
@@ -207,7 +207,7 @@ When I recorded in 2021, SelfhostedPro's Yacht was a super cool tool, and settin
 
 I'd still keep the caveat I gave in the video: for anything production-ready, especially things you're hosting on the web, look at something more mature like Portainer. And once you get comfortable, it's worth learning the basics underneath. My [Docker basics for beginners](/7-docker-basics-for-beginners) article is a good next step, and if you end up wanting a more modern manager for a bunch of compose stacks, I've also written about [Dockhand](/dockhand-docker-manager).
 
-With all that, I hope you enjoyed this little walkthrough of Yacht. Have a beautiful day.
+With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
