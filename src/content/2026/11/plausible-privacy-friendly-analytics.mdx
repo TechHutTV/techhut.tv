@@ -212,7 +212,7 @@ A few things from the dashboard tour need extra setup on CE. They're all [enviro
 
 | Feature | What to set |
 |---|---|
-| Email reports, invites, password resets | `MAILER_EMAIL` and `SMTP_HOST_ADDR`, `SMTP_HOST_PORT`, `SMTP_USER_NAME`, `SMTP_USER_PWD`, or an API key for Postmark, Mailgun, Mandrill, or SendGrid |
+| Email reports, invites, password resets | `MAILER_EMAIL` and `SMTP_HOST_ADDR`, `SMTP_HOST_PORT`, `SMTP_USER_NAME`, `SMTP_USER_PWD`, or set `MAILER_ADAPTER` to `Bamboo.PostmarkAdapter` with `POSTMARK_API_KEY`, `Bamboo.MailgunAdapter` with `MAILGUN_API_KEY` and `MAILGUN_DOMAIN`, `Bamboo.MandrillAdapter` with `MANDRILL_API_KEY`, or `Bamboo.SendGridAdapter` with `SENDGRID_API_KEY` |
 | City-level locations | `MAXMIND_LICENSE_KEY` for a free MaxMind GeoLite2 database. Without it, CE uses a bundled country-level database. |
 | Search Console and GA4 imports | `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from your own Google Cloud OAuth app. There's a [step-by-step guide](https://github.com/plausible/community-edition/wiki/Google-Integration). |
 
