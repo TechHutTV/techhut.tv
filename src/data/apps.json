@@ -1060,7 +1060,9 @@
     "name": "KDE Discover",
     "category": "Desktop",
     "description": "Find, install and update applications through KDE’s software center.",
-    "coverage": [],
+    "coverage": [
+      "/kde-discover-software-center"
+    ],
     "videos": [
       {
         "id": "0ycb4dmMXPY",

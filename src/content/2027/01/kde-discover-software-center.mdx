@@ -1,0 +1,166 @@
+export const title = "KDE Discover Is Actually Really Good Now"
+export const description = "A tour of KDE Discover, Plasma's software center: Flatpak, distro packages, Snap and firmware sources, app pages with permissions and reviews, updates, offline updates, and why it's great for finding new apps."
+export const date = "2027-01-11"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "KDE", "Apps"]
+export const cover = "/docs-static/img/2027/01/kde-discover-software-center/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="0ycb4dmMXPY" title="TechHut's KDE Discover walkthrough" />
+
+I've been pretty hard on KDE Discover over the years. In my [openSUSE post-install guide](/opensuse-5-things-you-must-do-after-installing), one of my tips was to uninstall it and use YaST instead. Back then it was buggy, updates would break or hang, and it just didn't work very well.
+
+Then I switched from GNOME to KDE Plasma on my main machine. At the time my favorite distro was Nobara, which is basically Fedora with a bunch of tweaks. After using Discover there for a while, I had to admit it had become a pleasure to use. The bug fixes in Plasma 5.25 and 5.26 cleared up the problems I'd had, and Plasma 5.27 made it better again. In my opinion it's now one of the best ways to manage software on a Plasma system.
+
+The video was published in February 2023, and I recorded the tour on Discover 5.27 in a KDE neon virtual machine. Discover has moved on to the Plasma 6 series since then. The install packages, settings names, update options, and newer features below are for [Discover 6.8.0](https://apps.kde.org/discover/), released with Plasma 6.8 on October 14, 2026. The screenshots and hands-on impressions come from the original recording, so the layout you see on a current system will look a bit different.
+
+## What Discover Is
+
+Discover is KDE's software center. You can search or browse by category, look at screenshots, read reviews, install and remove apps, and update the whole system from one window. It's GPL-2.0-or-later, and the source lives on [KDE Invent](https://invent.kde.org/plasma/discover).
+
+Discover doesn't install anything itself. It's a front end that talks to backends, and each backend handles one kind of software. The [current source tree](https://invent.kde.org/plasma/discover/-/tree/master/libdiscover/backends) includes these:
+
+| Backend | What it manages |
+|---|---|
+| PackageKit | Your distribution's own packages (apt, dnf, zypper and so on) |
+| Flatpak | Flatpak apps and runtimes, usually from Flathub |
+| Snap | Snap packages, if your distro supports them |
+| fwupd | Firmware updates from the Linux Vendor Firmware Service (LVFS) |
+| KNewStuff | Plasma add-ons and app add-ons from [store.kde.org](https://store.kde.org/) |
+| rpm-ostree | Image-based systems like Fedora Kinoite |
+
+There are also backends for Alpine's apk, SteamOS, and systemd-sysupdate. Which ones you get depends on what your distribution packages and installs. That's also why Discover can feel great on one distro and rough on another: a lot of the experience comes from the backend and the distro's packaging.
+
+## Installing Discover and Its Backends
+
+Most Plasma distributions ship Discover by default. If it's missing, or you want to add a backend, install it from your package manager. The backends are separate packages on most distros.
+
+Fedora KDE:
+
+```bash
+sudo dnf install plasma-discover plasma-discover-packagekit plasma-discover-flatpak
+```
+
+Fedora also has `plasma-discover-snap` and `plasma-discover-kns`, and the firmware backend is built into the main package. Fedora's package recommends `plasma-discover-offline-updates`, which turns on offline updates by default (more on that below).
+
+Debian, Ubuntu, and Kubuntu:
+
+```bash
+sudo apt install plasma-discover plasma-discover-backend-flatpak plasma-discover-backend-fwupd
+```
+
+Add `plasma-discover-backend-snap` if you want Snap packages to show up.
+
+Arch Linux:
+
+```bash
+sudo pacman -S discover flatpak fwupd
+```
+
+On Arch, distro package support comes from the optional `packagekit-qt6` package, and the [Arch package listing](https://archlinux.org/packages/extra/x86_64/discover/) describes that as "not recommended, use at your own risk." So on Arch, the safer setup is Discover for Flatpaks, firmware, and Plasma add-ons, with `pacman` still handling system packages.
+
+If Flatpak is installed but Flathub isn't set up, add it with the command from [Flathub's setup page](https://flathub.org/setup):
+
+```bash
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+## Settings: Your Sources
+
+The first place I went in the video was Settings, because that's where all of your sources and repositories live. Each backend gets its own group:
+
+- **Flatpak** lists your remotes, like Flathub. **Add Source…** adds another Flatpak repository from its URL. The arrows change a source's priority, and you can show the contents of a remote or remove it.
+- **Firmware Updates** lists the fwupd remotes. In my VM, the regular `lvfs` remote was on and `lvfs-testing` was off. You can switch those with a checkbox, but leave testing off unless you have a reason.
+- **Snap** showed up because KDE neon is based on Ubuntu.
+- **Your distro's repositories** come last. On neon that was a long list of Ubuntu "jammy" repositories.
+
+The useful one here is **Make Default**. When an app is available from more than one source, the default source is what Discover picks first. KDE neon used its own repositories by default, and I switched it to Flatpak, which is my preference.
+
+![Discover's Settings page from the video with Flathub as the default source, the fwupd firmware remotes, Snap, and KDE neon repositories](/docs-static/img/2027/01/kde-discover-software-center/settings-sources.jpg)
+
+Current versions add two things to this page. If your distro has backends that aren't installed, they can show up under **Missing Backends**. And **Configure Updates…** takes you to the update settings in System Settings.
+
+## App Pages
+
+Open any app and you get a lot of information. I used Krita as the example. At the top there's the name, developer, star rating, and a screenshot carousel you can click through. Below that are the version, download and installed size, where it's distributed from, and the license.
+
+![The Krita app page in Discover 5.27 from the video, showing the rating, screenshots, version, size, Flathub as the distributor, and the GPL-3.0 license](/docs-static/img/2027/01/kde-discover-software-center/krita-app-page.jpg)
+
+Scroll down and you'll find the description, links to the website and documentation, reviews, and links for donating and reporting bugs. In the current version, the license can be clicked for an explanation of what it means, and there's also a content rating. Ratings and reviews come from the [Open Desktop Ratings Service](https://odrs.gnome.org/), the same service GNOME Software uses. You can write your own review once the app is installed.
+
+### Permissions
+
+One of my favorite parts of the app page is the permissions list. For Flatpak apps, Discover spells out what the sandbox allows. Krita wanted network access and read and write access to all files, plus a couple of D-Bus permissions. If you're installing some random app you haven't heard of, this is worth scrolling down to check.
+
+![The Permissions for Krita section in Discover from the video, listing network access, all-files read and write access, and session and system bus access](/docs-static/img/2027/01/kde-discover-software-center/krita-permissions.jpg)
+
+Two newer features make this better. A **Configure permissions…** button opens that app's page in System Settings so you can tighten its permissions. Since Plasma 6.3, Discover also [highlights sandboxed apps whose permissions will change](https://kde.org/announcements/plasma/6/6.3.0/) when you update them.
+
+### Choosing a source
+
+Krita was available from three places in my VM: Flathub, the Snap Store, and the Ubuntu-based neon repositories. In 5.27 that was a **Sources** dropdown in the header. In current versions the same switcher reads **From Flathub** (or whichever source is selected), and picking another entry switches the page to that version.
+
+### Installing
+
+Click **Install**, and the job shows up under **Tasks** in the sidebar. Click that for more detail on progress, or to cancel. Krita is a big app, so it took a moment. Plasma 6.7 also made the Install button [more obvious](https://kde.org/announcements/plasma/6/6.7.0/), which is fair, because it was easy to miss in the old header.
+
+## Installed
+
+The **Installed** page lists everything on your system, and you can remove things from there. You can sort it the same ways as the category lists, including by size. Sorting by size is handy for finding what's eating your disk. My VM was a fresh install, so there wasn't much to clean up.
+
+## Updates
+
+This is the part that used to be broken, at least on openSUSE when I last ran it. I'd get all kinds of errors, and updates would hang. Since then I haven't had problems.
+
+The **Updates** page shows your pending software updates and system updates. In the VM, everything was rolled into one **System upgrade** entry covering 211 packages. Click **More Info…** and you get the full list of what's being updated, with release notes for the components that provide them. A lot of small libraries had none, but things like AppStream and git did.
+
+![The System upgrade details page in Discover from the video, listing 211 packages with release notes for the AppStream update](/docs-static/img/2027/01/kde-discover-software-center/update-release-notes.jpg)
+
+From there you can uncheck anything you want to hold back, then click **Update All** (or **Update Selected**). Progress shows in Tasks again. Current versions also let you choose what happens when updates finish: do nothing, restart, shut down, or quit Discover. If an update fails, Discover now tells you to report the problem to your distribution rather than to KDE, because that's usually where the bug is.
+
+### Offline updates and automatic updates
+
+Update behavior lives in **System Settings > Software Update**. Discover's **Configure Updates…** button takes you there too. The [current settings](https://invent.kde.org/plasma/discover/-/blob/master/kcm/ui/main.qml) are:
+
+| Setting | Options |
+|---|---|
+| Update software | Manually or Automatically |
+| Notification frequency (or Update frequency when automatic) | Daily, Weekly, Monthly, or Never |
+| Apply system updates | After rebooting (recommended) or Immediately |
+
+**After rebooting** is offline updates. Discover downloads the system packages, and the button changes to **Restart and Install Updates**. They're applied during the next boot, while nothing is using those files. KDE labels it "Recommended to maximize system stability," because packages aren't being replaced underneath a running desktop.
+
+The upstream default is **Immediately**, but distributions can change it. Fedora turns on offline updates by default. On systems where every update needs a reboot, like image-based distros, the option is hidden. With **Automatically**, app updates install right away and system updates wait for the next restart.
+
+## Discovering New Software
+
+This is the part I like, and it's right there in the name. In 5.27, the home page got sections like **Most Popular**, **Editor's Choice**, **Highest-Rated Games**, and **Highest-Rated Developer Tools**. That's a lot more useful than the old **Featured** list, which mostly showed off KDE's own apps. Current versions add a **Newly Published & Recently Updated** section too.
+
+The categories are the best part. Under **Internet > Web Browsers**, there were 30 browsers available in my VM, from Firefox to LibreWolf (a great pick if you want a privacy and security focused Firefox fork), ungoogled-chromium, Falkon, Brave, Floorp, Microsoft Edge, Tangram, Tor Browser Launcher, and more. A lot of people search the web for alternative browsers, and this is a better place to look.
+
+![The Web Browsers category in Discover from the video, sorted by rating and showing Floorp, LibreWolf, ungoogled-chromium, and Falkon](/docs-static/img/2027/01/kde-discover-software-center/web-browsers-category.jpg)
+
+Each entry opens a full app page, so you can check ratings and permissions before installing anything. The **Mail** category is how I found Mailspring, a really nice email client for Linux. A lot of what's on my main system I found by browsing Discover.
+
+Games work the same way. Sorted by rating, the top of the list had 0 A.D., SuperTux, and Minetest (now called [Luanti](https://www.luanti.org/en/)), and a lot of these free games are good. Sorting by size shows the biggest ones. Under **Emulators** sorted by rating there's RetroArch, the PPSSPP PSP emulator, GNOME Boxes for virtual machines (which is what my VM was running in), and plenty more. Even in **Video Players**, a lot of the highly rated options were apps I'd never heard of, and some looked great.
+
+Category lists can be sorted by rating, name, number of reviews, size, or release date. If a search comes up empty in the current category, Discover offers **Search in All Categories**. The current version can also search the web for the app, with a warning that software from the web hasn't been reviewed by your distributor.
+
+Discover covers more than apps. **Plasma Addons** has icon themes, widgets, splash screens, and more. **Application Addons** has add-ons for KDE apps.
+
+What's been added to discovery and installing since the video, from KDE's release announcements:
+
+- **Plasma 6.3**: permission changes in Flatpak updates are flagged.
+- **Plasma 6.5**: much faster startup, clearer feedback about which source is slow, support for Flathub's `flatpak+https://` install links, and hardware driver installation on operating systems that support it.
+- **Plasma 6.6**: font installation on supported operating systems.
+- **Plasma 6.7**: a more obvious Install button, redesigned app cards with more information, and a sorting order that makes more sense.
+
+## My Take
+
+I went from telling people to uninstall Discover to calling it one of the best graphical software tools on Linux. The bugs that made me give up on it were fixed, updates behaved, and the app pages give you what you need to decide on an app, especially the permissions list.
+
+For browsing, I think Discover has gotten a little better than GNOME Software. It's smoother and easier to wander around, and it beats searching for "top 10 Linux apps" lists. Making Flatpak the default source is what I went with, and the categories are worth some time. You'll probably find software you didn't know existed.
+
+If you're not sure which package format to pick when an app is offered several ways, my [Flatpak vs Snap vs AppImage](/flatpak-vs-snap-vs-appimage) article goes through the differences. With all that, I do hope you have an absolutely beautiful day.
