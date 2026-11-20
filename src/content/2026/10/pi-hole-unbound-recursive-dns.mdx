@@ -14,8 +14,6 @@ In this one we're setting up our very own ad blocking server with [Pi-hole](http
 
 I did this in a Proxmox container, but you can run it on just about anything: a Raspberry Pi you have lying around, a Pi alternative, or a small x86 board like a ZimaBoard.
 
-Linode sponsored the video this article is based on.
-
 <Note>
 I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The steps below are for [Pi-hole Core v6.6](https://github.com/pi-hole/pi-hole/releases/tag/v6.6) and [FTL v6.9](https://github.com/pi-hole/FTL/releases/tag/v6.9), both released November 11, 2026, plus Web v6.6.1 from October 17, 2026. They follow the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
 </Note>
