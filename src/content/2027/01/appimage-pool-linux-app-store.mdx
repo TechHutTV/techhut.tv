@@ -1,10 +1,10 @@
 export const title = "AppImage Pool: A Linux App Store for AppImages"
 export const description = "AppImage Pool is a small GTK-style app store for AppImageHub. Here's how to install it from Flathub or as an AppImage, download and run apps, keep several versions around, and add them to your app menu."
-export const date = "2026-10-17"
+export const date = "2027-01-10"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Apps"]
-export const cover = "/docs-static/img/2026/10/appimage-pool-linux-app-store/cover.jpg"
+export const cover = "/docs-static/img/2027/01/appimage-pool-linux-app-store/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -94,11 +94,11 @@ sudo zypper install fuse libfuse2
 
 Once it's open, AppImage Pool looks pretty good. The **Browse** tab starts on **Explore**, with a carousel of featured apps at the top and rows for each category underneath. The sidebar has the full category list: Network, Utility, System, Science, Development, Education, Graphics, Office, Game, Video, Audio, Finance, and a few more.
 
-![AppImage Pool's Explore page with the GIMP featured banner, the category sidebar, and Network and Utility rows](/docs-static/img/2026/10/appimage-pool-linux-app-store/appimage-pool-explore-home.jpg)
+![AppImage Pool's Explore page with the GIMP featured banner, the category sidebar, and Network and Utility rows](/docs-static/img/2027/01/appimage-pool-linux-app-store/appimage-pool-explore-home.jpg)
 
 Clicking a category opens a full grid of everything in it. There's a search button in the top-left corner, and **Grid** and **List** buttons on the right switch the layout.
 
-![The Network category in AppImage Pool showing a grid of apps including Discord, Firefox, Firefox Beta, and Firefox ESR](/docs-static/img/2026/10/appimage-pool-linux-app-store/appimage-pool-network-category.jpg)
+![The Network category in AppImage Pool showing a grid of apps including Discord, Firefox, Firefox Beta, and Firefox ESR](/docs-static/img/2027/01/appimage-pool-linux-app-store/appimage-pool-network-category.jpg)
 
 The selection is broad. Scrolling through, I spotted Inboxer, ScreenCloud, Thunderbird, Waterfox, and Audacity, along with the different Firefox channels.
 
@@ -106,7 +106,7 @@ The selection is broad. Scrolling through, I spotted Inboxer, ScreenCloud, Thund
 
 To test it, I grabbed the Firefox Nightly build. Open the app page and click **Download**. AppImage Pool pulls the release list from GitHub and shows a dialog with the latest build and its file. Tick the file and a **Download** button appears at the top of the dialog. The little up and down arrows next to the release name switch to older releases, which is where the version history comes in.
 
-![The download dialog for Firefox Nightly in AppImage Pool, listing the latest continuous build's x86_64 AppImage file](/docs-static/img/2026/10/appimage-pool-linux-app-store/firefox-nightly-download-dialog.jpg)
+![The download dialog for Firefox Nightly in AppImage Pool, listing the latest continuous build's x86_64 AppImage file](/docs-static/img/2027/01/appimage-pool-linux-app-store/firefox-nightly-download-dialog.jpg)
 
 Progress shows up under **Downloads**, and once it finishes the app appears under **Installed**. Click it there and it launches. Normally you'd have to mark a freshly downloaded AppImage as executable first, but AppImage Pool handles that for you, which is nice.
 
@@ -118,7 +118,7 @@ The download dialog uses GitHub's API without logging in, which GitHub limits to
 
 Not everything went smoothly. I tried Waterfox and ran into a problem with it, and the app clearly had some rough edges at the time. The next release, 4.9.9 in January 2022, listed fixes for Waterfox and Etcher. Audacity worked fine, though. I clicked download, picked the file, and it was done almost immediately. It opened without any problems.
 
-![Choosing the Audacity 3.1.3 AppImage in AppImage Pool's download dialog, as shown in the video](/docs-static/img/2026/10/appimage-pool-linux-app-store/audacity-version-download.jpg)
+![Choosing the Audacity 3.1.3 AppImage in AppImage Pool's download dialog, as shown in the video](/docs-static/img/2027/01/appimage-pool-linux-app-store/audacity-version-download.jpg)
 
 There's also a **Portable Home** option (added in 4.9.9) that launches apps with AppImage's `--appimage-portable-home` flag. That keeps an app's settings in a folder next to the AppImage instead of in your real home directory, which is handy when you're testing a version you don't want touching your normal config.
 
