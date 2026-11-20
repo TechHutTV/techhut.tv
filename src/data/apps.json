@@ -238,7 +238,9 @@
     "name": "CapRover",
     "category": "Server Management",
     "description": "Deploy web applications and databases through a self-hosted management interface.",
-    "coverage": [],
+    "coverage": [
+      "/caprover-deploy-web-apps"
+    ],
     "videos": [
       {
         "id": "E16KymP6284",

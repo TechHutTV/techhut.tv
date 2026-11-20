@@ -1,0 +1,326 @@
+export const title = "CapRover: Deploy Web Apps and One-Click Docker Apps the Easy Way"
+export const description = "Install CapRover on a VPS or home server, point a wildcard domain at it, and deploy one-click apps like Wiki.js and Nextcloud with free Let's Encrypt HTTPS from a simple web dashboard."
+export const date = "2026-12-19"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/12/caprover-deploy-web-apps/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="E16KymP6284" title="TechHut's CapRover walkthrough" />
+
+A while back I asked on my YouTube Community tab for applications that deserved a little more attention. There were a lot of good suggestions, but one stood out: [CapRover](https://caprover.com). The viewer pitched it as great for homelabs and small servers, with one-click Docker apps. I love a good one-click app, so I had to try it.
+
+CapRover is an app, database and web server manager. Under the hood it uses Docker, nginx and Let's Encrypt, and it puts a simple web interface on top. After playing with it for a while, the best way I can describe it is using Docker without really using Docker. You pick an app, give it a name, click deploy, and it ends up on its own subdomain with an HTTPS certificate one click away.
+
+The video was published in March 2023. The written steps have been updated for [CapRover v1.16.1](https://github.com/caprover/caprover/releases/tag/v1.16.1), released November 18, 2026, and the current [getting started docs](https://caprover.com/docs/get-started). The install command, the firewall rules, the server requirements and the one-click app templates have all changed a bit since I recorded. v1.16.0 also redesigned the dashboard, so the menus won't match the screenshots, and v1.16.1 updates nginx for CVE-2026-123007 and CVE-2026-123633. Update an existing install for that. The hands-on impressions come from the original recording, and I've called out the differences where they matter.
+
+## What CapRover Does
+
+CapRover's own pitch is that it's for developers who don't want to spend hours setting up build tools, uploading code, sorting out SSL certificates and fiddling with nginx. It handles a lot of that for you. My favorite part is the other use case: it lets people like me spin up self-hosted apps pretty quickly.
+
+You get:
+
+| Feature | What it does |
+|---|---|
+| One-click apps | Templates for databases and self-hosted apps, from the [one-click apps repo](https://github.com/caprover/one-click-apps) |
+| Automatic subdomains | Every web app gets `appname.your-root-domain` |
+| HTTPS | Built-in Let's Encrypt certificates, enabled per app with one click |
+| Your own code | Deploy Node.js, PHP, Python, Ruby or anything with a Dockerfile using a `captain-definition` file |
+| Monitoring | Built-in NetData for server stats, plus GoAccess for web traffic stats (added in v1.14) |
+| Clustering | Runs on Docker Swarm, so you can add more servers later |
+| CLI | Server setup and deployments from your own computer |
+
+The [README](https://github.com/caprover/caprover) also makes a point of there being no lock-in. Your apps are regular Docker services, so they keep running if you remove CapRover.
+
+On licensing: the [LICENSE file](https://github.com/caprover/caprover/blob/master/LICENSE) is Apache 2.0, but it has an appendix that takes priority over the Apache terms. It says CapRover's paid features can't be modified or redistributed without a written agreement, and changes to the free features have to stay free and open source. CapRover also collects [anonymous usage analytics](https://github.com/caprover/caprover/blob/master/TERMS_AND_CONDITIONS.md) by default. You can turn that off with `CAPROVER_DISABLE_ANALYTICS=true`, and I'll show you where below.
+
+## What You Need
+
+- **A domain name.** CapRover gives each app a subdomain, so you need a wildcard DNS record. More on that in a minute. You can run CapRover without a domain, but then you can't use HTTPS.
+- **A server with a public IP.** Any VPS works. I used a $5-a-month instance with one CPU core, 1 GB of RAM and 25 GB of storage, and it ran everything in this guide. The docs warn that 512 MB of RAM may not be enough, because builds can use a lot of memory.
+- **Ubuntu and Docker.** CapRover is tested on Ubuntu 24.04 with Docker 25 or newer. It publishes images for x86-64 and ARM64. The 32-bit ARMv7 image is no longer published.
+- **Node.js on your own computer.** This is only for the optional CLI. The current CLI needs Node.js 20 or newer.
+
+You can also run it on a home server. I cover that further down.
+
+## Step 1: Update the Server and Install Docker
+
+SSH into your server and, like with any new Linux server, update it first:
+
+```bash
+ssh your-user@YOUR_SERVER_IP
+sudo apt update && sudo apt upgrade -y
+```
+
+For the video I used a VPS image that came with Docker preinstalled, since Docker is one of CapRover's prerequisites. If yours doesn't have it, install Docker from [Docker's official instructions](https://docs.docker.com/engine/install/ubuntu/). The quick way on Ubuntu is Docker's convenience script:
+
+```bash
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+```
+
+<Warning>
+Don't install Docker from Snap. CapRover's docs say the Snap package is buggy, so use Docker's own packages.
+</Warning>
+
+Then check the version:
+
+```bash
+docker version
+```
+
+You want Docker 25.x or newer.
+
+## Step 2: Open the Firewall Ports
+
+Ubuntu uses UFW. Check what's allowed right now:
+
+```bash
+sudo ufw status
+```
+
+On my fresh server only port 22 was open, which is SSH. The firewall command I used in the video came from the docs at the time, and it opened just about everything, including the Docker Swarm ports. The current [firewall docs](https://caprover.com/docs/firewall) are tighter. For a single server, you only need these:
+
+```bash
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 443/udp
+sudo ufw allow 3000/tcp
+```
+
+| Port | Used for |
+|---|---|
+| `80/tcp` | HTTP, and Let's Encrypt validation |
+| `443/tcp` | HTTPS |
+| `443/udp` | HTTP/3 |
+| `3000/tcp` | The first-time setup dashboard. You can close it once CapRover is attached to a domain. |
+
+Make sure SSH stays allowed (`sudo ufw allow OpenSSH`) before you turn UFW on, or you'll lock yourself out. Port `996/tcp` is CapRover's built-in Docker registry, and you only need to expose it if an outside client has to push to that registry. The Swarm cluster ports (`2377/tcp`, `7946/tcp+udp`, `4789/udp`) should only be open between your own trusted nodes, never to the internet.
+
+<Note>
+Ports published by Docker can bypass UFW rules. If you really need to lock a port down, use your VPS provider's firewall as well.
+</Note>
+
+## Step 3: Run the CapRover Installer
+
+This is the current one-line install from the docs:
+
+```bash
+sudo docker run -p 80:80 -p 443:443 -p 3000:3000 \
+  -e ACCEPTED_TERMS=true \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /captain:/captain \
+  caprover/caprover
+```
+
+Compared to what I ran in the video, the big addition is `ACCEPTED_TERMS=true`, which accepts CapRover's terms and conditions. If you'd like to opt out of the anonymous analytics, add `-e CAPROVER_DISABLE_ANALYTICS=true` to the same command. For an existing install, the terms file gives this command:
+
+```bash
+sudo docker service update --env-add CAPROVER_DISABLE_ANALYTICS=true captain-captain
+```
+
+I used `sudo` here. There are ways to run Docker without it, which Docker explains in its [post-install steps](https://docs.docker.com/engine/install/linux-postinstall/).
+
+The installer pulls its images and runs a compatibility check on Docker, the OS, the CPU and the RAM. Then it tells you to wait at least 60 seconds before you try to open it. Use that minute to set up DNS.
+
+## Step 4: Point a Wildcard Domain at the Server
+
+This is the step people trip on. CapRover needs a **wildcard** A record, because every app gets its own subdomain. A normal record for one subdomain isn't enough.
+
+I had already created an A record for a `cap` subdomain on my domain. That's not quite what CapRover wants, so I edited the record and put `*.` in front of `cap`. That tells DNS to send anything under `cap` to my server.
+
+In whatever DNS provider you use, create a record like this:
+
+| Type | Host | Points to |
+|---|---|---|
+| A | `*.apps` | `YOUR_SERVER_IP` |
+
+With that, your **root domain** is `apps.your-domain.com`, and the CapRover dashboard will end up at `captain.apps.your-domain.com`. I didn't worry about an IPv6 record.
+
+DNS changes can take a while to show up. To check it, look up a random name under the wildcard, not the root domain itself:
+
+```bash
+dig +short randomthing123.apps.your-domain.com
+```
+
+If that returns your server's IP, you're good.
+
+<Warning>
+CapRover needs the A record to point straight at its IP. If you use a proxy service like Cloudflare's orange cloud, you may run into problems, and CapRover doesn't officially support that setup. Use DNS only.
+</Warning>
+
+## Step 5: Run Server Setup with the CLI
+
+The setup tool runs on your **local** computer, not the server. Open a terminal on your machine and install the CLI with npm. I needed `sudo` for the global install:
+
+```bash
+sudo npm install -g caprover
+```
+
+Then start the setup:
+
+```bash
+caprover serversetup
+```
+
+`caprover setup` is a shorter alias for the same command. It walks you through a few questions:
+
+1. **Have you started the CapRover container?** Yes.
+2. **IP address of your server.** Paste in your server's public IP. The CLI logs in with the default password, `captain42`.
+3. **Root domain.** Enter `apps.your-domain.com`. If the CLI checks it and moves on, your wildcard DNS is working.
+4. **New password.** At least 8 characters. Use a strong one, because this dashboard controls everything on the server.
+5. **Email address.** It has to be a real address, because it's used for your Let's Encrypt certificate. The CLI then enables HTTPS on the dashboard and forces it.
+6. **Machine name.** This is just a local label for the saved login. I called mine `cap`.
+
+If you've ever tried to get SSL certificates working with Docker and you're not that comfortable with nginx and reverse proxies, this part is really nice. It does all of it for you.
+
+When it finishes, your dashboard is at `https://captain.apps.your-domain.com`.
+
+<Note>
+If you've already forced HTTPS on the instance from the web UI, `serversetup` can't finish. Use `caprover login` instead. You can also skip the CLI entirely: log in at `http://YOUR_SERVER_IP:3000` with `captain42`, set the root domain, enable and force HTTPS, and then change the password once you're on HTTPS.
+</Note>
+
+If builds ever fail because the server runs out of memory, the docs suggest adding a swap file. On a 1 GB server, that's worth keeping in mind.
+
+## Running It on a Home Server Instead
+
+You don't need a VPS. CapRover's [run locally docs](https://caprover.com/docs/run-locally) cover installing on a machine on your home network, like a spare PC or a Raspberry Pi. The install command gets your server's LAN IP and turns off domain verification:
+
+```bash
+sudo mkdir -p /captain/data
+echo '{"skipVerifyingDomains":"true"}' | sudo tee /captain/data/config-override.json
+
+sudo docker run -e ACCEPTED_TERMS=true -e MAIN_NODE_IP_ADDRESS=192.168.1.12 \
+  -p 80:80 -p 443:443 -p 3000:3000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /captain:/captain \
+  caprover/caprover
+```
+
+Replace `192.168.1.12` with your server's address. Then you have two options:
+
+- **LAN only.** Point a wildcard like `*.caproverinstance.local` at the server in your local DNS server, then set that as the root domain from `http://192.168.1.12:3000`. You can't get Let's Encrypt certificates for internal names, so leave HTTPS off. CapRover's docs point out that some local DNS servers, like Pi-hole, don't allow wildcards in local entries. In that case you have to add `captain.caproverinstance.local` and then each app name one at a time. AdGuard Home's DNS rewrites are another place to set local names, and I touch on those in my [AdGuard Home guide](/adguard-home-proxmox-setup).
+- **Reachable from the internet.** This needs a static public IP. Forward ports 80 and 443 on your router to the server, point `*.your-domain.com` at your public IP, and then set the root domain and enable HTTPS like a normal install.
+
+Don't use `caprover serversetup` with a LAN-only setup. Configure it in the web UI and then use `caprover login`.
+
+## A Tour of the Dashboard
+
+When I logged in at the captain subdomain, it was already on HTTPS. There honestly isn't a lot going on in the dashboard, which is kind of the point.
+
+- **Dashboard.** You can change your root domain here.
+- **Monitoring.** It shows active connections and requests. For a lot more, you can start the NetData engine. Once it's running you can turn on email notifications or open NetData itself, which has a ton of useful information about the server. Newer versions also include GoAccess for web traffic stats.
+- **Cluster.** If you know Docker Swarm and want to spread apps across several servers, this is where you add nodes.
+- **Settings.** Updates, backups, nginx configuration and changing your password.
+
+![NetData's System Overview opened from CapRover's Monitoring page, showing disk, CPU and network gauges on the test server, as shown in the video](/docs-static/img/2026/12/caprover-deploy-web-apps/netdata-system-overview.jpg)
+
+A quick note on backups: the [backup docs](https://caprover.com/docs/backup-and-restore) say this feature is still experimental, and it doesn't include your app volumes or built images. You'll need your own backup for app data. I like [Duplicati](/duplicati-encrypted-backups) for that.
+
+## One-Click Apps
+
+For me, the best thing about CapRover is how easy it is to spin up apps. Under **Apps**, open the one-click apps and you get a huge list. Audiobookshelf is in there (I [wrote it up here](/audiobookshelf-self-host-audible-library)), plus Discourse, FileZilla, Firefox, Focalboard, Ghost, Guacamole, Joomla, Plausible, Plex, Radarr and a whole lot more. Some VPS providers have their own one-click installers, but a lot of those don't deploy into containers. With CapRover, everything is a container. You can also search the list instead of scrolling.
+
+![The One Click Apps page in the CapRover dashboard with the app search box and the first templates, including AdGuard Home and Adminer](/docs-static/img/2026/12/caprover-deploy-web-apps/one-click-apps-list.jpg)
+
+### Example: Wiki.js
+
+Wiki.js is a nice simple example because it doesn't ask for much. I named it `wiki`, and **the app name becomes your subdomain**, so it ended up at `wiki.apps.your-domain.com`.
+
+The current template asks for three things: the Wiki.js version (default `2.5`), the Postgres version, and a database password.
+
+<Warning>
+The Wiki.js template's default database password is a placeholder that anyone can read in the [template file](https://github.com/caprover/one-click-apps/blob/master/public/v4/apps/wiki-js.yml). Replace it with a strong random password before you deploy.
+</Warning>
+
+Click **Deploy** and CapRover shows its progress as it goes. When it was done it told me the app could take up to two minutes to be ready (you might see a 502 error until then). Back under Apps, I had two entries: the wiki itself and its Postgres database.
+
+![CapRover's Deploying your wiki-js progress list, partway through deploying the wiki-postgres database](/docs-static/img/2026/12/caprover-deploy-web-apps/wiki-js-deploy-progress.jpg)
+
+### Turning On HTTPS
+
+New apps load over plain HTTP at first, so the browser says the site isn't secure. On a public VPS, fix that before you open the Wiki.js installer, because the installer is where you type your admin email and password. In the video I ran the installer first and turned on HTTPS afterward. The written steps put HTTPS first, so those credentials never cross the internet unencrypted.
+
+This is the part that makes CapRover really cool. Go back to **Apps**, click the app, and you'll see its settings: HTTP settings, App Config, Deployment, editing the nginx configuration, websocket support and more.
+
+Under **HTTP Settings**, click **Enable HTTPS**. Give it a moment, and then load the site with `https://`. That's all it takes to get a valid certificate. Then turn on **Force HTTPS**, which the docs recommend, so plain HTTP visits get redirected.
+
+![The wiki app's HTTP Settings tab after HTTPS was enabled, with the Force HTTPS and Websocket Support options below](/docs-static/img/2026/12/caprover-deploy-web-apps/app-http-settings-https.jpg)
+
+Now open `https://wiki.apps.your-domain.com` and you get the Wiki.js installer. Set an admin email and a strong password, use the `https://` address as the site URL, and click install. In the video that's all it took to get my own Wiki.js instance.
+
+### Example: Nextcloud
+
+Nextcloud is an app I hold dear to my heart, so I tried that next. Search for it in the one-click list and name the app. I went with `nextcloud`, super creative.
+
+The template asks for versions and credentials. In the video, I typed a throwaway admin user and password for the demo. The current template is better about this: it now fills in random values for the database password and the admin password by default. The template now also deploys a Redis service. Keep these settings in mind:
+
+| Field | Default | Notes |
+|---|---|---|
+| Nextcloud version | A pinned release | Don't use the `fpm` image tags |
+| Database user and password | `nextcloud` / random | MariaDB runs as its own service |
+| Admin name and password | `admin` / random | Write the password down, or set your own strong one |
+| Protocol of proxy | `https` | Keep this as `https`, then enable HTTPS on the app |
+| Hostnames | Blank | Extra domains for Nextcloud's trusted domains list. I left it blank. |
+| PHP upload and memory limits | `512M` each | Raise them if you need bigger uploads |
+
+After deploying, it created the volumes and showed some tips for getting better performance out of Nextcloud. If you're going to use it, do read those and follow them. They cover adding an HSTS header to the nginx config, CalDAV and CardDAV redirects, and a few `occ` commands.
+
+Back in Apps, I could see everything it spun up, including a separate cron container. When I tried to open Nextcloud right away, it didn't work. Because the protocol is set to `https`, this is one of the apps where you **must enable HTTPS before you can even reach it**. Once I did that and refreshed, I could log in.
+
+It ran perfectly fine. This isn't the [Nextcloud All-in-One](/nextcloud-aio-self-hosted-cloud) setup, but it's still running in Docker, and switching between pages felt pretty decent even on a single-core server.
+
+## What's Happening Under the Hood
+
+To see what CapRover is doing, jump to your server and list the containers:
+
+```bash
+sudo docker container ls
+```
+
+You'll see nginx, Certbot doing the SSL heavy lifting, and the containers for each app, like the wiki and Nextcloud pieces. CapRover runs everything as Docker Swarm services, so `sudo docker service ls` gives a tidier view.
+
+This is why I keep calling it "Docker without Docker." It's all real Docker underneath, and CapRover just handles the boring parts.
+
+## Deploying Your Own Apps
+
+CapRover isn't only for people like me who kind of know what they're doing. If you really know what you're doing and you're building your own applications, it's still a great tool.
+
+The CapRover repo has a [captain-sample-apps](https://github.com/caprover/caprover/tree/master/captain-sample-apps) folder with ready-to-deploy examples for Node.js, Python, Ruby, Go, ASP.NET, React and more. In the video I downloaded the Node.js one. It's a normal, simple app with one extra file at the root, called `captain-definition`. That file tells CapRover how to build it. The current Node.js example from the [docs](https://caprover.com/docs/captain-definition-file) looks like this:
+
+```json
+{
+  "schemaVersion": 2,
+  "templateId": "node/24"
+}
+```
+
+The built-in templates are `node`, `php`, `python-django` and `ruby-rack`. For anything else, point it at a Dockerfile instead:
+
+```json
+{
+  "schemaVersion": 2,
+  "dockerfilePath": "./Dockerfile"
+}
+```
+
+To deploy, create an empty app in the dashboard (for example `my-first-app`). Then, from your project folder, run:
+
+```bash
+caprover deploy
+```
+
+Pick your server and app when it asks. The first build takes a couple of minutes, and then the app is live at `my-first-app.apps.your-domain.com`. Two things to know:
+
+- `caprover deploy` sends your **current git commit**. Uncommitted files and anything in `.gitignore` won't be uploaded.
+- Prefer not to use the CLI? From an app's **Deployment** tab you can upload a `.tar` of your project, paste in a `captain-definition` that just names a Docker image, or connect a Git repository so a webhook triggers a build on every push. See [deployment methods](https://caprover.com/docs/deployment-methods).
+
+v1.15 also added an experimental way to paste a simple [Docker Compose file](https://caprover.com/docs/docker-compose) into the dashboard. It only supports some Compose fields, but it's handy for small multi-container apps.
+
+## My Take
+
+Overall, this is probably one of the better ways to use Docker without having to write the Compose file yourself. Setup is the only part that takes some thought, and most of that is getting the wildcard DNS record right. After that, deploying an app is a name and a click, and HTTPS is one more click.
+
+If you're comfortable with Docker Compose and a reverse proxy, you may not need it. If you want a few web apps on a cheap VPS with real certificates and very little fuss, or you're a developer who wants a self-hosted Heroku-style setup, CapRover is awesome. Big thanks to the viewer who recommended it. If you're new to containers, my [Docker basics guide](/7-docker-basics-for-beginners) is a good place to start. With all that, I do hope you have an absolutely beautiful day.
