@@ -1,5 +1,5 @@
 export const title = "Home Assistant: Building My Smart Home on a ZimaBoard"
-export const description = "Install Home Assistant OS on a ZimaBoard or other x86-64 machine, pair Zigbee shades through a USB coordinator, and get them into Alexa with Emulated Hue, with the steps updated for Home Assistant 2026.10."
+export const description = "Install Home Assistant OS on a ZimaBoard or other x86-64 machine, pair Zigbee shades through a USB coordinator, and get them into Alexa with Emulated Hue, with the steps updated for Home Assistant 2026.11."
 export const date = "2026-10-11"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
@@ -17,7 +17,7 @@ The plan was simple: put Home Assistant on a ZimaBoard, plug in a Zigbee USB don
 What sold me on Home Assistant is that it's one place for everything. Zigbee, Wi-Fi, and Bluetooth devices can all live in the same dashboard and the same automations, instead of a separate app for every brand in the house.
 
 <Note>
-The written installation has been updated for [Home Assistant 2026.10.1](https://github.com/home-assistant/core/releases/tag/2026.10.1), released October 10, 2026, and [Home Assistant OS 18.3](https://github.com/home-assistant/operating-system/releases/tag/18.3), released September 17, 2026. A few things have changed since I recorded: new Home Assistant OS installs now serve the web UI on port 80, add-ons are now called apps, the Core and Supervised installation methods are no longer supported, and Zigbee settings moved under **Settings** > **Connectivity**. I've called out each change where it matters. My hands-on impressions come from the recorded walkthrough.
+The written installation has been updated for [Home Assistant 2026.11.2](https://github.com/home-assistant/core/releases/tag/2026.11.2), released November 16, 2026, and [Home Assistant OS 18.4](https://github.com/home-assistant/operating-system/releases/tag/18.4) for generic x86-64, released October 27, 2026. OS 18.5 only updates Raspberry Pi and Yellow for a kernel security fix, so it doesn't apply to a ZimaBoard. A few things have changed since I recorded: new Home Assistant OS installs now serve the web UI on port 80, add-ons are now called apps, the Core and Supervised installation methods are no longer supported, and Zigbee settings moved under **Settings** > **Connectivity**. I've called out each change where it matters. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## Why I Went with Zigbee
@@ -76,10 +76,10 @@ This is Method 1 in the docs, the recommended one, and what I did.
 
 1. On another computer, write an Ubuntu Desktop ISO to a USB drive by following [Ubuntu's instructions](https://documentation.ubuntu.com/desktop/en/latest/tutorial/try-ubuntu-desktop/). If you're already on Linux, GNOME Disks makes this easy. balenaEtcher and Rufus work too.
 2. Plug the USB drive into the ZimaBoard and boot from it. Choose **Try Ubuntu**, not **Install Ubuntu**, and connect to your network.
-3. In the live session, download the current HA OS image for generic x86-64. At the time of writing, that's 18.3:
+3. In the live session, download the current HA OS image for generic x86-64. At the time of writing, that's 18.4:
 
    ```bash
-   curl -fLO https://github.com/home-assistant/operating-system/releases/download/18.3/haos_generic-x86-64-18.3.img.xz
+   curl -fLO https://github.com/home-assistant/operating-system/releases/download/18.4/haos_generic-x86-64-18.4.img.xz
    ```
 
    Check the [installation guide](https://www.home-assistant.io/installation/generic-x86-64) for the latest release before copying this.
