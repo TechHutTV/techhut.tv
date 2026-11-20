@@ -1,10 +1,10 @@
 export const title = "OctoPrint on a Raspberry Pi: Make Your Dumb 3D Printer Smart"
 export const description = "Flash OctoPi with Raspberry Pi Imager, run through OctoPrint's setup wizard, add a USB webcam for timelapses, and control a 3D printer from your browser without exposing it to the internet."
-export const date = "2026-10-11"
+export const date = "2026-12-24"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["RaspberryPi", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/octoprint-3d-printer-setup/cover.jpg"
+export const cover = "/docs-static/img/2026/12/octoprint-3d-printer-setup/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -24,7 +24,7 @@ There are plenty of nice 10-inch racks around, but I wanted something even small
 
 I printed everything with a raft, roughly 20% infill, and supports. My printer isn't perfect, and the parts aren't perfect either, but the Pi 4 module slides in, has some airflow underneath, and fits well enough once it's screwed down. The designer also left the SD card slot reachable from the back, which is a thoughtful touch. The top piece has cutouts over the GPIO header, so I can add a fan later. Mine is running without one for now.
 
-![The 3D printed 5-inch micro rack on a desk with the Raspberry Pi 4 module in the top slot, its USB and Ethernet ports facing out, as the screws go in](/docs-static/img/2026/10/octoprint-3d-printer-setup/5-inch-micro-rack.jpg)
+![The 3D printed 5-inch micro rack on a desk with the Raspberry Pi 4 module in the top slot, its USB and Ethernet ports facing out, as the screws go in](/docs-static/img/2026/12/octoprint-3d-printer-setup/5-inch-micro-rack.jpg)
 
 One piece of advice: don't 3D print the screws. I wanted this to be fully printed, so I did it anyway, and they were too long, didn't fit my tools well, and made some unhappy noises going in. The model page lists the proper hardware: #10-32 x 3/4 in machine screws and bolts for the rack, plus smaller cap screws for the Pi case. Just buy those.
 
@@ -135,7 +135,7 @@ My printer is an Anycubic Kobra Max, so I named the profile with the manufacture
 
 These values vary a lot between printers, so look up your model's specs instead of copying mine.
 
-![The OctoPrint setup wizard's printer profile step with a lower-left origin, heated bed enabled, and a 400 x 400 x 450 mm print volume](/docs-static/img/2026/10/octoprint-3d-printer-setup/wizard-printer-profile.jpg)
+![The OctoPrint setup wizard's printer profile step with a lower-left origin, heated bed enabled, and a 400 x 400 x 450 mm print volume](/docs-static/img/2026/12/octoprint-3d-printer-setup/wizard-printer-profile.jpg)
 
 Take that safety screen seriously. I'll come back to remote access below.
 
@@ -145,7 +145,7 @@ After the wizard, OctoPrint reloads into the main interface. The **Connection** 
 
 Right after connecting, I got a notice about my firmware. That comes from the bundled [Firmware Check plugin](https://github.com/OctoPrint/OctoPrint-FirmwareCheck), which looks for firmware with known safety problems, such as disabled thermal runaway protection, or with broken serial communication. It can also show a heads-up for development builds. If you see one of these warnings, read it and look into a firmware update for your printer.
 
-![The OctoPrint main interface after connecting, showing the firmware development build notice, the serial port and baud rate, and the Operational state](/docs-static/img/2026/10/octoprint-3d-printer-setup/connected-operational.jpg)
+![The OctoPrint main interface after connecting, showing the firmware development build notice, the serial port and baud rate, and the Operational state](/docs-static/img/2026/12/octoprint-3d-printer-setup/connected-operational.jpg)
 
 ## Files and Folders
 
@@ -167,7 +167,7 @@ Presets live under **Settings** > **Printer** > **Temperatures**. My printer doe
 
 The **Control** tab is where the webcam shows up, along with jog controls for X, Y, and Z, extrude and retract buttons, and homing. With the camera feed, you can watch the axes move as you click. I may have clicked Z up a few too many times in the video, so watch your step size.
 
-![The OctoPrint Control tab with the live webcam view of the printer bed above the X/Y, Z, and extruder jog controls](/docs-static/img/2026/10/octoprint-3d-printer-setup/control-tab.jpg)
+![The OctoPrint Control tab with the live webcam view of the printer bed above the X/Y, Z, and extruder jog controls](/docs-static/img/2026/12/octoprint-3d-printer-setup/control-tab.jpg)
 
 ### Timelapses
 
@@ -181,7 +181,7 @@ Click **Load** on a file instead of **Print**, and the sidebar fills in the file
 
 The **G-code Viewer** tab then renders the toolpaths. You can zoom in, step through each layer, and see exactly what the printer is going to do. It's a nice sanity check before committing to a long print.
 
-![The OctoPrint G-code Viewer rendering the toolpaths for four rack gusset parts, with the loaded file's details in the sidebar](/docs-static/img/2026/10/octoprint-3d-printer-setup/gcode-viewer.jpg)
+![The OctoPrint G-code Viewer rendering the toolpaths for four rack gusset parts, with the loaded file's details in the sidebar](/docs-static/img/2026/12/octoprint-3d-printer-setup/gcode-viewer.jpg)
 
 There's also a **Terminal** tab if you want to send G-code commands directly and read the printer's responses.
 
@@ -200,7 +200,7 @@ The [Plugin Manager](https://docs.octoprint.org/en/main/bundledplugins/pluginman
 
 Each listing has **Details** and **Homepage** links. Check the compatibility information and last release date before installing anything.
 
-![The Install new Plugins dialog in OctoPrint's Plugin Manager listing Octolapse, DisplayLayerProgress, and OctoPrint-Cancelobject, each with an Install button](/docs-static/img/2026/10/octoprint-3d-printer-setup/plugin-repository.jpg)
+![The Install new Plugins dialog in OctoPrint's Plugin Manager listing Octolapse, DisplayLayerProgress, and OctoPrint-Cancelobject, each with an Install button](/docs-static/img/2026/12/octoprint-3d-printer-setup/plugin-repository.jpg)
 
 ## Running a Print
 
@@ -208,7 +208,7 @@ To print, click **Print** on a file. My file's start G-code heated the bed first
 
 The gusset print took about 50 minutes. When it finished, the sidebar showed a summary with the print time and file details. The file list also marks it as a successful print, which is handy when you're trying to remember which version of a file worked.
 
-![The OctoPrint sidebar after the gusset print finished, showing a print time of 50:20 and the progress bar at 100%](/docs-static/img/2026/10/octoprint-3d-printer-setup/print-finished.jpg)
+![The OctoPrint sidebar after the gusset print finished, showing a print time of 50:20 and the progress bar at 100%](/docs-static/img/2026/12/octoprint-3d-printer-setup/print-finished.jpg)
 
 Then, in the **Timelapse** tab, the rendered video shows up under the finished timelapses. A set of little gussets isn't the most exciting timelapse in the world, but you can watch it grow, and it works. Print something bigger and cooler, and your timelapse will be bigger and cooler too.
 
