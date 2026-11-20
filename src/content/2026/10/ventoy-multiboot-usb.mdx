@@ -16,7 +16,7 @@ For the video, I put together one USB drive with ten operating systems on it, in
 
 Skillshare sponsored the video this article is based on.
 
-The video was published in August 2021, and I recorded it with Ventoy 1.0.49. The written steps have been updated for [Ventoy 1.1.18](https://github.com/ventoy/Ventoy/releases/tag/v1.1.18), released October 9, 2026. Since then Ventoy has added a native Linux GUI, a Windows command line, Secure Boot support that's on by default, a secondary boot menu, and a GUI tool for its plugins. The screenshots and hands-on impressions come from the original recording, and I've noted where things look different now.
+The video was published in August 2021, and I recorded it with Ventoy 1.0.49. The steps below are for [Ventoy 1.1.18](https://github.com/ventoy/Ventoy/releases/tag/v1.1.18), released October 9, 2026. Since then Ventoy has added a native Linux GUI, a Windows command line, Secure Boot support that's on by default, a secondary boot menu, and a GUI tool for its plugins. The screenshots and hands-on impressions come from the original recording, and I've noted where things look different now.
 
 ## What Ventoy Does
 
@@ -25,7 +25,7 @@ Ventoy is an open source tool that turns a USB drive into a boot menu for disk i
 - A large data partition, formatted exFAT by default and labeled **Ventoy**. This is where your images go.
 - A small 32 MB FAT partition named **VTOYEFI** that holds the bootloader. Leave it alone.
 
-Ventoy searches every folder on the data partition and lists the images it finds alphabetically. Here's what it handles, according to the [official site](https://www.ventoy.net/en/index.html):
+Ventoy searches every folder on the data partition and lists the images it finds alphabetically. What it handles, according to the [official site](https://www.ventoy.net/en/index.html):
 
 | Feature | Details |
 |---|---|
@@ -169,7 +169,7 @@ I tested it on a ThinkPad. Plug in the drive, power on, and open the one-time bo
 
 ![The Ventoy boot menu on a ThinkPad from the video, listing ten ISOs including EndeavourOS, Fedora 34, Pop!_OS, and Windows 10](/docs-static/img/2026/10/ventoy-multiboot-usb/ventoy-boot-menu-isos.jpg)
 
-There's my menu with all ten images. I picked Manjaro Cutefish and chose the open source drivers, and it booted right into the live desktop. Then I rebooted, picked the Windows 10 ISO, and landed in Windows Setup. I didn't actually install it, but it was ready to go.
+There's my menu with all ten images. I picked Manjaro Cutefish and chose the open source drivers, and it booted right into the live desktop. Then I rebooted, picked the Windows 10 ISO, and landed in Windows Setup. I didn't install it, but it was ready to go.
 
 ![Windows 10 Setup booted from the Windows ISO on the Ventoy drive, as shown in the video](/docs-static/img/2026/10/ventoy-multiboot-usb/windows-setup-from-ventoy.jpg)
 
@@ -266,7 +266,7 @@ In April 2024, after the xz backdoor, a user opened [issue #2795](https://github
 
 I'm really happy I found this tool. Instead of a drawer full of USB sticks with one distro each, I've got one drive with all my ISOs on it, and adding or replacing one is just a file copy. Being able to drop a Windows ISO on it from Linux and have it just work is a big win on its own.
 
-It's only gotten better since, with a native Linux GUI, Secure Boot after a one-time key enrollment, and VentoyPlugson for the plugins. Grab a decent-sized USB drive, install Ventoy once, and stop reflashing.
+It's only gotten better since, with a native Linux GUI, Secure Boot after a one-time key enrollment, and VentoyPlugson for the plugins. Grab a decent-sized USB drive, install Ventoy once, and stop reflashing. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
