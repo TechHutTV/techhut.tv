@@ -477,7 +477,8 @@
       "/copyparty-file-server-linux",
       "/dockhand-docker-manager",
       "/proxmox-backup-server-complete-guide",
-      "/bookorbit-self-hosted-library"
+      "/bookorbit-self-hosted-library",
+      "/ultimate-home-server-part-2-jellyfin"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
