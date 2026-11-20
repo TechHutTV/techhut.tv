@@ -490,6 +490,11 @@
       "stars": 101,
       "fetchedAt": "2026-09-06T14:21:56.268Z"
     },
+    "truenas/middleware": {
+      "repository": "truenas/middleware",
+      "stars": 2606,
+      "fetchedAt": "2026-10-18T03:14:57.811Z"
+    },
     "ulauncher/ulauncher": {
       "repository": "ulauncher/ulauncher",
       "stars": 4508,

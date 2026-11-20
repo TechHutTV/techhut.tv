@@ -1,0 +1,49 @@
+{
+  "summary": "Turn a dedicated machine or virtual machine into a ZFS-based network storage server managed from a web interface. TrueNAS Community Edition, formerly TrueNAS SCALE, is the free Linux-based edition.",
+  "overview": "TrueNAS installs as its own operating system and manages disks as ZFS pools, which provide redundancy, snapshots, and replication for the data stored on them. Datasets organize that storage, and SMB, NFS, and iSCSI shares make it available to other devices on the network. Apps and virtual machines can run alongside the storage. Community Edition is the Debian-based successor to SCALE and shares a codebase with TrueNAS Enterprise; the older FreeBSD-based TrueNAS CORE is no longer under active development.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "x86-64 hardware (dedicated OS, Debian-based)",
+    "Virtual machine"
+  ],
+  "license": {
+    "name": "GPL-3.0 / LGPL-3.0 (Community Edition); proprietary Enterprise extensions",
+    "type": "Open-source core · Commercial editions",
+    "url": "https://www.truenas.com/docs/scale/25.10/gettingstarted/useragreements/scaleeula/"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.truenas.com/truenas-community-edition/"
+    },
+    {
+      "label": "Documentation",
+      "url": "https://www.truenas.com/docs/"
+    },
+    {
+      "label": "Download",
+      "url": "https://www.truenas.com/download/"
+    },
+    {
+      "label": "GitHub (middleware)",
+      "url": "https://github.com/truenas/middleware"
+    }
+  ],
+  "features": [
+    "ZFS pools and snapshots",
+    "SMB, NFS, and iSCSI shares",
+    "Replication",
+    "Apps and virtual machines"
+  ],
+  "sources": [
+    "https://www.truenas.com/truenas-community-edition/",
+    "https://www.truenas.com/blog/truenas-community-edition-release-2504/",
+    "https://www.truenas.com/software-status/",
+    "https://www.truenas.com/docs/scale/25.10/gettingstarted/useragreements/scaleeula/",
+    "https://github.com/truenas/middleware#readme",
+    "https://github.com/truenas/middleware/blob/master/LICENSE",
+    "https://github.com/truenas/middleware/blob/master/LICENSE.IX",
+    "https://github.com/truenas/scale-build/blob/master/LICENSE",
+    "https://github.com/truenas/webui/blob/master/LICENSE"
+  ]
+}

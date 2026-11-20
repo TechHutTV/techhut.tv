@@ -1118,6 +1118,17 @@
       "https://api.github.com/repos/aandrew-me/tgpt"
     ]
   },
+  "truenas": {
+    "repository": "truenas/middleware",
+    "label": "TrueNAS middleware",
+    "link": "https://github.com/truenas/middleware",
+    "reason": "Official TrueNAS middleware repository, described as the TrueNAS CORE/Enterprise/SCALE middleware source; it is the core backend component of TrueNAS. Count this component only; do not aggregate the separate webui, scale-build, or other TrueNAS repositories. Its LICENSE.IX notes that specified portions are for TrueNAS Enterprise use only.",
+    "sources": [
+      "https://github.com/truenas/middleware",
+      "https://github.com/truenas/middleware#readme",
+      "https://github.com/truenas/middleware/blob/master/LICENSE.IX"
+    ]
+  },
   "twingate": {
     "repository": null,
     "reason": "Proprietary service and clients; public examples and deployment tools are not the application.",

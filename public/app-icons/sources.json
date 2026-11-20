@@ -1271,5 +1271,13 @@
     "licenseSource": "https://github.com/homarr-labs/dashboard-icons/blob/376beb617e6354468fd677f2ce455d9f50144e9f/LICENSE",
     "changes": "None",
     "sha256": "e9f02f3ba23ed7069e835c307fc46b3dee8a1b54a1a40c022179448f7c68b2ad"
+  },
+  {
+    "app": "truenas",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/truenas-scale.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None (saved as truenas.png; TrueNAS SCALE is now TrueNAS Community Edition)",
+    "sha256": "a5f0a384d4770bcf344991a5359c6736747397f0b3992b532b2cd0727386f8fd"
   }
 ]
