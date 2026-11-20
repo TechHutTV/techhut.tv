@@ -1,0 +1,145 @@
+export const title = "GNOME Web (Epiphany): Is GNOME's Browser Actually Good Now?"
+export const description = "A look at GNOME Web, also known as Epiphany: where it came from, what the GTK 4 and libadwaita port changed, how WebKitGTK holds it back, and how to install it and try its experimental WebExtensions support today."
+export const date = "2027-01-14"
+export const authors = ["Cameron Knauff"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Gnome", "Apps"]
+export const cover = "/docs-static/img/2027/01/gnome-web-epiphany-browser/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="pZQmPmg6QUQ" title="TechHut's GNOME Web overview" />
+
+"GNOME Web is actually good now" is something I'd be more willing to believe if it hadn't been said after pretty much every update for the last few years. Still, when I made this video, [GNOME Web](https://apps.gnome.org/Epiphany/) (code name Epiphany) had just moved to GTK 4, finally had working hardware acceleration, and had features like browser extensions in the works. So I wanted to see whether it could finally be a real alternative to Firefox and Chrome.
+
+I recorded the video in May 2023, when GNOME Web 44 was current. The history, my impressions, and the daily-driving notes below come from that recording. I've updated the status of the browser, the install steps, and the WebExtensions instructions for [GNOME Web 51.1](https://gitlab.gnome.org/GNOME/epiphany/-/releases/51.1), released September 24, 2026.
+
+## What Changed Since the Video
+
+GNOME Web is very much alive. It ships a new major version with every GNOME release, and it still uses the GTK 4, libadwaita, and WebKitGTK 6.0 stack that landed in version 44. What's different from what I showed in 2023, according to the project's [release notes](https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/NEWS):
+
+- **The tab overview showed up.** In the video I was disappointed that Web 44 didn't use libadwaita's new tab overview. Version 45 added it, replacing the old tab list dropdown.
+- **WebExtensions are still experimental.** Support exists, but it is still off by default and hidden behind a setting, and you still install extensions manually from their files. In version 51, Epiphany switched from its own extension code to WebKitGTK's built-in WebExtension support. I cover how to try it below.
+- **Lots of interface work.** Version 47 added form autofill, a privacy report, and moved bookmarks into a sidebar. Version 49 redesigned the address bar and added a site menu and a kiosk mode. Version 50 added an option to hide cookie banners, and 51 can generate strong passwords for you.
+- **Flathub is the recommended way to install it.** The [README](https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/README.md) recommends the [Flathub build](https://flathub.org/apps/org.gnome.Epiphany) over distro packages, which it says are often outdated.
+
+## Where GNOME Web Came From
+
+Back around 2000, web browsers were all-in-one programs that did way more than browse. Before Firefox, there was the Mozilla Application Suite, which bundled a browser, an email client, and an IRC client. That made browsers of that era pretty bloated.
+
+The GNOME side's answer was **Galeon**, a browser built to do one thing: browse the web. It was popular for its speed and flexibility, and it used Mozilla's Gecko engine. A couple of years later, though, GNOME adopted its new design guidelines, which pushed for simpler interfaces and fewer preferences. Power users didn't love that direction, and the disagreement led Galeon's creator, Marco Pesenti Gritti, to fork his own project in 2002. The fork, which followed GNOME's guidelines, became **Epiphany**.
+
+Gecko was a great engine, but Mozilla treated it as a Firefox component, and building other browsers on top of it was difficult. So Epiphany moved to **WebKit**, the same engine behind Safari, and finished that transition with version 2.28 in 2009. After that came:
+
+| Version | What changed |
+|---|---|
+| 3.0 (2011) | Moved from GTK 2 to GTK 3 |
+| 3.4 (2012) | Renamed from Epiphany to Web |
+| 3.10 (2013) | Added the header bar, matching GNOME's design |
+
+In the video I said the rename came with 3.0. It was actually 3.4. Either way, the code name Epiphany never went away, which is why you'll still see it in the app ID and on the project pages.
+
+After that, outside of a few big releases, Web was mostly in maintenance mode while Chromium and Firefox shipped major updates constantly. It was painful to use next to them. It couldn't run your favorite extensions, and without hardware acceleration it felt sluggish. In one older version, I could barely get some YouTube videos to load.
+
+## The Development Boom
+
+Then development picked up. Every major release I looked at for the video brought something meaningful. By "game-changing" I don't mean it suddenly beat other browsers. It just started catching up. The run I went through:
+
+- **3.36** improved mobile support.
+- **3.38** added Intelligent Tracking Prevention.
+- **40** redesigned the tab bar.
+- **41** handled unresponsive websites better.
+- **42** finally turned on hardware acceleration all the time and supported the system dark style, so scrolling became smooth.
+- **43** revamped how web apps work.
+- **44** ported the whole browser to GTK 4 and libadwaita and reworked the preferences.
+
+I had dark mode under 41 in the video, but the release notes put system dark style support in 42, so I've corrected that here.
+
+### GNOME 44: GTK 4 and libadwaita
+
+The GTK 4 and libadwaita port brought the new GNOME look to the app. I couldn't spot many changes beyond the theme. Poking around with the GTK inspector, I could see some new widgets, like `AdwTabBar` for the tabs and the libadwaita-style preferences page. Between 43 and 44, though, the interface differences were pretty minor.
+
+![The GTK inspector from the video showing GNOME Web 44's widget tree with AdwTabBar selected](/docs-static/img/2027/01/gnome-web-epiphany-browser/gtk-inspector-adwtabbar.jpg)
+
+The bigger change was in the engine. Between patches landing upstream in WebKit and the GTK 4 port, general browsing in Web 44 was so much faster. YouTube videos opened.
+
+## Daily Driving It for a Few Weeks
+
+Just for fun, I used GNOME Web as my main browser for a few weeks. It ran decently fast, though not as fast as Firefox or Chromium. Reading articles, browsing social media like Twitter, and working in Google Docs were all fine.
+
+Stability was the problem. YouTube in particular would freeze, and I often had to close and reopen the browser to get things working again. I think most of that comes down to the engine.
+
+## The WebKit Problem
+
+WebKit has an interesting family tree. It started as KHTML, a KDE project. Apple forked it into WebKit for Safari, and Google later forked WebKit into Blink for Chrome. That technically makes GNOME Web the closest thing we have to Safari on Linux, which might be where some of its design inspiration comes from.
+
+The trouble is that Web felt slower than Chromium and Firefox and also fell behind on standards tests. In my HTML5 test run for the video, it scored 454, while Firefox scored 515 and Chromium 526. To be fair, WebKit intentionally blocks some features to prevent fingerprinting, and you probably won't notice most of them.
+
+![HTML5test results from the video: Chrome 111 scoring 526, Firefox 111 scoring 515, and GNOME Web scoring 454 out of 555](/docs-static/img/2027/01/gnome-web-epiphany-browser/html5test-chrome-firefox-gnome-web.jpg)
+
+WebKit is also the browser engine web developers have complained about most since Internet Explorer died, since they often have to write code specifically for Safari. I don't think many of them would bother if WebKit weren't the only engine allowed on iOS. That has started to change: Apple now lets [alternative browser engines run for EU users](https://developer.apple.com/support/alternative-browser-engines/) on iOS 17.4 and iPadOS 18 or later. Still, WebKit remains the engine behind most iPhone browsers.
+
+## Installing GNOME Web
+
+If you use GNOME, there's a good chance Web is already installed or available in GNOME Software. Otherwise, the upstream-recommended route is the [Flathub build](https://flathub.org/apps/org.gnome.Epiphany), which is verified by gnome.org and was on 51.1 when I checked:
+
+```bash
+flatpak install flathub org.gnome.Epiphany
+flatpak run org.gnome.Epiphany
+```
+
+If you'd rather use distro packages, the package is `epiphany` on Fedora and Arch and `epiphany-browser` on Debian and Ubuntu. Expect older versions on stable distros. Debian 13 ships 48.5, for example.
+
+```bash
+# Fedora
+sudo dnf install epiphany
+
+# Arch
+sudo pacman -S epiphany
+
+# Debian / Ubuntu
+sudo apt install epiphany-browser
+```
+
+There are also two development builds. **Epiphany Technology Preview** tracks Epiphany's development branch, and **Epiphany Canary** also builds the latest WebKitGTK from its main branch. Both are linked from the README, and upstream warns that neither is stable, with Canary being the riskier of the two.
+
+## Trying WebExtensions
+
+For me, the biggest thing GNOME Web has always been missing is extension support. In the video I tested the work-in-progress version, and it was very much beta. It was unstable and didn't always work, but the progress got me excited.
+
+That's still roughly where things stand. In 51.1, extensions are controlled by the `enable-webextensions` key in the `org.gnome.Epiphany.web` schema, which defaults to `false`. The extensions page itself says extensions have to be installed manually from their files. This is how to turn it on.
+
+For a distro package, run this in a terminal (or flip the same key in dconf Editor under `/org/gnome/epiphany/web/`, which is what I showed in the video):
+
+```bash
+gsettings set org.gnome.Epiphany.web enable-webextensions true
+```
+
+The Flathub version keeps its settings inside the sandbox, so the host's `gsettings` and dconf Editor won't affect it. Run `gsettings` inside the Flatpak instead:
+
+```bash
+flatpak run --command=gsettings org.gnome.Epiphany set org.gnome.Epiphany.web enable-webextensions true
+```
+
+Restart Web, then:
+
+1. Open **Preferences**. A new **Extensions** page appears.
+2. Download the extension you want from [addons.mozilla.org](https://addons.mozilla.org/) as an `.xpi` file. Epiphany is built to use Firefox extensions, so that's where its own extensions page points you.
+3. Click **Add New Extension** and pick the `.xpi` file (an unpacked `manifest.json` works too).
+4. Confirm the install prompt, then enable or disable the extension from the same page.
+
+To turn it back off, set the key to `false` with the same command.
+
+![The Extensions page in GNOME Web's preferences from the video, with Add New Extension and Return YouTube Dislike installed and enabled](/docs-static/img/2027/01/gnome-web-epiphany-browser/webextensions-preferences-page.jpg)
+
+<Warning>
+This is still an experimental feature. Many extensions won't work properly, and you're installing extension files by hand, so stick to well-known extensions from addons.mozilla.org. Keep Web updated, too. Version 51.rc fixed a path traversal bug (CVE-2026-77679) in how extension files were unpacked.
+</Warning>
+
+## My Take
+
+At the time of the video, my answer to "is GNOME Web actually good now?" was no. It was faster than it had ever been and fine for everyday browsing, but the stability problems, WebKit's compatibility gaps, and the lack of extensions kept me from daily driving it. It's also very basic as browsers go.
+
+I was still optimistic. I'm not a fan of how Google effectively controls the browser market through Chromium-based browsers, and while WebKit is behind Blink and Gecko, I think Web could become a good alternative if development keeps up, especially if Firefox keeps making interesting decisions. KDE makes plenty of apps I like, like Krita and Kdenlive, but its web browser isn't one of them either.
+
+In the video I guessed Web might be a real option within two or three releases. It has had seven since. It got the tab overview I wanted, plus a lot of polish, but the extensions it needed most are still experimental. If you live in GNOME and want a browser that looks like it belongs there, it's worth trying. Just keep Firefox or Chromium installed for the sites that don't cooperate. With all that, I do hope you have an absolutely beautiful day.

@@ -809,7 +809,9 @@
     "name": "GNOME Web",
     "category": "Desktop",
     "description": "Browse the web with GNOME’s WebKit-based browser.",
-    "coverage": [],
+    "coverage": [
+      "/gnome-web-epiphany-browser"
+    ],
     "videos": [
       {
         "id": "pZQmPmg6QUQ",
