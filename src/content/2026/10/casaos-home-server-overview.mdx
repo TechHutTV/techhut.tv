@@ -20,7 +20,7 @@ The original video was published in May 2022. The written installation has been 
 
 ## Where CasaOS Stands in 2026
 
-Before you build anything on it, here's the honest picture:
+Before you build anything on it:
 
 - **It isn't archived or discontinued.** The [GitHub repository](https://github.com/IceWhaleTech/CasaOS) is still public and Apache-2.0 licensed, the install script still works, and IceWhale hasn't published an end-of-life notice.
 - **The core is quiet.** v0.4.15 from December 2024 is the newest stable release. The only release since is [v0.4.17-alpha1](https://github.com/IceWhaleTech/CasaOS/releases/tag/v0.4.17-alpha1), a pre-release from April 2025 that adds initial RISC-V support. Recent commits to the main repo are mostly README updates.
@@ -29,9 +29,9 @@ Before you build anything on it, here's the honest picture:
 
 So CasaOS is still a reasonable way to put a friendly dashboard on a Linux box you already have, including ARM boards like a Raspberry Pi, which ZimaOS doesn't target. Just don't expect a steady stream of new core features.
 
-## What CasaOS Actually Is
+## What CasaOS is
 
-Despite the name, CasaOS isn't really an operating system. It's a set of system services plus a web UI that sits on top of a normal Linux install. Under the hood:
+Despite the name, CasaOS isn't an operating system. It's a set of system services plus a web UI that sits on top of a normal Linux install. Under the hood:
 
 - Every app is a Docker container. The app store is a catalog of preconfigured containers, and installing one pulls the image and starts it with sensible ports and folders.
 - Files live under `/DATA` by default. App data goes in `/DATA/AppData/<app>`, and folders like `/DATA/Media` and `/DATA/Gallery` are where store apps like Jellyfin and PhotoPrism look for your media and photos.
@@ -48,7 +48,7 @@ The [README](https://github.com/IceWhaleTech/CasaOS#readme) lists Debian 12 (tes
 
 The README also lists Alpine, OpenWrt, and Arch as "not fully tested," but the current script refuses to run on Alpine and OpenWrt at all. Anything outside the Debian family gets a warning that it may fail. For an x86-64 box, the CasaOS site lists the ZimaBoard and Intel NUCs as officially supported, and in practice an old laptop or mini PC works too.
 
-The script checks for at least 400 MB of RAM and asks before continuing if there's less than 5 GB of free disk space. That's the bare minimum. Your apps and media are what actually decide how much you need.
+The script checks for at least 400 MB of RAM and asks before continuing if there's less than 5 GB of free disk space. That's the bare minimum. Your apps and media are what decide how much you need.
 
 ### Prepare the Server
 
@@ -94,7 +94,7 @@ The current installer script served at `get.casaos.io` (it identifies itself as 
 2. **Checks the system**: architecture (amd64, arm64, or armv7), Linux, distribution, memory, and free disk space.
 3. **Installs dependencies** with your package manager: `wget`, `curl`, `smartmontools`, `parted`, `ntfs-3g`, `net-tools`, `udevil`, `samba`, `cifs-utils`, `mergerfs`, and `unzip`.
 4. **Installs Docker** with Docker's official convenience script from `get.docker.com` if it isn't already installed. If it finds a Docker version older than 20, it stops and asks you to remove it first.
-5. **Changes Docker's settings for the whole system.** It writes `/etc/systemd/system/docker.service.d/override.conf` with `DOCKER_MIN_API_VERSION=1.24`, then restarts Docker. [Docker Engine 29](https://docs.docker.com/engine/release-notes/29/) raised the oldest API version the daemon accepts, which broke CasaOS's app management. The override lowers that floor to 1.24 for every client on the machine, not just CasaOS.
+5. **Changes Docker's settings for the whole system.** It writes `/etc/systemd/system/docker.service.d/override.conf` with `DOCKER_MIN_API_VERSION=1.24`, then restarts Docker. [Docker Engine 29](https://docs.docker.com/engine/release-notes/29/) raised the oldest API version the daemon accepts, which broke CasaOS's app management. The override lowers that floor to 1.24 for every client on the machine.
 6. **Sets up auto-mounting** for USB drives with udevil and a `devmon` service user.
 7. **Downloads and installs the CasaOS services** from IceWhale's GitHub releases: the gateway, message bus, user service, local storage, app management, CLI, the v0.4.15 core, the web UI, and the app store bundle. Several of those components are pinned to alpha builds.
 8. **Installs rclone v1.61.1** for cloud storage mounts, using rclone's own install script with the download host swapped to IceWhale's mirror. If you already have a different rclone version, the script removes it and installs this one. That version is from December 2022, so keep that in mind if you use rclone for anything else on the same box.
@@ -174,7 +174,7 @@ In August 2023 I did a whole video on how cheap a homelab can be. The hardware w
 
 I still prefer a mini PC like that over a ZimaBoard for a first homelab, mostly because you can upgrade the RAM and SSD. The ZimaBoard can't do that, although its PCIe slot is really cool. For storage, I'd want at least 1 TB, if not 2. Little Intel chips like this are also a good deal for media servers, since their hardware transcoding is solid.
 
-Here's what I set up after logging in.
+This is what I set up after logging in.
 
 ### Network Shares with the Files App
 
@@ -200,9 +200,9 @@ If you'd rather try a newer Docker manager, I've also written about [Dockhand](/
 
 ## My Take
 
-CasaOS is one of the easiest ways I've found to go from a bare Linux install to a working home server. The install is a single command, the dashboard is genuinely beautiful and functional, and the store gets you Jellyfin, Nextcloud, or a photo backup in a couple of clicks. After that, you have the foundation to start trying out Docker containers and figuring out what a homelab can do for you. And it runs on cheap hardware. The mini PC I used came in under $200, and a ZimaBoard with CasaOS preinstalled was about the same price.
+CasaOS is one of the easiest ways I've found to go from a bare Linux install to a working home server. The install is a single command, the dashboard is beautiful and it works, and the store gets you Jellyfin, Nextcloud, or a photo backup in a couple of clicks. After that, you have the foundation to start trying out Docker containers and figuring out what a homelab can do for you. And it runs on cheap hardware. The mini PC I used came in under $200, and a ZimaBoard with CasaOS preinstalled was about the same price.
 
-The catch now is the project's pace. The core hasn't had a stable release since December 2024, and IceWhale's energy is clearly going into ZimaOS. The app store still gets updates, so for a learning box or a simple home server it's still a pleasant way to get started. Read the install script, give it its own machine, keep it off the open internet, and change the default passwords on store apps. If CasaOS ever stops working for you, everything it runs is just Docker containers with data in `/DATA`, so moving to Portainer, Dockhand, or plain Compose files isn't a dead end.
+The catch now is the project's pace. The core hasn't had a stable release since December 2024, and IceWhale's energy is clearly going into ZimaOS. The app store still gets updates, so for a learning box or a simple home server it's still a pleasant way to get started. Read the install script, give it its own machine, keep it off the open internet, and change the default passwords on store apps. If CasaOS ever stops working for you, everything it runs is Docker containers with data in `/DATA`, so you can move to Portainer, Dockhand, or plain Compose files. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
