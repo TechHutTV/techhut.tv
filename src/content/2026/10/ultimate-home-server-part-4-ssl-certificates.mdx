@@ -328,23 +328,3 @@ The other open item is the streaming subdomain. It's DNS-only, so it shows my ho
 That's the whole build. [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba) set up Proxmox, ZFS, and shared storage. [Part 2](/ultimate-home-server-part-2-jellyfin) added Jellyfin. [Part 3](/ultimate-home-server-part-3-arr-stack) automated the library. This part gave all of it real names and real certificates. The local domain in particular turned out to be pretty easy to set up, and not clicking through certificate warnings or remembering IP addresses anymore is worth the effort.
 
 With all of this configured, from VMs to containers to the proxy's data volume, make sure it's backed up. Rebuilding 19 proxy hosts from memory is nobody's idea of fun. My [Proxmox Backup Server guide](/proxmox-backup-server-complete-guide) covers that. If you're starting fresh, head back to [Part 1](/ultimate-home-server-part-1-proxmox-zfs-samba). With all that, I do hope you have an absolutely beautiful day.
-
-## Official References
-
-- [TechHut homelab repo: proxy notes](https://github.com/TechHutTV/homelab/tree/main/proxy) and [compose file](https://github.com/TechHutTV/homelab/blob/main/proxy/compose.yaml)
-- [Nginx Proxy Manager guide](https://nginxproxymanager.com/guide/)
-- [Nginx Proxy Manager full setup](https://nginxproxymanager.com/setup/)
-- [Nginx Proxy Manager advanced configuration](https://nginxproxymanager.com/advanced-config/)
-- [Nginx Proxy Manager v2.16.0 release](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0)
-- [favonia/cloudflare-ddns](https://github.com/favonia/cloudflare-ddns)
-- [Cloudflare: create an API token](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/)
-- [Cloudflare: create DNS records](https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/)
-- [Cloudflare: proxy status](https://developers.cloudflare.com/dns/proxy-status/)
-- [Cloudflare: SSL/TLS encryption modes](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/)
-- [Cloudflare service-specific terms](https://www.cloudflare.com/service-specific-terms-application-services/)
-- [Let's Encrypt challenge types](https://letsencrypt.org/docs/challenge-types/)
-- [Let's Encrypt Certificate Transparency logs](https://letsencrypt.org/docs/ct-logs/)
-- [certbot-dns-cloudflare](https://certbot-dns-cloudflare.readthedocs.io/en/stable/)
-- [Jellyfin networking](https://jellyfin.org/docs/general/post-install/networking/) and [reverse proxy](https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/)
-- [Home Assistant HTTP integration](https://www.home-assistant.io/integrations/http/)
-- [NetBird Networks](https://docs.netbird.io/manage/networks)
