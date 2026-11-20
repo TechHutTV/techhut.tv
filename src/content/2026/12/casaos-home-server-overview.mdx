@@ -1,10 +1,10 @@
 export const title = "CasaOS: A Simple Web Dashboard for Your Home Server"
 export const description = "What CasaOS is, how to install it on Debian, Ubuntu, or Raspberry Pi OS with the official script (and what that script does), a tour of the dashboard and app store, and where the project stands now that IceWhale is focused on ZimaOS."
-export const date = "2026-10-17"
+export const date = "2026-12-12"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/casaos-home-server-overview/cover.jpg"
+export const cover = "/docs-static/img/2026/12/casaos-home-server-overview/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -128,7 +128,7 @@ casaos-uninstall
 
 The dashboard is what sold me on it. It's clean, the widgets make sense, and it's the kind of page you could set as the home page for every browser in your house.
 
-![The CasaOS dashboard on the ZimaBoard with CPU, RAM, and storage widgets and the preinstalled File Browser, Jellyfin, and PhotoPrism apps, from the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-dashboard.jpg)
+![The CasaOS dashboard on the ZimaBoard with CPU, RAM, and storage widgets and the preinstalled File Browser, Jellyfin, and PhotoPrism apps, from the 2022 video](/docs-static/img/2026/12/casaos-home-server-overview/casaos-dashboard.jpg)
 
 Down the left side are live widgets. You get CPU usage by core, RAM out of the 8 GB in the ZimaBoard, network traffic, and storage. I'd had the board running for a couple of days at that point and it was barely doing anything. In the 2023 version, the dashboard also showed power usage and temperature, and the storage section had grown a **merge storages** option for combining drives. My 1 TB drive didn't show its full capacity at first, so that took a little tweaking.
 
@@ -152,7 +152,7 @@ As a quick test, I opened Jellyfin, which already had Big Buck Bunny loaded. Tha
 
 The app store is a list of Docker apps that are already configured to work with CasaOS. In 2022 it had Pi-hole, qBittorrent, Nextcloud, Emby, Transmission, and a handful of others. Sorting by name made it obvious there weren't that many yet. The Cloud category, for example, was basically Nextcloud, File Browser, and Duplicati. By 2023 it had grown to include things like Home Assistant, AdGuard Home, Calibre-Web, Portainer, and the \*arr apps. The [official store repository](https://github.com/IceWhaleTech/CasaOS-AppStore) is well past a hundred apps now, from Immich and Navidrome to newer things like Project NOMAD.
 
-![The CasaOS app store listing Syncthing, AdGuard Home, Nextcloud, Pi-hole, qBittorrent, Jellyfin, Vaultwarden, and Plex with Install buttons, from the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-app-store.jpg)
+![The CasaOS app store listing Syncthing, AdGuard Home, Nextcloud, Pi-hole, qBittorrent, Jellyfin, Vaultwarden, and Plex with Install buttons, from the 2022 video](/docs-static/img/2026/12/casaos-home-server-overview/casaos-app-store.jpg)
 
 Installing one is a single click. When I installed Nextcloud, CasaOS pulled the image and showed the progress, with an option to keep it going in the background. As soon as it said "installed" I clicked on it, and it opened right into the Nextcloud setup page. I didn't finish the setup in the video, but it was a really quick way to get a Nextcloud container running. The current store entry runs the official `nextcloud` image on port `10081`. If you want the full-featured version with Office, Talk, and backups, I'd use [Nextcloud AIO](/nextcloud-aio-self-hosted-cloud) instead.
 
@@ -160,7 +160,7 @@ Installing one is a single click. When I installed Nextcloud, CasaOS pulled the 
 
 If an app isn't in the store, there's a **custom install** option. You give it the Docker image, an app name, ports, the folders you want mapped, environment variables, and so on. The CasaOS site says you can also import an existing `docker run` command instead of typing it all in. If you're not sure what any of those fields mean, my [Docker basics guide](/7-docker-basics-for-beginners) covers them.
 
-![The Install a new App manually dialog in CasaOS with fields for the Docker image, app name, icon URL, web UI port, network, ports, and volumes, as shown in the 2022 video](/docs-static/img/2026/10/casaos-home-server-overview/casaos-custom-install.jpg)
+![The Install a new App manually dialog in CasaOS with fields for the Docker image, app name, icon URL, web UI port, network, ports, and volumes, as shown in the 2022 video](/docs-static/img/2026/12/casaos-home-server-overview/casaos-custom-install.jpg)
 
 You can also add third-party app stores. IceWhale's store repository links a guide for that and a list of community stores.
 
