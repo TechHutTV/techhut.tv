@@ -1,10 +1,10 @@
 export const title = "AMD and NVIDIA GPU Passthrough to a Windows 11 VM on Proxmox"
 export const description = "Pass a dedicated AMD or NVIDIA graphics card through to a Windows 11 virtual machine on Proxmox VE, from IOMMU and VFIO on the host to VirtIO drivers, Remote Desktop, and GPU drivers in the guest."
-export const date = "2026-10-15"
+export const date = "2026-11-25"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Virtualization", "Windows", "Homelab"]
-export const cover = "/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/cover.jpg"
+export const cover = "/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -50,7 +50,7 @@ Do this before you install anything.
 
 **IOMMU has to be enabled, no matter your hardware.** On my ASRock board, it's under **Advanced → AMD CBS → NBIO Common Options → IOMMU**. On Intel boards, look for **VT-d**. The name and location vary, so check your motherboard manual. While you're there, make sure CPU virtualization (SVM on AMD, VT-x on Intel) is on as well.
 
-![The ASRock UEFI NBIO Common Options page with IOMMU set to Enabled, as shown in the video](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/bios-iommu-enabled.jpg)
+![The ASRock UEFI NBIO Common Options page with IOMMU set to Enabled, as shown in the video](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/bios-iommu-enabled.jpg)
 
 The second change was specific to me and my RX 580: **I had to disable CSM** (Compatibility Support Module) under the **Boot** tab. Before I did that, I kept getting Error 43 for the card in Windows Device Manager, even after the driver installed. Radeon cards can be finicky with passthrough. If you're on AMD and hit the same thing, try disabling CSM first.
 
@@ -220,7 +220,7 @@ Click **Create VM** and enable **Advanced** at the bottom of the wizard. These a
 | Memory | 16384 MiB | 16 GB |
 | Network | Model **VirtIO (paravirtualized)** | Everything else at default |
 
-![The Proxmox Create Virtual Machine wizard System tab in the video with q35, OVMF (UEFI), VirtIO SCSI single, and a v2.0 TPM on local-lvm](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/create-vm-system-tab.jpg)
+![The Proxmox Create Virtual Machine wizard System tab in the video with q35, OVMF (UEFI), VirtIO SCSI single, and a v2.0 TPM on local-lvm](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/create-vm-system-tab.jpg)
 
 The **Add additional drive for VirtIO drivers** box is newer than the video. It adds a second CD drive with the driver ISO and switches the disk bus to SCSI and the network card to VirtIO for you. In the video, I only had one CD drive and changed the bus and network model by hand.
 
@@ -251,7 +251,7 @@ Select the VM, go to **Hardware → Add → PCI Device**, and:
 4. Leave **Primary GPU** unchecked for now.
 5. Under **Advanced**, keep **ROM-Bar** ticked and tick **PCI-Express**. PCI-Express is only available on q35.
 
-![The Add: PCI Device dialog in Proxmox VE 7.2 from the video, with 0000:05:00.0 selected, All Functions, ROM-Bar, and PCI-Express checked, and Primary GPU unchecked](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/add-pci-device-rx580.jpg)
+![The Add: PCI Device dialog in Proxmox VE 7.2 from the video, with 0000:05:00.0 selected, All Functions, ROM-Bar, and PCI-Express checked, and Primary GPU unchecked](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/add-pci-device-rx580.jpg)
 
 If something isn't set up properly, you might get a message here saying IOMMU isn't detected. Go back and check the BIOS and the `dmesg` output from earlier.
 
@@ -273,7 +273,7 @@ Run through the installer as usual. I chose **Windows 11 Pro**. That edition mat
 2. Open the VirtIO CD and go to `vioscsi\w11\amd64`.
 3. Select **Red Hat VirtIO SCSI pass-through controller** and click **Next**.
 
-![The Windows 11 Setup Select the driver to install screen in the video, with the Red Hat VirtIO SCSI pass-through controller from vioscsi\w11\amd64 selected](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/windows-setup-virtio-scsi-driver.jpg)
+![The Windows 11 Setup Select the driver to install screen in the video, with the Red Hat VirtIO SCSI pass-through controller from vioscsi\w11\amd64 selected](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/windows-setup-virtio-scsi-driver.jpg)
 
 The disk shows up, and you can continue. Proxmox's [Windows 11 guest guide](https://pve.proxmox.com/wiki/Windows_11_guest_best_practices) suggests loading two more drivers the same way while you're there: `NetKVM\w11\amd64` for the network and `Balloon\w11\amd64` for memory ballooning. With the network driver loaded, setup has internet access.
 
@@ -308,7 +308,7 @@ With Remote Desktop working, stay logged in and go back to Proxmox:
 2. Set **Graphic card** to **none**. Believe it or not, that's what we want. Instead of the emulated display, Windows uses the RX 580 directly.
 3. **Stop** the VM, then **Start** it again. A reboot from inside Windows doesn't apply hardware changes.
 
-![The VM's Hardware tab in Proxmox VE 7.2 from the video with Display set to none and the RX 580 attached as PCI device 0000:05:00 with pcie=1](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/vm-hardware-display-none.jpg)
+![The VM's Hardware tab in Proxmox VE 7.2 from the video with Display set to none and the RX 580 attached as PCI device 0000:05:00 with pcie=1](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/vm-hardware-display-none.jpg)
 
 Reconnect over RDP. I turned on dynamic resolution updates in Remmina so the window could be resized. Then I opened **Task Manager → Performance**, and the Radeon RX 580 was listed. That's a very good sign.
 
@@ -320,7 +320,7 @@ Now install the normal drivers for your card inside Windows: AMD's from [AMD's d
 
 For the ultimate test, I installed DaVinci Resolve. Out of any application out there, Resolve will tell you if your GPU is garbage. On first launch, the quick setup checked my operating system and graphics, and both came back good. A few clicks later, I was sitting in Resolve on a Windows VM with a real GPU.
 
-![DaVinci Resolve 18's Quick System Check inside the Windows VM in the video, with green checks for both the operating system and the graphics card](/docs-static/img/2026/10/proxmox-gpu-passthrough-windows-11/davinci-resolve-system-check.jpg)
+![DaVinci Resolve 18's Quick System Check inside the Windows VM in the video, with green checks for both the operating system and the graphics card](/docs-static/img/2026/11/proxmox-gpu-passthrough-windows-11/davinci-resolve-system-check.jpg)
 
 ## Troubleshooting
 
