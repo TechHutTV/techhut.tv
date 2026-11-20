@@ -14,7 +14,7 @@ When I made this video, a Raspberry Pi 5 was about to become the new home of my 
 
 The fix is [Gluetun](https://github.com/passteque/gluetun), a VPN client that runs as its own Docker container. Other containers can borrow its network, so everything they send goes out through the VPN. Gluetun also has a built-in firewall kill switch that only allows traffic through the VPN, so if the tunnel drops, it's designed to block their traffic rather than send it out over your home connection. It's still worth testing, which is why this guide checks the public IP from inside the containers.
 
-In this guide I'll prep a Pi with Docker, set up Gluetun with WireGuard, route the Deluge torrent client through it, attach a second container from outside the compose file, and test that it's all working. Use this for content you have the rights to, and check your local laws.
+I'll prep a Pi with Docker, set up Gluetun with WireGuard, route the Deluge torrent client through it, attach a second container from outside the compose file, and test that it's all working. Use this for content you have the rights to, and check your local laws.
 
 The video isn't sponsored. RasTech sent over the Raspberry Pi 5 starter kit I used in it.
 
@@ -124,7 +124,7 @@ sudo mkdir -p /media/data/downloads/deluge/{completed,incomplete,torrents}
 sudo chown -R "$(id -u):$(id -g)" /media/data
 ```
 
-My `/media/data` is actually a network share from my Unraid server, mounted through `/etc/fstab`. If you're doing the same, it looks something like this (install `cifs-utils` first, and keep the credentials in a separate file with `600` permissions rather than in fstab):
+My `/media/data` is a network share from my Unraid server, mounted through `/etc/fstab`. If you're doing the same, it looks something like this (install `cifs-utils` first, and keep the credentials in a separate file with `600` permissions rather than in fstab):
 
 ```text
 //192.168.1.10/data /media/data cifs credentials=/home/your_user/.smbcredentials,uid=1000,gid=100,iocharset=utf8 0 0
@@ -146,7 +146,7 @@ On most single-user installs that's `1000` and `1000`. In the video I used `PGID
 
 Chances are you already have a VPN provider. The Gluetun wiki has a [setup page for each supported provider](https://github.com/qdm12/gluetun-wiki/tree/main/setup/providers), and each one gives you an example compose file with exactly the variables that provider needs. Some support both WireGuard and OpenVPN, while others don't have a native WireGuard option, so depending on what you use, you may need to adjust the example below. If your provider hands you a WireGuard config file but isn't natively supported for WireGuard, the [custom provider page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/custom.md) covers it.
 
-I was using AirVPN when I recorded, using WireGuard. AirVPN isn't a sponsor. I found them because they're one of the predefined providers in Gluetun, and their website looks like something I would have designed in eighth grade, which for some reason makes me like it more. Here's what that looked like, following the wiki's [AirVPN page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/airvpn.md):
+I was using AirVPN when I recorded, using WireGuard. AirVPN isn't a sponsor. I found them because they're one of the predefined providers in Gluetun, and their website looks like something I would have designed in eighth grade, which for some reason makes me like it more. This is what that looked like, following the wiki's [AirVPN page](https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/airvpn.md):
 
 1. In the **Client Area**, open the **Config Generator**. Choose **Linux**, select **WireGuard**, and pick a server. I picked one in Vancouver. Scroll down and click **Generate**, then open the resulting config file.
 2. Back in the **Client Area**, open **Ports** and add a port. This is the forwarded port your torrent client will listen on.
@@ -184,7 +184,7 @@ chmod 600 .env
 
 In Portainer, go to **Stacks > Add stack**, paste the compose file into the web editor, and add those four values as environment variables below it. Portainer substitutes `${...}` values the same way Compose does.
 
-Here's the `compose.yaml`. Replace `your_user`, the IDs, and the time zone with your own:
+The `compose.yaml` is below. Replace `your_user`, the IDs, and the time zone with your own:
 
 ```yaml
 services:
