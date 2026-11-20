@@ -19,7 +19,7 @@ import {YouTube} from "@/components/YouTube"
 4. [Part 4: SSL certificates on everything](/ultimate-home-server-part-4-ssl-certificates)
 </Note>
 
-In this part we're building the piece that makes the whole home server feel automated. It's one Docker Compose stack with a VPN container (Gluetun), two download clients (qBittorrent and NZBGet), an indexer manager (Prowlarr), the library managers (Sonarr for shows, Radarr for movies, Lidarr for music), Bazarr for subtitles, and Seerr as the friendly request front end. Everything lands in the same `/data` folder that Jellyfin already reads from, so a finished download shows up in your library with no manual copying or renaming.
+In this part I'm putting the automation on the server. It's one Docker Compose stack with a VPN container (Gluetun), two download clients (qBittorrent and NZBGet), an indexer manager (Prowlarr), the library managers (Sonarr for shows, Radarr for movies, Lidarr for music), Bazarr for subtitles, and Seerr for requests. Everything lands in the same `/data` folder that Jellyfin already reads from, so a finished download shows up in your library without you copying or renaming anything.
 
 Quick disclaimer, same as in the video: I'm not encouraging anybody to download copyrighted content. Check your local laws. Everything I demonstrate uses freely licensed or public domain material, like an Ubuntu ISO and a 1925 Charlie Chaplin film, and that's how you should treat this stack too: a tool for organizing media you have the rights to.
 
@@ -48,15 +48,15 @@ You open each web UI at your server's LAN IP and the port in that table. The `17
 
 I spent a lot of time making this compose file as easy to use as I could. A few ideas are worth understanding before you run it.
 
-**A dedicated network with static IPs.** Everything sits on a `servarrnetwork` bridge, and each service gets a fixed address from `.env`. People used to have apps disconnect from each other when Docker handed out new internal IPs. Pinning the addresses fixes that, and you always know what to type when connecting one app to another.
+Everything sits on a `servarrnetwork` bridge, and each service gets a fixed address from `.env`. People used to have apps disconnect from each other when Docker handed out new internal IPs. Pinning the addresses fixes that, and you always know what to type when you connect one app to another.
 
-**Gluetun owns the network for the download side.** qBittorrent, NZBGet, Prowlarr, and FlareSolverr don't publish ports or get their own IPs. They use `network_mode: service:gluetun`, which puts them inside Gluetun's network stack, so their ports are listed under the `gluetun` service and they all share its `172.39.0.2` address. If the VPN isn't up, Gluetun's firewall keeps their traffic from leaving.
+qBittorrent, NZBGet, Prowlarr, and FlareSolverr don't publish ports or get their own IPs. They use `network_mode: service:gluetun`, which puts them inside Gluetun's network stack, so their ports are listed under the `gluetun` service and they all share its `172.39.0.2` address. If the VPN isn't up, Gluetun's firewall keeps their traffic from leaving.
 
-**Health checks and automatic recovery.** The containers behind Gluetun wait for it to report healthy before starting, and `restart: true` in their `depends_on` blocks means Compose restarts them whenever it restarts or recreates Gluetun. qBittorrent also has a ping health check and a `deunhealth.restart.on.unhealthy=true` label. The small [deunhealth](https://github.com/qdm12/deunhealth) container restarts anything with that label when it goes unhealthy, which covers the annoying case where the VPN blips and the torrent client just sits there stalled. Do note that deunhealth mounts the Docker socket, which gives it root-level control of Docker on that host.
+The containers behind Gluetun wait for it to report healthy before starting, and `restart: true` in their `depends_on` blocks means Compose restarts them whenever it restarts or recreates Gluetun. qBittorrent also has a ping health check and a `deunhealth.restart.on.unhealthy=true` label. The small [deunhealth](https://github.com/qdm12/deunhealth) container restarts anything with that label when it goes unhealthy, which covers the annoying case where the VPN blips and the torrent client just sits there stalled. Do note that deunhealth mounts the Docker socket, which gives it root-level control of Docker on that host.
 
-**One `/data` mount for everything.** Every container that touches media gets the same `/data:/data` bind mount instead of separate `/movies`, `/tv`, and `/downloads` volumes. The [Servarr Docker guide](https://wiki.servarr.com/docker-guide) explains why. Separate volumes look like separate file systems inside the containers, even when they're one disk outside, which rules out [hardlinks and instant moves](https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/). Using one path everywhere also means Radarr and the download clients agree on where every file lives, so you don't need remote path mappings.
+Every container that touches media gets the same `/data:/data` bind mount instead of separate `/movies`, `/tv`, and `/downloads` volumes. The [Servarr Docker guide](https://wiki.servarr.com/docker-guide) explains why. Separate volumes look like separate file systems inside the containers, even when they're one disk outside, which rules out [hardlinks and instant moves](https://trash-guides.info/Hardlinks/Hardlinks-and-Instant-Moves/). Using one path everywhere also means Radarr and the download clients agree on where every file lives, so you don't need remote path mappings.
 
-**Config folders next to the compose file.** Each service keeps its config in a folder named after it (`./gluetun`, `./radarr`, and so on) in the directory you run Compose from. Unless your folder layout differs from mine, you shouldn't need to edit `compose.yaml` at all. Almost everything you change lives in `.env`.
+Each service keeps its config in a folder named after it (`./gluetun`, `./radarr`, and so on) in the directory you run Compose from. Unless your folder layout differs from mine, you shouldn't need to edit `compose.yaml` at all. Almost everything you change lives in `.env`.
 
 <Note>
 `172.39.0.0/24` is technically outside the [RFC 1918](https://www.rfc-editor.org/rfc/rfc1918) private range (172.16.0.0/12 stops at 172.31). It works fine for Docker, but the host can't reach real internet addresses in that range. If that matters to you, pick an unused private subnet and update both the `subnet` line in `compose.yaml` and every `SET_IP_` value in `.env`.
@@ -138,7 +138,7 @@ Now open `.env`:
 nano .env
 ```
 
-Here's the top section with placeholder values. Fill it in from your generated `.conf` file:
+The top of `.env` looks like this. Fill it in from your generated `.conf` file:
 
 ```dotenv
 # General UID/GID and Timezone
@@ -261,7 +261,7 @@ To test it, I grabbed the official Ubuntu Desktop torrent from Ubuntu's [alterna
 
 ## NZBGet (Optional)
 
-Usenet isn't used as often, and it's a whole separate topic I'm not going to dive into, but the client is in the stack if you want it. Open `http://YOUR_SERVER_IP:6789`. The [LinuxServer image](https://docs.linuxserver.io/images/docker-nzbget/) starts with the username `nzbget` and the password `tegbzn6789`, so change those first.
+Usenet isn't used as often, and I'm not getting into that whole topic here, but the client is in the stack if you want it. Open `http://YOUR_SERVER_IP:6789`. The [LinuxServer image](https://docs.linuxserver.io/images/docker-nzbget/) starts with the username `nzbget` and the password `tegbzn6789`, so change those first.
 
 1. **Settings > Security:** change `ControlUsername` and `ControlPassword`, save, and reload. Log in again with the new credentials.
 2. **Settings > Incoming NZBs:** set `AppendCategoryDir` to **No**. Sonarr and Radarr handle categories themselves, and this avoids "directory does not appear to exist" errors.
@@ -324,7 +324,7 @@ To test the full pipeline, I added *The Gold Rush*, Charlie Chaplin's 1925 film.
 
 ![The Radarr add dialog for The Gold Rush (1925) with the /data/movies root folder and Movie Only monitoring](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/radarr-add-the-gold-rush.jpg)
 
-Radarr hardlinks imports when your storage supports it and copies them when it doesn't, so seeding torrents can keep their original files either way. Then I opened Jellyfin on port `8096`, the server from [Part 2](/ultimate-home-server-part-2-jellyfin), and *The Gold Rush* was sitting in my movies library. That's the whole loop, with nothing done by hand.
+Radarr hardlinks imports when your storage supports it and copies them when it doesn't, so seeding torrents can keep their original files either way. Then I opened Jellyfin on port `8096`, the server from [Part 2](/ultimate-home-server-part-2-jellyfin), and *The Gold Rush* was sitting in my movies library. Will you look at that.
 
 ### Quality Definitions and File Sizes
 
@@ -352,11 +352,11 @@ The last piece is the request front end. In the video, I used Jellyseerr from my
 4. Add a Radarr server: host `172.39.0.4`, port `7878`, and Radarr's API key. Mark it as the default server and click **Test**. That loads your quality profiles. I picked **Any**, set minimum availability to **Released**, and added the server.
 5. Add Sonarr the same way with `172.39.0.3` and port `8989`, then finish setup.
 
-What Seerr is great at is discovery. You can share it with other people, or just use it yourself, to browse what's popular and filter by streaming service, genre, rating, and more. I filtered for Apple TV titles, since I don't subscribe to it, and limited results to titles with a user score of 8 or higher. When something catches your eye, **Request** sends it straight to Radarr or Sonarr.
+I use Seerr to find something to watch. You can share it with other people, or just use it yourself, to browse what's popular and filter by streaming service, genre, rating, and whatnot. I filtered for Apple TV titles, since I don't subscribe to it, and limited results to titles with a user score of 8 or higher. When something catches your eye, **Request** sends it straight to Radarr or Sonarr.
 
 ![Jellyseerr's Discover page as shown in the video, with The Gold Rush at the front of Recently Added](/docs-static/img/2026/10/ultimate-home-server-part-3-arr-stack/jellyseerr-discover.jpg)
 
-I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I went shopping for a DVD so I could buy a copy and put it on the server, and the listing I found only offered streaming, no physical copy. Very disappointing. When a company won't sell you a copy you can own, there's no legitimate way to put it on your own server, and you're just out of luck. They're gatekeeping content.
+I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I went shopping for a DVD so I could buy a copy and put it on the server, and the listing I found only offered streaming, no physical copy. Very disappointing. When a company won't sell you a copy you can own, there's no legitimate way to put it on your own server, and you're just out of luck. They'd rather keep the movie inside their own app.
 
 ## Keep It Locked Down
 
@@ -366,9 +366,9 @@ I requested *Napoleon* that way, and it showed up in Radarr immediately. Then I 
 
 ## Final Thoughts
 
-This is the stack I actually run, and the reason it's as polished as it is comes down to all the feedback and fixes from people using the repo. Once Gluetun is connected and the apps are pointed at each other, it mostly disappears. You request something, it lands in the right folder with the right name, and Jellyfin picks it up.
+This is the stack I run, and it got this polished because people using the repo kept sending fixes. Once Gluetun is connected and the apps are pointed at each other, you request something, it lands in the right folder with the right name, and Jellyfin picks it up.
 
-The parts that matter most are the boring ones: a single `/data` path, static IPs, and making sure the VPN is genuinely working before anything else starts. Get those right and the rest is mostly clicking through settings pages. For deeper tuning, the Servarr and Bazarr wikis are excellent, and my [media README](https://github.com/TechHutTV/homelab/tree/main/media) collects the fixes I've needed along the way.
+The setup that keeps this from falling apart is a single `/data` path, static IPs, and a VPN that is really up before anything else starts. Get those right and the rest is mostly clicking through settings pages. For more tuning, the Servarr and Bazarr wikis are good, and my [media README](https://github.com/TechHutTV/homelab/tree/main/media) collects the fixes I've needed along the way.
 
 ## Next Up
 
