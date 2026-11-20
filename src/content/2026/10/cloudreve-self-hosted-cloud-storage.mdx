@@ -10,9 +10,9 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="944IfBbSYtE" title="TechHut's Cloudreve walkthrough" />
 
-[Cloudreve](https://cloudreve.org/) has been on my list to try for quite a while, and it turned out to be a really polished, feature-rich way to run a file server in your homelab. I'll be honest up front: I'm pretty partial to Nextcloud. It's still my preference. But preferences can change, and Cloudreve caught me a little off guard.
+[Cloudreve](https://cloudreve.org/) has been on my list to try for quite a while, and it turned out to be a polished way to run a file server in your homelab. I'm pretty partial to Nextcloud. It's still my preference. Preferences can change, though, and Cloudreve caught me a little off guard.
 
-The big difference is scope. Cloudreve is about files, and that's it. For me that might actually be a good thing. I've been slowly swapping pieces of my Nextcloud setup for more specific tools. I don't use Nextcloud Deck much anymore because I use my own project management system, and I replaced Nextcloud News with a self-hosted automation for a newsletter. I still love Nextcloud, but if all I really need from it is files, something focused like this is worth a look. If you're shopping around, I've also covered [OpenCloud](/self-host-opencloud-docker-compose), another file-focused Nextcloud alternative.
+The big difference is scope. Cloudreve is about files, and that's it. For me that might be a good thing. I've been slowly swapping pieces of my Nextcloud setup for more specific tools. I don't use Nextcloud Deck much anymore because I use my own project management system, and I replaced Nextcloud News with a self-hosted automation for a newsletter. I still love Nextcloud, but if all I really need from it is files, something focused like this is worth a look. If you're shopping around, I've also covered [OpenCloud](/self-host-opencloud-docker-compose), another file-focused Nextcloud alternative.
 
 Incogni sponsored the video this article is based on.
 
@@ -20,7 +20,7 @@ Incogni sponsored the video this article is based on.
 The written installation has been updated for [Cloudreve 4.19.1](https://github.com/cloudreve/cloudreve/releases/tag/4.19.1), released September 18, 2026. The official Docker Compose files are essentially the same ones I cloned in the video, but there have been several releases since then, including fixes for security vulnerabilities in 4.16.1, 4.17.0, 4.18.0, and 4.19.0. If you're running an older 4.x install, update it. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
-## What Cloudreve Actually Is
+## What Cloudreve is
 
 Cloudreve is a GPL-3.0 licensed, self-hosted file management and sharing system written in Go with a React frontend. The interesting part is that it builds a virtual file system in its database on top of whatever storage you configure. As the [concepts page](https://docs.cloudreve.org/usage/concept) explains, what users see as files and folders is separate from the physical blobs on your storage backend.
 
@@ -32,7 +32,7 @@ The [README](https://github.com/cloudreve/cloudreve) lists storage on local disk
 
 Before getting into the setup, I went straight to the pricing page, because with a really nice open-source project like this the first question is always how they make money. The answer is a free, open-source **Community** edition and a paid **Pro** edition. At the time of writing, the [pricing page](https://cloudreve.org/pricing) lists Pro at $89.90 per root domain as a lifetime license, and you only get the Pro frontend source, not the backend.
 
-Here's what the comparison page currently puts behind Pro:
+The comparison page currently puts these behind Pro:
 
 | Area | Pro-only features |
 |---|---|
@@ -80,7 +80,7 @@ For the Community edition, `.env` doesn't need anything. Its only entries are a 
 
 ### What's in the Base Stack
 
-Here's the current `docker-compose.yml` from upstream:
+The current `docker-compose.yml` from upstream looks like this:
 
 ```yaml
 services:
@@ -174,7 +174,7 @@ New sign-ups are enabled by default, and new accounts land in the default **User
 
 ### The Lightweight Version: No PostgreSQL or Redis
 
-PostgreSQL and Redis are optional. Without a database configured, Cloudreve uses SQLite, and without Redis it uses an in-memory cache that it persists to disk on a clean shutdown. The [deployment docs](https://docs.cloudreve.org/overview/deploy/) strongly recommend a real database for production because SQLite doesn't handle high concurrency well, but for a single user it's a reasonable way to keep things small. Here's the [single-container command](https://docs.cloudreve.org/overview/deploy/docker) from the docs, translated into Compose:
+PostgreSQL and Redis are optional. Without a database configured, Cloudreve uses SQLite, and without Redis it uses an in-memory cache that it persists to disk on a clean shutdown. The [deployment docs](https://docs.cloudreve.org/overview/deploy/) strongly recommend a real database for production because SQLite doesn't handle high concurrency well, but for a single user it's a reasonable way to keep things small. The [single-container command](https://docs.cloudreve.org/overview/deploy/docker) from the docs, translated into Compose:
 
 ```yaml
 services:
@@ -204,7 +204,7 @@ The first time I opened the dashboard through my new domain, Cloudreve asked whe
 
 ### That 1 TB of Storage Probably Isn't Real
 
-After uploading a few things, my storage meter said I had a terabyte available. The LXC only had about 200 GB of disk. That number is a **group quota**, not your disk size. The default Admin group gets 1 TB and the default User group gets 1 GB. You change it under **Dashboard → Groups**. I set mine to about 200 GB, refreshed, and the meter looked much more honest. Set your quotas so the total actually fits on the disk.
+After uploading a few things, my storage meter said I had a terabyte available. The LXC only had about 200 GB of disk. That number is a **group quota**, not your disk size. The default Admin group gets 1 TB and the default User group gets 1 GB. You change it under **Dashboard → Groups**. I set mine to about 200 GB, refreshed, and the meter looked much more honest. Set your quotas so the total fits on the disk.
 
 ![Editing the Admin group in the Cloudreve dashboard with the initial storage quota changed to 200 GB](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/admin-group-storage-quota.jpg)
 
@@ -236,7 +236,7 @@ Under **New** you can also create files directly. I made a new Markdown file cal
 
 ### Sharing
 
-Clicking **Share** on a file gives you options to password-protect the link or have it expire after a number of downloads. I opened the link for my Proxmox ISO in another browser and got a clean share page showing the file. If you actually want to share files with people outside your network, put the instance behind a reverse proxy with HTTPS first.
+Clicking **Share** on a file gives you options to password-protect the link or have it expire after a number of downloads. I opened the link for my Proxmox ISO in another browser and got a clean share page showing the file. If you want to share files with people outside your network, put the instance behind a reverse proxy with HTTPS first.
 
 ![The Cloudreve Create share link dialog with options to protect with a password, expire automatically, or expire after being downloaded](/docs-static/img/2026/10/cloudreve-self-hosted-cloud-storage/create-share-link-dialog.jpg)
 
@@ -322,7 +322,7 @@ Given the number of security fixes in recent releases, I'd check the [release no
 
 ## Final Thoughts
 
-When it comes to simple file management and sharing, Cloudreve's feature set is strong. The web interface is beautiful and quick. Remote downloads are genuinely useful, the Markdown editor and image viewer worked nicely, and sharing was easy. The admin dashboard is also more complete than I expected from the free edition.
+For simple file management and sharing, Cloudreve's feature set is strong. The web interface is beautiful and quick. Remote downloads are useful, the Markdown editor and image viewer worked nicely, and sharing was easy. The admin dashboard is also more complete than I expected from the free edition.
 
 For me to replace Nextcloud with something like this, though, it needs more on the client side. Windows and iPhone are a good start, but I'm on macOS and Linux, and I want a simple setting that keeps everything synced and available offline. I'm also not thrilled about OIDC and activity logs being Pro-only, though I understand they need to make money somehow.
 
