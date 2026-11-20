@@ -10,15 +10,15 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="tYi7RFDGtc8" title="TechHut's NUT UPS server walkthrough" />
 
-If your homelab is anything more than one mini PC or an old laptop, you probably need a UPS. I live on the eastern side of Washington, and we get some serious wind out here. When the wind picks up, the power flickers. That's a problem when you have disks spinning and data constantly moving between machines. One quick power drop can cause data loss, or worse, actually damage the hardware in your NAS or server.
+If your homelab is anything more than one mini PC or an old laptop, you probably need a UPS. I live on the eastern side of Washington, and we get some serious wind out here. When the wind picks up, the power flickers. That's a problem when you have disks spinning and data constantly moving between machines. One quick power drop can cause data loss, or worse, damage the hardware in your NAS or server.
 
 A UPS (uninterruptible power supply) is basically a big battery that sits between the wall and your gear. The battery alone isn't the whole solution, though. Your machines also need to know when they're running on battery so they can shut themselves down properly before it runs out. That's what [Network UPS Tools](https://networkupstools.org/) (NUT) is for.
 
-In this guide I'll go over the UPS I'm using, how to set up a NUT server on a Linux box, how I use my Synology NAS as the NUT server instead, and how to connect Unraid to it so everything shuts down in the right order.
+I'll go over the UPS I'm using, how to set up a NUT server on a Linux box, how I use my Synology NAS as the NUT server instead, and how to connect Unraid to it so everything shuts down in the right order.
 
 Tripp Lite (now part of Eaton) sent me the UPS in this article to review, and Linode (part of Akamai) sponsored the video this article is based on.
 
-The video was published in June 2023. The install script I used then hasn't changed since and doesn't set up network access or shutdowns, so the written Linux setup is now a manual configuration for NUT 2.8.x. Upstream NUT is at [v2.8.5](https://github.com/networkupstools/nut/releases/tag/v2.8.5) (April 2026). The Synology steps are checked against DSM 7.4, and the Unraid steps use the actively maintained NUT plugin, which has different labels than the one in the video. My hands-on footage and impressions come from the original recording.
+The video was published in June 2023. The install script I used then hasn't changed since and doesn't set up network access or shutdowns, so the Linux setup below is a manual configuration for NUT 2.8.x. Upstream NUT is at [v2.8.5](https://github.com/networkupstools/nut/releases/tag/v2.8.5) (April 2026). The Synology steps are checked against DSM 7.4, and the Unraid steps use the actively maintained NUT plugin, which has different labels than the one in the video. My hands-on footage and impressions come from the original recording.
 
 ## The UPS I'm Using
 
@@ -26,7 +26,7 @@ The unit I have is the Tripp Lite SmartPro LCD **SMART1500LCD**. It's a 1500VA /
 
 ![The front LCD of the Tripp Lite SMART1500LCD in my rack showing 120V output and a full battery capacity bar](/docs-static/img/2026/10/nut-ups-server-synology-unraid/ups-lcd.jpg)
 
-I'm nowhere near full load. Honestly, I could have gotten a much smaller unit. With what I have plugged in, the UPS estimates somewhere around 40 to 45 minutes of runtime. Plugged into it are:
+I'm nowhere near full load. I could have gotten a much smaller unit. With what I have plugged in, the UPS estimates somewhere around 40 to 45 minutes of runtime. Plugged into it are:
 
 - My **Unraid** server, which holds all of my media
 - My **Synology** NAS, which handles my backups
@@ -39,7 +39,7 @@ The UPS has eight outlets, but the most important port for this guide is the **U
 The SMART1500LCD is listed in the [NUT hardware compatibility list](https://networkupstools.org/stable-hcl.html) under the `usbhid-ups` driver. Before buying any UPS for this, check that list for your model.
 
 <Note>
-Do a rough power calculation before you buy. Add up what your gear actually draws and how many minutes you need to shut it all down. It's easy to spend two or three hundred dollars more than you need to on a UPS that's way bigger than your setup.
+Do a rough power calculation before you buy. Add up what your gear draws and how many minutes you need to shut it all down. It's easy to spend two or three hundred dollars more than you need to on a UPS that's way bigger than your setup.
 </Note>
 
 ## How NUT Works
@@ -75,7 +75,7 @@ You should see a line for your UPS. Mine showed up as a Tripp Lite UPS.
 
 ### What the Install Script in the Video Does
 
-In the video I used [NUTandRpi](https://github.com/dzomaya/NUTandRpi), an install script from an Eaton employee. It's MIT licensed, aimed at Raspberry Pi OS and other apt-based distros, and it got me to a working status page in a few minutes. Reading through the [script source](https://github.com/dzomaya/NUTandRpi), here's what it actually does:
+In the video I used [NUTandRpi](https://github.com/dzomaya/NUTandRpi), an install script from an Eaton employee. It's MIT licensed, aimed at Raspberry Pi OS and other apt-based distros, and it got me to a working status page in a few minutes. Reading through the [script source](https://github.com/dzomaya/NUTandRpi), this is what it does:
 
 - Installs `nut` and `nut-cgi` from your distro's repos. Apache comes along as a dependency of `nut-cgi`.
 - Sets `MODE=netserver` in `nut.conf`.
@@ -286,7 +286,7 @@ In the video I said I didn't know what **Until low battery** really meant, and S
 
 Since the Synology is the server for everything else, I'd leave it on **Until low battery** so it's the last thing to go down. Let the clients shut down earlier.
 
-If you also tick **Shut down UPS when the system enters Standby Mode**, turn on **Restart automatically after a power failure** under **Hardware & Power > General** so the NAS comes back by itself. Synology recommends pulling the plug on the UPS once to make sure your model actually behaves the way you expect.
+If you also tick **Shut down UPS when the system enters Standby Mode**, turn on **Restart automatically after a power failure** under **Hardware & Power > General** so the NAS comes back by itself. Synology recommends pulling the plug on the UPS once to make sure your model behaves the way you expect.
 
 ### The Credentials Synology Uses
 
@@ -362,7 +362,7 @@ LIST UPS
 LOGOUT
 ```
 
-Each command should come back with `OK`, and `LIST UPS` should list `ups`. If you get `ERR ACCESS-DENIED`, the IP you're connecting from isn't in **Permitted Synology NAS Devices**. If it won't connect at all, check which IP the Synology is actually serving NUT on. One person in that thread had a bonded network interface and the UPS server was on a different IP than they expected.
+Each command should come back with `OK`, and `LIST UPS` should list `ups`. If you get `ERR ACCESS-DENIED`, the IP you're connecting from isn't in **Permitted Synology NAS Devices**. If it won't connect at all, check which IP the Synology is serving NUT on. One person in that thread had a bonded network interface and the UPS server was on a different IP than they expected.
 
 ## Test It Before You Need It
 
@@ -378,9 +378,9 @@ Plug the UPS back in before the battery is completely drained, unless you're spe
 
 A UPS is something you're eventually going to need in your homelab, so it's worth budgeting for. Just do the power calculation first so you don't overspend on capacity you'll never use. My SMART1500LCD is way more UPS than my three machines need, and that's fine, but you can probably go smaller.
 
-The Synology route was nearly plug and play, aside from hunting down credentials Synology doesn't document. The NUT plugin on Unraid gives me more control and more information than DSM does, and I'll probably move to Unraid as my main system eventually, though I do like Synology's software a lot. If you don't have a NAS with NUT built in, a Raspberry Pi or small Linux box makes a great NUT server. Just give it a listen address, your own users, and `upsmon`, so it actually shuts things down.
+The Synology route was nearly plug and play, aside from hunting down credentials Synology doesn't document. The NUT plugin on Unraid gives me more control and more information than DSM does, and I'll probably move to Unraid as my main system eventually, though I do like Synology's software a lot. If you don't have a NAS with NUT built in, a Raspberry Pi or small Linux box makes a great NUT server. Just give it a listen address, your own users, and `upsmon`, so it shuts things down.
 
-If you haven't tried Unraid before, it's one of my favorite NAS operating systems, and you can put it on just about anything. With all that, I do hope you found this helpful. Have a great one.
+If you haven't tried Unraid before, it's one of my favorite NAS operating systems, and you can put it on just about anything. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
