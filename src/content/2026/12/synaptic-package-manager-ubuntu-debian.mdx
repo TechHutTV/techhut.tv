@@ -1,10 +1,10 @@
 export const title = "Synaptic: The Classic Package Manager for Ubuntu and Debian"
 export const description = "Install Synaptic on Ubuntu or Debian, search and install packages, lock versions, browse by section and repository, and understand how it handles root on Wayland and the newer deb822 .sources files."
-export const date = "2026-10-17"
+export const date = "2026-12-31"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Apps"]
-export const cover = "/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/cover.jpg"
+export const cover = "/docs-static/img/2026/12/synaptic-package-manager-ubuntu-debian/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -106,7 +106,7 @@ To install something:
 3. Click **Apply** in the toolbar.
 4. Review the summary and click **Apply** again.
 
-![The Mark additional required changes dialog listing GIMP's dependencies in Synaptic, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-mark-additional-changes.jpg)
+![The Mark additional required changes dialog listing GIMP's dependencies in Synaptic, as shown in the original video](/docs-static/img/2026/12/synaptic-package-manager-ubuntu-debian/synaptic-mark-additional-changes.jpg)
 
 Synaptic downloads and installs everything, and a few seconds later GIMP was on my system. You can queue up as many changes as you want before hitting Apply.
 
@@ -116,7 +116,7 @@ Click on any package, and the panel below the list shows its description, with b
 
 Say you want to stay on the version you have. Maybe the new release has changes you don't like, or you just want things to stay stable. Select the package, open the **Package** menu, and choose **Lock Version**. Synaptic won't upgrade it from then on. To undo it, open the same menu and uncheck **Lock Version**.
 
-![Synaptic's Package menu with Mark for Removal, Mark for Complete Removal, Lock Version, and Properties, with GIMP selected, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-package-menu-lock-version.jpg)
+![Synaptic's Package menu with Mark for Removal, Mark for Complete Removal, Lock Version, and Properties, with GIMP selected, as shown in the original video](/docs-static/img/2026/12/synaptic-package-manager-ubuntu-debian/synaptic-package-menu-lock-version.jpg)
 
 One thing to know: Synaptic stores these locks in its own pin file, `/var/lib/synaptic/preferences`, which only Synaptic reads. They apply to upgrades done in Synaptic. If you also update from the terminal with `sudo apt upgrade`, a locked package can still get upgraded there. Synaptic's main branch has since been changed so **Lock Version** also sets a dpkg hold, but that change isn't in a release yet (0.92 is still the latest). Until it is, to freeze a package for APT everywhere, put it on hold:
 
@@ -147,7 +147,7 @@ Click **All** in the left sidebar and you see literally every package available 
 | **Search Results** | Your recent searches, so you can jump back to them |
 | **Architecture** | Packages by CPU architecture, useful if you have multiarch enabled |
 
-![Synaptic's Sections view listing package categories like Libraries and Mathematics, with the filter buttons at the bottom left, as shown in the original video](/docs-static/img/2026/10/synaptic-package-manager-ubuntu-debian/synaptic-sections-filter.jpg)
+![Synaptic's Sections view listing package categories like Libraries and Mathematics, with the filter buttons at the bottom left, as shown in the original video](/docs-static/img/2026/12/synaptic-package-manager-ubuntu-debian/synaptic-sections-filter.jpg)
 
 **Status** is a quick way to see everything installed on your system, including what you installed manually, or everything in your repositories that you don't have yet. **Origin** shows which applications come from which repository, which also makes it easy to spot packages from a PPA or other third-party repo. In the video, the upgradeable filter came up empty because I had just updated my system.
 
