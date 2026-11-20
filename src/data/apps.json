@@ -1078,7 +1078,9 @@
     "name": "Kdenlive",
     "category": "Creative",
     "description": "Edit videos with a timeline, effects and customizable export settings.",
-    "coverage": [],
+    "coverage": [
+      "/kdenlive-linux-video-editing-workflow"
+    ],
     "videos": [
       {
         "id": "vPySszLuJC8",

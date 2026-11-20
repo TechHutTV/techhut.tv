@@ -1,0 +1,226 @@
+export const title = "Kdenlive on Linux: Why I Came Back, My Workflow, and the Circular Crop Trick"
+export const description = "Why I returned to Kdenlive after switching to DaVinci Resolve, how to install the current release on Linux, Windows, or macOS, and how to build a circular picture-in-picture with Transform and Alpha Shapes."
+export const date = "2027-01-13"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Apps", "KDE", "DaVinci Resolve"]
+export const cover = "/docs-static/img/2027/01/kdenlive-linux-video-editing-workflow/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="vPySszLuJC8" title="TechHut's Kdenlive follow-up and editing workflow" />
+
+In August 2021 I made a video called "Why I Switched To Resolve from Kdenlive." I'd been editing in [Kdenlive](https://kdenlive.org/) for around two years, and a handful of bugs had made it close to unusable for how I work. Less than a year later I made the follow-up above, basically an apology. Most of what drove me away had been fixed, and I was back to doing a big chunk of my editing in it.
+
+I'm pulling together three videos: that 2022 follow-up, the 2021 video where I left (used here only for context on what was broken back then), and a 2021 tutorial on the circular picture-in-picture effect I used in a lot of my videos.
+
+The videos were recorded in 2021 and 2022. The install steps and effect instructions below are for [Kdenlive 26.08.2](https://kdenlive.org/news/releases/26.08.2/), released October 13, 2026. Since then Kdenlive has moved to Qt6 and KDE Frameworks 6 (in 24.02), dropped its PPA, raised the minimum OS versions, and added masking tools that didn't exist when I recorded the tutorial. The footage, screenshots, and opinions are from the original recordings, and I've noted where things look different now.
+
+## What Kdenlive Is
+
+Kdenlive is a free and open source non-linear video editor from KDE. It's licensed under the GPL-3.0, built on the MLT multimedia framework, and runs on Linux, Windows, and macOS. For free and open source software, it's one of the fuller editors you can get.
+
+What originally sold me on it was how much it felt like Adobe Premiere Pro, which I used for years in high school video production classes. The keyframing in particular is really good for something that's free. You get the things a full editor has:
+
+- A multitrack timeline with clips, compositions, and same-track mixes
+- Keyframeable effects, color correction, and titles
+- Proxy clips and timeline preview rendering for heavy footage
+- Nested sequences, subtitles, speech-to-text, and multicam tools in newer releases
+
+## Why I Left in 2021
+
+This is the history, not the current state. In mid-2021 I was hitting three problems constantly:
+
+- **Clicks at audio cuts.** I cut a lot when I talk to a camera, and every cut that didn't land on dead air produced a high-pitched click. The only fix was zooming way in and adding a few frames of fade in and fade out to every cut.
+- **A glitchy Slide composition.** I use slide-in screen recordings all the time: cut the recording, put it on the track above, shrink it with Transform, and drop a Slide composition on it. Back then a black bar or artifact would sweep across the frame during the slide unless the clip didn't touch the edges of the frame.
+- **Blacked-out renders.** Occasionally a segment with an effect or overlay would render out completely black. On a 2K or 4K project that's a 45-minute render wasted, and I usually ended up deleting the effect instead of fighting it.
+
+So I moved my post-production to DaVinci Resolve. Its cut page, keyframe curves, and color tools were fantastic, but on Linux it had its own problems, which I'll come back to.
+
+## Why I Came Back
+
+About a year later I'd been using Kdenlive a lot again and felt I owed the developers a follow-up. In the 2022 video I opened a project I was working on at the time (setting up SteamOS on a device) and there was no clipping anywhere. That bug was gone.
+
+The slide problem was also fixed. I pulled up a guide I'd just published, where I installed Proxmox on a PC and set up a Windows virtual machine, and it's full of those slide transitions. The black bar was gone. I could drop the composition on and move on, without keyframing every slide by hand.
+
+Kdenlive still crashed on me once around then. It froze, I clicked **Wait** five to ten times, and finally force-closed it. When I opened it again it recovered the project and I lost almost no time. Big commercial editors like Premiere crash too, so a crash with good recovery didn't bother me much.
+
+<Note>
+Current Kdenlive has an **Auto Save** option under **Settings > Configure Kdenlive > Misc** that backs up the project every 60 seconds or 25 operations by default, and since 25.08 you can change those numbers. Recovery depends on that backup, so save often on long projects anyway.
+</Note>
+
+### The One Annoyance That Was Left
+
+My one remaining complaint in 2022 was the profile prompt. When you add the first clip to a new project and its resolution or frame rate doesn't match the project profile, Kdenlive offers to switch the project to the clip's profile.
+
+![The Kdenlive Project Bin prompt offering to switch to the clip's HD 1080p 29.97 fps profile after the first clip is added, as shown in the 2022 video](/docs-static/img/2027/01/kdenlive-linux-video-editing-workflow/switch-clip-profile-prompt.jpg)
+
+A couple of times I threw a clip on the timeline, started cutting, then went back and clicked **Switch**. The frame rate change shifted everything over by a few frames and wrecked the edit. Changing the profile through Project Settings warns you and tells you to save first. That little Project Bin button didn't warn me at all.
+
+The prompt is still standard behavior in 26.08, so here's how to stay out of trouble:
+
+1. **Set the profile first.** Pick the right resolution and frame rate in the Project Settings dialog that opens with **File > New** (or later from **File > Project Settings**) before you add anything, or answer the prompt before you make your first cut.
+2. **Turn the check off** if you always pick your profile manually: **Settings > Configure Kdenlive > Misc**, then uncheck **Check if first added clip matches project profile**.
+3. **Ask for a suggestion on purpose.** Select a clip in the Project Bin and use **Adjust Profile to Current Clip** in the Media menu, which suggests a matching profile when you want one.
+
+If you do change the frame rate after cutting, save first so you can go back.
+
+## My Two-Stage Workflow With Resolve
+
+For a while I did all the cutting and effects in Resolve. By the 2022 video I'd settled on a back-and-forth workflow:
+
+1. Do the rough cut in Kdenlive, removing dead air and mistakes.
+2. Render that out and take it to DaVinci Resolve on an M1 MacBook Air for color correction.
+3. Bring it back into Kdenlive for most of the editing.
+4. Finish it off in Resolve.
+
+Sometimes I do nearly everything in Kdenlive. If I had to go back to Kdenlive completely, I think I could, although I'd miss Resolve's color correction and grading.
+
+The reason Kdenlive won back so much ground was that Resolve on Linux was a hassle in 2022. Even with a paid license I had to transcode footage with FFmpeg to get audio working. With the free version, I needed huge amounts of storage, because a 500 MB clip turned into roughly 30 GB once converted into a format Resolve accepted. In 2021 I also had to run it through AMD's proprietary OpenGL driver with a custom launch shortcut on Arch just to get it to open. At that point I felt Resolve wasn't really worth it on Linux compared to Kdenlive.
+
+Resolve on Linux has changed since then, and codec support still depends on your edition and version, so check Blackmagic's current documentation. If you want to run it anyway, our guide to [installing DaVinci Resolve on any Linux distro with DavinciBox](/install-davinci-resolve-linux-ubuntu-arch-fedora-davincibox) covers the container-based route.
+
+## Installing Kdenlive
+
+Kdenlive releases roughly every three months. The [download page](https://kdenlive.org/download/) currently offers 26.08.2 in these official packages:
+
+| Platform | Package | Notes |
+|---|---|---|
+| Linux | [Flatpak on Flathub](https://flathub.org/apps/org.kde.kdenlive) (`org.kde.kdenlive`) | Official, verified KDE package |
+| Linux | AppImage (`kdenlive-26.08.2-x86_64.AppImage`) | x86_64, self-contained |
+| Windows | Installer (`kdenlive-26.08.2.exe`) or standalone (`kdenlive-26.08.2_standalone.exe`) | 64-bit Windows 10 (1809 or later) or newer |
+| macOS | Apple Silicon (`kdenlive-26.08.2-arm64.dmg`) or Intel (`kdenlive-26.08.2-x86_64.dmg`) | macOS 13 Ventura or newer |
+
+On Linux, AppImage and Flatpak are the only packages the Kdenlive team maintains. The Ubuntu PPA has been unsupported since 24.02. Your distro's own package may still be fine, but it's packaged and updated by your distro, not by the Kdenlive team.
+
+### Flatpak
+
+```bash
+flatpak install flathub org.kde.kdenlive
+flatpak run org.kde.kdenlive
+```
+
+If you haven't added Flathub yet, follow the [Flathub setup instructions](https://flathub.org/setup) for your distro first.
+
+### AppImage
+
+```bash
+wget https://download.kde.org/stable/kdenlive/26.08/linux/kdenlive-26.08.2-x86_64.AppImage
+chmod +x kdenlive-26.08.2-x86_64.AppImage
+./kdenlive-26.08.2-x86_64.AppImage
+```
+
+Move the AppImage somewhere permanent first, like `~/Applications`, so it doesn't get cleaned out of your Downloads folder.
+
+### Windows and macOS
+
+On Windows, the installer needs administrator rights and installs for all users. The standalone build is a self-extracting folder that doesn't need admin rights. Run `bin\kdenlive.exe` from wherever you extract it.
+
+On macOS, open the DMG and drag Kdenlive into Applications. The [installation docs](https://docs.kdenlive.org/en/getting_started/installation.html) say macOS will warn that it can't check the app for malware the first time. Right-click Kdenlive in Finder, choose **Open**, then confirm.
+
+<Warning>
+The download page also has daily builds. The Kdenlive team says they can be unstable and can corrupt existing projects, so keep them away from real work.
+</Warning>
+
+### Which Linux Package Should You Use?
+
+In the 2022 video I pointed people to my [Flatpak vs. Snap vs. AppImage benchmarks](/flatpak-vs-snap-vs-appimage). In that test, a Kdenlive render finished fastest with the distro's native package, the AppImage was a bit behind, and Flatpak and Snap trailed further. That was a 2022 test on older builds, so treat it as a data point, not a rule. Flatpak is the easiest to keep updated, and the AppImage is handy if you want to keep a specific version around for an older project.
+
+The docs list 8 GB of RAM and 4 CPU cores as the minimum for HD editing and 16 GB and 8 cores for 4K. Timeline playback is CPU-bound, so a faster CPU matters more than a big GPU.
+
+## How to Make a Circular Picture-in-Picture with Alpha Shapes
+
+<YouTube videoId="W5BP8SZvhZM" title="TechHut's circular video crop in Kdenlive tutorial" />
+
+People kept asking how I did the round facecam that sat over my screen recordings, so I made a tutorial on it. A circle adds a bit of character compared to the square everyone else uses. It's only two effects: **Transform** and **Alpha Shapes**.
+
+I recorded this in June 2021. Both effects are still in Kdenlive 26.08 with the same names and the same parameters, so the steps below still work. The effect panel and monitor overlays look a little different now.
+
+### What You Need
+
+You need two separate video files: the background footage (in my case a screen recording) and the a-roll of you talking. In the video I had already:
+
+- imported both clips and synced the audio
+- put the screen recording on the lower video track and the face camera on the track above it
+- applied a color temperature change so I didn't look so white
+- cut the face clip where I wanted the effect to start
+
+In Kdenlive, clips with an alpha channel automatically show the track underneath, so you don't need a composition for this.
+
+### Step 1: Size and Position with Transform
+
+1. Open the **Effects** tab and expand **Transform, Distort and Perspective**.
+2. Drag **Transform** onto the face clip.
+3. Shrink the clip and move it over to where you want the circle, using the size and X/Y fields or the handles in the Project Monitor.
+
+Don't worry about getting it perfect. You'll come back to Transform after the shape is in place.
+
+### Step 2: Cut the Circle with Alpha Shapes
+
+1. In the Effects tab, search for "shape".
+2. Drag **Alpha Shapes** (in the **Alpha, Mask and Keying** category) onto the same clip.
+
+![Searching the Kdenlive Effects tab for "sha" with Alpha shapes highlighted under Alpha, Mask and Keying, as shown in the 2021 video](/docs-static/img/2027/01/kdenlive-linux-video-editing-workflow/alpha-shapes-effect-search.jpg)
+
+Pick **Alpha Shapes**, not **Shape Alpha**. Shape Alpha is a different effect that builds a mask from an image or video file.
+
+By default Alpha Shapes draws a rectangle. Everything inside it stays visible and everything outside turns transparent, so the background shows through. Now dial it in:
+
+1. **Position X / Y:** move the shape so it's centered on your face. The range is 0 to 1000, and 500 is the middle of the frame.
+2. **Shape:** choose **Ellipse**. You also get Rectangle, Triangle, and Diamond.
+3. **Transition width:** this is the soft edge. At 0 the edge can look pixelated, so I keep it between 5 and 10.
+4. **Size X / Y:** adjust the width first, then the height, until it looks like a circle. 500 equals 100% of the frame. Because the frame is wider than it is tall, a circle needs a larger Size Y than Size X. In my 1440p project I ended up around 138 for X and 231 for Y.
+
+Leave **Min** at 0 and **Max** at 1000. Max is the opacity inside the shape and Min is the opacity outside, so swapping them punches a hole in the clip instead.
+
+Getting a perfect circle by eye is tricky. One tip is to download a circle PNG and line your shape up against it. You can also type values directly into the fields instead of dragging the sliders.
+
+### Step 3: Reframe Inside the Circle
+
+If the shape is where you want it but your face isn't centered inside it, go back to the **Transform** effect and adjust the size and position there. Make sure the footage fills the circle so there are no black edges.
+
+Give yourself some room above and below your head when you record. I didn't do a great job of that in the example, and the extra space makes it much easier to frame yourself inside the circle.
+
+![The finished circular facecam overlay on top of a desktop screen recording with Kdenlive open, as shown in the 2021 tutorial](/docs-static/img/2027/01/kdenlive-linux-video-editing-workflow/circular-picture-in-picture-result.jpg)
+
+### Step 4: Save It So You Never Do This Again
+
+You don't want to rebuild the circle for every video. In the video I saved it as a preset: next to the eye icon that disables the effect, open **Presets**, choose to save a preset, and give it a name. I named mine "window rm" for right middle. Next time I could apply the effect and load the preset to get exactly the same shape.
+
+In current Kdenlive you can go a step further. The **Save Effect** button at the top of the effect stack saves the whole stack, so Transform and Alpha Shapes together, under a name in the **Custom** effects category. Then it's one drag onto the next face clip.
+
+### Dealing with Laggy Playback
+
+This effect is heavy on your processor. I was editing in 1440p, and playback was often laggy whenever the circle was on screen. What helps while editing:
+
+- **Lower the monitor's preview resolution** from the drop-down under the monitor.
+- **Use proxy clips** for the camera and screen recordings.
+- **Render a timeline preview.** Set the zone with I and O, add a preview zone, then press Shift + Return (or use **Sequence > Timeline Preview > Start Preview Render**). See [Timeline Preview Rendering](https://docs.kdenlive.org/en/tips_and_tricks/tips_and_tricks/timeline_preview_rendering.html).
+
+### Other Ways to Mask in Current Kdenlive
+
+A few options have been added or expanded since this tutorial, all in the [Alpha, Mask and Keying](https://docs.kdenlive.org/en/effects_and_filters/video_effects/alpha_mask_keying.html) category:
+
+- **[Shape Alpha](https://docs.kdenlive.org/en/effects_and_filters/video_effects/alpha_mask_keying/shape_alpha.html):** uses a PNG with transparency (or a luma image) as the mask, so you can use a perfect circle file directly.
+- **[Rotoscoping](https://docs.kdenlive.org/en/effects_and_filters/video_effects/alpha_mask_keying/rotoscoping.html):** draw any shape by hand and keyframe it.
+- **Masking effects (21.08 and later):** effects with "(Mask)" in the name, such as Alpha Shapes (Mask), work with [Mask Apply](https://docs.kdenlive.org/en/effects_and_filters/video_effects/alpha_mask_keying/mask_apply.html) to limit other effects, like a blur, to one area of the frame. This is different from cutting out a picture-in-picture.
+- **[Object Mask](https://docs.kdenlive.org/en/effects_and_filters/video_effects/alpha_mask_keying/object_mask.html) (25.04 and later):** uses Meta's SAM2 segmentation model to isolate a person or object, similar to rotoscoping. You have to set up object detection and download models first.
+
+For a round facecam, Transform plus Alpha Shapes is still the quickest option.
+
+## What's Changed Since My Videos
+
+If you last used Kdenlive around when I made these videos, these are the big changes from the official release notes:
+
+- **24.02:** moved to Qt6 and KDE Frameworks 6, with better Wayland support and rendering through Vulkan, Metal, and DirectX instead of OpenGL. It also added a dedicated Apple Silicon build and dropped the PPA.
+- **24.08 to 24.12:** effect controls directly in the monitor, a keyframe curve editor, multiple subtitle tracks, and built-in effects.
+- **25.04 to 25.12:** Object Mask, OpenTimelineIO import and export, a revamped titler and audio mixer, a 10-bit pipeline for effects, compositions, and rendering, and a new welcome screen.
+- **26.04 to 26.08:** multi-clip speed changes, track reordering, a rotation anchor for the Transform effect, rounded rectangles and snapping in the title editor, and a stability-focused release with 11 crash fixes in 26.08.0.
+
+The [What's New](https://docs.kdenlive.org/en/more_information/whats_new.html) page in the manual has the full list by version.
+
+## My Take
+
+I made the follow-up because it would have been a disservice to the people working on Kdenlive not to. The bugs that pushed me away, the audio clicks and the broken slide composition, were fixed within about a year, and I didn't hit anything significant after that besides the profile prompt.
+
+When I recorded the follow-up, I thought there was nothing better for editing video on Linux, and I really appreciate the work the developers put into it. Resolve's color grading is amazing, and I like having both tools available. But if you're on Linux and want a native editor you can install from Flathub without transcoding your footage first, Kdenlive is where I'd start. Grab the Flatpak, set your project profile before your first cut, and save that circle as a custom effect. With all that, I do hope you have an absolutely beautiful day.
