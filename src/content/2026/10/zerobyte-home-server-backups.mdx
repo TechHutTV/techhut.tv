@@ -10,18 +10,18 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="vAQdYEhI04A" title="TechHut's Zerobyte walkthrough" />
 
-After my [Duplicati guide](/duplicati-encrypted-backups), I got a lot of good feedback and alternative suggestions. The one I liked most is [Zerobyte](https://github.com/nicotsx/zerobyte), a young backup tool for your homelab that covers just about everything I used Duplicati for, with a much nicer interface.
+After my [Duplicati guide](/duplicati-encrypted-backups), I got a lot of good feedback and alternative suggestions. The one I liked is [Zerobyte](https://github.com/nicotsx/zerobyte), a young backup tool for your homelab that covers just about everything I used Duplicati for, with a much nicer interface.
 
 Zerobyte is a web UI and scheduler built on top of [Restic](https://restic.net/). You point it at your data, whether that's a local folder or an SMB, NFS, WebDAV, SFTP, or rclone share. Then pick where the encrypted backups should go, set a schedule and retention policy, and it takes care of the rest.
 
 I want to say this up front: Zerobyte is early software. The README still says it's in version 0.x and **subject to major changes from version to version**. I really like it, but pair it with another backup solution until it matures. Don't make it the only copy of anything you care about.
 
-In this guide I'll install it with Docker Compose, back up my Immich library from an Unraid SMB share to a local repository, add an encrypted Google Drive repository through rclone, and then walk through restoring a file.
+I'll install it with Docker Compose, back up my Immich library from an Unraid SMB share to a local repository, add an encrypted Google Drive repository through rclone, and then walk through restoring a file.
 
 Floppydata sponsored the video this article is based on.
 
 <Note>
-The video was recorded in December 2025. The written installation has been updated for [Zerobyte v0.43.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.43.2), released October 3, 2026. Since then, the compose file has gained two required variables, `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP volumes, multiple users, OIDC single sign-on, and encrypted configuration exports. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
+The video was recorded in December 2025. The install steps below are for [Zerobyte v0.43.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.43.2), released October 3, 2026. Since then, the compose file has gained two required variables, `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP volumes, multiple users, OIDC single sign-on, and encrypted configuration exports. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
 </Note>
 
 ## How Zerobyte Is Organized
@@ -32,7 +32,7 @@ Zerobyte has three building blocks, and once you understand them the rest of the
 - **Repositories** are where the backups go. Each one is a Restic repository, encrypted before anything leaves the machine.
 - **Backups** are jobs that connect one volume to one repository on a schedule, with a retention policy.
 
-Here's what the [current documentation](https://zerobyte.app/docs/concepts/repositories) lists:
+What the [current documentation](https://zerobyte.app/docs/concepts/repositories) lists:
 
 | | Supported types |
 |---|---|
@@ -85,13 +85,13 @@ services:
       - /path/to/backups/zerobyte:/data
 ```
 
-Here's what each part is doing:
+What each part is doing:
 
 - **`image`**: `v0.43` is the tag upstream uses in its docs. It picks up 0.43.x patch releases but won't move you to 0.44 on its own. Because this is a 0.x project, read the [release notes](https://github.com/nicotsx/zerobyte/releases) before changing that tag.
 - **`cap_add: SYS_ADMIN` and `/dev/fuse`**: These let Zerobyte mount remote shares from inside the container. SMB, NFS, and WebDAV need `SYS_ADMIN`; SFTP and rclone volumes also need `/dev/fuse`. If you only back up folders that are already bind-mounted into the container, you can drop both. Upstream documents a [reduced-privilege setup](https://zerobyte.app/docs/installation#simplified-installation-no-remote-mounts) for that, and all repository types still work.
 - **`4096`**: The web UI port.
 - **`TZ`**: This sets the time zone used for the backup schedules. If you leave it out, schedules run in UTC.
-- **`BASE_URL`**: The address you will actually use to reach Zerobyte. For LAN access, that's `http://` plus the server IP and port. Behind a reverse proxy, use your HTTPS address, such as `https://backup.your-domain.com`, which also turns on secure cookies.
+- **`BASE_URL`**: The address you will use to reach Zerobyte. For LAN access, that's `http://` plus the server IP and port. Behind a reverse proxy, use your HTTPS address, such as `https://backup.your-domain.com`, which also turns on secure cookies.
 - **`/var/lib/zerobyte`**: Zerobyte's database, configuration, and keys. Keep this on local storage. Upstream specifically warns against putting it on a network share.
 - **`/path/to/backups/zerobyte:/data`**: This is my addition. In the previous video I made a backups directory on that machine's spinning drives, so I mount a folder from there at `/data` to hold my local repository.
 
@@ -172,7 +172,7 @@ Under **Backups**, create a backup job:
 There are plenty of other options, including exclude patterns and custom Restic parameters. Click **Create**, and the job shows as enabled.
 
 <Note>
-The `library` folder holds originals, not Immich's database. According to [Immich's backup guide](https://docs.immich.app/administration/backup-and-restore/), its automatic database dumps are stored in `UPLOAD_LOCATION/backups`, and the original files are in `library`, `upload`, and `profile`. Immich recommends backing up the whole `UPLOAD_LOCATION` if you can. Pick paths based on what you'd actually need for a restore.
+The `library` folder holds originals, not Immich's database. According to [Immich's backup guide](https://docs.immich.app/administration/backup-and-restore/), its automatic database dumps are stored in `UPLOAD_LOCATION/backups`, and the original files are in `library`, `upload`, and `profile`. Immich recommends backing up the whole `UPLOAD_LOCATION` if you can. Pick paths based on what you'd need for a restore.
 </Note>
 
 To test it, I clicked **Backup now**. My library is big, so this probably wasn't the best idea, but it moved along about as quickly as you'd expect over my 1 gig network. I stopped that run for the video. The first backup uploads everything, so expect it to take a while. After that, only the changes get stored.
