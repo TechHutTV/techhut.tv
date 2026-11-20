@@ -14,7 +14,7 @@ I've been running [Nextcloud](https://nextcloud.com/) for years, and it's still 
 
 The easiest way to run all of that is Nextcloud All-in-One (AIO). The setup covers Docker Compose, Nginx Proxy Manager, a real domain with a wildcard certificate, the apps worth turning on, and how to upgrade to the latest Hub release.
 
-The install steps below are for [AIO v14.2.0](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0), released September 21, 2026. That release ships Nextcloud 34 (Hub 26 Spring), and new instances can install [Nextcloud Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/) (Nextcloud 35) directly. A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
+The install steps below are for [AIO v15.1.1](https://github.com/nextcloud/all-in-one/releases/tag/v15.1.1), released November 19, 2026. That release includes Nextcloud 35.0.3, which is [Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/). A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
 
 Both videos had sponsor segments (Brilliant in the setup guide, Brevo in the Hub 26 video). Neither company is involved with Nextcloud, and I've left those segments out.
 
@@ -257,7 +257,7 @@ Next comes **Optional containers**. In the video I enabled Full-text search and 
 
 ![The Optional containers list in AIO v10.15.0 as shown in the video, with ClamAV off and Collabora, Fulltextsearch, Imaginary, Talk, and Whiteboard checked](/docs-static/img/2026/10/nextcloud-aio-self-hosted-cloud/aio-optional-containers.jpg)
 
-Above the start button is a checkbox to install the newest major version. In the video it said Hub 10. On v14.2.0 it reads **Install Nextcloud Hub 26 Summer**, and if you leave it unchecked you get Hub 26 Spring. Then click **Download and start containers**.
+In the video there was a checkbox above the start button for the newest major version, and it said Hub 10. On v14.2.0 that box offered Hub 26 Summer and left you on Hub 26 Spring if you skipped it. [AIO v15.1.1](https://github.com/nextcloud/all-in-one/releases/tag/v15.1.1) already includes Nextcloud 35.0.3, and the checkbox is hidden, so a new install is Hub 26 Summer. Click **Download and start containers**.
 
 This takes a while. You can watch the containers get created with `docker ps`, and clicking a container's status in the AIO interface shows its logs. Most of them will say they're waiting for Nextcloud, which is normal. Keep reloading the page until everything is green.
 
@@ -322,7 +322,7 @@ On current AIO, it looks like this:
 
 1. **Back up first.** In the AIO interface, set a backup location under **Backup and restore** (ideally a separate drive like `/mnt/backup`) and click **Create backup**. Save the backup encryption key it shows you, because you can't restore without it. I skipped this in the video because I like living on the edge. Please don't copy me on this one.
 2. **Update the containers.** If updates are listed, click **Stop containers**, then **Start and update containers**. If there's a mastercontainer update, the interface shows a button for it first. Updating the containers moves Nextcloud to whatever version AIO currently bundles.
-3. **Jump to the newest Hub.** Once everything is up to date and running, the interface shows a **Note about Nextcloud Hub 26 Summer** section with an **Upgrade to Nextcloud Hub 26 Summer** button. It warns that a failed upgrade can leave the instance broken, which is why step 1 matters.
+3. **Don't look for a second Hub button.** On v14 that page had a **Note about Nextcloud Hub 26 Summer** section and an upgrade button. v15.1.1 already ships Nextcloud 35.0.3, and AIO only shows that extra button when a newer major is waiting. Updating the containers is the whole move. The warning on that button was real when it was there: a failed major upgrade can leave the instance broken, which is why step 1 still matters.
 
 AIO waits for at least the first patch release of a new major version, and for important apps to support it, before switching. The [beta channel](https://github.com/nextcloud/all-in-one#how-to-switch-the-channel) is there if you want to help test.
 
@@ -365,7 +365,7 @@ There's a lot I didn't get to here: the AI features, the Memories and Local AI c
 - [AIO reverse proxy documentation](https://github.com/nextcloud/all-in-one/blob/main/reverse-proxy.md)
 - [AIO local instance documentation](https://github.com/nextcloud/all-in-one/blob/main/local-instance.md)
 - [AIO community containers](https://github.com/nextcloud/all-in-one/tree/main/community-containers)
-- [AIO v14.2.0 release](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0)
+- [AIO v15.1.1 release](https://github.com/nextcloud/all-in-one/releases/tag/v15.1.1)
 - [Nextcloud Hub 26 Winter release post](https://nextcloud.com/blog/nextcloud-hub26-winter/)
 - [Nextcloud Hub 26 Summer release post](https://nextcloud.com/blog/nextcloud-hub26-summer/)
 - [External storage configuration](https://docs.nextcloud.com/server/latest/admin_manual/configuration_files/external_storage_configuration_gui.html)
