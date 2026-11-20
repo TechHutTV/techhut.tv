@@ -1606,7 +1606,9 @@
     "name": "ONLYOFFICE Desktop Editors",
     "category": "Desktop",
     "description": "Work with documents, spreadsheets and presentations on the desktop.",
-    "coverage": [],
+    "coverage": [
+      "/onlyoffice-desktop-editors-linux"
+    ],
     "videos": [
       {
         "id": "42xbfk37HzM",

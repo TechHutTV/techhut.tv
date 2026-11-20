@@ -1,0 +1,212 @@
+export const title = "ONLYOFFICE Desktop Editors: A Microsoft Office Replacement That Runs Natively on Linux"
+export const description = "A tour of ONLYOFFICE Desktop Editors, the free and open source office suite with a familiar ribbon interface and strong DOCX, XLSX and PPTX compatibility, plus current install options for Linux, Windows and macOS."
+export const date = "2026-12-07"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Linux", "Windows", "Mac"]
+export const cover = "/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="ZRyrZQZggF4" title="TechHut's ONLYOFFICE Desktop Editors walkthrough" />
+
+If you're moving from Microsoft Office to Linux, [ONLYOFFICE Desktop Editors](https://www.onlyoffice.com/desktop) is one of the first apps I'd point you to. It runs natively on Linux, the desktop app is free and open source, and it handles Word, Excel, and PowerPoint files really well. It looks and works the way Office users expect.
+
+I used it off and on quite a bit when I first switched to Linux, and I spent a couple of weeks with it before making the first video. I made a second video in 2022 when version 7.1 came out. This article combines both.
+
+## What Changed Since the Videos
+
+I recorded the first video in November 2021 and the 7.1 video in May 2022. ONLYOFFICE has released a lot since then:
+
+- **The current version is 10.0.0**, [released October 13, 2026](https://github.com/ONLYOFFICE/DesktopEditors/releases/tag/v10.0.0). ONLYOFFICE calls it a fully rebuilt app. Their [changelog](https://github.com/ONLYOFFICE/DesktopEditors/blob/master/CHANGELOG.md) warns that some settings don't carry over from older versions, so you'll have to sign in to your cloud accounts again after updating.
+- **PDFs are now fully editable.** In 7.1 the editors could only view PDFs and convert them. [Version 8.1](https://www.onlyoffice.com/blog/2024/06/onlyoffice-docs-8-1-released) (June 2024) added a full PDF Editor that can edit text, manage pages, and add tables, shapes, and images.
+- **AI tools are an optional add-on.** Version 10.0 combines the AI features into a single beta module that isn't installed by default. More on that below.
+- **The packages have caught up.** As of November 19, 2026, the deb, rpm, Windows, macOS, Snap stable, Flathub, and GitHub AppImage downloads are all on 10.0.0. The Snap beta channel is on 10.0.3. Stay on stable unless you want that newer build.
+
+The install steps below are for the current release. The tour and my impressions come from the two original recordings, so a few menus and the start screen look different now.
+
+## What's in the Suite
+
+Unlike most office suites, ONLYOFFICE doesn't ship separate programs for each kind of document. It's one app that opens everything in tabs, kind of like a web browser. You open a new document and it appears as a tab, and a spreadsheet becomes another tab in the same window. If that's not your thing, you can drag a tab out into its own window.
+
+What's included today, according to the [GitHub README](https://github.com/ONLYOFFICE/DesktopEditors):
+
+| Editor | What it handles |
+|---|---|
+| Document Editor | DOCX, ODT, DOC, RTF, TXT and more, with DOCX as the default |
+| Spreadsheet Editor | XLSX, ODS, XLS, CSV |
+| Presentation Editor | PPTX, ODP, PPT |
+| PDF Editor | Viewing, editing, annotating, and filling in PDF forms |
+| Form Creator | Building fillable PDF forms |
+| Diagram Viewer | Opening diagram files (view only) |
+
+It also connects to cloud services like Nextcloud, ownCloud, Seafile, Dropbox, and Box for real-time co-editing. The app is licensed under the [GNU AGPL v3](https://github.com/ONLYOFFICE/DesktopEditors/blob/master/LICENSE) and runs on Linux, Windows, and macOS.
+
+## Installing ONLYOFFICE Desktop Editors
+
+Everything here comes from the official [download page](https://www.onlyoffice.com/download-desktop) and the ONLYOFFICE Help Center. Only 64-bit Linux is supported. There are x86_64 and arm64 builds for the deb, rpm, AppImage, and Snap packages.
+
+### Flatpak (any distro)
+
+The [Flathub listing](https://flathub.org/apps/details/org.onlyoffice.desktopeditors) is verified and published by ONLYOFFICE. If Flathub is already set up, install it with:
+
+```bash
+flatpak install flathub org.onlyoffice.desktopeditors
+flatpak run org.onlyoffice.desktopeditors
+```
+
+The [Flatpak manifest](https://github.com/flathub/org.onlyoffice.desktopeditors) grants `--filesystem=host`, so the sandbox doesn't really limit which files the app can reach. That's convenient for an office suite, but it's good to know.
+
+### Snap
+
+The [Snap](https://snapcraft.io/onlyoffice-desktopeditors) is published by Ascensio System SIA (the company behind ONLYOFFICE) and runs under strict confinement:
+
+```bash
+sudo snap install onlyoffice-desktopeditors
+```
+
+The stable channel is on 10.0.0, so the command above gets the current release. The beta channel is on 10.0.3 if you want the newer build.
+
+### Debian, Ubuntu, and derivatives (APT repository)
+
+The [Help Center](https://helpcenter.onlyoffice.com/desktop/installation/desktop-install-ubuntu.aspx) recommends using the repository so updates come in with the rest of your system. Here are the steps, exactly as documented:
+
+```bash
+mkdir -p -m 700 ~/.gnupg
+gpg --no-default-keyring --keyring gnupg-ring:/tmp/onlyoffice.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys CB2DE8E5
+chmod 644 /tmp/onlyoffice.gpg
+sudo chown root:root /tmp/onlyoffice.gpg
+sudo mv /tmp/onlyoffice.gpg /usr/share/keyrings/onlyoffice.gpg
+
+echo 'deb [signed-by=/usr/share/keyrings/onlyoffice.gpg] https://download.onlyoffice.com/repo/debian squeeze main' | sudo tee -a /etc/apt/sources.list.d/onlyoffice.list
+
+sudo apt-get update
+sudo apt-get install onlyoffice-desktopeditors
+```
+
+The `squeeze` suite name isn't a typo. ONLYOFFICE builds the package against Debian Squeeze and uses the same repository for Ubuntu and other derivatives. When I checked, it served 10.0.0. Launch it from your app menu or with `desktopeditors`.
+
+### RHEL, CentOS, and compatible distros
+
+The [RPM instructions](https://helpcenter.onlyoffice.com/desktop/installation/desktop-install-rhel.aspx) add ONLYOFFICE's yum repository plus EPEL:
+
+```bash
+sudo yum install https://download.onlyoffice.com/repo/centos/main/noarch/onlyoffice-repo.noarch.rpm
+sudo yum install epel-release
+sudo yum install onlyoffice-desktopeditors -y
+```
+
+On RHEL itself, EPEL is installed differently. The Help Center page has the `subscription-manager` commands for that.
+
+### AppImage
+
+Download `DesktopEditors-x86_64.AppImage` (or the arm64 build) from the [AppImage releases](https://github.com/ONLYOFFICE/appimage-desktopeditors/releases), then:
+
+```bash
+chmod +x ./DesktopEditors-x86_64.AppImage
+./DesktopEditors-x86_64.AppImage
+```
+
+To update, download the new AppImage. To remove it, delete the file.
+
+### Windows and macOS
+
+The [download page](https://www.onlyoffice.com/download-desktop) has EXE and MSI installers for Windows x64, x86, and ARM64, plus a small online installer and a Microsoft Store listing. On macOS there are separate DMGs for Intel and Apple silicon on macOS 10.13 and newer, and an older build for 10.12 and earlier.
+
+## The Document Editor
+
+The main reason I recommend ONLYOFFICE is the interface. It handles DOCX files really well, but what really sells it is that someone coming from Microsoft Office won't get lost. In the video I put a document in ONLYOFFICE next to the same file in Word online. The ribbon layout is nearly identical: Home, Insert, Layout, and References are all where you'd expect. In many cases ONLYOFFICE puts more tools up front, and I think it organizes them better than Word online, which is what a lot of people end up using on Linux.
+
+![The ONLYOFFICE Document Editor with the Home ribbon, heading styles, and the paragraph settings panel on the right, as shown in the 2021 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/word-processor-ribbon.jpg)
+
+All the basics are there: font and text formatting, highlighting, headings, footnotes, and custom styles. A few things I liked:
+
+- **Two side panels.** The thin left bar has search, comments, the navigation pane (handy if you use headings), and a link to support and training. The right panel has line spacing, paragraph spacing, and indents. **Show advanced settings** opens a full dialog for padding, borders, and fill.
+- **Context-aware tools.** Some icons on the right panel stay grayed out until you select that kind of element. Insert a table and click into it, and the panel switches to table settings like borders, row and column sizes, and **Add formula**.
+- **Insert tab.** Images, charts, shapes, hyperlinks, headers and footers, date and time, text boxes, Text Art, equations, and symbols.
+- **References.** A table of contents that picks up your headings, plus captions, cross-references, and footnotes.
+- **Collaboration.** Comments, resolving them, and track changes. This is really useful if, say, you write an article and send it to an editor who also uses ONLYOFFICE.
+- **Protection.** You can encrypt a document with a password and add a signature.
+
+### Plugins
+
+The **Plugins** tab is where it gets fun. In the video I opened the built-in Photo Editor, which has text, shapes, colors, brightness, noise, pixelate, and more. I also installed **Typograf**, a plugin that prepares text for publishing by fixing punctuation, dates, money, and math symbols. It's sort of like a built-in Grammarly, at least partly.
+
+Back then I installed it from its page on GitHub. Version 7.4 added a [Plugin Manager](https://github.com/ONLYOFFICE/DesktopEditors/blob/master/CHANGELOG.md), so now you browse and install plugins inside the app. Typograf and the Photo Editor are both still in the official [plugin repository](https://github.com/ONLYOFFICE/onlyoffice.github.io), and the [ONLYOFFICE marketplace](https://www.onlyoffice.com/app-directory) has the full list.
+
+### Compatibility
+
+Compatibility is the other big thing. I opened documents I'd made on Windows machines and at school, including a really big DOCX I use for testing formatting, and they came through fine. My school is all-in on Microsoft Office, and I never had trouble with anything a professor sent me.
+
+To be fair, I've seen one case where it struggled. Tom at Switched to Linux imported a novel he'd written in LibreOffice Writer and ran into formatting issues. That's a specific use case, but if you live in ODT, test your own files.
+
+## Spreadsheets and Presentations
+
+The spreadsheet and presentation editors work the same way, with a ribbon layout that will feel familiar if you know Excel and PowerPoint. PPTX files open with basically no issues. I didn't demo spreadsheets in the first video, because all my real examples were things I shouldn't show on the internet. I had no problems with them in my own use, though.
+
+## Features From the 7.1 Release That Are Now Standard
+
+<YouTube videoId="42xbfk37HzM" title="TechHut's ONLYOFFICE 7.1 features video" />
+
+ONLYOFFICE asked me to cover version 7.1 when it came out in May 2022. Those features have been part of the editors for years now, but they're still some of the ones I use most.
+
+### Opening and converting PDFs
+
+7.1 made it possible to open PDF, XPS, and DjVu files right in ONLYOFFICE, so I didn't need a separate PDF viewer anymore. The really useful part was saving a PDF as an editable document. I saved ONLYOFFICE's own 7.1 announcement PDF as an ODT, opened it, and it was basically the same file. It wasn't perfect, though. Everything came in bold, so I had to clean that up.
+
+Then I tried something harder: an academic paper from 1968 with tricky formatting, saved as DOCX. It did pretty well, but again a lot of text came in bold, and the layout wasn't fully reconstructed. Copying large sections wouldn't have come out right, but simple edits or adding notes were very doable. I also opened a 352-page textbook from one of my classes, and the navigation panel listed every chapter and heading, just like a regular PDF viewer.
+
+![A 352-page PDF textbook open in ONLYOFFICE with the chapter and heading navigation panel on the left, as shown in the 7.1 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/pdf-viewer-navigation.jpg)
+
+Today the [PDF Editor](https://www.onlyoffice.com/pdf-editor) goes much further. Since 8.1 you can edit the text in a PDF directly. Version 10.0 extended redaction so it also removes annotations and metadata, added reusable saved signatures, and can recognize tables with visible borders when you edit text.
+
+### The View tab
+
+7.1 added a **View** tab with zoom, **Fit to Width**, and toggles for the toolbar, status bar, and rulers. You can also change the interface theme right there instead of digging through settings, which I liked. If you really want to save your eyes, **Dark document** makes the page itself dark with white text, not just the interface.
+
+![The ONLYOFFICE View tab in the dark interface theme, with Fit To Width, Interface theme, Dark document, and toolbar and ruler toggles, as shown in the 7.1 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/view-tab-dark-theme.jpg)
+
+Version 9.0 later added the Modern Light and Modern Dark themes, so the options in that menu have changed since then.
+
+### Formula tips and print preview in spreadsheets
+
+In the spreadsheet editor, type `=` and start typing a function name, and ONLYOFFICE shows matching functions with a short description of each. I used it to add up a column and then find the median. It's a really handy tool. 7.1 also added a print preview for workbooks that can show all sheets or just the current one. People had been asking for that for a long time.
+
+![Formula tips in the ONLYOFFICE Spreadsheet Editor listing SUBSTITUTE, SUBTOTAL, SUM, and other functions after typing =SU, as shown in the 7.1 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/spreadsheet-formula-tips.jpg)
+
+### Animations, slide ordering, and shapes
+
+The presentation editor got an **Animation** tab. It has the usual effects you'd expect from PowerPoint, like fades, swirls, bounces, and random bars, plus motion paths for custom movement. You can preview an effect, start it on click, and set the delay and duration.
+
+![The Animation tab in the ONLYOFFICE Presentation Editor with exit effects and motion paths open, as shown in the 7.1 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/presentation-animations.jpg)
+
+You can also right-click a slide and move it to the beginning or end. That's a lot easier than dragging slide 40 all the way to the top. Dragging still works too.
+
+For shapes, there's a new shape menu with recently used shapes. The best part is **Edit Points**. Right-click a shape and you can drag its individual points around, which makes shapes almost endlessly customizable. I turned a star into something like Patrick from SpongeBob and made him pink. The gradient fill's direction picker also started previewing your chosen colors, which makes it easy to flip which way the gradient runs.
+
+![A star shape in Edit Points mode in the ONLYOFFICE Presentation Editor, with its points pulled out of shape, as shown in the 7.1 video](/docs-static/img/2026/12/onlyoffice-desktop-editors-linux/shape-edit-points.jpg)
+
+7.1 also brought ARM support, though at the time I noted that on Linux it only supported Ubuntu. Now there are arm64 deb, rpm, AppImage, and Snap packages, plus Windows ARM64 and Apple silicon builds.
+
+## What's Newer: AI Tools
+
+AI has been showing up in ONLYOFFICE for a while: AI macro generation in 9.0, and an AI Agent in 9.2 that can generate documents, fill PDF forms, and connect to MCP servers. In 10.0, ONLYOFFICE combined all of that into one **AI Tools** module. According to the [10.0 announcement](https://www.onlyoffice.com/blog/2026/10/onlyoffice-desktop-editors-10):
+
+- It's a beta, and it isn't installed by default. You add it from the start window and can remove it in Settings.
+- AI Chat works from the start window and can answer questions about documents, spreadsheets, presentations, forms, and PDFs without opening them.
+- It supports cloud providers like ChatGPT, Claude, Gemini, Mistral, and DeepSeek, and local models through Ollama, LM Studio, or GPT4All.
+- The [changelog](https://github.com/ONLYOFFICE/DesktopEditors/blob/master/CHANGELOG.md) also lists optional PowerShell and Bash command execution, MCP server support, and web search.
+
+I didn't cover any of this in the videos. If you don't want AI in your office suite, it's opt-in. If you do try it, a local model keeps your documents on your own machine. Be careful with the command-execution features, and double-check anything it writes, because ONLYOFFICE itself warns that AI assistants can produce false information.
+
+## Beyond the Desktop App
+
+ONLYOFFICE also makes [ONLYOFFICE Docs](https://www.onlyoffice.com/docs), the same editors running on your own server. The Community edition is [open source under the AGPL v3](https://github.com/ONLYOFFICE/DocumentServer), and there are paid Enterprise and Developer editions. When I made these videos, I was running ONLYOFFICE on my Nextcloud server. I'd been using Collabora there, but kept running into problems, including having to manually downgrade it to get it working, so I switched. ONLYOFFICE still maintains its [Nextcloud connector](https://github.com/ONLYOFFICE/onlyoffice-nextcloud). If you're setting up Nextcloud from scratch, my [Nextcloud AIO guide](/nextcloud-aio-self-hosted-cloud) covers the office options that come with it.
+
+If you want the whole business suite (documents, projects, CRM, and mail), check out my [ONLYOFFICE Workspace overview](/onlyoffice-workspace-overview).
+
+## My Take
+
+For anyone moving from Microsoft Office to Linux, ONLYOFFICE is still one of the options I'd start with. The ribbon interface means you won't spend your first week hunting for tools, DOCX, XLSX, and PPTX files come through cleanly in my experience, and the desktop app is free and open source. The tabbed single-window design takes a minute to get used to, but I really like it.
+
+Since I made these videos, it's added a full PDF editor and optional AI tools. My advice is the same as in 2021: install it from Flathub or ONLYOFFICE's repository, open the files you work with, and see how they look. If you mostly work in ODT files from LibreOffice, test those carefully first. With all that, I do hope you have an absolutely beautiful day.
