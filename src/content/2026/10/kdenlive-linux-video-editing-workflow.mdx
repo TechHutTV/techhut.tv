@@ -12,15 +12,15 @@ import {YouTube} from "@/components/YouTube"
 
 In August 2021 I made a video called "Why I Switched To Resolve from Kdenlive." I'd been editing in [Kdenlive](https://kdenlive.org/) for around two years, and a handful of bugs had made it close to unusable for how I work. Less than a year later I made the follow-up above, basically an apology. Most of what drove me away had been fixed, and I was back to doing a big chunk of my editing in it.
 
-This article pulls together three videos: that 2022 follow-up, the 2021 video where I left (used here only for context on what was broken back then), and a 2021 tutorial on the circular picture-in-picture effect I used in a lot of my videos.
+I'm pulling together three videos: that 2022 follow-up, the 2021 video where I left (used here only for context on what was broken back then), and a 2021 tutorial on the circular picture-in-picture effect I used in a lot of my videos.
 
-The videos were recorded in 2021 and 2022. The written installation steps and effect instructions have been updated for [Kdenlive 26.08.2](https://kdenlive.org/news/releases/26.08.2/), released October 13, 2026. Since then Kdenlive has moved to Qt6 and KDE Frameworks 6 (in 24.02), dropped its PPA, raised the minimum OS versions, and added masking tools that didn't exist when I recorded the tutorial. The footage, screenshots, and opinions are from the original recordings, and I've noted where things look different now.
+The videos were recorded in 2021 and 2022. The install steps and effect instructions below are for [Kdenlive 26.08.2](https://kdenlive.org/news/releases/26.08.2/), released October 13, 2026. Since then Kdenlive has moved to Qt6 and KDE Frameworks 6 (in 24.02), dropped its PPA, raised the minimum OS versions, and added masking tools that didn't exist when I recorded the tutorial. The footage, screenshots, and opinions are from the original recordings, and I've noted where things look different now.
 
 ## What Kdenlive Is
 
-Kdenlive is a free and open source non-linear video editor from KDE. It's licensed under the GPL-3.0, built on the MLT multimedia framework, and runs on Linux, Windows, and macOS. For free and open source software, it's one of the most feature-packed editors out there.
+Kdenlive is a free and open source non-linear video editor from KDE. It's licensed under the GPL-3.0, built on the MLT multimedia framework, and runs on Linux, Windows, and macOS. For free and open source software, it's one of the fuller editors you can get.
 
-What originally sold me on it was how much it felt like Adobe Premiere Pro, which I used for years in high school video production classes. The keyframing in particular is really good for something that's free. You get the things you'd expect from a real editor:
+What originally sold me on it was how much it felt like Adobe Premiere Pro, which I used for years in high school video production classes. The keyframing in particular is really good for something that's free. You get the things a full editor has:
 
 - A multitrack timeline with clips, compositions, and same-track mixes
 - Keyframeable effects, color correction, and titles
@@ -29,7 +29,7 @@ What originally sold me on it was how much it felt like Adobe Premiere Pro, whic
 
 ## Why I Left in 2021
 
-To be fair to the project, this is the history, not the current state. In mid-2021 I was hitting three problems constantly:
+This is the history, not the current state. In mid-2021 I was hitting three problems constantly:
 
 - **Clicks at audio cuts.** I cut a lot when I talk to a camera, and every cut that didn't land on dead air produced a high-pitched click. The only fix was zooming way in and adding a few frames of fade in and fade out to every cut.
 - **A glitchy Slide composition.** I use slide-in screen recordings all the time: cut the recording, put it on the track above, shrink it with Transform, and drop a Slide composition on it. Back then a black bar or artifact would sweep across the frame during the slide unless the clip didn't touch the edges of the frame.
@@ -191,7 +191,7 @@ In current Kdenlive you can go a step further. The **Save Effect** button at the
 
 ### Dealing with Laggy Playback
 
-This effect is heavy on your processor. I was editing in 1440p, and playback was often laggy whenever the circle was on screen. Here's what helps while editing:
+This effect is heavy on your processor. I was editing in 1440p, and playback was often laggy whenever the circle was on screen. What helps while editing:
 
 - **Lower the monitor's preview resolution** from the drop-down under the monitor.
 - **Use proxy clips** for the camera and screen recordings.
@@ -210,7 +210,7 @@ For a round facecam, Transform plus Alpha Shapes is still the quickest option.
 
 ## What's Changed Since My Videos
 
-If you last used Kdenlive around when I made these videos, here are the big changes from the official release notes:
+If you last used Kdenlive around when I made these videos, these are the big changes from the official release notes:
 
 - **24.02:** moved to Qt6 and KDE Frameworks 6, with better Wayland support and rendering through Vulkan, Metal, and DirectX instead of OpenGL. It also added a dedicated Apple Silicon build and dropped the PPA.
 - **24.08 to 24.12:** effect controls directly in the monitor, a keyframe curve editor, multiple subtitle tracks, and built-in effects.
@@ -223,7 +223,7 @@ The [What's New](https://docs.kdenlive.org/en/more_information/whats_new.html) p
 
 I made the follow-up because it would have been a disservice to the people working on Kdenlive not to. The bugs that pushed me away, the audio clicks and the broken slide composition, were fixed within about a year, and I didn't hit anything significant after that besides the profile prompt.
 
-When I recorded the follow-up, I thought there was nothing better for editing video on Linux, and I really appreciate the work the developers put into it. Resolve's color grading is amazing, and I like having both tools available. But if you're on Linux and want a native editor you can install from Flathub without transcoding your footage first, Kdenlive is where I'd start. Grab the Flatpak, set your project profile before your first cut, and save that circle as a custom effect.
+When I recorded the follow-up, I thought there was nothing better for editing video on Linux, and I really appreciate the work the developers put into it. Resolve's color grading is amazing, and I like having both tools available. But if you're on Linux and want a native editor you can install from Flathub without transcoding your footage first, Kdenlive is where I'd start. Grab the Flatpak, set your project profile before your first cut, and save that circle as a custom effect. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
