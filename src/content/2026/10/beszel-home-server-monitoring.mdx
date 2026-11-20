@@ -12,9 +12,9 @@ import {YouTube} from "@/components/YouTube"
 
 If you didn't know, I've moved away from Portainer and now just run regular Docker Compose files. Most of that lives on one virtual machine I call **servarr**. It's my main Docker server and holds most of my *arr application suite. With everything piled onto one VM, I want an easy way to keep an eye on it.
 
-I've tried a couple of approaches. [Uptime Kuma](https://github.com/louislam/uptime-kuma) is great and it looks beautiful, but I drifted away from it and leaned more on Grafana dashboards. I wouldn't call those cumbersome, exactly, but I realized I wasn't actually opening them as often as I'd like. If you want the full-featured route, my [Grafana, Prometheus, and InfluxDB guide](/monitor-home-server-grafana-prometheus-influxdb) still covers it.
+I've tried a couple of approaches. [Uptime Kuma](https://github.com/louislam/uptime-kuma) is great and it looks beautiful, but I drifted away from it and leaned more on Grafana dashboards. I wouldn't call those cumbersome, exactly, but I realized I wasn't opening them as often as I'd like. If you want the full-featured route, my [Grafana, Prometheus, and InfluxDB guide](/monitor-home-server-grafana-prometheus-influxdb) still covers it.
 
-This time I'm trying [Beszel](https://beszel.dev/). It's a lightweight monitoring platform with a really clean web UI, Docker and Podman stats, history, alerts, and multi-user support, and it looked easy to set up. In this guide we'll get the hub running, add a Docker VM and a bare-metal Proxmox host, then look at the charts and alerts.
+This time I'm trying [Beszel](https://beszel.dev/). It's a lightweight monitoring platform with a clean web UI, Docker and Podman stats, history, alerts, and multi-user support, and it looked easy to set up. We'll get the hub running, add a Docker VM and a bare-metal Proxmox host, then look at the charts and alerts.
 
 <Note>
 The written installation has been updated for [Beszel v0.21.0](https://github.com/henrygd/beszel/releases/tag/v0.21.0), released October 2, 2026. Beszel has gained a lot since I recorded the video, including Intel GPU support, so I've marked those changes where they come up. My hands-on impressions come from the recorded walkthrough.
@@ -67,7 +67,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/Proxmo
 
 I went with the advanced options because I like to pick everything myself. I kept it unprivileged, set a root password, and gave it a staggering 16 GB of disk, two CPU cores, and a little more RAM than the default. The network bridge and DHCP defaults were fine, and I skipped the configuration-file option for now.
 
-Here's what the [install source](https://github.com/community-scripts/ProxmoxVE/blob/main/install/beszel-install.sh) actually sets up:
+The [install source](https://github.com/community-scripts/ProxmoxVE/blob/main/install/beszel-install.sh) sets up:
 
 - An unprivileged Debian 13 LXC with 1 core, 512 MB of RAM, and 5 GB of disk by default.
 - The official prebuilt hub binary from Beszel's GitHub releases, placed in `/opt/beszel`. It isn't a fork and doesn't bundle extra services.
@@ -101,7 +101,7 @@ services:
       - ./beszel_data:/beszel_data
 ```
 
-Set `APP_URL` to the address you'll actually use to reach the hub. It's used for links in emails and notifications, and you'll want your full HTTPS address there if you put Beszel behind a reverse proxy. Then start it:
+Set `APP_URL` to the address you'll use to reach the hub. It's used for links in emails and notifications, and you'll want your full HTTPS address there if you put Beszel behind a reverse proxy. Then start it:
 
 ```bash
 docker compose up -d
@@ -141,7 +141,7 @@ On a fresh hub you'll see "No systems found." Click **Add System** in the top ri
 
 The dialog shows the hub's **Public Key** and a **Token**, and it can copy a ready-made Docker Compose file, `docker run` command, or install command with those values already filled in. I copied the `docker run` version and pasted it into the VM's shell.
 
-Here's what that command looks like in the current hub, with placeholders where your values go:
+That command looks like this in the current hub, with placeholders where your values go:
 
 ```bash
 docker run -d --name beszel-agent --network host --restart unless-stopped \
@@ -286,7 +286,7 @@ NVIDIA has its own `henrygd/beszel-agent-nvidia` image that needs the NVIDIA Con
 
 Alerts were the other thing I wanted. They're configured from the **bell icon** on each system in the table. You can set them for that specific system, or switch to **All Systems** and apply the same rules everywhere.
 
-Here's what I set up for servarr in the video:
+This is what I set up for servarr in the video:
 
 | Alert | Threshold |
 |---|---|
@@ -333,7 +333,7 @@ Updating is easy. Docker users can bump the image tag and run `docker compose pu
 
 Overall, this seems like a really nice tool, and I do like it. The hub LXC only needed a minute to start, adding the Docker VM was one pasted command, and the Proxmox host took one more. In very little time I had CPU, memory, disk, and network for both machines, temperatures from the Proxmox host, and per-container stats from the Docker VM, all in one clean dashboard, and it already pointed me at something to look into.
 
-It's not trying to replace a Grafana stack. If you want custom dashboards and the freedom to graph any metric you can collect, my [Grafana guide](/monitor-home-server-grafana-prometheus-influxdb) is still the way to go. But I wasn't really opening those dashboards, and for seeing at a glance how my servers are doing, with alerts when something's off, Beszel is a lot simpler. You could throw every system you have in here and monitor just about everything.
+If you want custom dashboards and the freedom to graph any metric you can collect, my [Grafana guide](/monitor-home-server-grafana-prometheus-influxdb) is still the way to go. I wasn't opening those dashboards, though. For seeing how my servers are doing, with alerts when something's off, Beszel is a lot simpler. You could throw every system you have in here and monitor just about everything.
 
 If you have Proxmox, you can follow exactly what I did. If you just have a Linux machine, use Docker or the binary install for the hub and the same agent script I ran on my Proxmox host. With all that, I do hope you have an absolutely beautiful day.
 
