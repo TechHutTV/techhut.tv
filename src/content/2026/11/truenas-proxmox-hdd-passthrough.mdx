@@ -1,10 +1,10 @@
 export const title = "How to Install TrueNAS in Proxmox with Hard Drive Passthrough"
 export const description = "Run TrueNAS Community Edition as a Proxmox VM: create the VM, pass physical hard drives through by ID with their serial numbers, install TrueNAS, and build a ZFS pool, plus why passing through the whole controller is better."
-export const date = "2026-10-15"
+export const date = "2026-11-21"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Homelab", "Self-Host", "Virtualization", "Linux"]
-export const cover = "/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/cover.jpg"
+export const cover = "/docs-static/img/2026/11/truenas-proxmox-hdd-passthrough/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -112,7 +112,7 @@ A few notes on those choices:
 - **CPU type.** Proxmox's docs say `host` gives the best performance if you don't need live migration. You can't live-migrate this VM anyway, since its drives are physically attached to this node. I gave it four cores because I planned to run Nextcloud and a couple of other services on it.
 - **Don't start it yet.** On the Confirm tab, make sure **Start after created** is unchecked. The drives have to be attached first.
 
-![The Proxmox Create Virtual Machine Disks tab showing a SCSI boot disk on the VirtIO SCSI single controller with IO thread enabled](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/proxmox-create-vm-disks-tab.jpg)
+![The Proxmox Create Virtual Machine Disks tab showing a SCSI boot disk on the VirtIO SCSI single controller with IO thread enabled](/docs-static/img/2026/11/truenas-proxmox-hdd-passthrough/proxmox-create-vm-disks-tab.jpg)
 
 This disk is only the TrueNAS boot drive. You can't pass physical drives through from this wizard. That happens next, in the shell.
 
@@ -177,7 +177,7 @@ grep scsi /etc/pve/qemu-server/100.conf
 
 Each passthrough line should show the by-id path, a `size=` Proxmox filled in, and your serial. You'll see the same thing in the VM's **Hardware** tab:
 
-![The Proxmox Hardware tab for the TrueNAS VM in the video, listing three passed-through Seagate drives on scsi1 to scsi3 with their serial numbers set](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/proxmox-passthrough-disks-serials.jpg)
+![The Proxmox Hardware tab for the TrueNAS VM in the video, listing three passed-through Seagate drives on scsi1 to scsi3 with their serial numbers set](/docs-static/img/2026/11/truenas-proxmox-hdd-passthrough/proxmox-passthrough-disks-serials.jpg)
 
 That screenshot is from the video, so it shows the `i440fx` and SeaBIOS defaults I used back then, and no `backup=0`.
 
@@ -202,7 +202,7 @@ Start the VM and open its **Console**. The installer boots into the console setu
 5. If you kept SeaBIOS instead of OVMF, you'll get one more question, **Legacy Boot**, asking whether to allow EFI boot. With OVMF the installer skips it.
 6. When it reports that the installation succeeded, select **OK**. Then, in Proxmox, remove the ISO from the CD/DVD drive (or set **Do not use any media**) and reboot.
 
-![The TrueNAS CORE installer from the video listing the 64 GiB boot disk and three 3.6 TiB passed-through drives, all reported as QEMU HARDDISK](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/truenas-installer-qemu-disks.jpg)
+![The TrueNAS CORE installer from the video listing the 64 GiB boot disk and three 3.6 TiB passed-through drives, all reported as QEMU HARDDISK](/docs-static/img/2026/11/truenas-proxmox-hdd-passthrough/truenas-installer-qemu-disks.jpg)
 
 That's the old CORE installer from the video, but look at the drive names: every disk is a `QEMU QEMU HARDDISK`. That's the virtual-disk layer I mentioned earlier, and it's why TrueNAS can't read real SMART data from drives passed through this way.
 
@@ -216,7 +216,7 @@ The dashboard gives you a quick overview of your system information, CPU, memory
 
 First, check that TrueNAS sees the drives with their serials. Open **Storage** and go to the disks list. Each passed-through drive should show the serial you set in Proxmox.
 
-![TrueNAS CORE's Disks page from the video, listing the boot disk and three 3.64 TiB drives with serials ZDHADG4D, ZDHAG8CD, and ZDHAG8GG](/docs-static/img/2026/10/truenas-proxmox-hdd-passthrough/truenas-disks-serials.jpg)
+![TrueNAS CORE's Disks page from the video, listing the boot disk and three 3.64 TiB drives with serials ZDHADG4D, ZDHAG8CD, and ZDHAG8GG](/docs-static/img/2026/11/truenas-proxmox-hdd-passthrough/truenas-disks-serials.jpg)
 
 That's the CORE interface from the video. The serials matched the Proxmox config, which is exactly what you want. On Community Edition, the screen looks different but shows the same information.
 
