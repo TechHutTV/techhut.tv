@@ -10,11 +10,11 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="NnCaw57FVMU" title="TechHut's Synaptic Package Manager walkthrough" />
 
-I wasn't planning on making a video that night. I was installing Ubuntu on my main desktop, and the Ubuntu software store just wouldn't open. Honestly, that was fine with me, because I don't like the Ubuntu store much anyway. So I grabbed the tool I'd rather use: the Synaptic Package Manager.
+I wasn't planning on making a video that night. I was installing Ubuntu on my main desktop, and the Ubuntu software store just wouldn't open. That was fine with me, because I don't like the Ubuntu store much anyway. So I grabbed the tool I'd rather use: the Synaptic Package Manager.
 
 Synaptic works on Ubuntu and pretty much any Debian-based system. It's not the prettiest app around, but it's very functional, and its layout reminds me a lot of the YaST software manager on openSUSE, which I love (I talked about YaST in my [openSUSE post-install guide](/opensuse-5-things-you-must-do-after-installing)).
 
-The video was published in September 2021. The written steps, version numbers, and the sections on root access, Wayland, and repository files have been updated for the Synaptic packages in Ubuntu 26.04 LTS and Debian 13 (both 0.91.7), plus [Synaptic 0.92](https://github.com/mvo5/synaptic), tagged upstream on October 5, 2026. The screenshots and hands-on impressions come from the original recording.
+The video was published in September 2021. The steps, version numbers, and the sections on root access, Wayland, and repository files below are for the Synaptic packages in Ubuntu 26.04 LTS and Debian 13 (both 0.91.7), plus [Synaptic 0.92](https://github.com/mvo5/synaptic), tagged upstream on October 5, 2026. The screenshots and hands-on impressions come from the original recording.
 
 ## What Synaptic Is
 
@@ -35,7 +35,7 @@ The project is still active. Recent work includes a switch from autotools to Mes
 
 ## Installing Synaptic
 
-Synaptic is in the official archives, so there's nothing to download from a website. Here's what each release ships, according to [packages.ubuntu.com](https://packages.ubuntu.com/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all) and [packages.debian.org](https://packages.debian.org/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all):
+Synaptic is in the official archives, so there's nothing to download from a website. What each release ships, according to [packages.ubuntu.com](https://packages.ubuntu.com/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all) and [packages.debian.org](https://packages.debian.org/search?keywords=synaptic&searchon=names&exact=1&suite=all&section=all):
 
 | Release | Synaptic version | Where |
 |---|---|---|
@@ -183,9 +183,9 @@ Be careful with your distro's main repository file. A typo or a disabled compone
 
 ## My Take
 
-Synaptic isn't pretty, but it is very functional, and when I made the video I called it absolutely wonderful for Ubuntu and Debian-based systems. You can find literally anything in the archive, see exactly what a package depends on and what files it installs, lock versions, and queue up a pile of changes before applying them all at once. It's also a great fallback when the distro's software store is acting up, which is exactly why I reached for it in the first place.
+Synaptic isn't pretty, but it is very functional, and when I made the video I called it absolutely wonderful for Ubuntu and Debian-based systems. You can find just about anything in the archive, see exactly what a package depends on and what files it installs, lock versions, and queue up a pile of changes before applying them all at once. It's also a great fallback when the distro's software store is acting up, which is exactly why I reached for it in the first place.
 
-The main things to watch now are the root-on-Wayland quirk and the repository editor's limited deb822 support. If you'd rather stay in the terminal, check out my look at [Nala](/nala-apt-frontend), a friendlier front end for APT. And if you're wondering how distro packages compare to Flatpak, Snap, and AppImage, I covered that in [Flatpak vs Snap vs AppImage](/flatpak-vs-snap-vs-appimage).
+The main things to watch now are the root-on-Wayland quirk and the repository editor's limited deb822 support. If you'd rather stay in the terminal, check out my look at [Nala](/nala-apt-frontend), a friendlier front end for APT. And if you're wondering how distro packages compare to Flatpak, Snap, and AppImage, I covered that in [Flatpak vs Snap vs AppImage](/flatpak-vs-snap-vs-appimage). With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
