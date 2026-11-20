@@ -14,7 +14,7 @@ Today we're installing real Linux applications inside Windows. Not a full virtua
 
 Linode sponsored the video this article is based on.
 
-I recorded the video in early 2022 on Windows 11, back when WSLg, the part of WSL that runs Linux GUI apps, was still pretty new. The steps below follow Microsoft's current documentation and [WSL 3.0.3](https://github.com/microsoft/WSL/releases), the latest release as of October 2026. A few things have changed: `wsl --install` now gives you a much newer Ubuntu, GUI apps work on Windows 10 too, systemd is on by default in Ubuntu, one of the commands I showed has been removed, and WSL itself is now open source. My hands-on impressions all come from the original recording, and I've called out the spots where things look different now.
+I recorded the video in early 2022 on Windows 11, back when WSLg, the part of WSL that runs Linux GUI apps, was still pretty new. The steps below follow Microsoft's current documentation and [WSL 3.0.5](https://github.com/microsoft/WSL/releases/tag/3.0.5), the latest release as of November 2026. A few things have changed: `wsl --install` now gives you a much newer Ubuntu, GUI apps work on Windows 10 too, systemd is on by default in Ubuntu, one of the commands I showed has been removed, and WSL itself is now open source. My hands-on impressions all come from the original recording, and I've called out the spots where things look different now.
 
 ## What WSL Is
 
@@ -66,7 +66,7 @@ In the video, it worked through the Virtual Machine Platform and the WSL kernel,
 
 After the reboot, an Ubuntu console window opens and asks you to create a Unix username and password. I went with `brandon`. This account is separate from your Windows login, it gets `sudo` rights, and each distro you install has its own. Nothing shows up on screen while you type the password, which is normal. Pick something strong.
 
-When I made the video, this gave me Ubuntu 20.04 LTS on a 5.10 kernel. Today the default `Ubuntu` entry installs **Ubuntu 26.04 LTS**, and WSL 3.0.3 ships a 6.18 kernel.
+When I made the video, this gave me Ubuntu 20.04 LTS on a 5.10 kernel. Today the default `Ubuntu` entry installs **Ubuntu 26.04 LTS**, and WSL 3.0.5 ships a 6.18 kernel.
 
 ### Open it from the Start menu or Windows Terminal
 
