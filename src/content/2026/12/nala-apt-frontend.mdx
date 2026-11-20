@@ -1,10 +1,10 @@
 export const title = "Nala: A Nicer Frontend for APT on Debian and Ubuntu"
 export const description = "Nala puts a cleaner, colorful interface on APT with parallel downloads, mirror selection, and transaction history. Here's how to install it today, and what changed with the Rust rewrite."
-export const date = "2026-10-17"
+export const date = "2026-12-30"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Software"]
 export const tags = ["Linux", "Terminal"]
-export const cover = "/docs-static/img/2026/10/nala-apt-frontend/cover.jpg"
+export const cover = "/docs-static/img/2026/12/nala-apt-frontend/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -133,7 +133,7 @@ It showed a summary of everything it was going to install before asking to conti
 
 Later in the video, I did the same thing for `mpv`:
 
-![Nala installing mpv on Kubuntu in the video, with the package summary, the Downloading panel, the Installing Packages panel, and the dpkg progress bar](/docs-static/img/2026/10/nala-apt-frontend/nala-install-mpv-progress.jpg)
+![Nala installing mpv on Kubuntu in the video, with the package summary, the Downloading panel, the Installing Packages panel, and the dpkg progress bar](/docs-static/img/2026/12/nala-apt-frontend/nala-install-mpv-progress.jpg)
 
 A few install flags worth knowing. These work in Python 0.16.0 and in the Rust version:
 
@@ -158,7 +158,7 @@ sudo nala fetch
 
 In the video, it found the three fastest Ubuntu mirrors for me and wrote them to a sources file. After that, Nala and APT both use those mirrors, and since Nala spreads its downloads across the mirrors you have, a few fast ones can speed things up. I really couldn't get over how nice the progress bar looked while it tested them.
 
-![The output of sudo nala fetch writing three Ubuntu mirrors to nala-sources.list, followed by nala history showing one install transaction, from the video](/docs-static/img/2026/10/nala-apt-frontend/nala-fetch-and-history.jpg)
+![The output of sudo nala fetch writing three Ubuntu mirrors to nala-sources.list, followed by nala history showing one install transaction, from the video](/docs-static/img/2026/12/nala-apt-frontend/nala-fetch-and-history.jpg)
 
 The options have changed a little over the years, and so has the file it writes:
 
