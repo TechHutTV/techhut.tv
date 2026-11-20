@@ -12,14 +12,14 @@ import {YouTube} from "@/components/YouTube"
 
 For the longest time I was the biggest Plex defender around. I even made a whole video explaining why I picked Plex over Jellyfin, even though I like Jellyfin more. Plex just had better apps on more platforms and friendlier handling of hardware transcoding and subtitles. That trade-off doesn't work for me anymore.
 
-The final straw was pricing. Open source is my preference, but I'm also fine with proprietary software as long as I can buy a lifetime license and actually own the thing. In May, Plex [announced](https://www.plex.tv/blog/new-lifetime-plex-pass-pricing/) that a new Lifetime Plex Pass would jump from $249.99 to $749.99 on July 1, 2026, while monthly and annual pricing stayed the same. Even at $249.99 the lifetime pass was already steep. At around $7 a month, I figured the new price would take about nine years to pay for itself, compared to roughly three before. They really don't want people buying lifetime passes anymore.
+The final straw was pricing. Open source is my preference, but I'm also fine with proprietary software as long as I can buy a lifetime license and own the thing. In May, Plex [announced](https://www.plex.tv/blog/new-lifetime-plex-pass-pricing/) that a new Lifetime Plex Pass would jump from $249.99 to $749.99 on July 1, 2026, while monthly and annual pricing stayed the same. Even at $249.99 the lifetime pass was already steep. At around $7 a month, I figured the new price would take about nine years to pay for itself, compared to roughly three before. They really don't want people buying lifetime passes anymore.
 
 So I'm starting the slow process of moving my family over to Jellyfin. Before I do any of that, I want good data in place. One of the reasons I loved Plex was the ecosystem around it, and [Tautulli](https://tautulli.com/) was a big part of that for me. On the Jellyfin side, the tool that fills that role is [Jellystat](https://github.com/CyferShepard/Jellystat).
 
 HUANUO sponsored the video this article is based on.
 
 <Note>
-The written installation has been updated for [Jellystat 1.1.12](https://github.com/CyferShepard/Jellystat/releases/tag/1.1.12), released September 8, 2026. That release fixes two critical security issues that affect 1.1.11 and earlier, so the compose file below pins it instead of relying on `latest`. My hands-on impressions come from the recorded walkthrough.
+These steps use [Jellystat 1.1.12](https://github.com/CyferShepard/Jellystat/releases/tag/1.1.12), released September 8, 2026. That release fixes two critical security issues that affect 1.1.11 and earlier, so the compose file below pins it instead of relying on `latest`. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## What Jellystat Does
@@ -35,7 +35,7 @@ Jellystat is an MIT-licensed statistics app for Jellyfin. It runs alongside your
 - Automatic syncing of library items
 - Integration with the Jellyfin Playback Reporting plugin
 
-Looking through that list, the only thing I really miss from Tautulli is the newsletter feature. I haven't dug into whether another tool covers that yet. For the core job of keeping an eye on my media server and seeing what's actually going on, Jellystat has what I want.
+Looking through that list, the only thing I really miss from Tautulli is the newsletter feature. I haven't dug into whether another tool covers that yet. For keeping an eye on my media server and seeing what's going on, Jellystat has what I want.
 
 There is one thing worth knowing before you commit to it. In April 2026 the developer posted a project update in the README saying Jellystat will be rebuilt from the ground up on a new architecture, and that the current codebase will mostly get fixes for major bugs in the meantime. Releases have continued since then, including the security fixes in 1.1.12, but treat the current version as being in maintenance mode, and expect some rough edges. The README itself says it's still in development.
 
@@ -218,7 +218,7 @@ The **Libraries** page shows item counts and total size for each library. My num
 
 ### Users and Activity
 
-**Users** shows each Jellyfin account and what it has been doing. Right now I'm the only person in there, but this is exactly the page I want once my family starts moving over. **Activity** is the running history of playback, and my test session was still listed as in progress. There's a little bit of delay before things show up, but it's not bad.
+**Users** shows each Jellyfin account and what it has been doing. Right now I'm the only person in there, but this is exactly the page I want once my family starts moving over. **Activity** is the running history of playback, and my test session was still listed as in progress. There's a little bit of delay before things show up. It's small enough that I don't mind it.
 
 ### Statistics
 
@@ -289,9 +289,9 @@ The README also documents Emby support through the `IS_EMBY_API=true` environmen
 
 ## Final Thoughts
 
-For a first step away from Plex, this was exactly what I wanted. In a few minutes I had session monitoring, library numbers, user activity, and the hour-of-day chart I actually use for scheduling maintenance. Watching my Xbox stream show up and then switch to a 1080p transcode was a good sign that tracking works the way it should.
+For a first step away from Plex, this was exactly what I wanted. In a few minutes I had session monitoring, library numbers, user activity, and the hour-of-day chart I use for scheduling maintenance. Watching my Xbox stream show up and then switch to a 1080p transcode was a good sign that tracking works the way it should.
 
-It isn't a perfect Tautulli replacement. There's no newsletter feature, the charts need some history before they're useful, and the developer has said the current codebase is headed for a full rewrite. But for keeping an eye on a Jellyfin server while I slowly move my family over, it does the job.
+There's no newsletter feature, the charts need some history before they're useful, and the developer has said the current codebase is headed for a full rewrite. For keeping an eye on a Jellyfin server while I slowly move my family over, it does the job.
 
 The Jellystat section is in my [homelab repo](https://github.com/TechHutTV/homelab/tree/main/media) if you're running my media stack. Uncomment it, fill in your `.env`, and you're good to go. With all that, I do hope you have an absolutely beautiful day.
 
