@@ -1,0 +1,300 @@
+export const title = "Ulauncher: Rice Your Linux App Launcher with Extensions and Custom Themes"
+export const description = "Install Ulauncher on Linux, bind its hotkey on X11 or Wayland, add extensions from ext.ulauncher.io, and build a custom color theme that matches the rest of your desktop."
+export const date = "2027-01-06"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Customization", "Apps"]
+export const cover = "/docs-static/img/2027/01/ulauncher-linux-app-launcher/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="oO9ytyS5laQ" title="TechHut's Ulauncher extensions and custom theming walkthrough" />
+
+[Ulauncher](https://ulauncher.io) is one of my favorite applications on Linux. It's a keyboard-driven launcher: hit a hotkey, type a few letters, and open an app, a folder, a web search, or whatever an extension adds. I gave it a quick mention in an earlier top apps video, and it's also in my [Top 10 Linux Apps](/top-10-linux-apps-ubuntu) list, but this time I wanted to go deeper into the extensions and especially the theming. For the video, I built a theme that matches the colors of an EndeavourOS i3 setup, and I'll show you how to do the same for your own rice.
+
+The video was published in March 2021, and the Ulauncher download page in it showed v5.10.0 as the stable release. The steps below are for [Ulauncher 5.16.3](https://github.com/Ulauncher/Ulauncher/releases/tag/5.16.3), released November 4, 2026, which is the current stable version. Ulauncher 6 is a big rewrite, but it is still in beta ([6.0.0-beta35](https://github.com/Ulauncher/Ulauncher/releases/tag/v6.0.0-beta35) came out September 21, 2026), so I'm staying on v5 and pointing out what's different in v6. The biggest change since the video is Wayland, where you now bind the hotkey through your desktop environment. The footage and hands-on impressions are from the original recording.
+
+## What Ulauncher Does
+
+Ulauncher is written in Python with GTK and licensed under GPL-3.0. The [source is on GitHub](https://github.com/Ulauncher/Ulauncher). Out of the box it gives you:
+
+| Feature | How you use it |
+|---|---|
+| App search | Type part of an app name. The fuzzy matching forgives typos and learns your picks. |
+| File browser | Start a query with `/` or `~` to browse directories. |
+| Shortcuts | Keyword plus a query opens a URL or runs a script, like `g` for Google Search. |
+| Calculator | Type a math expression and get the answer inline. |
+| Extensions | Community add-ons from [ext.ulauncher.io](https://ext.ulauncher.io). |
+| Color themes | Four built-in themes, plus any custom CSS theme you drop in a folder. |
+
+It only runs on Linux. On Windows, PowerToys Run and its successor Command Palette fill a similar role, and I cover them in my [PowerToys guide](/microsoft-powertoys-windows-11).
+
+## Install Ulauncher
+
+The [download section on ulauncher.io](https://ulauncher.io/#Download) lists packages for the major distros. These are the stable-channel commands from that page.
+
+**Ubuntu** (the PPA has 5.16.3 builds for 20.04, 22.04, 24.04, 26.04, and 26.10):
+
+```bash
+sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y && sudo apt update && sudo apt install ulauncher
+```
+
+**Debian** uses the same PPA with its signing key added by hand:
+
+```bash
+sudo apt update && sudo apt install -y gnupg
+gpg --keyserver keyserver.ubuntu.com --recv 0xfaf1020699503176
+gpg --export 0xfaf1020699503176 | sudo tee /usr/share/keyrings/ulauncher-archive-keyring.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/ulauncher-archive-keyring.gpg] \
+          http://ppa.launchpad.net/agornostal/ulauncher/ubuntu jammy main" \
+          | sudo tee /etc/apt/sources.list.d/ulauncher-jammy.list
+sudo apt update && sudo apt install ulauncher
+```
+
+**Fedora** has it in the official repos:
+
+```bash
+sudo dnf install ulauncher
+```
+
+Fedora's package can trail the GitHub release. At the time of writing, Fedora 45 had 5.16.3 in its updates repo, while Fedora 44 was still on 5.15.15.
+
+**Arch Linux** gets it from the [AUR](https://aur.archlinux.org/packages/ulauncher/), which is maintained by the Ulauncher team and is at 5.16.3:
+
+```bash
+git clone https://aur.archlinux.org/ulauncher.git && cd ulauncher && makepkg -is
+```
+
+Use your AUR helper instead if you have one. For anything else, the [releases page](https://github.com/Ulauncher/Ulauncher/releases) has a `.deb` (`sudo apt install ./ulauncher_5.16.3_all.deb`) and a source tarball.
+
+<Warning>
+The releases page lists the v6 betas above the stable release. If you want the stable version, grab the `5.16.3` assets, not `v6.0.0-beta35`. Ubuntu users who want the beta can swap `ppa:agornostal/ulauncher` for `ppa:agornostal/ulauncher-dev`.
+</Warning>
+
+### Start it on login
+
+If your package ships the systemd user unit (the 5.16.3 `.deb` installs `ulauncher.service`), enable it:
+
+```bash
+systemctl --user enable --now ulauncher
+```
+
+Otherwise, turn on **Launch at Login** in the preferences. I had that unchecked in the video because I started Ulauncher from my i3 config instead. If you do the same, a line like this works:
+
+```text
+exec --no-startup-id ulauncher --hide-window
+```
+
+## Set the Hotkey (X11 and Wayland)
+
+The default hotkey is **Ctrl+Space**, and you can change it under **Preferences > General > Hotkey**. On X11 (which includes i3, the setup in the video), that's all there is to it.
+
+Wayland is different, and this is the biggest change since I recorded the video. Ulauncher 5 grabs global hotkeys with a library that only works on X11, and Wayland doesn't let apps listen for keys while they're unfocused. Since 5.16.0, Ulauncher tells new Wayland users this with a notification and shows a warning under the hotkey setting. The fix, from the maintainers' [global hotkeys discussion](https://github.com/Ulauncher/Ulauncher/discussions/1347), is to let your desktop environment own the shortcut:
+
+1. In Ulauncher's preferences, set the hotkey to a combination you'll never press.
+2. In your desktop environment's keyboard settings, create a custom shortcut that runs `ulauncher-toggle`.
+3. If the window opens without focus, install `wmctrl` (the `ulauncher-toggle` script calls it).
+
+On GNOME, that's **Settings > Keyboard > Customize Shortcuts > Custom Shortcuts > +**. Enter any name, `ulauncher-toggle` as the command, pick your shortcut, and click **Add**. If the shortcut doesn't fire, one user in that thread fixed it by using the full path from `which ulauncher-toggle`, usually `/usr/bin/ulauncher-toggle`.
+
+On Sway, add a binding to your config:
+
+```text
+bindsym Ctrl+space exec ulauncher-toggle
+```
+
+Two fallbacks were added in 5.16.0 for when the hotkey isn't set up yet: the tray icon has a **Show Ulauncher** item, and opening Ulauncher from your app menu now brings up the window.
+
+<Note>
+Ulauncher 6 can register the hotkey for you through the desktop environment's settings on GNOME, KDE, XFCE, Budgie, and Pantheon, according to the maintainers. On other desktops it shows you the command to bind manually.
+</Note>
+
+## The Basics
+
+Press the hotkey and start typing. When I typed `u`, it listed UXTerm, Ulauncher, and UpdateInTerminal, each with an icon and a short description. The **Alt+number** labels on the right let you open a result without arrowing down. It's quick: a couple of letters brought up LibreWolf, and `f` got me Firefox.
+
+The built-in file browser starts when you type `/` for the root directory or `~` for your home folder. Keep typing a path to drill down.
+
+The gear icon on the right of the search box opens the preferences. Under **General** you'll find:
+
+- **Hotkey** and **Color Theme**.
+- **Launch at Login** and **Show Indicator Icon** (the tray icon).
+- **Render On**, which picks the monitor. **Monitor with a mouse pointer** is a good choice if you have more than one screen. I was on a laptop, so it didn't matter much for me.
+- **Advanced** settings, including a custom **Terminal Command** and **Blacklisted App Dirs** for directories you don't want showing up in search.
+
+![Ulauncher's preferences window from the video with the Color Theme dropdown open, listing Elementary Dark, Elementary Light, Ubuntu, Adwaita, and the custom Endeavour theme](/docs-static/img/2027/01/ulauncher-linux-app-launcher/preferences-color-theme.jpg)
+
+### Shortcuts
+
+The **Shortcuts** tab holds keyword searches. Ulauncher ships with three: **Google Search** (`g`), **Stack Overflow** (`so`), and **Wikipedia** (`wiki`). Type `g techhut`, press Enter, and it opens a Google search for TechHut in your browser. Add your own with **Add shortcut**, using `%s` where the query goes, for example `https://duckduckgo.com/?q=%s`. A shortcut can also run a script instead of opening a URL.
+
+## Extensions
+
+Shortcuts just open a URL. Extensions can show live results right in the launcher. Browse them at [ext.ulauncher.io](https://ext.ulauncher.io). I like sorting by GitHub stars so the more popular ones float to the top.
+
+To install one:
+
+1. Copy the extension's GitHub URL from its page on ext.ulauncher.io.
+2. Open **Preferences > Extensions > Add extension**.
+3. Paste the URL and click **Add**.
+
+Most extensions have settings on the same page, including the keyword that triggers them, so you can change anything that clashes. These are the ones I had installed, and all of them are still listed on ext.ulauncher.io with support for v5's extension API:
+
+| Extension | Keyword | What it does |
+|---|---|---|
+| [Better file browser](https://github.com/fisadev/ulauncher-better-file-browser) | `f` | A nicer file browser that can also open folders in your file manager |
+| [DuckDuckGo](https://github.com/mikebarkmin/ulauncher-duckduckgo) | `ddg` | DuckDuckGo search with suggestions as you type |
+| [Youtube Search](https://github.com/NastuzziSamy/ulauncher-youtube-search) | `yt` | Searches YouTube and opens a video directly |
+| [Emoji](https://github.com/Ulauncher/ulauncher-emoji) | `em` | Finds an emoji by name and copies it |
+| [Clipboard](https://github.com/friday/ulauncher-clipboard) | `c` | Searches your clipboard history |
+
+**Better file browser** is my favorite, because it makes browsing a lot nicer than the built-in mode. Type `f`, a space, and you're in your home folder. Jump into Documents, search for something, or pick **Open folder in external file browser** to open the current directory in your file manager.
+
+![The Better file browser extension listing home folders in the custom Endeavour theme, with Music selected in purple](/docs-static/img/2027/01/ulauncher-linux-app-launcher/better-file-browser-endeavour-theme.jpg)
+
+**DuckDuckGo** shows why extensions beat plain shortcuts. `ddg techhut` gives you search suggestions inside the launcher instead of only opening a results page.
+
+**Youtube Search** with `yt techhut` returned TechHut videos with thumbnails, durations, view counts, and upload dates. Pick one and it opens that video. The description line uses a template you can edit in the extension's settings. The default is `{duration} • {views} • {channel} • {date}`.
+
+![The Youtube Search extension returning TechHut videos with thumbnails and view counts over the Extensions tab in Ulauncher's preferences](/docs-static/img/2027/01/ulauncher-linux-app-launcher/youtube-search-extension.jpg)
+
+**Emoji** is handy. Type `em` and an emoji name, like `em smile`, and cycle through the matches. I guessed in the video that it might be included by default. It isn't built in, but it is made by Ulauncher's creator and published under the Ulauncher GitHub organization. You can also search by shortcode by starting with `:`. I don't have the emoji names memorized (`happy` got me nothing), but you can learn them as you go.
+
+**Clipboard** is the one I installed live in the video. After I copied something, `c` showed it in my clipboard history. It works through a clipboard manager: GPaste, CopyQ, Clipman, or Clipster. On **Auto**, it uses whichever one is running, and if you don't have any of them, it downloads Clipster and uses that.
+
+There are many more, including custom scripting extensions, which I want to play with. If you can think of something, there's probably an extension for it.
+
+<Note>
+Ulauncher 6 introduces a new extension API (version 3). Extensions declare which API versions they support, and the ext.ulauncher.io listings show that. Ulauncher 5 installs the matching branch automatically. If you try the v6 beta, check each extension's supported API versions before you rely on it.
+</Note>
+
+## Installing a Theme
+
+Themes live in `~/.config/ulauncher/user-themes/`. That folder might not exist yet, so create it:
+
+```bash
+mkdir -p ~/.config/ulauncher/user-themes
+cd ~/.config/ulauncher/user-themes
+```
+
+Then clone a theme into it. Mine is the EndeavourOS-inspired one from the video. In the video I cloned it from GitLab, but it now lives [on GitHub](https://github.com/TechHutTV/endeavour-ulauncher-theme) under GPL-3.0:
+
+```bash
+git clone https://github.com/TechHutTV/endeavour-ulauncher-theme.git
+```
+
+Open the preferences, and **Endeavour** shows up in the **Color Theme** dropdown. It's a grey background with some transparency and purple and blue accents. The four built-in themes are Elementary Dark, Elementary Light, Ubuntu, and Adwaita. I really like the Ubuntu one, which follows Ubuntu's orange color scheme.
+
+For more options, the [community theme list](https://gist.github.com/gornostal/02a232e6e560da7946c053555ced6cce) has a lot of user-made themes: Arc Dark, Dracula, Mint-Y-Dark, Pop!_OS Dark, One Dark, a few transparent ones, and many more. Install any of them the same way.
+
+## Building a Custom Theme for Your Rice
+
+Making your own theme, or tweaking an existing one, is easier than it sounds. A v5 theme is a folder with three files:
+
+- `manifest.json` has the theme's `name` (unique ID), `display_name` (what the dropdown shows), and optional `extend_theme`.
+- `theme.css` holds the colors and styles.
+- `theme-gtk-3.20.css` imports `theme.css` and adds a few rules for GTK 3.20 and newer, such as the caret color.
+
+The easiest start is copying an existing theme. The built-in ones are in `/usr/share/ulauncher/themes/` in the official packages, or you can copy mine:
+
+```bash
+cp -r ~/.config/ulauncher/user-themes/endeavour-ulauncher-theme ~/.config/ulauncher/user-themes/my-theme
+```
+
+Then edit `manifest.json` in the copy and give it a new `name` and `display_name`, so it doesn't clash with the original:
+
+```json
+{
+    "manifest_version": "1",
+    "name": "my-theme",
+    "display_name": "My Theme",
+    "extend_theme": "dark",
+    "css_file": "theme.css",
+    "css_file_gtk_3.20+": "theme-gtk-3.20.css",
+    "matched_text_hl_colors": {
+        "when_selected": "#21becc",
+        "when_not_selected": "#21becc"
+    }
+}
+```
+
+`matched_text_hl_colors` sets the color of the letters that match your query. `extend_theme` lets you build on an existing theme, and mine extends the built-in dark theme.
+
+### Pull your colors from your desktop config
+
+This is how I built the Endeavour theme. I started from a transparent blue-accent community theme by lifeofcoding, then took the color codes from the EndeavourOS i3 config file and swapped them in. In the video I had the i3 config open on the left and `theme.css` on the right, both in nano.
+
+![The EndeavourOS i3 config color variables in nano on the left and the Ulauncher theme.css with matching define-color lines on the right](/docs-static/img/2027/01/ulauncher-linux-app-launcher/i3-config-and-theme-css-nano.jpg)
+
+At the top of `theme.css`, each color gets a name with GTK's `@define-color`:
+
+```css
+@define-color on-violet #43034B;
+@define-color on-lightblue  #5294e2;
+@define-color on-purple #e345ff;
+@define-color on-grey  #b0b5bd;
+@define-color on-lightgrey #8b8b8b;
+@define-color on-yellowbrown    #e1b700;
+```
+
+From then on you use the name instead of the hex code. The rest of the file maps those names to parts of the launcher, and the variable names are easy to follow:
+
+```css
+/* App window */
+@define-color bg_color rgba(45, 49, 58, 0.95);
+@define-color window_bg @bg_color;
+@define-color window_border_color @on-lightblue;
+
+/* Result items */
+@define-color item_box_selected @on-violet;
+
+.app {
+    background-color: @window_bg;
+    border-color: @window_border_color;
+    border-width: 1px;
+    border-radius: 0px;
+}
+```
+
+I used `rgba()` for the background so the Endeavour theme has a little transparency. `window_border_color` uses the light blue, and `item_box_selected` is the highlight behind the selected result. You can point any of these at one of your named colors, or paste in a new color code.
+
+### Edit, save, reload
+
+In the video, I changed the selected highlight from purple to yellow. That meant setting `item_box_selected` to `@on-yellowbrown` and saving with **Ctrl+O** in nano.
+
+```css
+@define-color item_box_selected @on-yellowbrown;
+```
+
+Ulauncher won't pick up the change right away. You need to make it reload the theme. In the video, I switched to another theme in the preferences and then switched back. The official [theme docs](https://docs.ulauncher.io/en/latest/themes/themes.html) suggest sending Ulauncher a HUP signal, which works too:
+
+```bash
+pgrep -a ulauncher        # find the PID
+kill -HUP <PID>
+```
+
+Open the launcher again, and the selection is yellow.
+
+![The Better file browser results in the edited Endeavour theme with the selected row now highlighted in yellow](/docs-static/img/2027/01/ulauncher-linux-app-launcher/endeavour-theme-yellow-highlight.jpg)
+
+It isn't only colors. There's border width, text shadows, the selected item box, and `border-radius` for the corners. I set the radius to something dramatic like `30px` to show the effect, reloaded, and the sharp square corners turned round. (The theme docs say only colors can be changed because of GTK limits on element sizes, but border radius and width worked fine in the video.) I really hate how the curved corners look, so I switched it back right after recording. The version on GitHub has `0px`.
+
+My advice: browse the community theme list, find one that's close to what you like, and tweak it until it fits your desktop.
+
+### Theme changes in Ulauncher 6
+
+If you move to Ulauncher 6 later, themes are getting simpler. According to the [v6 theme docs](https://docs.ulauncher.io/en/v6/themes/themes.html), a theme can be a single `.css` file placed directly in `~/.config/ulauncher/user-themes/`, with no manifest. The built-in themes are already single files (for example `dark.css`). The match highlight colors move from `manifest.json` into the CSS as `.item-highlight` and `.selected.item-box .item-highlight`. Folder themes with a `manifest.json`, like mine, are still supported. The latest beta also adds theme commands to the `ulauncher` CLI.
+
+To convert a v5 theme, flatten any `@import` in the CSS, add the two highlight colors, copy over the rules from the theme you extended, and save the result as `user-themes/<name>.css`.
+
+## Why Not Just Use the Default Launcher?
+
+The EndeavourOS i3 setup comes with its own app launcher, which I showed on a blank workspace at the end of the video. I called it dmenu there. Current EndeavourOS i3 configs bind Super+D to rofi in a dmenu-style layout. It's a great tool, and you can do a lot with it, including scripting. I just think Ulauncher is much more beautiful, and with a window manager it has become something I use every day.
+
+## Final Thoughts
+
+Ulauncher is fast, the extensions turn it into far more than an app menu, and theming it is really just editing a few color variables in a CSS file. Pulling color codes straight from my i3 config made the launcher look like it belonged on that desktop, and anyone with a rice can do the same in a few minutes.
+
+The one thing to know in 2026 is the Wayland hotkey. Bind `ulauncher-toggle` in your desktop's shortcut settings and you're set. And keep an eye on Ulauncher 6, which simplifies themes and is getting close to a stable release.
+
+If you've found a favorite theme or you use a different launcher, I'd like to hear about it. With all that, I do hope you have an absolutely beautiful day.
