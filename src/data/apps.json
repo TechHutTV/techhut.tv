@@ -1427,7 +1427,9 @@
     "name": "Navidrome",
     "category": "Media",
     "description": "Stream a personal music library from a self-hosted server.",
-    "coverage": [],
+    "coverage": [
+      "/navidrome-self-hosted-music-streaming"
+    ],
     "videos": [
       {
         "id": "RSIvuyLDuvk",

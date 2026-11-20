@@ -1,0 +1,278 @@
+export const title = "Ditch Spotify: Self-Host Your Music Streaming with Navidrome"
+export const description = "Set up Navidrome with Docker Compose on an Ubuntu server, load in the music you already own, fix tags and permissions, and stream your library to your phone with a Subsonic client like Substreamer."
+export const date = "2026-12-02"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="RSIvuyLDuvk" title="TechHut's Navidrome walkthrough" />
+
+Streaming services were supposed to save us from cable. Now there are so many of them that getting all the content you want means stacking subscriptions until your monthly bill looks a lot like cable again. On this channel I like finding free and open source alternatives you can host yourself, and for music, my pick is [Navidrome](https://www.navidrome.org).
+
+Navidrome is a personal streaming service for music you already own. You point it at your library, it gives you a clean web player that looks a lot like Spotify, and it works with a huge list of mobile and desktop apps. Jellyfin and Plex can technically do music too, but Navidrome is built for it.
+
+I'll install Navidrome with Docker Compose on an Ubuntu server, get some music onto it, go over the tagging and permission issues I ran into, and then stream everything from my phone.
+
+The video was published in August 2022. The install steps below are for [Navidrome v0.64.2](https://github.com/navidrome/navidrome/releases/tag/v0.64.2), released September 24, 2026. The official image name, the Compose file, the Docker install steps, and the permission advice have all changed since then, and Navidrome has picked up features like multiple libraries and an experimental Jellyfin API. The hands-on footage and my impressions come from the original recording, so the interface looks a little different today.
+
+## What Navidrome Does
+
+Navidrome scans a folder of audio files and turns it into a streaming server. According to the [official overview](https://www.navidrome.org/docs/overview/), it:
+
+- Streams just about any audio format and transcodes on the fly when a client needs a smaller file
+- Supports multiple users, each with their own playlists, favorites, and play counts
+- Can split collections into [separate libraries](https://www.navidrome.org/docs/usage/features/multi-library/) with per-user access (added in v0.58.0)
+- Has smart playlists, public share links, and scrobbling to Last.fm and ListenBrainz
+- Speaks the Subsonic and OpenSubsonic APIs, so a long list of [third-party apps](https://www.navidrome.org/apps/) can connect to it
+- Runs on Linux, macOS, Windows, and Docker, and is light enough for a Raspberry Pi
+
+It's GPL-3.0 licensed and [developed on GitHub](https://github.com/navidrome/navidrome).
+
+If you want a feel for it before installing anything, there's a [public demo](https://www.navidrome.org/demo/) at `demo.navidrome.org` (user `demo`, password `demo`). This was one of my favorite things on their site. It has a loaded library, so you can see what a full collection looks like: titles, quality, ratings, playlists, downloads, and album info. Everything is sleek and modern, and it honestly looks shockingly similar to Spotify.
+
+![An album page in the Navidrome demo with star ratings, track quality badges, and the Play Next, Add to Playlist, and Download buttons, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/demo-album-page.jpg)
+
+## What You Need
+
+- **A Linux server.** For the video, I spun up a small Ubuntu cloud server with a shared CPU and 1 GB of RAM, which was plenty. A home server or a spare PC works the same way.
+- **Music you own.** I used albums I had ripped from CDs and kept as a backup on my NAS.
+- **A way to copy files to the server.** I used FileZilla over SFTP.
+- **A client app** for your phone, if you want to listen on the go. More on that at the end.
+
+I recorded this on Ubuntu 20.04 LTS. That release is no longer on Docker's [supported list for Ubuntu](https://docs.docker.com/engine/install/ubuntu/), which currently covers 22.04, 24.04, 26.04, and 26.10, so pick one of the LTS releases from that list.
+
+## Prep the Server
+
+Logged in as root, the first thing I did was create a regular user with sudo rights. Doing everything as root isn't a good habit.
+
+```bash
+adduser yourusername
+usermod -aG sudo yourusername
+```
+
+`adduser` asks for a password and some optional details. You can skip the details unless this is a shared server. Then update everything:
+
+```bash
+apt update && apt upgrade -y
+```
+
+Now log out and SSH back in as the new user. I used Tabby, an Electron-based terminal, but any SSH client does the job.
+
+```bash
+ssh yourusername@your-server-ip
+```
+
+## Install Docker
+
+In the video I installed `docker-compose` from Ubuntu's own repository. The current recommendation is Docker's official apt repository, which includes the Compose plugin. The command is `docker compose` with a space now, so that's what I'll use for the rest of this guide. These steps come from [Docker's Ubuntu instructions](https://docs.docker.com/engine/install/ubuntu/):
+
+```bash
+# Add Docker's official GPG key
+sudo apt update
+sudo apt install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+I used to do all my Docker stuff straight from the command line and avoided Compose for way too long. I really wish I hadn't, because Compose makes this kind of thing so much easier. If you're new to it, my [Docker basics for beginners](/7-docker-basics-for-beginners) article covers the fundamentals.
+
+## Create the Folders
+
+Navidrome needs two folders on the host:
+
+| Container path | What goes there | Access Navidrome needs |
+|---|---|---|
+| `/data` | The database and cache | Read and write |
+| `/music` | Your music library | Read only |
+
+I put both in my home directory. Create them **before** starting the container. If a bind-mounted folder doesn't exist, Docker creates it owned by root, and Navidrome (which runs as your user) won't be able to write to it.
+
+```bash
+mkdir -p ~/navidrome/data ~/music
+pwd
+id -u
+id -g
+```
+
+`pwd` gives you the full path to your home folder (mine was `/home/brandon`), which you'll need for the Compose file. `id -u` and `id -g` print your user and group IDs. On a fresh server with one regular user, they're usually both `1000`.
+
+## The Docker Compose File
+
+In the video I copied the Compose file from Docker Hub, because people were reporting errors copying it from the docs at the time. Today the [Docker installation page](https://www.navidrome.org/docs/installation/docker/) is the place to get it, and the image name changed. It was `deluan/navidrome` when I recorded. The docs now use `navidrome/navidrome`, which its Docker Hub page describes as the official Navidrome repository. The old name still gets the same releases, but use the new one going forward.
+
+Create the file:
+
+```bash
+cd ~/navidrome
+nano docker-compose.yml
+```
+
+Then paste this in, replacing `yourusername` with your own:
+
+```yaml
+services:
+  navidrome:
+    image: navidrome/navidrome:latest
+    user: 1000:1000 # your id -u and id -g values
+    ports:
+      - "4533:4533"
+    restart: unless-stopped
+    environment:
+      ND_LOGLEVEL: info
+      ND_PASSWORDENCRYPTIONKEY: "replace-with-a-long-random-passphrase"
+    volumes:
+      - "/home/yourusername/navidrome/data:/data"
+      - "/home/yourusername/music:/music:ro"
+```
+
+Save with `Ctrl+O` and exit with `Ctrl+X`. A few notes on what's in there:
+
+- **`user`** has to match the account that owns the data folder and can read the music. The image ignores `PUID` and `PGID`, so don't bother adding those. The docs also warn against removing `user` to make permission errors go away, since the container would then run as root.
+- **`:ro`** mounts the music read-only. Navidrome never needs to write to your library.
+- **`ND_PASSWORDENCRYPTIONKEY`** is optional, but I'd set it. By default, Navidrome encrypts stored passwords with a shared key that's in the source code, which the [security docs](https://www.navidrome.org/docs/usage/admin/security/) call obfuscation more than encryption. You can generate a passphrase with `openssl rand -hex 32`. Treat it as a one-time setting: once Navidrome has started with your key, don't change it, or users won't be able to log in.
+
+Every other setting works the same way. Take the option name from the [configuration options](https://www.navidrome.org/docs/usage/configuration/options/), uppercase it, add `ND_` in front, and replace dots with underscores, so `Scanner.Schedule` becomes `ND_SCANNER_SCHEDULE`. A few you might want:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `ND_SCANNER_WATCHERWAIT` | `5s` | How long to wait after a file change before rescanning. `0` turns the watcher off. |
+| `ND_SCANNER_SCHEDULE` | `0` (off) | A cron schedule for full scans, if you want them on top of the watcher |
+| `ND_ENABLEINSIGHTSCOLLECTOR` | `true` | Anonymous usage stats. Set it to `false` to opt out. |
+| `ND_ENABLEDOWNLOADS` | `true` | Shows download buttons in the web UI |
+| `ND_ENABLESHARING` | `true` | Public share links for albums, songs, and playlists |
+| `ND_BASEURL` | empty | A subpath such as `/music` if your reverse proxy serves Navidrome there |
+
+If you'd rather use a config file, put `navidrome.toml` in the data folder. The Docker image looks for it at `/data/navidrome.toml`.
+
+## Start Navidrome
+
+From the folder with the Compose file:
+
+```bash
+sudo docker compose up -d
+```
+
+`up` starts it, and `-d` runs it detached, so it keeps running after you close the terminal. Thanks to `restart: unless-stopped`, it also comes back after a reboot. Docker pulls the image, and a few seconds later you can check on it:
+
+```bash
+sudo docker compose ps
+sudo docker compose logs -f navidrome
+```
+
+In the video I used `docker container ls -a`, which works too. Navidrome's [getting started page](https://www.navidrome.org/docs/getting-started/) says to look for "Navidrome server is ready!" in the logs. If the container stops right away, the data folder probably isn't writable by the user in your Compose file.
+
+Now open `http://your-server-ip:4533` in a browser. On first launch, Navidrome asks you to create an admin user. I named mine brandon and gave it a decent password. Do this right away, because whoever reaches the page first gets to be the admin.
+
+![The Navidrome first-launch screen asking to create an admin user with a username and password, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/create-admin-user.jpg)
+
+## Ports, Firewalls, and HTTPS
+
+On my cloud server, port `4533` was reachable as soon as the container started, with no firewall changes. If you can't connect, check your provider's firewall or your network.
+
+One thing I didn't get into in the video: Docker's own docs [warn](https://docs.docker.com/engine/install/ubuntu/) that published container ports bypass `ufw` and `firewalld` rules. So on a cloud server, Navidrome is on the internet the moment it starts, even if `ufw` is set to deny everything.
+
+As you can see in the address bar, it's also plain HTTP, so your password goes over the network unencrypted. The [security docs](https://www.navidrome.org/docs/usage/admin/security/) recommend putting Navidrome behind a reverse proxy like Caddy, Nginx, or Traefik and handling SSL there. If the proxy runs on the same machine, publish the port on localhost only so the proxy is the only way in:
+
+```yaml
+    ports:
+      - "127.0.0.1:4533:4533"
+```
+
+If you're setting this up at home, my [SSL certificates guide](/ultimate-home-server-part-4-ssl-certificates) walks through Nginx Proxy Manager with Let's Encrypt. Or skip public exposure entirely and reach it over a VPN, like the [NetBird setup](/self-host-netbird-pocketid) I use.
+
+Navidrome does rate-limit login attempts by default (five per IP every 20 seconds), and v0.64.1 fixed a high-severity issue where failed Subsonic API logins weren't rate-limited at all. That's a good reason to keep it updated if it faces the internet.
+
+## Getting Your Music onto the Server
+
+A fresh instance has no albums, so there's not much to do yet. I moved my ripped CDs over from my NAS with FileZilla, which is one of my favorite clients for this. Connect with SFTP to your server and drop your albums into the `music` folder.
+
+This is where I ran into permission problems. I uploaded a lot of the files as root, so new album folders were owned by root, and I had to go back and fix the permissions afterward. In FileZilla, I selected everything, opened **File permissions**, and set it all to `755`. After that it worked fine.
+
+![FileZilla's Change file attributes dialog set to 755 for the album folders in the remote music directory, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/filezilla-file-permissions.jpg)
+
+The easier route is to upload as your regular user from the start, so the files are owned by the same UID that Navidrome runs as. If you already have root-owned files, fix them from the terminal:
+
+```bash
+sudo chown -R yourusername:yourusername ~/music
+sudo chmod -R a+rX ~/music
+```
+
+Navidrome only needs to read your music. The `a+rX` gives everyone read access to the files and makes the folders browsable, without making every file executable like `755` does. If the music folder isn't readable, Navidrome still runs, but your library stays empty and the logs show permission-denied errors.
+
+New files get picked up automatically. The file watcher triggers a scan a few seconds after something changes, and you can also start a scan from the web UI.
+
+## Tags, Not Folders
+
+After an hour or two of playing around, I had some music in there: Tom Petty's Wildflowers, some Tim McGraw, Kanye West, and Metallica. I was slowly learning that getting it to look as good as I wanted would take some work. Some albums were missing their art, and the albums and artists lists were full of featured artists. I really only had four artists, but it was pulling in every feature as its own entry. Some of the Tom Petty albums also needed to be credited to Tom Petty and the Heartbreakers to group properly.
+
+![The Navidrome Artists list cluttered with featured artists like Jay-Z & Kanye West and Big Sean as separate entries, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/artists-list-features.jpg)
+
+At the time I blamed my naming schemes and figured I had to clean up the folder names. Navidrome's [tagging guidelines](https://www.navidrome.org/docs/usage/library/tagging/) explain what's going on: it organizes your library **entirely** from the metadata tags in your files. Folder names don't matter. So the fixes are:
+
+- **Set Album Artist consistently.** Every track on an album should have the same Album Artist (Tom Petty and the Heartbreakers, for example). The Artist tag can still list features per track.
+- **Use multi-valued artist tags** (`ARTISTS` and `ALBUMARTISTS`) for collaborations, so Navidrome can link each artist without guessing. It can split names on separators like " feat. " or " / " as a fallback.
+- **Add cover art.** Embed it in the files or drop a `cover.jpg` or `folder.jpg` into each album folder. By default, Navidrome checks those files first, then embedded art, then Last.fm.
+
+I also noticed there was no way to edit any of this inside Navidrome, and that's still the case. The docs point you to an external tagger, with [MusicBrainz Picard](https://picard.musicbrainz.org/) as the main recommendation and beets for command-line folks. Back up your files before a bulk edit, then rescan.
+
+Once things are tagged correctly, it all clicks. When I opened Tim McGraw, all of his albums were there and loaded completely fine, and everything sounded and played great.
+
+![Tim McGraw's discography in Navidrome with cover art showing for every album, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/tim-mcgraw-albums.jpg)
+
+## Streaming from Your Phone
+
+The web player is great on a computer, but the thing that makes this a real Spotify alternative is being able to use it on your phone. Since Navidrome speaks the Subsonic API, you can use any compatible app.
+
+The one I found and liked was [Substreamer](https://substreamer.org/), which is on iOS and Android. In the app I could browse all my albums, go into Graduation by Kanye West, and toggle it to be available offline. Offline downloads are probably one of the best features of services like Spotify and YouTube Music, so having that with my own library is super handy. I could also see the songs I'd starred while playing around, make playlists, and there are more options for bookmarks and podcasts.
+
+Substreamer is still actively maintained. The iOS version was updated in October 2026 and the Android version in July 2026. Today it's free, with no ads or subscriptions, and its source is on [GitHub](https://github.com/ghenry22/substreamer) under GPL-3.0.
+
+To connect any Subsonic client, use your server's address (`https://your-domain.com` behind a proxy, or `http://your-server-ip:4533`) with your Navidrome username and password. Navidrome's [apps page](https://www.navidrome.org/apps/) lists dozens of other clients if Substreamer isn't for you, from Android and iOS players to desktop apps like Feishin and Supersonic and even terminal clients.
+
+### The Jellyfin Option
+
+At the end of the video I mentioned wanting to look at how Navidrome could work alongside an existing Jellyfin setup. Since then, Navidrome added an [experimental Jellyfin API](https://www.navidrome.org/docs/usage/features/jellyfin/) in v0.64.0. It lets Jellyfin music clients connect to Navidrome directly. It's off by default:
+
+```yaml
+    environment:
+      ND_JELLYFIN_ENABLED: "true"
+```
+
+Clients connect to `http://your-server-ip:4533/jellyfin` with your Navidrome login. The docs list Finamp, Jellify, and Feishin as tested. It's labeled experimental for a reason, and some client requests aren't answered yet. LAN auto-discovery is a separate opt-in setting that needs host networking in Docker, so for a normal setup, just type in the address.
+
+## Updating and Backups
+
+To update, pull the new image and recreate the container:
+
+```bash
+cd ~/navidrome
+sudo docker compose pull
+sudo docker compose up -d
+```
+
+Read the [release notes](https://github.com/navidrome/navidrome/releases) before a big jump. v0.64.0, for example, re-encoded every internal ID and told users to back up the database first. Apps that cache IDs, like offline downloads in a phone app, may need to re-sync afterward.
+
+Navidrome has a [built-in backup](https://www.navidrome.org/docs/usage/admin/backup/) for its database (users, playlists, play counts and so on). Set `ND_BACKUP_PATH`, `ND_BACKUP_SCHEDULE`, and `ND_BACKUP_COUNT`, and mount a host folder for the backups. It doesn't include your music or config, so back up the music folder separately, ideally with something like [Duplicati](/duplicati-encrypted-backups).
+
+## Final Thoughts
+
+Navidrome is a really good way to start self-hosting your music. The install is a single Compose file, the web player looks a lot like Spotify, and pairing it with a client like Substreamer gives you the things I use Spotify for, including offline downloads, on music you already own.
+
+The real work isn't the server, it's your library. If your files are tagged messily like mine were, expect to spend some time cleaning things up before every album has its art and every artist shows up where you expect. Get the tags right, sort out the file permissions, and put it behind HTTPS before you expose it to the internet. With all that, I do hope you have an absolutely beautiful day.
