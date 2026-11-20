@@ -14,7 +14,7 @@ If you spend any time in a Linux terminal, you type `ls` constantly. It lists th
 
 [LSD](https://github.com/lsd-rs/lsd), short for LSDeluxe (and no, not that), is a drop-in alternative that adds colors, file type icons, a tree view and more formatting options. In the video I installed it, went through the flags I liked, and then replaced my `ls` command with it so I never had to think about typing something different.
 
-The video is from February 2021. Since then the project moved from `Peltoche/lsd` to the [lsd-rs](https://github.com/lsd-rs/lsd) organization on GitHub, gained a lot more distro packages and a proper theming system, and is now at [v1.2.0](https://github.com/lsd-rs/lsd/releases/tag/v1.2.0), released October 12, 2025. The install, font and configuration steps below have been updated for that release. The terminal footage and my impressions come from the original recording.
+The video is from February 2021. Since then the project moved from `Peltoche/lsd` to the [lsd-rs](https://github.com/lsd-rs/lsd) organization on GitHub, gained a lot more distro packages and a proper theming system, and is now at [v1.2.0](https://github.com/lsd-rs/lsd/releases/tag/v1.2.0), released October 12, 2025. The install, font and configuration steps below are for that release. The terminal footage and my impressions come from the original recording.
 
 ## What LSD Is
 
@@ -141,7 +141,7 @@ Flags can be combined like regular `ls`, so `lsd -lA --group-dirs first` works f
 
 ## Step 4: Replace ls With an Alias
 
-You're used to typing `ls`, and you don't want to retrain your fingers. The fix is a shell alias, so typing `ls` actually runs `lsd`. The README covers this under configuring your shell.
+You're used to typing `ls`, and you don't want to retrain your fingers. The fix is a shell alias, so typing `ls` runs `lsd`. The README covers this under configuring your shell.
 
 ### Bash
 
@@ -155,7 +155,7 @@ On my ArcoLinux install, the file already had a `#list` section with aliases for
 
 ![The .bashrc file in nano on ArcoLinux, with the default ls alias commented out and alias ls='lsd -Fla' added under the list section](/docs-static/img/2026/10/lsd-lsdeluxe-ls-command/bashrc-ls-alias.jpg)
 
-Commenting out the old line is good housekeeping. If you leave both, whichever alias comes last in the file wins. Here's a reasonable set to add at the end of the file:
+Commenting out the old line is good housekeeping. If you leave both, whichever alias comes last in the file wins. A reasonable set to add at the end of the file:
 
 ```bash
 alias ls='lsd'
@@ -215,7 +215,7 @@ On Linux and macOS it follows the XDG spec and looks in `$HOME/.config/lsd` and 
 
 ### config.yaml
 
-This is where most of your defaults can live instead of in the alias. Anything you leave out keeps its default. Here's a small example:
+This is where most of your defaults can live instead of in the alias. Anything you leave out keeps its default. A small example:
 
 ```bash
 mkdir -p ~/.config/lsd
@@ -291,7 +291,7 @@ The [icons sample](https://github.com/lsd-rs/lsd/blob/main/doc/samples/icons-sam
 
 ## Final Thoughts
 
-LSD is one of those small terminal upgrades that you notice every day. The colors and icons make directory listings much easier to scan, the color-coded file sizes are genuinely useful, and once it's aliased to `ls` there's nothing new to remember. Just don't skip the Nerd Font step like I did.
+LSD is one of those small terminal upgrades that you notice every day. The colors and icons make directory listings much easier to scan, the color-coded file sizes are useful, and once it's aliased to `ls` there's nothing new to remember. Just don't skip the Nerd Font step like I did. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
