@@ -17,7 +17,7 @@ I did this in a Proxmox container, but you can run it on just about anything: a 
 Linode sponsored the video this article is based on.
 
 <Note>
-I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The steps below are for [Pi-hole Core v6.5](https://github.com/pi-hole/pi-hole/releases/tag/v6.5), FTL v6.8, and Web v6.6.1, all released October 17, 2026, and for the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
+I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The steps below are for [Pi-hole Core v6.6](https://github.com/pi-hole/pi-hole/releases/tag/v6.6) and [FTL v6.9](https://github.com/pi-hole/FTL/releases/tag/v6.9), both released November 11, 2026, plus Web v6.6.1 from October 17, 2026. They follow the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## Why Bother With Recursive DNS?
@@ -360,6 +360,8 @@ Pi-hole updates with one command:
 sudo pihole -up
 ```
 
+Core v6.6 is a security release. It fixes local privilege-escalation bugs in repair, update, debug, checkout, and uninstall, a gravity database issue, and a debug log that could include password hashes and TOTP secrets. Update if you're still on 6.5. The Unbound port and `pihole.toml` steps did not change.
+
 Unbound came from your distribution's repositories, so it updates with everything else through `sudo apt update && sudo apt upgrade`. Pi-hole recommends reading the release notes for Core, FTL, and Web before updating, especially for big jumps. If you still have a v5 install, the upgrade to v6 is one-way and migrates your old settings into `pihole.toml`, so back up first.
 
 ## Pi-hole or AdGuard Home?
@@ -378,7 +380,8 @@ For my own test instance, I used a throwaway password, which you absolutely shou
 
 - [Pi-hole](https://pi-hole.net/) and [Pi-hole documentation](https://docs.pi-hole.net/)
 - [Pi-hole on GitHub](https://github.com/pi-hole/pi-hole)
-- [Pi-hole Core v6.5 release](https://github.com/pi-hole/pi-hole/releases/tag/v6.5)
+- [Pi-hole Core v6.6 release](https://github.com/pi-hole/pi-hole/releases/tag/v6.6)
+- [Pi-hole FTL v6.9 release](https://github.com/pi-hole/FTL/releases/tag/v6.9)
 - [Introducing Pi-hole v6](https://pi-hole.net/blog/2025/02/18/introducing-pi-hole-v6/)
 - [Prerequisites](https://docs.pi-hole.net/main/prerequisites/)
 - [Installation](https://docs.pi-hole.net/main/basic-install/)
