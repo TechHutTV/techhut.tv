@@ -12,7 +12,7 @@ import {YouTube} from "@/components/YouTube"
 
 [Ulauncher](https://ulauncher.io) is one of my favorite applications on Linux. It's a keyboard-driven launcher: hit a hotkey, type a few letters, and open an app, a folder, a web search, or whatever an extension adds. I gave it a quick mention in an earlier top apps video, and it's also in my [Top 10 Linux Apps](/top-10-linux-apps-ubuntu) list, but this time I wanted to go deeper into the extensions and especially the theming. For the video, I built a theme that matches the colors of an EndeavourOS i3 setup, and I'll show you how to do the same for your own rice.
 
-The video was published in March 2021, and the Ulauncher download page in it showed v5.10.0 as the stable release. The written steps have been updated for [Ulauncher 5.16.3](https://github.com/Ulauncher/Ulauncher/releases/tag/5.16.3), released November 4, 2026, which is the current stable version. Ulauncher 6 is a big rewrite, but it is still in beta ([6.0.0-beta35](https://github.com/Ulauncher/Ulauncher/releases/tag/v6.0.0-beta35) came out September 21, 2026), so this guide targets v5 and points out what's different in v6. The biggest change since the video is Wayland, where you now bind the hotkey through your desktop environment. The footage and hands-on impressions are from the original recording.
+The video was published in March 2021, and the Ulauncher download page in it showed v5.10.0 as the stable release. The steps below are for [Ulauncher 5.16.3](https://github.com/Ulauncher/Ulauncher/releases/tag/5.16.3), released November 4, 2026, which is the current stable version. Ulauncher 6 is a big rewrite, but it is still in beta ([6.0.0-beta35](https://github.com/Ulauncher/Ulauncher/releases/tag/v6.0.0-beta35) came out September 21, 2026), so I'm staying on v5 and pointing out what's different in v6. The biggest change since the video is Wayland, where you now bind the hotkey through your desktop environment. The footage and hands-on impressions are from the original recording.
 
 ## What Ulauncher Does
 
@@ -177,7 +177,7 @@ mkdir -p ~/.config/ulauncher/user-themes
 cd ~/.config/ulauncher/user-themes
 ```
 
-Then clone a theme into it. Here's mine, the EndeavourOS-inspired one from the video. In the video I cloned it from GitLab, but it now lives [on GitHub](https://github.com/TechHutTV/endeavour-ulauncher-theme) under GPL-3.0:
+Then clone a theme into it. Mine is the EndeavourOS-inspired one from the video. In the video I cloned it from GitLab, but it now lives [on GitHub](https://github.com/TechHutTV/endeavour-ulauncher-theme) under GPL-3.0:
 
 ```bash
 git clone https://github.com/TechHutTV/endeavour-ulauncher-theme.git
@@ -222,7 +222,7 @@ Then edit `manifest.json` in the copy and give it a new `name` and `display_name
 
 ### Pull your colors from your desktop config
 
-Here's how I built the Endeavour theme. I started from a transparent blue-accent community theme by lifeofcoding, then took the color codes from the EndeavourOS i3 config file and swapped them in. In the video I had the i3 config open on the left and `theme.css` on the right, both in nano.
+This is how I built the Endeavour theme. I started from a transparent blue-accent community theme by lifeofcoding, then took the color codes from the EndeavourOS i3 config file and swapped them in. In the video I had the i3 config open on the left and `theme.css` on the right, both in nano.
 
 ![The EndeavourOS i3 config color variables in nano on the left and the Ulauncher theme.css with matching define-color lines on the right](/docs-static/img/2026/10/ulauncher-linux-app-launcher/i3-config-and-theme-css-nano.jpg)
 
@@ -277,7 +277,7 @@ Open the launcher again, and the selection is yellow.
 
 ![The Better file browser results in the edited Endeavour theme with the selected row now highlighted in yellow](/docs-static/img/2026/10/ulauncher-linux-app-launcher/endeavour-theme-yellow-highlight.jpg)
 
-It isn't only colors. There's border width, text shadows, the selected item box, and `border-radius` for the corners. I set the radius to something dramatic like `30px` to show the effect, reloaded, and the sharp square corners turned round. (The theme docs say only colors can be changed because of GTK limits on element sizes, but border radius and width worked fine in the video.) Honestly, I really hate how the curved corners look, so I switched it back right after recording. The version on GitHub has `0px`.
+It isn't only colors. There's border width, text shadows, the selected item box, and `border-radius` for the corners. I set the radius to something dramatic like `30px` to show the effect, reloaded, and the sharp square corners turned round. (The theme docs say only colors can be changed because of GTK limits on element sizes, but border radius and width worked fine in the video.) I really hate how the curved corners look, so I switched it back right after recording. The version on GitHub has `0px`.
 
 My advice: browse the community theme list, find one that's close to what you like, and tweak it until it fits your desktop.
 
@@ -297,7 +297,7 @@ Ulauncher is fast, the extensions turn it into far more than an app menu, and th
 
 The one thing to know in 2026 is the Wayland hotkey. Bind `ulauncher-toggle` in your desktop's shortcut settings and you're set. And keep an eye on Ulauncher 6, which simplifies themes and is getting close to a stable release.
 
-If you've found a favorite theme or you use a different launcher, I'd like to hear about it.
+If you've found a favorite theme or you use a different launcher, I'd like to hear about it. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
