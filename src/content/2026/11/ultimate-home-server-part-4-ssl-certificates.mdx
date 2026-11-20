@@ -163,9 +163,9 @@ The [repo Compose file](https://github.com/TechHutTV/homelab/blob/main/proxy/com
 
 ### Nginx Proxy Manager: Host or Bridge Networking
 
-I'm a sucker for a good web GUI, and this is one of the easiest containers you'll ever deploy. The one decision that matters is networking. I run it with `network_mode: host` because that has worked best for me, especially for containers on the same machine, where `localhost:8888` just works. The catch is that it takes ports 80, 81, and 443 directly on the host, which is another reason to give it its own LXC or VM.
+I'm a sucker for a good web GUI, and this is one of the easiest containers you'll ever deploy. The one decision that matters is networking. I run it with `network_mode: host` because that has worked best for me, especially for containers on the same machine, where `127.0.0.1:8888` just works. The catch is that it takes ports 80, 81, and 443 directly on the host, which is another reason to give it its own LXC or VM.
 
-The steps below use host networking on Linux throughout. Bridge networking also works, but requires changing the port mappings and upstream addresses together: `localhost` would mean the proxy container itself. For the test page, put both containers on a shared Docker network and use `helloworld:80` as the upstream instead of `localhost:8888`. See NPM's [setup examples](https://nginxproxymanager.com/setup/) if you prefer that layout. I use named volumes for `data` and `letsencrypt`; bind mounts work fine too.
+The steps below use host networking on Linux throughout. Bridge networking also works, but requires changing the port mappings and upstream addresses together: `localhost` would mean the proxy container itself. For the test page, put both containers on a shared Docker network and use `helloworld:80` as the upstream instead of `127.0.0.1:8888`. See NPM's [setup examples](https://nginxproxymanager.com/setup/) if you prefer that layout. I use named volumes for `data` and `letsencrypt`; bind mounts work fine too.
 
 ### The DDNS Container
 
@@ -257,7 +257,7 @@ Test everything with the hello world container before adding anything real. Go t
 
 - **Domain Names:** `example.com`
 - **Scheme:** `http`
-- **Forward Hostname / IP:** `localhost`, which works because Nginx Proxy Manager uses host networking and the test container is on the same machine
+- **Forward Hostname / IP:** `127.0.0.1`, matching the test container’s IPv4 loopback binding because Nginx Proxy Manager uses host networking
 - **Forward Port:** `8888`
 - Enable **Block Common Exploits**.
 
@@ -323,7 +323,7 @@ When a device looks up `proxmox.example.net`, DNS returns `10.0.0.203`, the devi
 
 One common gotcha: some routers and DNS filters have DNS rebinding protection, such as dnsmasq's `stop-dns-rebind` option. They block public DNS answers that point to private IPs. If your local domain won't resolve at home but works on mobile data with a lookup tool, whitelist the domain in that protection.
 
-Now repeat the certificate step for `example.net` and `*.example.net`, using a DNS challenge with Cloudflare and your token, unless you already created it for private-only access. Then add proxy hosts like before. To repeat the hello-world test with `hello.example.net` pointing to `localhost:8888`, restart the test container with `docker compose --profile test up -d helloworld` and stop/remove it afterward as above. For Proxmox, use:
+Now repeat the certificate step for `example.net` and `*.example.net`, using a DNS challenge with Cloudflare and your token, unless you already created it for private-only access. Then add proxy hosts like before. To repeat the hello-world test with `hello.example.net` pointing to `127.0.0.1:8888`, restart the test container with `docker compose --profile test up -d helloworld` and stop/remove it afterward as above. For Proxmox, use:
 
 - **Domain Names:** `proxmox.example.net`
 - **Scheme:** `https`, because Proxmox only serves HTTPS on 8006
