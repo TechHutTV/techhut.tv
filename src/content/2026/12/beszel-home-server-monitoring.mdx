@@ -1,0 +1,338 @@
+export const title = "Beszel: Simple, Lightweight Monitoring for Your Home Servers"
+export const description = "Set up Beszel, a lightweight self-hosted monitoring hub with per-machine agents, on Proxmox, Docker, or bare-metal Linux, then tour its system and container charts, GPU stats, and alerts."
+export const date = "2026-12-23"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Monitoring", "Homelab", "Self-Host", "Docker", "Proxmox", "Linux"]
+export const cover = "/docs-static/img/2026/12/beszel-home-server-monitoring/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="RHPjdB7gyQM" title="TechHut's Beszel walkthrough" />
+
+If you didn't know, I've moved away from Portainer and now just run regular Docker Compose files. Most of that lives on one virtual machine I call **servarr**. It's my main Docker server and holds most of my *arr application suite. With everything piled onto one VM, I want an easy way to keep an eye on it.
+
+I've tried a couple of approaches. [Uptime Kuma](https://github.com/louislam/uptime-kuma) is great and it looks beautiful, but I drifted away from it and leaned more on Grafana dashboards. I wouldn't call those cumbersome, exactly, but I realized I wasn't opening them as often as I'd like. If you want the full-featured route, my [Grafana, Prometheus, and InfluxDB guide](/monitor-home-server-grafana-prometheus-influxdb) still covers it.
+
+This time I'm trying [Beszel](https://beszel.dev/). It's a lightweight monitoring platform with a clean web UI, Docker and Podman stats, history, alerts, and multi-user support, and it looked easy to set up. We'll get the hub running, add a Docker VM and a bare-metal Proxmox host, then look at the charts and alerts.
+
+<Note>
+The written installation has been updated for [Beszel v0.21.2](https://github.com/henrygd/beszel/releases/tag/v0.21.2), released November 12, 2026. Beszel has gained a lot since I recorded the video, including Intel GPU support, so I've marked those changes where they come up. v0.21.2 also fixes permission bugs, including non-admin users being able to change system users, so update an existing install. The hub and agent install steps are the same. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## How Beszel Works
+
+Beszel has two pieces:
+
+- **The hub** is the web app with the dashboard, your account, alert settings, and the stored history. It's built on [PocketBase](https://pocketbase.io/) and listens on port `8090`.
+- **The agent** is a small program that runs on each machine you want to monitor. It collects the metrics and sends them to the hub.
+
+You run one hub and as many agents as you have machines. It's [MIT licensed](https://github.com/henrygd/beszel/blob/main/LICENSE), and both pieces are small Go binaries with Docker images available.
+
+According to the [project docs](https://beszel.dev/guide/what-is-beszel), the agent currently tracks:
+
+- CPU, memory, and network usage for the host and for each Docker or Podman container
+- Disk usage and disk I/O, including extra partitions and drives
+- Load average, temperatures, and fan speeds
+- GPU usage and power draw for NVIDIA, AMD, and Intel
+- Battery charge, S.M.A.R.T. disk health, and ZFS pools
+- Network monitors that probe ICMP, TCP, HTTP, and DNS targets from the agent
+
+That's a lot less than a Grafana stack can do if you're willing to build it, but it's also a lot less to build.
+
+### Keys, Tokens, and the Two Connection Modes
+
+The hub and agent can talk in two directions, which matters when troubleshooting. The [security page](https://beszel.dev/guide/security) explains both:
+
+| Mode | Who connects | Port | Needs |
+|---|---|---|---|
+| WebSocket | Agent connects out to the hub | Hub's `8090` (or your proxy) | Hub public key, a `TOKEN`, and `HUB_URL` |
+| SSH | Hub connects in to the agent | Agent's `45876` | Hub public key only |
+
+On first start the hub generates an ED25519 key pair. The agent only accepts connections signed by that key, and its SSH server doesn't provide a shell or accept input, so it can't be used to run commands on the machine. In WebSocket mode, the token identifies the system, the hub proves who it is with its key, and the agent's fingerprint locks that registration to the machine.
+
+Upstream recommends WebSocket mode with an HTTPS hub URL if agents reach the hub over an untrusted network. SSH mode doesn't verify the agent's host key, so it assumes a trusted path between the two. On a home LAN or over a VPN like [NetBird](/self-host-netbird-pocketid), either mode works.
+
+## Install the Hub
+
+The [getting started guide](https://beszel.dev/guide/getting-started) has a Docker Compose file that includes both the hub and a local agent. I wanted the front end in its own Proxmox LXC instead, separate from the machines it's watching, so that's what I did in the video. If you don't have Proxmox, the Docker Compose and binary options below work on any Linux machine.
+
+### Option 1: Proxmox Helper Script (What I Used)
+
+The [Proxmox VE community scripts](https://community-scripts.org/scripts?id=beszel) include a Beszel LXC. Run this in the **Proxmox host's shell**, not inside a container:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/beszel.sh)"
+```
+
+I went with the advanced options because I like to pick everything myself. I kept it unprivileged, set a root password, and gave it a staggering 16 GB of disk, two CPU cores, and a little more RAM than the default. The network bridge and DHCP defaults were fine, and I skipped the configuration-file option for now.
+
+The [install source](https://github.com/community-scripts/ProxmoxVE/blob/main/install/beszel-install.sh) sets up:
+
+- An unprivileged Debian 13 LXC with 1 core, 512 MB of RAM, and 5 GB of disk by default.
+- The official prebuilt hub binary from Beszel's GitHub releases, placed in `/opt/beszel`. It isn't a fork and doesn't bundle extra services.
+- A `beszel-hub` systemd service running `beszel serve --http "0.0.0.0:8090"`.
+
+The script page notes that it may install a different version than the newest upstream release, so check which version you got. To update later, run `update` in the LXC's console. It stops the service, runs Beszel's own `beszel update`, and starts it again.
+
+When the script finishes it prints the container's address. Open `http://YOUR_LXC_IP:8090` in a browser.
+
+### Option 2: Docker Compose
+
+On any Linux machine with Docker and the Compose plugin, the [hub installation docs](https://beszel.dev/guide/hub-installation) boil down to one service. I've pinned the image to the current release instead of using `latest`:
+
+```bash
+mkdir -p ~/beszel
+cd ~/beszel
+nano docker-compose.yml
+```
+
+```yaml
+services:
+  beszel:
+    image: henrygd/beszel:0.21.2
+    container_name: beszel
+    restart: unless-stopped
+    environment:
+      APP_URL: http://YOUR_SERVER_IP:8090
+    ports:
+      - 8090:8090
+    volumes:
+      - ./beszel_data:/beszel_data
+```
+
+Set `APP_URL` to the address you'll use to reach the hub. It's used for links in emails and notifications, and you'll want your full HTTPS address there if you put Beszel behind a reverse proxy. Then start it:
+
+```bash
+docker compose up -d
+```
+
+Everything the hub stores lives in `./beszel_data`, so back up that folder, or use the [built-in backup feature](https://beszel.dev/guide/hub-installation#backing-up-the-hub), which can save to disk or S3-compatible storage.
+
+If you also want to monitor the same machine the hub runs on, `localhost` won't work between the two containers. Upstream's recommended way is a shared unix socket, and their [combined hub and agent compose file](https://beszel.dev/guide/getting-started) shows the full setup.
+
+### Option 3: Binary Install Script
+
+There's also an official hub install script for Linux and FreeBSD. It installs the latest binary and creates a systemd service:
+
+```bash
+curl -sL https://get.beszel.dev/hub -o /tmp/install-hub.sh
+chmod +x /tmp/install-hub.sh
+sudo /tmp/install-hub.sh
+```
+
+It accepts `-p` for a different port, `--auto-update` for daily updates, and `-u` to uninstall.
+
+### Create Your Account
+
+The first time you open the hub, it asks you to create an account. I just used a simple email and password. Do use a real, strong password here, because this one account controls every system you add.
+
+That first account is created as both a regular Beszel user and a PocketBase superuser, which gets access to the PocketBase admin panel at `/_/`. They're stored separately, so changing your hub password doesn't change the superuser password. The [user accounts page](https://beszel.dev/guide/user-accounts) covers that, along with roles and password resets.
+
+<Warning>
+Don't forward port `8090` straight to the internet. Keep the hub on your LAN or a VPN, or put it behind a reverse proxy with HTTPS. If you use a proxy, it has to pass WebSocket connections to `/api/beszel/agent-connect` so agents can reach the hub. The [reverse proxy guide](https://beszel.dev/guide/reverse-proxy) has examples.
+</Warning>
+
+## Add Your First System: A Docker VM
+
+On a fresh hub you'll see "No systems found." Click **Add System** in the top right. Pick Docker or Binary, give the system a name, and enter the machine's IP address. I named mine servarr and gave it that VM's address.
+
+![The Beszel Add New System dialog on the Docker tab with the name Servarr, host 10.0.0.200, and the default port 45876](/docs-static/img/2026/12/beszel-home-server-monitoring/add-new-system-dialog.jpg)
+
+The dialog shows the hub's **Public Key** and a **Token**, and it can copy a ready-made Docker Compose file, `docker run` command, or install command with those values already filled in. I copied the `docker run` version and pasted it into the VM's shell.
+
+That command looks like this in the current hub, with placeholders where your values go:
+
+```bash
+docker run -d --name beszel-agent --network host --restart unless-stopped \
+  -v /var/run/docker.sock:/var/run/docker.sock:ro \
+  -v beszel_agent_data:/var/lib/beszel-agent \
+  -e KEY="ssh-ed25519 AAAA...your-hub-public-key" \
+  -e LISTEN=45876 \
+  -e TOKEN="your-token-from-the-dialog" \
+  -e HUB_URL="http://YOUR_HUB_IP:8090" \
+  henrygd/beszel-agent
+```
+
+The dialog uses the floating `latest` tag. If you prefer Compose, here's the same thing as a file, pinned to the current release:
+
+```yaml
+services:
+  beszel-agent:
+    image: henrygd/beszel-agent:0.21.2
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./beszel_agent_data:/var/lib/beszel-agent
+    environment:
+      LISTEN: 45876
+      KEY: "ssh-ed25519 AAAA...your-hub-public-key"
+      TOKEN: your-token-from-the-dialog
+      HUB_URL: http://YOUR_HUB_IP:8090
+```
+
+What each piece does:
+
+- **`network_mode: host`** lets the agent see the host's real network interfaces. Without it you'd only get the container's own traffic. It also means the agent's port is exposed directly on the host.
+- **The Docker socket** is how the agent reads per-container stats. Keep in mind that `:ro` only stops the socket file from being replaced. It doesn't make the Docker API read-only, so only mount it into containers you trust.
+- **The agent data volume** stores the agent's fingerprint and other state so it survives updates.
+- **`KEY`, `TOKEN`, and `HUB_URL`** are the pairing values from the dialog. The hub fills in `HUB_URL` from the address you used to open it, so open the hub by an address the agent can reach, not `localhost`.
+
+The command didn't print anything the first time I ran it, which threw me for a second, but the container was running. Back in the hub, click **Add System** to finish. servarr showed up in the table and flipped to green. If yours turns red instead, the [common issues page](https://beszel.dev/guide/common-issues) is the place to start.
+
+## Add a Bare-Metal Linux Host: My Proxmox Server
+
+Next I wanted to see if I could add the Proxmox host itself without Docker. The agent has a [Linux install script](https://beszel.dev/guide/agent-installation) for exactly this.
+
+In the video I grabbed the plain script from the docs and ran it on the Proxmox host. It asked for the hub's public key, which I pasted from a new Add System dialog for my Proxmox machine, and asked whether to enable automatic updates, which I said yes to. It never asked for a token, and the system still connected.
+
+That's expected. The token and hub URL are optional for backwards compatibility, and without them the agent falls back to SSH mode, with the hub connecting to the agent on port `45876`. That's fine on a LAN, but the hub has to be able to reach that port.
+
+The cleaner way now is to choose **Binary** in the Add System dialog and copy the Linux command. It runs the same official script with your key, token, and hub URL already filled in, so the agent uses WebSocket mode:
+
+```bash
+curl -sL https://get.beszel.dev -o /tmp/install-agent.sh && chmod +x /tmp/install-agent.sh && sudo /tmp/install-agent.sh -p 45876 -k "ssh-ed25519 AAAA...your-hub-public-key" -t "your-token-from-the-dialog" -url "http://YOUR_HUB_IP:8090"
+```
+
+On Proxmox you're probably root already, so you can drop the `sudo`. In the video I wasn't sure about the script going through a temp directory, so I checked the [script source](https://github.com/henrygd/beszel/blob/main/supplemental/scripts/install-agent.sh). `/tmp` is just a staging spot for the download; the agent itself ends up under `/opt`. On a systemd system the script:
+
+- Creates a `beszel` system user and adds it to the `docker` group if one exists.
+- Downloads the official agent release, checks it against the release checksums, and installs it to `/opt/beszel-agent/beszel-agent`.
+- Writes a sandboxed `beszel-agent.service` that runs as the `beszel` user, not root.
+- Optionally adds a `beszel-agent-update.timer` that checks for updates daily.
+
+To change the key, token, or hub URL later, edit the `Environment=` lines in `/etc/systemd/system/beszel-agent.service`, then run `systemctl daemon-reload` and restart the service. To remove the agent, run the script again with `-u`.
+
+My Proxmox host connected right away. Since it isn't running Docker there were no container charts, just the host's CPU, memory, disk, and network. It was showing around 10 GB of RAM in use.
+
+### Adding Lots of Machines with a Universal Token
+
+If you're rolling the agent out to a bunch of machines, you don't have to create each one in the hub first. Under **Settings > Tokens & Fingerprints**, you can enable a universal token that lets agents register themselves. It's ephemeral by default, expiring after an hour or when the hub restarts. You can switch it to permanent if you want, but then it stays valid until you turn it off.
+
+Systems registered this way are named after the machine's hostname unless you set `SYSTEM_NAME` on the agent. Treat the universal token like a password, since anything holding it plus the hub's public key can add itself to your dashboard.
+
+## Touring the Dashboard
+
+With two systems in, the main table already tells you a lot: CPU, memory, and disk usage at a glance, plus network traffic and the agent version for each machine. Each row has a menu to pause monitoring, edit the system, or copy its hostname, and clicking a system opens its full page.
+
+![The Beszel All Systems table with Proxmox and Servarr rows showing CPU, memory, disk, and GPU usage](/docs-static/img/2026/12/beszel-home-server-monitoring/all-systems-table.jpg)
+
+### System Pages and Container Stats
+
+The system page is where Beszel really shines. For servarr I had CPU, memory, and disk usage charts for the VM, and since the agent can see Docker, it breaks CPU and memory down by container too. Everything running on that VM showed up as its own colored band, and I could filter the charts by container name.
+
+![The Beszel system page for Servarr with CPU and memory charts next to per-container Docker CPU and memory usage](/docs-static/img/2026/12/beszel-home-server-monitoring/servarr-system-charts.jpg)
+
+That immediately paid off. qBittorrent was using quite a bit more memory than the rest, which is now on my list to look into. Getting that kind of breakdown without building a single dashboard is exactly what I was after.
+
+In the video I tried to pick a shorter time range so the graphs were easier to read, but the default hour was as short as it went, and the next step up was 12 hours. That's changed: [v0.13.0](https://github.com/henrygd/beszel/releases/tag/v0.13.0) added a **1 minute** view with one-second updates, alongside 1 hour, 12 hours, 24 hours, 1 week, and 30 days.
+
+### Temperatures
+
+My Proxmox host showed temperatures, while servarr didn't. That makes sense: the agent on Proxmox runs directly on the hardware and can read real sensors, but a virtual machine usually has none to report. If temperatures matter to you, install an agent on the bare-metal host as well as inside your VMs.
+
+### GPU Monitoring, Then and Now
+
+servarr has an Intel GPU passed through to it, but at the time of recording the docs said Intel GPUs weren't supported yet. They mentioned possibly using `intel_gpu_top` in the future, which I was pretty excited about.
+
+That has since landed. [v0.12.10](https://github.com/henrygd/beszel/releases/tag/v0.12.10) added initial Intel support a few weeks after the video, and newer releases added Intel Arc / Xe support through `nvtop`. For a Docker agent, the [GPU guide](https://beszel.dev/guide/gpu) says to switch to the Intel image and pass the GPU through.
+
+For older Intel GPUs on the `i915` driver, which use `intel_gpu_top`:
+
+```yaml
+services:
+  beszel-agent:
+    image: henrygd/beszel-agent-intel:0.21.2
+    cap_add:
+      - CAP_PERFMON
+    devices:
+      - /dev/dri/card0:/dev/dri/card0
+```
+
+For Arc and other GPUs on the newer `xe` driver, which use `nvtop`:
+
+```yaml
+services:
+  beszel-agent:
+    image: henrygd/beszel-agent-intel:0.21.2
+    pid: host
+    devices:
+      - /dev/dri:/dev/dri
+```
+
+Run `ls /dev/dri` on the host to find the right device name, and keep the rest of your agent config the same.
+
+For the binary agent, install `intel-gpu-tools` (or `nvtop` for `xe` GPUs) from your distro's packages. Because the install script runs the agent as the non-root `beszel` user, the [GPU guide](https://beszel.dev/guide/gpu) also has you grant the performance-monitoring capability. On the tool itself:
+
+```bash
+sudo setcap cap_perfmon=ep /usr/bin/intel_gpu_top
+```
+
+(Use `/usr/bin/nvtop` instead if that's your collector.) Then add the capability to the service with `sudo systemctl edit beszel-agent`:
+
+```ini
+[Service]
+AmbientCapabilities=CAP_PERFMON
+CapabilityBoundingSet=CAP_PERFMON
+```
+
+If the service already has capabilities set, for S.M.A.R.T. data for example, put them all on the same two lines instead of adding duplicates. Then run `sudo systemctl daemon-reload` and `sudo systemctl restart beszel-agent`.
+
+NVIDIA has its own `henrygd/beszel-agent-nvidia` image that needs the NVIDIA Container Toolkit, and AMD is read directly from sysfs. I haven't re-tested GPU stats on servarr since the video, so this part comes from the docs rather than my own setup.
+
+## Alerts and Notifications
+
+Alerts were the other thing I wanted. They're configured from the **bell icon** on each system in the table. You can set them for that specific system, or switch to **All Systems** and apply the same rules everywhere.
+
+This is what I set up for servarr in the video:
+
+| Alert | Threshold |
+|---|---|
+| CPU usage | Above 80% |
+| Temperature | Above 80 degrees |
+| Memory usage | Above 95% |
+
+I set memory higher than the others because there's ZFS on this machine, so I only want to hear about it when usage gets really high. Each threshold also has a duration in minutes, so a quick spike doesn't page you.
+
+![Beszel alert settings for Servarr with CPU usage set to 80% and memory usage set to 95%, each for 10 minutes](/docs-static/img/2026/12/beszel-home-server-monitoring/servarr-alert-thresholds.jpg)
+
+Current releases offer a lot more alert types than I used: status (system down), disk, bandwidth, load average, CPU I/O wait and steal time, GPU, battery, network monitor packet loss, container health, and failed systemd services. The README also lists notifications on S.M.A.R.T. drive failures.
+
+Setting thresholds doesn't send notifications anywhere by itself, though. Active alerts show in the hub, but delivery is configured under **Settings > Notifications**, and that part I didn't wire up in the video. There are two options:
+
+- **Email**, using the SMTP settings in the PocketBase admin panel.
+- **Webhook / Push** URLs using the [Shoutrrr](https://beszel.dev/guide/notifications/) format, which covers Discord, Gotify, Matrix, ntfy, Pushover, Slack, Telegram, Signal, generic webhooks, and more.
+
+For example, a self-hosted ntfy topic with an access token looks like this:
+
+```text
+ntfy://:YOUR_NTFY_ACCESS_TOKEN@ntfy.your-domain.com/homelab-alerts
+```
+
+Use the **Test URL** button before you trust it. Newer releases also added **quiet hours** in settings, for silencing alerts during set time periods.
+
+## What's Changed Since the Video
+
+Beszel has been moving fast. Beyond Intel GPU support, these are the changes that jumped out to me in the [release notes](https://github.com/henrygd/beszel/releases):
+
+- **Container details and logs** (v0.14.0), plus a page listing every container across systems.
+- **S.M.A.R.T. disk health** (v0.15.0) with failure alerts.
+- **systemd service monitoring** (v0.16.0), with failed-service alerts in v0.19.0 and service logs in v0.21.0.
+- **Quiet hours** for alerts (v0.17.0) and the option to make universal tokens permanent (v0.18.0).
+- **ZFS pool and dataset monitoring** and **container health alerts** (v0.19.0).
+- **Network monitors** that probe hosts from your agents, and a flag for **container image updates** (v0.20.0).
+- A **pending package updates** list, Wi-Fi signal monitoring, and TLS certificate expiry checks (v0.21.0).
+
+One change to know about before upgrading: since [v0.19.0](https://github.com/henrygd/beszel/releases/tag/v0.19.0), agents verify the hub's HTTPS certificate. If your hub uses a self-signed or private certificate authority, set `CA_CERT_FILE` on the agent to that CA certificate, or WebSocket connections will be rejected. Plain `http://` on your LAN isn't affected.
+
+Updating is easy. Docker users can bump the image tag and run `docker compose pull && docker compose up -d`. Binaries have a built-in `update` command (`beszel update` for the hub, `beszel-agent update` for the agent), and script-installed agents can use the daily update timer if you enabled it. The helper-script LXC uses `update` as covered earlier.
+
+## Final Thoughts
+
+Overall, this seems like a really nice tool, and I do like it. The hub LXC only needed a minute to start, adding the Docker VM was one pasted command, and the Proxmox host took one more. In very little time I had CPU, memory, disk, and network for both machines, temperatures from the Proxmox host, and per-container stats from the Docker VM, all in one clean dashboard, and it already pointed me at something to look into.
+
+If you want custom dashboards and the freedom to graph any metric you can collect, my [Grafana guide](/monitor-home-server-grafana-prometheus-influxdb) is still the way to go. I wasn't opening those dashboards, though. For seeing how my servers are doing, with alerts when something's off, Beszel is a lot simpler. You could throw every system you have in here and monitor just about everything.
+
+If you have Proxmox, you can follow exactly what I did. If you just have a Linux machine, use Docker or the binary install for the hub and the same agent script I ran on my Proxmox host. With all that, I do hope you have an absolutely beautiful day.
