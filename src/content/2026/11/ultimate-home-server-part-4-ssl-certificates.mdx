@@ -1,10 +1,10 @@
 export const title = "Ultimate Home Server Part 4: SSL Certificates on Everything"
 export const description = "Put real domains and Let's Encrypt certificates in front of your home server with Nginx Proxy Manager, Cloudflare DDNS, and a local-only domain, without exposing more than you mean to."
-export const date = "2026-10-11"
+export const date = "2026-11-28"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Homelab", "Self-Host", "Docker", "Proxmox"]
-export const cover = "/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cover.jpg"
+export const cover = "/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -145,7 +145,7 @@ The `user`, `read_only`, `cap_drop`, and `no-new-privileges` lines are the proje
 
 Under **SSL/TLS** for the public zone, check the encryption mode. In the video I set it to **Full**. Flexible gave me trouble with Jellyfin, and with Force SSL turned on it's a classic cause of [too many redirects](https://github.com/NginxProxyManager/nginx-proxy-manager/issues/852).
 
-![Cloudflare's SSL/TLS encryption mode options with Full selected, as set in the video](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cloudflare-ssl-encryption-mode-full.jpg)
+![Cloudflare's SSL/TLS encryption mode options with Full selected, as set in the video](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/cloudflare-ssl-encryption-mode-full.jpg)
 
 I also said in the video that Full (strict) would need extra API setup. That isn't accurate. Per [Cloudflare's encryption mode docs](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/), [Full (strict)](https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/full-strict/) only needs a valid public certificate, like Let's Encrypt, on the origin, which is exactly what Nginx Proxy Manager will serve. Once every proxied hostname has its certificate, Full (strict) is the better choice. Newer zones may default to **Automatic SSL/TLS**, which picks a mode for you.
 
@@ -200,7 +200,7 @@ dns_cloudflare_api_token=REPLACE_WITH_YOUR_SCOPED_TOKEN
 
 Leave **Propagation Seconds** empty to use the plugin's default. If the request fails, setting it to `120` sometimes fixes it. When I did this, I also had to agree to Let's Encrypt's terms. Current versions removed that step from the form. Save it, and you should get a certificate covering the root domain and every subdomain.
 
-![The Nginx Proxy Manager certificate form with Use a DNS Challenge enabled and Cloudflare chosen as the DNS provider](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-dns-challenge-cloudflare.jpg)
+![The Nginx Proxy Manager certificate form with Use a DNS Challenge enabled and Cloudflare chosen as the DNS provider](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/npm-dns-challenge-cloudflare.jpg)
 
 Nginx Proxy Manager stores this token in its database so it can renew the certificate automatically. As of v2.16.0, it also deletes the temporary credentials file after each Certbot run. That makes the `data` volume and the admin UI more sensitive, which is one more reason to keep port 81 private and back up that volume carefully.
 
@@ -226,7 +226,7 @@ Jellyfin is one of the few things I want reachable from outside the house, and i
 
 First, in Jellyfin go to **Dashboard > Networking** and add the Nginx Proxy Manager host IP (`10.0.0.203`) to **Known Proxies**, then restart Jellyfin. The [Jellyfin reverse proxy docs](https://jellyfin.org/docs/general/post-install/networking/reverse-proxy/) explain why: without it, Jellyfin ignores forwarded headers and every client appears to come from the proxy.
 
-![Jellyfin's Networking settings with the Nginx Proxy Manager IP 10.0.0.203 entered under Known proxies](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/jellyfin-known-proxies.jpg)
+![Jellyfin's Networking settings with the Nginx Proxy Manager IP 10.0.0.203 entered under Known proxies](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/jellyfin-known-proxies.jpg)
 
 Then add a proxy host:
 
@@ -265,7 +265,7 @@ In Cloudflare, open the local domain's zone and add:
 
 When a device looks up `proxmox.example.net`, DNS returns `10.0.0.203`, the device connects to Nginx Proxy Manager on your LAN, and it routes the request by hostname. From anywhere else, that address points into someone else's private network, so it won't reach you. DNS changes can take a few minutes to propagate.
 
-![Cloudflare DNS records for the local domain: a DNS-only A record pointing to 10.0.0.203 and a wildcard CNAME](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/cloudflare-local-domain-dns-records.jpg)
+![Cloudflare DNS records for the local domain: a DNS-only A record pointing to 10.0.0.203 and a wildcard CNAME](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/cloudflare-local-domain-dns-records.jpg)
 
 One common gotcha: some routers and DNS filters have DNS rebinding protection, such as dnsmasq's `stop-dns-rebind` option. They block public DNS answers that point to private IPs. If your local domain won't resolve at home but works on mobile data with a lookup tool, whitelist the domain in that protection.
 
@@ -278,7 +278,7 @@ Now repeat the certificate step for `example.net` and `*.example.net`, using a D
 - Enable **Websockets Support**, which the console needs.
 - On **SSL**, choose the `example.net` wildcard certificate and enable **Force SSL**.
 
-![The New Proxy Host dialog for proxmox.hopki.net with the https scheme, port 8006, and Websockets Support enabled](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-proxmox-proxy-host.jpg)
+![The New Proxy Host dialog for proxmox.hopki.net with the https scheme, port 8006, and Websockets Support enabled](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/npm-proxmox-proxy-host.jpg)
 
 That's the moment from the thumbnail: `https://proxmox.example.net` with a real Let's Encrypt certificate. No more browser warning, and no more remembering which IP Proxmox is on.
 
@@ -321,7 +321,7 @@ client_max_body_size 100M;
 
 The other open item is the streaming subdomain. It's DNS-only, so it shows my home IP. I'm still looking for a good way to hide that IP for media and file streaming without breaking Cloudflare's terms.
 
-![Part of the Nginx Proxy Manager proxy host list, with local-domain hosts like bazarr, docker, frigate, and hass all on Let's Encrypt certificates](/docs-static/img/2026/10/ultimate-home-server-part-4-ssl-certificates/npm-proxy-hosts-list.jpg)
+![Part of the Nginx Proxy Manager proxy host list, with local-domain hosts like bazarr, docker, frigate, and hass all on Let's Encrypt certificates](/docs-static/img/2026/11/ultimate-home-server-part-4-ssl-certificates/npm-proxy-hosts-list.jpg)
 
 ## Wrapping Up the Series
 
