@@ -16,7 +16,7 @@ I've gone through plenty of them. Homepage, Heimdall (a longtime favorite), and 
 
 YESOUL sponsored the video this article is based on and sent over the exercise bike featured in it.
 
-The video was published in March 2025. The written installation and every config example below have been updated for [Glance v0.8.6](https://github.com/glanceapp/glance/releases/tag/v0.8.6), released September 3, 2026, and checked against the current docs. A few things changed in between: the include syntax, a built-in theme picker, optional login, and Pi-hole v6 support. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
+The video was published in March 2025. The written installation and every config example below have been updated for [Glance v0.8.8](https://github.com/glanceapp/glance/releases/tag/v0.8.8), released November 7, 2026, and checked against the current docs. v0.8.8 is a fix release and includes security fixes, so update an existing install. The config examples are the same. A few things changed in between: the include syntax, a built-in theme picker, optional login, and Pi-hole v6 support. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
 
 ## What Glance Is
 
@@ -78,7 +78,7 @@ The template's compose file is below, with one change. I pinned the image to the
 services:
   glance:
     container_name: glance
-    image: glanceapp/glance:v0.8.6
+    image: glanceapp/glance:v0.8.8
     restart: unless-stopped
     volumes:
       - ./config:/app/config
@@ -369,8 +369,8 @@ The `presets` part is new since my video. Starting with v0.8.0, any presets you 
 The login feature arrived after my video, and it's worth using if more than your LAN can reach the dashboard. Generate a secret key and a password hash:
 
 ```bash
-docker run --rm glanceapp/glance:v0.8.6 secret:make
-docker run --rm glanceapp/glance:v0.8.6 password:hash 'your-strong-password'
+docker run --rm glanceapp/glance:v0.8.8 secret:make
+docker run --rm glanceapp/glance:v0.8.8 password:hash 'your-strong-password'
 ```
 
 The second command puts the password in your shell history, so clear that entry afterward.
@@ -413,7 +413,7 @@ For me, it's the one I keep coming back to. Start with the template, get the mon
 - [Docker Compose template](https://github.com/glanceapp/docker-compose-template)
 - [Glance on Docker Hub](https://hub.docker.com/r/glanceapp/glance)
 - [Community widgets](https://github.com/glanceapp/community-widgets)
-- [v0.8.6 release](https://github.com/glanceapp/glance/releases/tag/v0.8.6)
+- [v0.8.8 release](https://github.com/glanceapp/glance/releases/tag/v0.8.8)
 - [v0.8.0 release notes](https://github.com/glanceapp/glance/releases/tag/v0.8.0)
 - [Proxmox VE helper script for Glance](https://community-scripts.org/scripts/glance)
 - [Pi-hole API authentication](https://docs.pi-hole.net/api/auth/)
