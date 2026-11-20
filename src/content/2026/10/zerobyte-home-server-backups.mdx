@@ -18,8 +18,6 @@ I want to say this up front: Zerobyte is early software. The README still says i
 
 I'll install it with Docker Compose, back up my Immich library from an Unraid SMB share to a local repository, add an encrypted Google Drive repository through rclone, and then walk through restoring a file.
 
-Floppydata sponsored the video this article is based on.
-
 <Note>
 The video was recorded in December 2025. The install steps below are for [Zerobyte v0.44.2](https://github.com/nicotsx/zerobyte/releases/tag/v0.44.2), released November 9, 2026. The compose file requires `APP_SECRET` (added in [v0.23.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.23.0)) and `BASE_URL` (added in [v0.24.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.24.0)). It has also added SFTP sources, multiple users, OIDC single sign-on, and encrypted configuration exports. In [v0.44.0](https://github.com/nicotsx/zerobyte/releases/tag/v0.44.0) the interface renamed Volumes to Sources. The docs pages still say volumes. My hands-on impressions come from the recorded walkthrough, and I've noted where the current version differs.
 </Note>
