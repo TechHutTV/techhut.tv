@@ -1206,7 +1206,9 @@
     "name": "LSD",
     "category": "Terminal",
     "description": "List files with icons, colors and configurable command-line output.",
-    "coverage": [],
+    "coverage": [
+      "/lsd-lsdeluxe-ls-command"
+    ],
     "videos": [
       {
         "id": "6MlOaZ_KgxA",

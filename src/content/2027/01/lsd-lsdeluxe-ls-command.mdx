@@ -1,0 +1,294 @@
+export const title = "LSD (LSDeluxe): Make Your Linux ls Command Awesome"
+export const description = "Install LSD, the Rust rewrite of ls with colors, icons and a tree view, set up a Nerd Font, learn the flags worth knowing, alias it to ls in bash or zsh, and customize it with config.yaml, colors.yaml and icons.yaml."
+export const date = "2027-01-03"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Terminal", "Customization"]
+export const cover = "/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="6MlOaZ_KgxA" title="TechHut's LSD (LSDeluxe) walkthrough" />
+
+If you spend any time in a Linux terminal, you type `ls` constantly. It lists the files and folders in whatever directory you're in, and it does that job fine. It's just not very nice to look at.
+
+[LSD](https://github.com/lsd-rs/lsd), short for LSDeluxe (and no, not that), is a drop-in alternative that adds colors, file type icons, a tree view and more formatting options. In the video I installed it, went through the flags I liked, and then replaced my `ls` command with it so I never had to think about typing something different.
+
+The video is from February 2021. Since then the project moved from `Peltoche/lsd` to the [lsd-rs](https://github.com/lsd-rs/lsd) organization on GitHub, gained a lot more distro packages and a proper theming system, and is now at [v1.2.0](https://github.com/lsd-rs/lsd/releases/tag/v1.2.0), released October 12, 2025. The install, font and configuration steps below are for that release. The terminal footage and my impressions come from the original recording.
+
+## What LSD Is
+
+LSD is a rewrite of GNU `ls` that's heavily inspired by [colorls](https://github.com/athityakumar/colorls). The big difference is that colorls is a Ruby script, while LSD is written in Rust, which I pointed to in the video as the reason it performs a lot better. It's open source under the Apache 2.0 license and runs on Linux, macOS, Windows and the BSDs.
+
+Out of the box, running `lsd` instead of `ls` gives you a more compact grid with an icon next to every entry. Folders get folder icons, images get picture icons, HTML files get the little HTML5 logo, Markdown files get their own icon, and generic files like ISOs get a plain file icon.
+
+![The ls and lsd commands side by side in a terminal on ArcoLinux, with lsd showing folder and file type icons in the Downloads folder](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/ls-vs-lsd-arcolinux.jpg)
+
+Most of the familiar `ls` flags work, though not every single one. Run `lsd --help` to see the full list.
+
+## Step 1: Install a Nerd Font First
+
+This is the part I skipped, and it bit me. I didn't read the whole README, and without a patched font the icons don't render. You get empty boxes or question marks where the icons should be.
+
+LSD needs a font with the extra glyphs, like a [Nerd Font](https://www.nerdfonts.com/) (Font Awesome also works), and your terminal has to be set to use it. Installing the font alone isn't enough.
+
+Back then I grabbed the complete Nerd Fonts package from the AUR, which pulled down something like 1.5 GB of fonts. That package doesn't exist anymore, and you really only need one or two fonts. Here are the current options from the [Nerd Fonts README](https://github.com/ryanoasis/nerd-fonts):
+
+**Arch Linux:** most Nerd Fonts are now in the official [extra repository](https://archlinux.org/groups/any/nerd-fonts/), so no AUR needed.
+
+```bash
+sudo pacman -S ttf-jetbrains-mono-nerd
+```
+
+**macOS or Linux with Homebrew:**
+
+```bash
+# macOS
+brew install font-jetbrains-mono-nerd-font
+
+# Linux (Homebrew needs --cask here)
+brew install --cask font-jetbrains-mono-nerd-font
+```
+
+**Any Linux distro, manually:** download a font from the [Nerd Fonts download page](https://www.nerdfonts.com/font-downloads) or the [latest release](https://github.com/ryanoasis/nerd-fonts/releases/latest), extract it into your user fonts folder, and refresh the font cache.
+
+```bash
+mkdir -p ~/.local/share/fonts/JetBrainsMono
+cd ~/.local/share/fonts/JetBrainsMono
+curl -OL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz
+tar -xf JetBrainsMono.tar.xz && rm JetBrainsMono.tar.xz
+fc-cache -f
+```
+
+**Windows:** the Nerd Fonts project points to community Scoop and Chocolatey packages, or you can install the downloaded font files normally.
+
+Then open your terminal's preferences and select the font (for example "JetBrainsMono Nerd Font"). The LSD README has a quick test. If this prints a folder icon, you're set:
+
+```bash
+echo $'\uf115'
+```
+
+If it prints a box or a question mark, the font isn't set up in your terminal yet.
+
+## Step 2: Install LSD
+
+LSD is packaged almost everywhere now. In the video I was on ArcoLinux, and since it's in the official Arch repos it was a one-liner. These follow the [project README](https://github.com/lsd-rs/lsd#installing-with-a-package-manager), with the Debian, Ubuntu and NixOS rows adjusted for current releases:
+
+| OS / distro | Command |
+|---|---|
+| Arch Linux | `sudo pacman -S lsd` |
+| Fedora | `sudo dnf install lsd` |
+| Debian 12+ / Ubuntu 24.04+ | `sudo apt install lsd` |
+| openSUSE | `sudo zypper install lsd` |
+| Gentoo | `sudo emerge sys-apps/lsd` |
+| Void Linux | `sudo xbps-install lsd` |
+| Solus | `sudo eopkg it lsd` |
+| NixOS | add `pkgs.lsd` to `environment.systemPackages` |
+| FreeBSD | `pkg install lsd` |
+| macOS | `brew install lsd` or `sudo port install lsd` |
+| Windows | `winget install --id lsd-rs.lsd`, `scoop install lsd` or `choco install lsd` |
+| Android (Termux) | `pkg install lsd` |
+
+Arch, Fedora, Homebrew, winget and Scoop all ship 1.2.0 right now. Debian and Ubuntu lag behind: Debian 12 has 0.23.1, Ubuntu 24.04 LTS has 1.0.0, Debian 13 has 1.1.5, and Ubuntu 26.04 LTS has 1.2.0. Older builds may not support every option below, so check with `lsd --version`. The old snap package is discontinued.
+
+If your distro's version is too old, or you're on something older like Ubuntu 22.04, you have two other routes.
+
+**Cargo**, if you have a Rust toolchain (1.2.0 needs Rust 1.85 or newer):
+
+```bash
+cargo install lsd
+```
+
+**Prebuilt binaries** from the [releases page](https://github.com/lsd-rs/lsd/releases). There are `.deb` packages for amd64, arm64 and i686, plus tarballs for Linux, macOS and Windows zips. On Debian or Ubuntu releases older than Debian 12 or Ubuntu 21.10, use the `_xz.deb` files, since those older `dpkg` versions can't read the default zstd compression:
+
+```bash
+curl -LO https://github.com/lsd-rs/lsd/releases/download/v1.2.0/lsd_1.2.0_amd64_xz.deb
+sudo apt install ./lsd_1.2.0_amd64_xz.deb
+```
+
+## Step 3: Try the Flags
+
+Once it's installed, `lsd --help` shows everything. These are the ones I used in the video, plus a few I'd add now:
+
+| Flag | What it does |
+|---|---|
+| `-a`, `--all` | Show hidden files (anything starting with `.`) |
+| `-A`, `--almost-all` | Hidden files, but without `.` and `..` |
+| `-l`, `--long` | Long table: permissions, user, group, size, date |
+| `-F`, `--classify` | Add an indicator like `/` for directories or `*` for executables |
+| `--tree` | Recurse into directories and show the result as a tree |
+| `--depth NUM` | Stop recursing after a given depth (great with `--tree`) |
+| `--group-dirs first` | List directories before files (`first`, `last` or `none`) |
+| `-t`, `-S`, `-X` | Sort by modified time, size or extension |
+| `-r`, `--reverse` | Reverse the sort order |
+| `--total-size` | Show the total size of directories instead of the entry size |
+| `-g`, `--git` | Show git status per file in the long view (needs a build with git support, which is the default for cargo builds) |
+| `--classic` | Turn off colors, icons and dir grouping to act like plain `ls` |
+
+In the video, I started with `lsd -a` in my home directory. It's the same list `ls -a` gives you, just easier to scan. Then I went with `lsd -Fl`, and that's where it starts to look good. The permission bits are colored by type (read, write and execute each get their own color), the last-modified dates are colored by how recent they are, and directories are clearly marked.
+
+It gets more useful in a folder with actual files in it. In my Downloads folder you could see the sizes color-coded: small files in a light tan, medium files a bit warmer, and multi-gigabyte ISOs in a darker orange. That makes the big stuff jump out right away.
+
+![lsd -Fl output in the home and Downloads folders, with colored permissions, dates and file sizes where the 2.5 GB ISOs stand out in orange](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/lsd-fl-long-listing.jpg)
+
+I didn't get to the tree view in the video, but it's one of the best reasons to use LSD. This shows two levels of a project folder with directories first:
+
+```bash
+lsd --tree --depth 2 --group-dirs first
+```
+
+Flags can be combined like regular `ls`, so `lsd -lA --group-dirs first` works fine.
+
+## Step 4: Replace ls With an Alias
+
+You're used to typing `ls`, and you don't want to retrain your fingers. The fix is a shell alias, so typing `ls` runs `lsd`. The README covers this under configuring your shell.
+
+### Bash
+
+Open `~/.bashrc` in your home directory. In the video I used `sudo nano`, but you don't need sudo for a file in your own home directory:
+
+```bash
+nano ~/.bashrc
+```
+
+On my ArcoLinux install, the file already had a `#list` section with aliases for `ls`. I commented out the existing `alias ls='ls --color=auto'` line with a `#` and added mine. My first attempt was `lsd -Fla`.
+
+![The .bashrc file in nano on ArcoLinux, with the default ls alias commented out and alias ls='lsd -Fla' added under the list section](/docs-static/img/2027/01/lsd-lsdeluxe-ls-command/bashrc-ls-alias.jpg)
+
+Commenting out the old line is good housekeeping. If you leave both, whichever alias comes last in the file wins. A reasonable set to add at the end of the file:
+
+```bash
+alias ls='lsd'
+alias l='lsd -l'
+alias la='lsd -a'
+alias lla='lsd -la'
+alias lt='lsd --tree'
+```
+
+The last four are the README's example aliases. The README writes them with `ls` (like `alias l='ls -l'`), which works the same once `ls` points at `lsd`. Add your own flags to the `ls` line if you want them every time.
+
+Save with Ctrl+O, exit with Ctrl+X, and then either open a new terminal or reload the file in the current one:
+
+```bash
+source ~/.bashrc
+```
+
+In the video I didn't know whether I needed to restart, so I closed and relaunched the terminal, and that did it. `source` is just quicker.
+
+### Zsh
+
+It's the same alias syntax, just in `~/.zshrc`:
+
+```bash
+nano ~/.zshrc
+# add the same alias lines, then:
+source ~/.zshrc
+```
+
+If you use a framework like Oh My Zsh that defines its own `ls` aliases, put your lines after the framework is loaded so yours take priority.
+
+<Note>
+Aliases only apply in interactive shells, so scripts that call `ls` still get the real thing. If you ever need plain `ls` in your terminal, run `command ls` or `\ls` to skip the alias.
+</Note>
+
+### What I settled on
+
+With `-Fla`, every `ls` printed hidden files and the full long table. That was a lot of information for a quick look around, so I dropped the `a` and settled on this:
+
+```bash
+alias ls='lsd -Fl'
+```
+
+That looked a lot better to me. I said at the time I'd probably trim it further eventually, since I don't need the full table every time, but it was a great start.
+
+## Step 5: Customize It (Config and Themes)
+
+In the video I only pointed at the default color table in the README and mentioned you could change all of it. The configuration system has grown a lot since then. LSD now reads up to three YAML files, and you only need the ones you want to change.
+
+On Linux and macOS it follows the XDG spec and looks in `$HOME/.config/lsd` and `$XDG_CONFIG_HOME/lsd`, which is `~/.config/lsd/` on most systems. On Windows it checks `%USERPROFILE%\.config\lsd` and then `%APPDATA%\lsd`.
+
+| File | What it controls |
+|---|---|
+| `config.yaml` | Default flags: layout, blocks, sorting, date format, icons and more |
+| `colors.yaml` | Custom color theme (only used when `color.theme` is `custom`) |
+| `icons.yaml` | Icon overrides by name, file type or extension |
+
+### config.yaml
+
+This is where most of your defaults can live instead of in the alias. Anything you leave out keeps its default. A small example:
+
+```bash
+mkdir -p ~/.config/lsd
+nano ~/.config/lsd/config.yaml
+```
+
+```yaml
+# ~/.config/lsd/config.yaml
+blocks:                # columns shown with -l, in this order
+  - permission
+  - user
+  - size
+  - date
+  - name
+indicators: true       # same as -F
+date: relative         # date, locale, relative or '+<strftime format>'
+sorting:
+  column: name
+  dir-grouping: first  # first, last or none
+icons:
+  when: auto
+  theme: fancy         # fancy (Nerd Font) or unicode
+color:
+  when: auto
+  theme: default       # set to custom to load colors.yaml
+```
+
+There's no setting that makes the long table the default, so keep `-l` in your alias if you want it every time. The `blocks` list then decides which columns that table shows (this example drops the group column). There's also a `layout` key (`grid`, `tree` or `oneline`) if you'd rather default to one entry per line or a tree.
+
+Flags on the command line still override the file. To test a config without touching your real one, use `lsd --config-file /path/to/test.yaml`, and `lsd --ignore-config` skips it entirely. The full list of options with defaults is in the [config sample](https://github.com/lsd-rs/lsd/blob/main/doc/samples/config-sample.yaml).
+
+### colors.yaml
+
+To use your own colors, set `theme: custom` under `color` in `config.yaml`, then create `~/.config/lsd/colors.yaml`. You only need to list what you want to change, and everything else falls back to the default theme. Values can be color names like `dark_green` or 256-color numbers.
+
+```yaml
+# ~/.config/lsd/colors.yaml
+user: 230
+group: 187
+date:
+  hour-old: 40
+  day-old: 42
+  older: 36
+size:
+  none: 245
+  small: 229
+  medium: 216
+  large: 172
+```
+
+Those are the default values, so they're a good starting point. The `size` section is where the tan-to-orange file size colors from the video come from. The [colors reference](https://github.com/lsd-rs/lsd/blob/main/doc/colors.md) and [colors sample](https://github.com/lsd-rs/lsd/blob/main/doc/samples/colors-sample.yaml) list every key.
+
+### icons.yaml
+
+`icons.yaml` is picked up automatically, with no setting needed in `config.yaml`. You can override icons by `name`, `extension` or `filetype`, using Nerd Font glyphs or regular Unicode emoji. Your overrides are merged on top of the built-in set:
+
+```yaml
+# ~/.config/lsd/icons.yaml
+extension:
+  rs: 🦀
+filetype:
+  dir: 📂
+  file: 📄
+```
+
+The [icons sample](https://github.com/lsd-rs/lsd/blob/main/doc/samples/icons-sample.yaml) shows every key.
+
+### A few gotchas
+
+- **Icons look wrong or mismatched:** Nerd Fonts moved some icon code points in version 3, and LSD uses the new ones. Use a font patched with Nerd Fonts 2.3 or later.
+- **First character of names gets cut off in Konsole:** this is a known terminal issue. The README has a workaround using a special `separator` value under `icons` in `config.yaml`.
+- **Icons in PuTTY or KiTTY:** pick a Nerd Font "Mono" variant, since those terminals struggle with double-width icons.
+
+## Final Thoughts
+
+LSD is one of those small terminal upgrades that you notice every day. The colors and icons make directory listings much easier to scan, the color-coded file sizes are useful, and once it's aliased to `ls` there's nothing new to remember. Just don't skip the Nerd Font step like I did. With all that, I do hope you have an absolutely beautiful day.
