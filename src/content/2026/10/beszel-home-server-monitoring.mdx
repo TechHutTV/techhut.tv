@@ -17,7 +17,7 @@ I've tried a couple of approaches. [Uptime Kuma](https://github.com/louislam/upt
 This time I'm trying [Beszel](https://beszel.dev/). It's a lightweight monitoring platform with a clean web UI, Docker and Podman stats, history, alerts, and multi-user support, and it looked easy to set up. We'll get the hub running, add a Docker VM and a bare-metal Proxmox host, then look at the charts and alerts.
 
 <Note>
-The written installation has been updated for [Beszel v0.21.0](https://github.com/henrygd/beszel/releases/tag/v0.21.0), released October 2, 2026. Beszel has gained a lot since I recorded the video, including Intel GPU support, so I've marked those changes where they come up. My hands-on impressions come from the recorded walkthrough.
+The written installation has been updated for [Beszel v0.21.2](https://github.com/henrygd/beszel/releases/tag/v0.21.2), released November 12, 2026. Beszel has gained a lot since I recorded the video, including Intel GPU support, so I've marked those changes where they come up. v0.21.2 also fixes permission bugs, including non-admin users being able to change system users, so update an existing install. The hub and agent install steps are the same. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## How Beszel Works
@@ -90,7 +90,7 @@ nano docker-compose.yml
 ```yaml
 services:
   beszel:
-    image: henrygd/beszel:0.21.0
+    image: henrygd/beszel:0.21.2
     container_name: beszel
     restart: unless-stopped
     environment:
@@ -159,7 +159,7 @@ The dialog uses the floating `latest` tag. If you prefer Compose, here's the sam
 ```yaml
 services:
   beszel-agent:
-    image: henrygd/beszel-agent:0.21.0
+    image: henrygd/beszel-agent:0.21.2
     container_name: beszel-agent
     restart: unless-stopped
     network_mode: host
@@ -244,7 +244,7 @@ For older Intel GPUs on the `i915` driver, which use `intel_gpu_top`:
 ```yaml
 services:
   beszel-agent:
-    image: henrygd/beszel-agent-intel:0.21.0
+    image: henrygd/beszel-agent-intel:0.21.2
     cap_add:
       - CAP_PERFMON
     devices:
@@ -256,7 +256,7 @@ For Arc and other GPUs on the newer `xe` driver, which use `nvtop`:
 ```yaml
 services:
   beszel-agent:
-    image: henrygd/beszel-agent-intel:0.21.0
+    image: henrygd/beszel-agent-intel:0.21.2
     pid: host
     devices:
       - /dev/dri:/dev/dri
@@ -351,5 +351,7 @@ If you have Proxmox, you can follow exactly what I did. If you just have a Linux
 - [User accounts](https://beszel.dev/guide/user-accounts)
 - [Common issues](https://beszel.dev/guide/common-issues)
 - [Beszel on GitHub](https://github.com/henrygd/beszel)
+- [v0.21.2 release](https://github.com/henrygd/beszel/releases/tag/v0.21.2)
 - [v0.21.0 release](https://github.com/henrygd/beszel/releases/tag/v0.21.0)
+
 - [Proxmox VE community script for Beszel](https://community-scripts.org/scripts?id=beszel)
