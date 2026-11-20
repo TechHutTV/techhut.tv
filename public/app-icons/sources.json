@@ -1271,5 +1271,31 @@
     "licenseSource": "https://github.com/homarr-labs/dashboard-icons/blob/376beb617e6354468fd677f2ce455d9f50144e9f/LICENSE",
     "changes": "None",
     "sha256": "e9f02f3ba23ed7069e835c307fc46b3dee8a1b54a1a40c022179448f7c68b2ad"
+  },
+  {
+    "app": "bazarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/bazarr.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "sha256": "f1b92048135e4415a1f7db2fd23e63211f93580fb1642c3097b9c65a2c783576"
+  },
+  {
+    "app": "nzbget",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/nzbget.png",
+    "repository": "https://github.com/selfhst/icons",
+    "license": "CC-BY-4.0",
+    "changes": "None",
+    "sha256": "98f200b6ba527d1e9368f502dcef3a0396d3bf21f69e612fd34c21bad3c7affe"
+  },
+  {
+    "app": "bazarr",
+    "source": "https://raw.githubusercontent.com/selfhst/icons/4798f7b385ce4d9b18520e4f2091635be6370bc4/png/bazarr-light.png",
+    "repository": "https://github.com/selfhst/icons",
+    "provenance": "Existing dark-theme PNG verified byte-for-byte against the pinned selfh.st collection.",
+    "license": "CC-BY-4.0 (icon collection); Bazarr branding remains the property of its owner.",
+    "licenseSource": "https://github.com/selfhst/icons/blob/4798f7b385ce4d9b18520e4f2091635be6370bc4/LICENSE",
+    "changes": "None",
+    "sha256": "b0ac6d9e3f724b4540fb4c291440e4de687dab11a6e1971723e6eb62b71f7358"
   }
 ]

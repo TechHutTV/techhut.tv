@@ -1,0 +1,42 @@
+{
+  "summary": "Find and download subtitles for libraries managed by Sonarr and Radarr.",
+  "overview": "Bazarr is a companion to Sonarr and Radarr. It syncs the series and movies those applications manage, then searches the subtitle providers you enable for the languages set in each language profile. It can scan existing files for missing subtitles, keep a history of what it downloaded, and replace earlier subtitles when a better match appears. Manual search covers anything the automatic search misses, so subtitles can be handled alongside the rest of a media automation stack.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "macOS",
+    "Windows",
+    "Docker"
+  ],
+  "license": {
+    "name": "GPL-3.0",
+    "type": "Open source",
+    "url": "https://github.com/morpheus65535/bazarr/blob/master/LICENSE"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://www.bazarr.media/"
+    },
+    {
+      "label": "Official wiki",
+      "url": "https://wiki.bazarr.media/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/morpheus65535/bazarr"
+    }
+  ],
+  "features": [
+    "Sonarr and Radarr sync",
+    "Language profiles",
+    "Multiple subtitle providers",
+    "Manual subtitle search"
+  ],
+  "sources": [
+    "https://www.bazarr.media/",
+    "https://wiki.bazarr.media/Getting-Started/Setup-Guide/",
+    "https://github.com/morpheus65535/bazarr#readme",
+    "https://github.com/morpheus65535/bazarr/blob/master/LICENSE"
+  ]
+}
