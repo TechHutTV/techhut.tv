@@ -1354,7 +1354,9 @@
     "name": "Microsoft PowerToys",
     "category": "Desktop",
     "description": "Add window layouts, a launcher and other productivity tools to Windows.",
-    "coverage": [],
+    "coverage": [
+      "/microsoft-powertoys-windows-11"
+    ],
     "videos": [
       {
         "id": "n8W7AN5Rsqc",

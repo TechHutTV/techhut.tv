@@ -1,0 +1,257 @@
+export const title = "Microsoft PowerToys: The Windows 11 Utilities Worth Installing Right Now"
+export const description = "Install Microsoft PowerToys on Windows 11 and tour the utilities I tried, from FancyZones and Color Picker to Text Extractor and PowerToys Run, updated for PowerToys 0.102 and Command Palette."
+export const date = "2027-01-05"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Windows", "Apps"]
+export const cover = "/docs-static/img/2027/01/microsoft-powertoys-windows-11/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="n8W7AN5Rsqc" title="TechHut's Microsoft PowerToys walkthrough" />
+
+I'm always digging through GitHub looking for projects to cover, and Microsoft PowerToys seems to land on the daily trending list about every other day. I had never looked at it on the channel, so I finally sat down with it.
+
+[PowerToys](https://learn.microsoft.com/en-us/windows/powertoys/) is a free collection of small utilities from Microsoft that fill in gaps in Windows: a window layout manager, a color picker, a launcher, bulk renaming, screen OCR, and a lot more. You install one app, then turn on only the pieces you want.
+
+Windows isn't my daily driver, so I did all of this in a Windows 11 virtual machine, connected through Microsoft Remote Desktop from my Mac. That matters for a couple of the keyboard shortcuts below, since I was pressing them on a Mac keyboard.
+
+The video was published in September 2022. I recorded it right after PowerToys 0.62 came out, which is the release that added Screen Ruler, Quick Accent, and Text Extractor. The install steps, default shortcuts, and feature notes below are for [PowerToys 0.102](https://github.com/microsoft/PowerToys/releases/tag/v0.102.3101) (v0.102.3101.0), released November 6, 2026. That build is a hotfix on top of [0.102.2933.0](https://github.com/microsoft/PowerToys/releases/tag/v0.102.2933.0), which added the new utilities below. Since then, Video Conference Mute has been removed, Command Palette has arrived as the next generation of PowerToys Run, and more than a dozen new utilities have been added. The screenshots and hands-on impressions come from the original recording, and I've noted where things work differently now.
+
+## What PowerToys Is
+
+| | Details |
+|---|---|
+| Latest release | 0.102 (v0.102.3101.0), November 6, 2026 |
+| Requirements | Windows 11, or Windows 10 version 2004 (build 19041) or newer |
+| CPU | 64-bit x64 or ARM64 |
+| License | [MIT](https://github.com/microsoft/PowerToys/blob/main/LICENSE), open source |
+| Source | [microsoft/PowerToys on GitHub](https://github.com/microsoft/PowerToys) |
+| Price | Free |
+
+At the end of the video I joked that people would yell at me for using "proprietary garbage." For the record, PowerToys is MIT-licensed, and the whole thing is developed in the open on GitHub.
+
+## Install PowerToys
+
+Microsoft recommends GitHub or the Microsoft Store, with winget as the package manager option. Pick one.
+
+### Option 1: winget
+
+Open PowerShell or Terminal and run:
+
+```powershell
+winget install --id Microsoft.PowerToys --source winget
+```
+
+That installs for your user account by default. If you want it for every user on the machine, the README gives a machine-wide variant:
+
+```powershell
+winget install --scope machine Microsoft.PowerToys -s winget
+```
+
+### Option 2: The installer from GitHub
+
+Go to the [releases page](https://github.com/microsoft/PowerToys/releases), open **Assets**, and grab the installer that matches your machine. For 0.102 the files are:
+
+| Installer | x64 | ARM64 |
+|---|---|---|
+| Per user | `PowerToysUserSetup-0.102.3101.0-x64.exe` | `PowerToysUserSetup-0.102.3101.0-arm64.exe` |
+| Machine wide | `PowerToysSetup-0.102.3101.0-x64.exe` | `PowerToysSetup-0.102.3101.0-arm64.exe` |
+
+The README says x64 per-user is the right pick for most devices. Per-user installs to `%userprofile%\AppData\Local\Programs`, and machine-wide goes to `%ProgramFiles%`. Both get updates the same way. The release page lists SHA-256 hashes for each file if you want to check your download.
+
+### Option 3: Microsoft Store
+
+PowerToys is also on the [Microsoft Store](https://aka.ms/getPowertoys). Chocolatey (`choco install powertoys`) and Scoop (`scoop install powertoys` from the `extras` bucket) work too, but those packages are maintained by the community rather than Microsoft.
+
+When I installed it, the download was about 125 MB, and it came down in a couple of seconds, faster than my NAS moves files sometimes. Back then the installer was still labeled "PowerToys (Preview)." It asked for a restart when it finished, and since it was a VM, I just let it reboot.
+
+The installer pulls in the Microsoft Edge WebView2 Runtime if you need it. Once PowerToys is installed, it checks for updates on its own and shows a notification when a new version is out. In 0.102 you can also pick a **Stable** or **Insider** update channel under **Settings > General**.
+
+<Note>
+PowerToys has to be running in the background for its shortcuts and remaps to work. If you want it to work with apps that run as administrator, such as an elevated Terminal or Task Manager, you need to run PowerToys as administrator too.
+</Note>
+
+## General Settings
+
+The PowerToys settings window lists every utility down the left side. The **General** page has the version info, the update check, and the app theme. You can go light, dark, or follow Windows. I kept it dark for the whole video. Current versions also open to a **Home** page where you can switch individual utilities on or off and see an overview of their shortcuts.
+
+## The Tools I Tried
+
+I went through the list in the order the settings app shows it. Default shortcuts below are the current ones, from Microsoft's documentation.
+
+### Always On Top
+
+Press **Win+Ctrl+T** and the active window stays above everything else until you press it again or close it. My example was the trusty Calculator floating over a spreadsheet while you work in Excel behind it.
+
+The default border around the pinned window looked pretty rough to me, so I turned the thickness down. Somewhere around two or three pixels looked about right, and I turned off rounded corners. You can also exclude apps. Newer versions add a toggle for Always On Top in a window's title bar right-click menu and an optional sound when you pin something.
+
+### Awake
+
+Awake keeps your PC from sleeping without you touching your power plan. You can keep it awake indefinitely, for a set time, or until a specific date and time, and **Keep screen on** stops the displays from turning off as well. It doesn't work while the lock screen is showing, so for anything unattended Microsoft says to change your actual power plan instead.
+
+### Color Picker
+
+On GNOME, my desktop of choice, I use a shell-integrated color picker, and this is the Windows version of the same idea. Press **Win+Shift+C** (on my Mac keyboard over Remote Desktop that was Command+Shift+C), click anything on screen, and you get the color.
+
+The editor that opens is the nice part. It shows the color you picked plus a range of lighter and darker shades you can click, the values in several formats with copy buttons, and a history of everything you've picked. I grabbed a blue, then the yellow of the File Explorer icon, and both were sitting in the history.
+
+![The Color Picker editor open over the PowerToys settings, showing the picked blue with HEX and RGB values and a history of picked colors](/docs-static/img/2027/01/microsoft-powertoys-windows-11/color-picker-editor.jpg)
+
+In settings, you choose the default format that gets copied to your clipboard and which formats show up in the editor. I switched the default to RGB to show how it works, but honestly HEX and RGB are the only two I care about. The current version copies HEX by default, keeps up to 20 colors in history, and lets you define custom formats.
+
+### FancyZones
+
+FancyZones is a window manager that lets you build your own layouts and snap windows into them. This was a quicker video, so I didn't go as deep as it deserves, but it's one of the big selling points of PowerToys.
+
+The editor opens with **Win+Shift+\`** (the backtick key). The default didn't want to cooperate through my Remote Desktop setup at first, so I recorded the shortcut again in settings and then it worked.
+
+The editor starts with templates: Focus, Columns, Rows, Grid, and Priority Grid. Pick one and it applies to that monitor.
+
+![The FancyZones editor showing the Focus, Columns, Rows, Grid, and Priority Grid templates and an empty Custom section](/docs-static/img/2027/01/microsoft-powertoys-windows-11/fancyzones-editor-templates.jpg)
+
+The fun part is **Create new layout**. There are two styles:
+
+- **Grid** starts with three columns. Click to split a zone (hold Shift to split the other way), drag dividers to resize, and drag across zones to merge them.
+- **Canvas** gives you free-floating zones that you can move and resize like windows, and they're allowed to overlap.
+
+I made a custom layout with a zone for a spreadsheet, one for TweetDeck, one for an email client, and one for music. Then save and apply it. To use it, drag a window while holding **Shift**, and the zones light up so you can drop it into one. Hold **Ctrl** while dragging to span multiple zones. At the end of the video I snapped a window into it, and it just worked.
+
+A few things are worth knowing now:
+
+- Assign a number to a custom layout and turn on **Enable quick layout switch**, and **Win+Ctrl+Alt+[number]** applies it.
+- **Override Windows Snap** makes Win+arrow keys move windows between your zones.
+- Custom layouts live in `%LocalAppData%\Microsoft\PowerToys\FancyZones\custom-layouts.json` if you want to back them up or copy them to another PC.
+- Newer releases add a FancyZones CLI (`FancyZonesCLI.exe`) and a mode that rotates windows across monitors with **Alt+X** and the arrow keys.
+
+### File Explorer Add-ons
+
+This section came with a lot of warning messages, but it's mostly about better previews in File Explorer for file types Windows doesn't handle well on its own. You turn each one on here.
+
+The current list of Preview Pane handlers is SVG, Markdown, PDF, G-code, Binary G-code (`.bgcode`), QOI images, and source code (via Monaco, covering more than 150 extensions). Thumbnail handlers cover SVG, PDF, G-code, Binary G-code, STL, and QOI. To see previews, open File Explorer and enable **View > Preview pane**.
+
+<Warning>
+Enabling these preview handlers overrides any other preview handlers you already have installed. Microsoft notes reports of conflicts between Outlook and the PowerToys PDF previewer. Thumbnail handlers may also need a reboot before they kick in.
+</Warning>
+
+### Image Resizer
+
+Image Resizer adds a resize option to the right-click menu for images. To test it, I took a screenshot with Snipping Tool at 1440p and dropped it on the desktop. In the video, I right-clicked it, went into **Show more options**, and picked **Resize pictures**. In current versions, the menu entry is called **Resize with Image Resizer**.
+
+![The Image Resizer dialog with the Small preset selected, next to the Image Resizer presets in PowerToys settings](/docs-static/img/2027/01/microsoft-powertoys-windows-11/image-resizer-dialog.jpg)
+
+The dialog has presets (Small, Medium, Large, Phone, plus custom) and a few checkboxes, like only making pictures smaller or resizing the originals instead of creating copies. I chose a smaller size and it made a new copy next to the original. Hovering over them showed the 1440p original and a new 553 by 480 version.
+
+Each preset can be set to Fill, Fit, or Stretch, in pixels, percent, centimeters, or inches. You can also set the output file name pattern (for example `%1 (%2)` gives `example (Small).png`). There's a command line version now too:
+
+```powershell
+PowerToys.ImageResizerCLI.exe --width 800 --height 600 .\image.png
+```
+
+### Keyboard Manager
+
+I only touched on this one in the video. Keyboard Manager remaps single keys or whole shortcuts. Current versions go further. A key or shortcut can send a text string, launch an app, or open a URI, and shortcut remaps can apply to one app only (matched by process name, like `msedge`). Since 0.100, new installs use a redesigned editor, and the legacy one is still a toggle away.
+
+A few limits: **Win+L** and **Ctrl+Alt+Del** can't be remapped, the Fn key usually can't either, and remaps only apply while PowerToys is running. If you lock yourself out with a bad remap, close PowerToys or turn Keyboard Manager off.
+
+### Mouse Utilities
+
+**Find My Mouse** puts a spotlight on your cursor when you press the left Ctrl key twice. macOS does something similar when you give the mouse a little shake. I swiped over to my Mac to show it, and the PowerToys version is a bit more obvious and, honestly, easier to trigger. Funny enough, the current version also offers **Shake mouse** as an activation method, along with right Ctrl or a custom shortcut.
+
+**Mouse Highlighter** (**Win+Shift+H**) draws a circle wherever you click. It gave me serious 2008 CamStudio vibes, and I left it on just because it felt retro. Newer versions add a **Ripple** mode, which is the default for new settings.
+
+There's also **Mouse Pointer Crosshairs**. Since the video, the mouse utilities have picked up **Mouse Jump**, for moving the pointer long distances or across monitors, and **CursorWrap**, which wraps the pointer around screen edges.
+
+### PowerRename
+
+PowerRename is bulk renaming from the File Explorer right-click menu, with search and replace or regular expressions. It's like find and replace in Microsoft Word, but for file names. I'll be honest, I wasn't interested in it at the moment, but if you deal with batches of files, it's powerful.
+
+It shows a live preview of the new names before anything changes, and Ctrl+Z in Explorer undoes the rename. Two examples from Microsoft's docs:
+
+| Search for | Replace with | Result |
+|---|---|---|
+| `(\d{2})-(\d{2})-(\d{4})` | `$3-$2-$1` | `29-03-2020` becomes `2020-03-29` |
+| `a` | `Image_${padding=4;increment=2;start=10}_` | With **Enumerate items** on, numbers the files `Image_0010_`, `Image_0012_`, and so on |
+
+Turn on **Use regular expressions** for the first one, and turn on **Match all occurrences** whenever you use capture groups. You can also pull in a file's creation date (`$YYYY`, `$MM`, `$DD`) or photo EXIF data like `$CAMERA_MODEL`.
+
+### PowerToys Run (and Command Palette)
+
+PowerToys Run is a quick launcher. The default shortcut is **Alt+Space**, which was awkward on my Mac keyboard, so I changed it to **Shift+Space**. Then it works pretty much like you'd expect. Type "edge" and open Edge. Type a URL like techhut.tv and it opens the best website for tech media directly. Type `2+2` and it shows 4, with options to copy the answer or send it to the calculator.
+
+![PowerToys Run showing the result 4 for the query 2+2, with a web search option and file results below](/docs-static/img/2027/01/microsoft-powertoys-windows-11/powertoys-run-calculator.jpg)
+
+It's basically Ulauncher, just built into Windows. You also get settings for which monitor it opens on and its theme, which I switched to dark. It also found my TechHut OneDrive folders, which was a nice touch.
+
+PowerToys Run still ships in 0.102, and it has picked up more plugins since the video. Each plugin has an activation prefix, for example `=` for the calculator, `??` for a web search, `>` for shell commands, `$` for Windows settings, `%%` for unit conversion, and `<` to switch to an open window.
+
+**Command Palette** is the bigger change. It arrived in 0.90, and Microsoft calls it the evolution of PowerToys Run. Its default shortcut is **Win+Alt+Space**. It launches apps, searches files, runs commands, and also does things like WinGet app installs, clipboard history, a system performance monitor, a Dock you can pin commands to, and an Extension Gallery for community extensions.
+
+| What you want | Type this in Command Palette |
+|---|---|
+| Launch an app | Start typing its name |
+| Run a command | `>` followed by the command, like `> cmd` |
+| Web search | `??` followed by your query |
+| Calculate | A math expression, or `=` and a space |
+| Open a Windows Settings page | `$` followed by the page name, like `$ display` |
+| Search files | `file` and a space, or open **Search files** |
+
+Both utilities are still in PowerToys, and you can turn each one on or off from the Home page.
+
+### Quick Accent
+
+Quick Accent is for typing accented letters, like when you're writing Spanish and need those little marks on top. In the video I held down a letter and picked the accented version I wanted from the bar that pops up at the top of the screen. Currently, you hold the base letter and press **Space** or an arrow key to open the picker (the default trigger accepts either). 0.101 also adds an optional **Press and hold the letter** mode. You can limit the picker to the languages you use under **Characters**. Turn it on from its settings page first.
+
+### Screen Ruler
+
+So, how big is this window? Screen Ruler finds out. It has bounds, spacing, horizontal, and vertical modes. I drew a bounding box around a window, and it came out at roughly 1,500 by 1,000 pixels. In the video, the shortcut was Win+Shift+M. The current default is **Win+Ctrl+Shift+M**. Clicking copies the measurement to your clipboard, and settings cover the edge-detection tolerance, line color, and extra units like inches or centimeters.
+
+### Shortcut Guide
+
+This one was a nice surprise. In the video, **Win+Shift+/** brought up a full-screen overlay of Windows shortcuts, including the window controls, and there were things in there I didn't know about. I've been using Windows wrong this whole time. It looked great in dark mode too.
+
+Shortcut Guide has been rebuilt since then. The default shortcut is now written as **Win+Shift+?**, which is the same keys on a US keyboard. It opens a regular, searchable window instead of the overlay. It shows shortcuts for the app you're in, plus Windows and PowerToys, with built-in lists for apps like Office, Edge, Chrome, Firefox, VS Code, Terminal, Discord, Slack, Photoshop, and DaVinci Resolve. Holding the Windows key for a moment shows shortcut indicators on the taskbar, and you can add your own apps with a YAML file.
+
+### Text Extractor
+
+Text Extractor was one of the newer tools at the time, and it was the one I was really interested in. Press **Win+Shift+T**, drag a box over any part of the screen, and the text inside goes to your clipboard through OCR, even if it's text you can't normally select.
+
+I tested it by grabbing the Text Extractor description from the settings page (extracting the Text Extractor text with Text Extractor) and pasting it into a text editor. It worked. It's the same idea as the feature on iPhones where you can select text right out of a photo, and it's super handy for things like school.
+
+OCR uses your Windows language settings, and it only recognizes languages that have an OCR language pack installed. Microsoft's docs have PowerShell commands for checking and adding them. Proofread the output, since OCR isn't perfect.
+
+### Video Conference Mute (removed)
+
+Video Conference Mute gave you global hotkeys to mute your microphone and turn off your camera. I could see a use for it, but there are other ways to do that. It was deprecated and removed in [PowerToys 0.88](https://github.com/microsoft/PowerToys/releases/tag/v0.88.0) in January 2025, so you won't find it in current versions.
+
+## Added Since the Video
+
+A lot has shown up since 0.62. The short version, using Microsoft's own descriptions:
+
+- **Command Palette:** the launcher covered above, the successor to PowerToys Run.
+- **Advanced Paste:** paste clipboard content in whatever format you need. The AI features are optional, and 0.101 adds on-device transformations that don't need a cloud endpoint or API key.
+- **Peek:** quick file previews without opening an app.
+- **Workspaces:** launch a set of apps into saved positions with one click.
+- **ZoomIt:** the Sysinternals screen zoom, annotation, and recording tool, added in 0.88.
+- **Crop And Lock:** make a cropped, still-interactive window from part of another window.
+- **File Locksmith:** see which processes are holding a file, from the right-click menu.
+- **Hosts File Editor**, **Environment Variables**, and **Registry Preview:** friendlier editors for those three.
+- **Mouse Without Borders:** control several PCs with one keyboard and mouse.
+- **New+:** create files and folders from your own templates in File Explorer.
+- **Command Not Found:** a PowerShell 7 module that suggests a WinGet package when a command isn't found.
+- **Light Switch:** automatic light and dark theme switching based on the time of day.
+- **Power Display:** brightness, contrast, volume, input, and color temperature controls for external monitors.
+- **Grab And Move:** hold a modifier key and drag anywhere in a window to move or resize it.
+- **Window Hopper:** added in 0.101, it cycles through the windows of the current app with **Alt+\`**.
+- **Mouse Button Lock:** new in 0.102. Hold a mouse button for a moment, let go, and Windows keeps treating it as held until you click again.
+- **CursorHide:** also new in 0.102. It hides the pointer while you type, after you stop moving the mouse, or both, and shows it again when you move.
+- **Command Palette quick-access shelf:** in compact mode, pins sit under the search box. **Alt+1** through **Alt+9** launch them.
+- **ZoomIt snip dictation:** hold **Space** while you drag a snip and ZoomIt transcribes what you say on the device, then one paste gives you the screenshot and the text.
+
+## My Take
+
+Out of everything here, Text Extractor and Shortcut Guide are the ones I loved. I don't use hotkeys and shortcuts nearly enough, on macOS or on GNOME, and I'd be a lot more efficient if I did. Always On Top makes sense, but I'd barely ever use it. Color Picker is helpful, and FancyZones is super cool. I need to dig into it more and learn it properly.
+
+The one I figured I'd use the most was PowerToys Run. I'm not in Windows that much, but whenever I was in that virtual machine, I planned to take advantage of it. On a current install, Command Palette covers that same job and a lot more.
+
+PowerToys is free, open source, and modular, so you can install it and turn on only what you need. That's why it keeps showing up on GitHub's trending list. With all that, I do hope you have an absolutely beautiful day.
