@@ -1,0 +1,179 @@
+export const title = "ONLYOFFICE Workspace: A Self-Hosted Alternative to Google Workspace and Microsoft 365"
+export const description = "A tour of ONLYOFFICE Workspace's documents, projects, CRM, mail, chat and community modules, plus the current way to self-host Workspace Community with the official Docker install script."
+export const date = "2026-12-06"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Software"]
+export const tags = ["Self-Host", "Docker", "Linux"]
+export const cover = "/docs-static/img/2026/12/onlyoffice-workspace-overview/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="c0ArprJZ-0E" title="TechHut's ONLYOFFICE Workspace walkthrough" />
+
+If you run a small business and want out of Google Workspace or Microsoft 365, you're usually looking at stitching together a file server, an office suite, a project tracker, a CRM, and a mail client. [ONLYOFFICE Workspace](https://www.onlyoffice.com/workspace) tries to be all of that in one portal: documents, projects, CRM, mail, calendar, chat, and an internal community section, all tied to the ONLYOFFICE editors.
+
+The part I liked is that you aren't locked into their servers. You can host the whole thing yourself, which is the main reason I thought it was worth a look.
+
+## What Changed Since the Video
+
+I recorded this in August 2022, and a few big things have changed since then:
+
+- **The cloud version I used is gone.** In the video I signed up for ONLYOFFICE's hosted Workspace because it was the quickest way in, and back then it was free for up to five users. ONLYOFFICE [discontinued Workspace Cloud as of March 2, 2026](https://www.onlyoffice.com/blog/2025/12/wrapping-up-onlyoffice-workspace-cloud) and is pointing cloud users to DocSpace. So the only way to use Workspace today is to self-host it.
+- **Self-hosted Workspace is still offered, but it's in maintenance mode.** The [Workspace download page](https://www.onlyoffice.com/download-workspace) still offers the free Community edition, and [Workspace 12.8.0](https://www.onlyoffice.com/blog/2026/05/onlyoffice-workspace-12-8) came out on May 7, 2026. ONLYOFFICE staff have said on their [forum](https://community.onlyoffice.com/t/further-development-of-onlyoffice-community-server-workspace/16658) that Workspace remains available and keeps getting security and stability updates, but that new features are going into [DocSpace](https://www.onlyoffice.com/docspace) instead. Keep that in mind before you build your whole company on it.
+- **The server component has a new name.** The open source core, formerly Community Server, is now called [ONLYOFFICE Groups](https://github.com/ONLYOFFICE/CommunityServer) and is licensed under Apache 2.0. Workspace Community is Groups bundled with ONLYOFFICE Docs, Mail Server, Talk, and the Control Panel.
+
+The install steps below are for the current self-hosted release. The tour of the modules and my impressions come from the original recording on the cloud version, so some menus may look a little different on your server.
+
+## What ONLYOFFICE Workspace Includes
+
+The modules I went through:
+
+| Module | What it does |
+|--------|--------------|
+| Documents | File storage and sharing, with ONLYOFFICE editors built in |
+| Projects | Projects, tasks, subtasks, milestones, Gantt charts, time tracking |
+| CRM | Companies, contacts, opportunities, invoices, sales reports |
+| Mail | Web mail client, shared mailboxes, templates, optional self-hosted mail server |
+| Talk | Team chat based on XMPP (Jabber) |
+| Community | Blogs, forums, bookmarks, and a wiki (off by default) |
+| Calendar, People, Feed | Scheduling, the employee directory, and notifications |
+
+There are two self-hosted editions. Community is free and open source. Enterprise is a paid per-server license that adds more users, extra features, and professional support from ONLYOFFICE. See the [Workspace pricing page](https://www.onlyoffice.com/workspace-prices) for the current tiers.
+
+## Installing ONLYOFFICE Workspace Community
+
+ONLYOFFICE's recommended route is an install script that sets everything up in Docker. There's also a package-based option for Debian and RHEL style systems, a Windows installer, and one-click images for a couple of hosting providers, all listed in the [Help Center](https://helpcenter.onlyoffice.com/workspace/installation/community).
+
+### Requirements
+
+According to the [official Docker install guide](https://helpcenter.onlyoffice.com/workspace/installation/workspace-install-docker.aspx), you'll need:
+
+- A 64-bit (amd64) Linux distribution with kernel 3.10 or later
+- At least 4 CPU cores (6 recommended)
+- At least 8 GB of RAM (12 GB recommended)
+- At least 40 GB of free disk space
+- Root access
+
+This is not a lightweight app. It runs a full office server, MySQL, Elasticsearch, and optionally a mail server, so give it a real VM. The script checks your CPU, RAM, and disk before it starts and stops if you're under the minimums. It also creates a 6 GB swap file at `/onlyoffice_swapfile` (and adds it to `/etc/fstab`) if your server has less than 16 GB of RAM.
+
+### Run the install script
+
+Download the script as root:
+
+```bash
+curl -O https://download.onlyoffice.com/install/workspace-install.sh
+```
+
+If you want ONLYOFFICE Mail, pass your mail domain. That domain needs a valid A record pointing at the server, and your MX record should point at it too:
+
+```bash
+bash workspace-install.sh -md "your-domain.com"
+```
+
+If you don't have a domain set up for mail, or you just want to try it out, skip the mail server:
+
+```bash
+bash workspace-install.sh -ims false
+```
+
+The script asks whether to install with Docker. Answer **Y**. To see every option first, run `bash workspace-install.sh -h`.
+
+Since you're running it as root, here's what the current scripts do, based on the [`workspace-install.sh`](https://download.onlyoffice.com/install/workspace-install.sh) and [`install.sh`](https://download.onlyoffice.com/install/install.sh) that ONLYOFFICE serves today. `workspace-install.sh` is a small wrapper. It installs curl if needed, asks Docker or packages, then downloads ONLYOFFICE's main `install.sh` and runs it in Workspace Community mode. That script:
+
+- Installs Docker using Docker's `get.docker.com` script if it isn't already there
+- Creates a Docker network called `onlyoffice` and stores all data under `/app/onlyoffice`
+- Starts these containers: `onlyoffice-mysql-server` (MySQL 8.4.0), `onlyoffice-elasticsearch`, `onlyoffice-document-server` (`onlyoffice/documentserver`), `onlyoffice-mail-server` (if you gave it a mail domain), `onlyoffice-control-panel`, and `onlyoffice-community-server` (`onlyoffice/communityserver`)
+- Pulls the newest version tag of each ONLYOFFICE image unless you pin one with `-cv`, `-dv`, `-mv`, or `-cpv`
+- Generates a random JWT secret for the document server
+
+The Community Server and Mail Server containers run with `--privileged`, and the Control Panel container gets the Docker socket mounted so it can manage the other containers. That's how ONLYOFFICE designed it, but it does mean this stack has root-level control of the host. It's safest on its own VM instead of a box that runs other services.
+
+<Warning>
+The script uses well-known default MySQL passwords unless you override them. MySQL is only reachable on the internal Docker network by default, so it isn't published to your LAN, but it's still a good idea to set your own on a fresh install with `-mysqlrp` (root), `-mysqlp` (Community Server user), and `-mysqlmp` (mail user), for example `bash workspace-install.sh -md "your-domain.com" -mysqlrp "strong-root-password" -mysqlp "strong-db-password" -mysqlmp "strong-mail-password"`. Keep in mind that passwords typed on the command line end up in your shell history.
+</Warning>
+
+### Ports
+
+The Community Server container publishes ports `80`, `443`, and `5222` (Talk, the XMPP chat). If you install the mail server, it also publishes `25`, `143`, `587`, `465`, `993`, `995`, and `4190`. The script checks these ports first and stops if something else is already using them. If port 80 is taken, you can move the web interface with `-cp 8080`. ONLYOFFICE has a full [port reference](https://helpcenter.onlyoffice.com/workspace/installation/workspace-open-ports.aspx) if you need to set up firewall rules.
+
+### First login
+
+When the script finishes, open a browser on another machine and go to your server's LAN IP address. ONLYOFFICE specifically says not to use `localhost` or `127.0.0.1`. The setup wizard asks for the administrator email and password, plus your language and time zone. Set the time zone correctly, since calendar reminders and notifications depend on it.
+
+For HTTPS, the Control Panel has an **HTTPS** page where you can generate and apply a certificate or upload your own `.crt` and `.key` files.
+
+To update later, rerun the script with `--update true`. It recreates the containers on the newest images and keeps the data in `/app/onlyoffice`.
+
+### Other install options
+
+- **DEB/RPM packages:** Run `bash workspace-install.sh` and answer **N**. This installs Docs, Community Server, and the Control Panel from packages, but not Mail, which you have to set up separately. The Control Panel's HTTPS and Update sections aren't available on package installs. See the [package install guide](https://helpcenter.onlyoffice.com/installation/workspace-install-linux.aspx).
+- **Docker Compose:** The [Docker-CommunityServer](https://github.com/ONLYOFFICE/Docker-CommunityServer) repo has a `docker-compose.workspace.yml`, but the [current file](https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/master/docker-compose.workspace.yml) pins older images (Community Server 12.6, Docs 8.1) and contains placeholder secrets like `my-secret-pw` and `jwt_secret`. If you go that way, update the image tags and replace every secret before you start it. Otherwise, the script is the better-maintained route.
+
+## Documents
+
+The Documents module is basic file storage, a bit like Google Drive, Nextcloud, or Dropbox. What makes it stand out is the built-in ONLYOFFICE editors. You can create a document, spreadsheet, or presentation from the **Create** button and it opens right in the browser.
+
+I recommend ONLYOFFICE to a lot of people moving off Microsoft Office because the interface is so close. You get a ribbon with tabs across the top and a sidebar on the right for formatting whatever you've selected. The sidebar also handles document search, comments, and chat. Spreadsheets and presentations work the same way.
+
+![The ONLYOFFICE document editor in the video's cloud portal, with the Home ribbon and style gallery across the top and paragraph settings in the right sidebar](/docs-static/img/2026/12/onlyoffice-workspace-overview/document-editor-ribbon-sidebar.jpg)
+
+Files can be shared with specific people or with the whole portal, and you can see what's been shared with you and what belongs to projects you're assigned to. You can also connect outside cloud drives like Dropbox, Box, OneDrive, and Google Drive and work on those files from the same place.
+
+![The Connecting account dialog in the video's cloud version of Documents, listing Google Drive, Box, Dropbox, SharePoint, OneDrive, Nextcloud, ownCloud, kDrive, and Yandex Disk](/docs-static/img/2026/12/onlyoffice-workspace-overview/connect-cloud-storage-accounts.jpg)
+
+If you don't need the whole Workspace, you can still get the editors. There are [ONLYOFFICE Desktop Editors](https://www.onlyoffice.com/desktop), mobile apps, and [connectors](https://www.onlyoffice.com/all-connectors) for Nextcloud, ownCloud, and plenty of other platforms. If Nextcloud is more your speed, my [Nextcloud AIO guide](/nextcloud-aio-self-hosted-cloud) covers that route.
+
+## Projects
+
+Projects is a project management tool. You create a project, assign people to it, and then add tasks with due dates and subtasks. Tasks can have documents attached, be assigned to specific people, and be linked to each other. Try saying "tasks" that many times in a row, by the way.
+
+You can also set milestones with their own due dates, which helps you keep track of how a project is going overall. There's a Gantt chart for the timeline view and a time tracking feature, which is a nice touch. When I made the video there was also a dedicated mobile app for Projects.
+
+## CRM
+
+For anyone not in sales, CRM is customer relationship management. Here you can add companies and people, link people to companies, assign tasks, attach documents and projects, and even send invoices from the app. You can create opportunities with their own tasks, participants, invoices, and documents, and generate sales reports in a couple of clicks.
+
+![The Create new opportunity form in the CRM module in the video, with a title, contact search, budget, due date, and deal stage](/docs-static/img/2026/12/onlyoffice-workspace-overview/crm-create-opportunity.jpg)
+
+You can also connect [Twilio](https://helpcenter.onlyoffice.com/workspace/administration/connect-twilio.aspx) under **Settings**, **Integration**, **Third-Party Services**, which lets you call CRM contacts from the browser using a virtual number.
+
+## Mail
+
+ONLYOFFICE Mail is a web mail client built into the portal. You can send and receive mail, filter it, and manage multiple accounts. You can also share one mailbox with several people on the portal, so an address like support@ or marketing@ can be handled by a whole department. There are templates for messages you send all the time, too.
+
+In the video I mentioned that the free plan needed your own email provider, because ONLYOFFICE only hosted mail for paying customers. That was about the cloud version. On a self-hosted Workspace Community install, you can run the included Mail Server on your own domain (that's the `-md` option above), or skip it and connect accounts from whatever provider you already use.
+
+## Talk (Chat)
+
+There's a team chat app based on Jabber (XMPP). You can message people directly or the entire portal, and the contact list fills in automatically from your employee list.
+
+It's missing some quality-of-life features. For chat by itself I'd rather use something like Slack or even Discord. The basics are there, though, if you want chat inside the same portal.
+
+## Community
+
+This one isn't enabled by default, but it's pretty cool. To turn it on, go to **Settings**, **Common**, **Modules & Tools**, select Community (and whichever Community tools you want), and click **Save**. The [Help Center](https://helpcenter.onlyoffice.com/workspace/administration/configuration.aspx) confirms it's been off by default on new portals since version 12.0.
+
+Once it's on, you get:
+
+- **Blogs:** posts everyone in the portal can see and comment on, like an internal company blog
+- **Forums:** categories and threads, like any other forum software
+- **Bookmarks:** a shared list of useful web resources
+- **Wiki:** a place for company documentation, sorted into categories
+
+![The default Wiki home page in the Community module in the video, with the Blogs, Events, Forums, Bookmarks, and Wiki sections in the sidebar](/docs-static/img/2026/12/onlyoffice-workspace-overview/community-wiki-home.jpg)
+
+This is one of the most useful parts of Workspace, and I have no idea why it's disabled by default and barely mentioned on their website.
+
+## Calendar, People, and Feed
+
+These don't do a ton, so I'll speed run them:
+
+- **Calendar** syncs with project tasks and milestones, so you can see when things are due and plan ahead.
+- **People** is where you manage team members, filter them, edit their settings, and see upcoming birthdays.
+- **Feed** collects your notifications, which is handy for seeing the projects and tasks you've been assigned.
+
+## My Take
+
+Back when I made this video, I thought ONLYOFFICE Workspace was worth looking at if you run a small business and don't want a big tech giant handling your data. Most of the major functionality was free, the editors are a good fit for people coming from Microsoft Office, and you could host it on your own hardware or any cloud you like. The Community module was a nice surprise, and chat was the weakest part.
+
+The situation is different now. The free hosted plan I used is gone, so self-hosting is the only way in, and it's a heavy stack that wants at least 8 GB of RAM and four cores. ONLYOFFICE says Workspace is still maintained with security and stability updates, but their new development is going into DocSpace. If you need projects, CRM, mail, and a wiki all in one self-hosted portal, Workspace Community still does that. If you mainly want the editors, the desktop apps or a Nextcloud integration might fit better. With all that, I do hope you have an absolutely beautiful day.
