@@ -1,0 +1,208 @@
+export const title = "Docker Made Easy with Yacht: Template-Based Container Management"
+export const description = "Install Yacht, a web UI for Docker built around templates and one-click deployments, then add a template library, deploy your first container, and find your way around images, volumes, networks, and settings."
+export const date = "2026-12-13"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
+export const cover = "/docs-static/img/2026/12/yacht-docker-management/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="__38-ehaYYs" title="TechHut's Yacht walkthrough" />
+
+If you've been wanting to try Docker but the terminal side of it feels like a wall, [Yacht](https://github.com/Yacht-sh/Yacht) is an easy way in. It's a web UI for managing containers, and its whole focus is templates and one-click deployments. You pick an app from a library, look over a pre-filled form, hit deploy, and you have a running container. It's a nice way to learn what containers, images, volumes, and ports are without having to memorize a pile of flags first.
+
+<Note>
+I recorded the video in December 2021, when Yacht was labeled alpha software and was SelfhostedPro's project under the SelfhostedPro GitHub account. That's not who runs it now. The active repository is [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), under the Yacht-sh organization, and it's maintained by a different developer, wickedyoda. Its [changes.md](https://github.com/Yacht-sh/Yacht/blob/master/changes.md) describes the code as a fork of SelfhostedPro's 2021 code, and the license files have been rewritten since then (more on that below). The latest release is [Yacht v1.1](https://github.com/Yacht-sh/Yacht/releases/tag/1.1), published September 2, 2026. The old `SelfhostedPro/Yacht` URL is now a separate fork with an outdated README, and the TypeScript rewrite that README points to ([yacht-nuxt](https://github.com/Yacht-sh/yacht-nuxt)) was archived on August 30, 2026. The install steps below are for the current Yacht-sh project. The hands-on footage and my impressions come from the original recording of SelfhostedPro's 2021 alpha, not the current build.
+</Note>
+
+## What Yacht Is (and Isn't)
+
+Yacht sits on top of Docker and talks to it through the Docker socket. From the browser you can:
+
+- Deploy apps from template libraries in a guided form
+- Start, stop, restart, and remove containers, and watch their CPU and memory usage
+- Manage images, volumes, and networks
+- Work with Docker Compose projects
+- Set **template variables**, so every app you deploy puts its data in folders you choose
+
+Yacht reads Portainer-style templates, so a lot of existing template lists work with it.
+
+When I recorded, I was clear that this wasn't the tool I'd pick for production. For things you plan to put on the web, I recommended [Portainer](https://docs.portainer.io/start/install-ce), which is a lot more developed and has many more features. Yacht's sweet spot is dipping your toes into Docker, and for that it works well.
+
+A few facts about the current project:
+
+| Item | Details |
+|---|---|
+| Repository | [github.com/Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht) |
+| Latest release | v1.1 (September 2, 2026) |
+| Docs | [dev.yacht.sh](https://dev.yacht.sh) and the repo's [`docs/` folder](https://github.com/Yacht-sh/Yacht/tree/master/docs) |
+| Platforms | Linux (the README says only Linux is verified) |
+| Image architectures | amd64 and arm64 |
+| Default port | `8000` |
+| Maintainer | wickedyoda, under the Yacht-sh organization (the original 2021 project was SelfhostedPro's) |
+| License | GPL-3.0 per the README (see the license note below) |
+
+## Where I Ran It
+
+In the video I didn't touch the terminal at all. I used a one-click marketplace image on a small cloud server running Debian 10, filled in a Yacht email and password, left compose support on and the theme at default, and it installed Docker and published the Yacht container for me.
+
+You don't need a cloud server for any of this, though. If you want to do it locally, one of the easiest routes is Ubuntu Server. You can enable the Docker snap package during that install, and from there you can run Yacht the same way. Basically anything that can run Docker works.
+
+The steps below use a plain Docker install, so they work on any Linux machine, local or cloud.
+
+## Install Yacht with Docker
+
+### 1. Install Docker
+
+Follow Docker's [official install guide](https://docs.docker.com/engine/install/) for your distro. If you want to run `docker` without `sudo`, the [post-installation steps](https://docs.docker.com/engine/install/linux-postinstall/) cover adding your user to the `docker` group.
+
+### 2. Run the container
+
+The quickest way is a single `docker run`. Create a volume for Yacht's database first:
+
+```bash
+docker volume create yacht
+
+docker run -d \
+  --name yacht \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  -e ADMIN_EMAIL=you@your-domain.com \
+  -e ADMIN_PASSWORD='REPLACE_WITH_A_STRONG_PASSWORD' \
+  -e SECRET_KEY='REPLACE_WITH_A_RANDOM_STRING' \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v yacht:/config \
+  selfhostedpro/yacht:sha-8e5b09e
+```
+
+Or, if you'd rather keep it in a `docker-compose.yml`:
+
+```yaml
+services:
+  yacht:
+    image: selfhostedpro/yacht:sha-8e5b09e
+    container_name: yacht
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      ADMIN_EMAIL: you@your-domain.com
+      ADMIN_PASSWORD: ${YACHT_ADMIN_PASSWORD}
+      SECRET_KEY: ${YACHT_SECRET_KEY}
+    volumes:
+      - yacht:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  yacht:
+```
+
+Put the two secrets in a `.env` file next to it and start it up:
+
+```bash
+cat > .env <<'EOF'
+YACHT_ADMIN_PASSWORD=REPLACE_WITH_A_STRONG_PASSWORD
+YACHT_SECRET_KEY=REPLACE_WITH_A_RANDOM_STRING
+EOF
+chmod 600 .env
+
+docker compose up -d
+```
+
+`openssl rand -hex 32` is an easy way to generate the secret key.
+
+A few notes on what's going on here:
+
+- **The image.** Despite the old name, `selfhostedpro/yacht` on Docker Hub is now built by the Yacht-sh repo's [`gh-packages` workflow](https://github.com/Yacht-sh/Yacht/blob/master/.github/workflows/gh-packages.yml), which pushes `latest` plus `sha-<commit>` tags for amd64 and arm64 on every push to `master`. So `latest` is whatever was merged most recently, not a release. The commands above pin `sha-8e5b09e`, the commit the [v1.1 release tag](https://github.com/Yacht-sh/Yacht/releases/tag/1.1) points to. If you'd rather pin by digest, that build is `selfhostedpro/yacht@sha256:50ee52a473fa3d0a57a305258e3f004c1aded9a5c12544fc0cf1bf524b2e0056`. The upstream docs show `ghcr.io/yacht-sh/yacht:latest:latest`, which isn't a valid tag (it has `:latest` twice). As of this update, anonymous pulls from `ghcr.io/yacht-sh/yacht` also asked for authentication, which is why I'm using the Docker Hub image here.
+- **The Docker socket.** Mounting `/var/run/docker.sock` is what lets Yacht manage your containers, and it's also root-equivalent access to the host. Whoever builds the image you run is effectively trusted with root on that machine, so pin a build, read the release notes before you move to a new one, and only run it on a host you're comfortable handing over.
+- **`/config`** holds the SQLite database, your templates, and settings. Keep that volume.
+- **`ADMIN_EMAIL` and `ADMIN_PASSWORD`** are only used to create the first user when the database is empty. Changing them later doesn't change an existing account.
+- **`SECRET_KEY`** is recommended by the README so you don't get logged out between restarts.
+- **Port 8000 clashes?** The docs suggest mapping `8001:8000` if you also run Portainer on the same host.
+- **SELinux.** The getting started guide says to add `--privileged` if SELinux is enabled.
+
+<Warning>
+If you skip `ADMIN_EMAIL` and `ADMIN_PASSWORD`, Yacht creates a default user, `admin@yacht.local` with the password `pass`. Change it right away under the admin menu in the top right, then **User** and **Change Password**. Also keep in mind that anything with access to the Docker socket effectively has root on the host, so don't publish port 8000 to the internet. Keep it on your LAN or behind a VPN. I have a guide for [self-hosting NetBird with Pocket ID](/self-host-netbird-pocketid) if you need remote access.
+</Warning>
+
+### 3. Log in
+
+Open `http://YOUR_SERVER_IP:8000` and sign in with the email and password you set. In the video, I just copied my server's IP into the browser, added port 8000, and logged in with the email and password I'd typed into the setup form.
+
+## The Dashboard
+
+The first thing you land on is the dashboard with your current containers. On a fresh install there's only one: Yacht itself. The UI is honestly beautiful, and each container shows its CPU and memory usage. On my base install, Yacht was using about 80 MB of RAM.
+
+![The Yacht dashboard in the video's 2021 alpha UI, showing the yacht container card with its CPU and memory usage](/docs-static/img/2026/12/yacht-docker-management/dashboard-yacht-container.jpg)
+
+The sidebar has applications, templates, projects, resources, and settings. The current version also adds a **Containers** list and a host selector in the top bar for managing more than one Docker host (more on that at the end).
+
+## Adding a Template Library
+
+To show how easy launching a container is, go to **Templates** (not Applications). Templates are basically a library of things you can install. You aren't limited to what's in them, since Yacht can run any Docker container, but they give you a nice list to get started with.
+
+Click **New Template**, give it a title, and paste in a URL. The project recommended the SelfhostedPro templates when I recorded, so I named mine "SelfhostedPro." The URL the current version suggests on that screen is:
+
+```text
+https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/master/Template/yacht.json
+```
+
+That list still loads and has a bit over a hundred apps, from Jellyfin and Sonarr to Vaultwarden and Pi-hole. It hasn't been updated since 2023, though, so treat the image names and paths in it as a starting point and check each app's own docs for anything that's moved. Hit **Submit**, then click the template to see everything it offers for a one-click deploy.
+
+![Heimdall, Homer, and HTPC Manager cards from the SelfhostedPro template list in the video, each with View and Deploy buttons](/docs-static/img/2026/12/yacht-docker-management/selfhostedpro-template-apps.jpg)
+
+## Deploying Your First Container
+
+The example I used was [Homer](https://github.com/bastienwirtz/homer), a simple static home page for your server's services. Rather than keeping a pile of bookmarks, you run it alongside everything else and link it all together. Clicking **View** shows more info about the app and links to its Docker Hub page.
+
+Click **Deploy** and Yacht walks you through a form:
+
+1. **Basics.** You can change the container name. The image is the Docker Hub location, and the restart policy decides what happens when the server reboots or the container fails (none, always, on failure, or unless stopped). I kept the default of unless stopped.
+2. **Networking.** Make sure the network is set to **bridge** so the container connects properly. The template also fills in a label (I kept "web UI") and the host and container ports. In the current template, Homer's web UI maps host port `8902` to container port `8080`.
+3. **Volumes.** This is where the app's data lives. For Homer, the config folder holds its assets and `config.yml`. Generally you can leave these where they are.
+4. **Environment variables.** Homer doesn't need any, but you can add them with the plus button.
+5. **Deploy.** You get a little progress bar, and that's it.
+
+The volumes step is what I like most. If you look at Homer's Docker Hub page, there's a bit of setup work that makes it slightly difficult if you're just getting into Docker and want to fire something up and play with it. Yacht organizes all your volumes automatically, which is fantastic. Some apps will still need you to set things up yourself. Jellyfin is a good example, since you'll want to point it at your media directories.
+
+![The Volumes step of the Deploy homer form in the video, with !config/Homer paths on the host mapped to /www/assets and /www/config.yml in the container](/docs-static/img/2026/12/yacht-docker-management/deploy-homer-volumes.jpg)
+
+<Note>
+Homer's own README now mounts a single folder at `/www/assets` and keeps `config.yml` inside it, while the old template still lists a separate `/www/config.yml` mount. If Homer doesn't pick up your config, edit the volumes to match [Homer's current Docker instructions](https://github.com/bastienwirtz/homer).
+</Note>
+
+After deploying, you land on the **Applications** page. Homer and Yacht are both listed with their images, creation dates, and status. Clicking the web UI link opened my new Homer instance. To customize Homer, I'd need to hop into the CLI and edit its configuration files. Yacht helps here too: the app's storage info shows where each of those files lives on the host.
+
+## Resources: Images, Volumes, and Networks
+
+Under **Resources** you can see everything Docker is holding onto.
+
+- **Images** shows all of your images, including the ones pulled through the template. You can hit the plus button to pull your own, but then you have to configure the container manually, just like you would on the CLI, by going to Applications and creating a new one without a template.
+- **Volumes** lets you add and remove volumes, which helps when a container needs a custom one.
+- **Networks** shows the details of each network. In the video I was only using bridge.
+
+## Settings and Template Variables
+
+**Settings** is where you import and export your Yacht data, change the theme and colors, and manage template variables. The current version also has pages for pruning unused Docker resources, updating Yacht, and adding hosts.
+
+Template variables are the thing to set up early. Templates use placeholders that start with an exclamation point, and Yacht swaps them for real paths when you deploy. For example, `!config` becomes `/yacht/AppData/Config` and `!movies` becomes `/yacht/Media/Movies` by default. If you run something like Jellyfin and keep your movies somewhere else, change `!movies` here (or add your own variable) and every template that uses it lands in the right place.
+
+![The Template Variables tab of Yacht's settings in the video, mapping !config, !data, !media, !downloads, and !music to folders under /yacht](/docs-static/img/2026/12/yacht-docker-management/settings-template-variables.jpg)
+
+## What's New Since the Video
+
+If you watched the video and are installing Yacht now, this is what's different:
+
+- **New home and maintainer.** The project lives at [Yacht-sh/Yacht](https://github.com/Yacht-sh/Yacht), maintained by wickedyoda rather than SelfhostedPro, with versioned releases starting at 1.0. The README no longer carries the alpha warning that was there when I recorded.
+- **License.** SelfhostedPro's original releases were MIT licensed ("Copyright 2020 SelfhostedPro"). The current repo's `LICENSE.md` is a Creative Commons Attribution 4.0 license reading "Copyright 2025 wickedyoda", and a GPLv3 `LICENSE` file was added on August 30, 2026 in [commit 2a63782](https://github.com/Yacht-sh/Yacht/commit/2a637828a9932d2e30fbb8f74ce4b2908be8f550), which also switched the README's license line to GPLv3. If licensing matters for how you use it, read both files yourself.
+- **Multiple hosts.** You can add other Docker hosts by their Docker API URL from the Hosts settings page. There's also a `yacht-agent` container that runs on a remote machine and connects back to your main Yacht server, so you don't have to expose that machine's Docker API. It's still early, though. The [agent docs](https://github.com/Yacht-sh/Yacht/blob/master/docs/agent.md) say agent hosts handle queued container actions (start, stop, restart, kill, remove), while compose execution, deploys, log and stats streaming, and image, volume, and network changes aren't fully supported yet.
+- **Security options.** There are new settings for secure cookies, an HTTPS redirect, and trusted hosts for when you put Yacht behind a reverse proxy. The repo's `docs/security.md` lists the recommended values.
+
+## My Take
+
+When I recorded in 2021, SelfhostedPro's Yacht was a super cool tool, and setting it up was about as easy as Docker gets. The templates and the way it handles volumes for you made it a great first step if containers still feel abstract. That recommendation was for the original project. The current Yacht-sh build has a different maintainer and a lot of changes, and my hands-on impressions don't cover it, so judge it on its own. You got to see images, volumes, ports, and networks as real things in a UI before you ever had to write them out by hand.
+
+I'd still keep the caveat I gave in the video: for anything production-ready, especially things you're hosting on the web, look at something more mature like Portainer. And once you get comfortable, it's worth learning the basics underneath. My [Docker basics for beginners](/7-docker-basics-for-beginners) article is a good next step, and if you end up wanting a more modern manager for a bunch of compose stacks, I've also written about [Dockhand](/dockhand-docker-manager).
+
+With all that, I do hope you have an absolutely beautiful day.
