@@ -1,0 +1,348 @@
+export const title = "MicroCloud: A Proxmox Alternative You Can Run on Ubuntu"
+export const description = "Set up Canonical's MicroCloud on Ubuntu with LXD, MicroCeph, and MicroOVN, build a three-node cluster, and manage containers from the CLI and web UI. Plus how it compares to Proxmox."
+export const date = "2026-11-29"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Homelab", "Self-Host", "Linux", "Proxmox", "Virtualization"]
+export const cover = "/docs-static/img/2026/11/microcloud-proxmox-alternative/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="tSJqjZjLrig" title="TechHut's MicroCloud walkthrough" />
+
+[MicroCloud](https://canonical.com/microcloud) is Canonical's way to manage Linux containers and virtual machines and build your own little cloud. It's lightweight, it has plenty of features, and it's a handful of snap packages you install on top of a Linux system you already have.
+
+The first time I signed into the web interface, it felt really familiar. If you've used Proxmox, you'll probably be comfortable here pretty quickly. The big difference is that you don't need a dedicated Proxmox machine. You can deploy MicroCloud on infrastructure you already run and start using it right away. That's what caught my attention, and I'll come back to the Proxmox question at the end.
+
+I'll build a three-node cluster, use the CLI to launch and expose a container, add storage, and walk through the web UI. The video was published in January 2026. The install steps follow Canonical's documentation as of October 2026, which pins snap channels, holds automatic updates, and raises the hardware recommendations. My hands-on impressions come from the recorded walkthrough, and I've called out the places where things have changed.
+
+## What MicroCloud Is Made Of
+
+MicroCloud is a set of Canonical projects that get wired together for you:
+
+| Component | Job |
+|---|---|
+| **LXD** | Runs system containers and virtual machines. It's the engine behind the CLI and the web UI. |
+| **MicroCeph** | Distributed Ceph storage, replicated across the cluster. Local storage on each machine is a separate ZFS pool managed by LXD. |
+| **MicroOVN** | OVN networking: overlay networks, DHCP, security groups, and other network services |
+| **MicroCloud** | Ties everything together and handles cluster setup with `microcloud init` and `microcloud join` |
+
+LXD is often confused with LXC. [Canonical's docs explain](https://canonical.com/lxd/docs/latest/explanation/lxd_lxc/) that LXD uses LXC under the hood to create and manage containers and adds its own tooling on top. System containers share the host's kernel, so they're incredibly light on resources, while a VM gets its own kernel and needs a lot more RAM and CPU. MicroCloud can do both, but I'm focusing on containers here because my test nodes were already VMs.
+
+The [product page](https://canonical.com/microcloud) lists scaling from a single node to 50-node clusters, remote authentication, and fine-grained access control. Canonical describes it as fully open source.
+
+## My Test Lab and the Current Requirements
+
+For the video, I built three Ubuntu virtual machines: micro one, micro two, and micro three. Each had 4 cores, 4 GB of RAM, a 32 GB root disk, and two extra disks:
+
+- a **16 GB** disk for local storage on that node
+- a **128 GB** disk for distributed storage that the whole cluster can use
+
+You need at least one extra disk for storage. I used two so I could show both kinds.
+
+Canonical's [requirements page](https://canonical.com/microcloud/docs/latest/reference/requirements/) is more specific than my test lab:
+
+| | Testing and development | Production |
+|---|---|---|
+| Machines | 1 or more, physical or virtual | At least 3 physical machines (4 for critical deployments) |
+| RAM | At least 8 GiB per member | At least 32 GiB per member |
+| Storage | At least one empty local disk per member. High availability needs 3 disks across 3 members | 3 NVMe disks per member: OS, local, distributed |
+| Network | Two interfaces recommended. A single NIC with a bridge works but isn't supported | Two dedicated interfaces, ideally dual-port 10 GbE or faster |
+| OS | Ubuntu 22.04 or newer, LTS recommended | Ubuntu LTS |
+
+Storage disks must be free of partitions and filesystems, member IP addresses must be static, and the uplink network needs broadcast and multicast. Multicast is also how `microcloud join` finds the initiator on your LAN. My 4 GB VMs were below today's documented 8 GiB minimum for test setups. It worked for a demo, but give your nodes more memory if you can.
+
+## Network Prep: The Bridge
+
+This is the part that tripped me up. My VMs only had one network interface each, and MicroCloud can't use the interface that's already carrying everything as its uplink. The uplink has to be either an unused interface with no IP address or a bridge.
+
+So I added a bridge to the Netplan configuration on each node. If your hardware has two network ports, like the ZimaBoard 2 I've got sitting here, you can skip this and use the second port as the uplink.
+
+Canonical says the single-interface setup is fine for experimenting but isn't supported or recommended, because it can't separate cluster traffic from uplink traffic. They also prefer an OVS bridge over a native Linux bridge. The example below is a plain Netplan bridge, based on [Netplan's bridge example](https://netplan.readthedocs.io/en/stable/examples/), with a static address. Replace the interface name, addresses, and gateway with your own, and give each node its own IP:
+
+```yaml
+# /etc/netplan/60-microcloud-bridge.yaml (example)
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp1s0:
+      dhcp4: false
+  bridges:
+    br0:
+      interfaces: [enp1s0]
+      addresses: [192.168.1.11/24]
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses: [192.168.1.1]
+```
+
+If an existing Netplan file already configures `enp1s0`, edit that file instead of adding a second definition. Then test the change:
+
+```bash
+sudo chmod 600 /etc/netplan/60-microcloud-bridge.yaml
+sudo netplan try
+```
+
+<Warning>
+Changing the network on a remote machine can cut off your SSH session. `netplan try` rolls the change back if you don't confirm it, but have console access ready anyway, especially on bare metal.
+</Warning>
+
+## Install the Snaps
+
+Everything installs as snaps. Run these on **every** machine that will join the cluster. These commands come from Canonical's [current install guide](https://canonical.com/microcloud/docs/latest/how-to/install/):
+
+```bash
+sudo snap install lxd --channel=6/stable --cohort="+"
+sudo snap install microceph --channel=squid/stable --cohort="+"
+sudo snap install microovn --channel=24.03/stable --cohort="+"
+sudo snap install microcloud --channel=3/stable --cohort="+"
+```
+
+In the video I just installed the four snaps without picking channels. The current docs pin each component to a compatible channel. The `--cohort="+"` flag keeps every node on the same revisions when you update later.
+
+Then hold automatic updates, again on every node:
+
+```bash
+sudo snap refresh --hold lxd microceph microovn microcloud
+```
+
+Snaps update themselves by default, and MicroCloud doesn't want that. If the nodes end up on different versions, workloads keep running, but you can't change the cluster's configuration, such as adding members or instances, until they match again. Holding updates lets you follow the [update guide](https://canonical.com/microcloud/docs/latest/how-to/update_upgrade/) on your own schedule.
+
+### Which Release Are You Getting?
+
+As I write this, the `3/stable` channel delivers MicroCloud 3.3. Canonical calls it a [feature release](https://canonical.com/microcloud/docs/latest/reference/release-notes/release-notes-3.3/) that isn't recommended for production. The docs already include [release notes for MicroCloud 3.4.0](https://canonical.com/microcloud/docs/latest/reference/release-notes/release-notes-3.4.0/), the first LTS release on track 3, but it hadn't reached the stable snap channel or GitHub releases yet. Check the [compatibility matrix](https://canonical.com/microcloud/docs/latest/reference/releases-snaps/) before you install, because the recommended LXD, MicroCeph, and MicroOVN channels may change when 3.4 lands. Version 3.4 also requires snapd 2.75 or newer.
+
+If you want an LTS release today, the [2.1 LTS documentation](https://canonical.com/microcloud/docs/default/how-to/install/) uses these channels instead:
+
+```bash
+sudo snap install lxd --channel=5.21/stable --cohort="+"
+sudo snap install microceph --channel=squid/stable --cohort="+"
+sudo snap install microovn --channel=24.03/stable --cohort="+"
+sudo snap install microcloud --channel=2/stable --cohort="+"
+```
+
+Whichever you pick, use the same channels on every node.
+
+## Initialize the Cluster
+
+Pick one machine to act as the initiator and run:
+
+```bash
+sudo microcloud init
+```
+
+After the services start, it walks you through a series of prompts. The menus use the arrow keys to move, Space to select, and Enter to confirm. This is how I answered them, and how they line up with the [initialization guide](https://canonical.com/microcloud/docs/latest/how-to/initialize/).
+
+1. **More than one cluster member?** I said yes. For a single node, say no. You can always add machines later with `microcloud add`.
+2. **Address for internal traffic.** Because of my bridge, this listed the bridge addresses. I selected mine and hit Enter.
+3. **Join the other machines.** The initiator prints a passphrase. On each of the other machines, run:
+
+   ```bash
+   sudo microcloud join
+   ```
+
+   Pick the same kind of address there (I used the bridge's IPv4 address again), then paste the passphrase. Back on the initiator, the joining systems show up in a table with their host names and IP addresses. You can also compare the fingerprints. I selected both and hit Enter, so all three systems were in.
+4. **Local storage.** Yes, because I had a dedicated disk for it. Select exactly one disk per machine (my three 16 GB disks), then choose which ones to wipe. If you only have one spare disk per node, Canonical notes it can't be used for both local and distributed storage. In that case I'd say no here and use it for distributed storage.
+5. **Distributed storage.** Yes. Since the 16 GB disks were already taken, the 128 GB disks were the only ones left. I selected and wiped them.
+6. **Encrypt the disks?** I'd generally recommend it, but I said no for this demo. Encryption needs the `dm-crypt` kernel module, and the keys are stored in the Ceph configuration. The [MicroCeph docs](https://canonical.com/ceph/docs/latest/snap/how-to/enable-fde/) cover the prerequisites.
+7. **CephFS remote storage.** Sure, I enabled it. This adds a distributed file system pool.
+8. **Ceph internal and public subnets.** I used my base subnet for both. Leaving them empty uses the MicroCloud internal network.
+9. **Distributed networking.** Yes. I selected the bridge interface on every node as the OVN uplink. This step depends a lot on your network and hardware, so read the [requirements](https://canonical.com/microcloud/docs/latest/reference/requirements/) if your setup is different.
+10. **IPv4 gateway and range.** Enter your router's address in CIDR notation, then the first and last addresses that OVN can use on the uplink network. My gateway was `10.173.10.1/24`, and I gave it `10.173.10.200` through `10.173.10.240`, about 40 addresses. The range can't include addresses your nodes or other devices already use, so pick a block that's free and outside your router's DHCP pool.
+11. **IPv6 gateway.** I'm not using IPv6 on that network, so I left it empty.
+12. **DNS for the distributed network.** I kept the default.
+13. **Dedicated underlay network.** That's a bit beyond my skill set at the moment, so I skipped it. It needs an extra interface on each node.
+
+![The microcloud init prompt for the OVN uplink with the br0 bridge selected on all three cluster members](/docs-static/img/2026/11/microcloud-proxmox-alternative/microcloud-init-ovn-uplink.jpg)
+
+The current docs also describe an optional prompt to create an initial UI access link. It's an admin link that's valid for one day and lets you sign into the web UI right away. Then you can set up permanent authentication. I didn't have that prompt in the video and used the certificate method shown later.
+
+After that, MicroCloud brings up its own services plus OVN, Ceph, and LXD on every node. The peers join one after another. When it prints **MicroCloud is ready**, you're done.
+
+## Working with the Cluster from the CLI
+
+You can manage everything from the web interface now, but it's worth knowing the basic commands. Run these on any cluster member. If `lxc` complains about permissions, either prefix the commands with `sudo` or add your user to the `lxd` group:
+
+```bash
+sudo usermod -aG lxd "$USER"
+newgrp lxd
+```
+
+Check the cluster members. The URL column also tells you where to find the web UI:
+
+```bash
+lxc cluster list
+```
+
+You get each member's name, URL, roles, architecture, and status. Next, check the storage pools:
+
+```bash
+lxc storage list
+```
+
+I had `local` and `remote` here, and with CephFS enabled you'll also see `remote-fs`. If you only set up one kind of storage, you'll only see that one. For the health of the Ceph cluster itself:
+
+```bash
+sudo ceph status
+```
+
+MicroCeph sets up `ceph` as a shortcut for its built-in Ceph tools, so you don't need to install anything else.
+
+### Launch a Container on a Specific Node
+
+You'll probably use `lxc list` constantly. Right after setup it's empty, so let's spin up an Ubuntu container for a simple Nginx web server. I'm on micro one, but I want the container to run on micro two, so I add `--target`:
+
+```bash
+lxc launch ubuntu:24.04 web-server --target ubuntu-micro2
+```
+
+Use your own member name from `lxc cluster list`. Leave out `--target` and MicroCloud picks a member for you. The first launch takes a moment to download the image and build the filesystem. If you've used LXCs on Proxmox, this is the same basic idea.
+
+Run `lxc list` again to see the container's state, IP address, type, snapshots, and location. To get a shell inside it:
+
+```bash
+lxc exec web-server -- bash
+```
+
+That drops you in as root inside the container. From there, it's a normal Ubuntu system:
+
+```bash
+apt update && apt upgrade -y
+apt install -y nginx
+systemctl status nginx
+curl http://localhost
+```
+
+The Nginx package ships a default HTML page in `/var/www/html`. I copied it to `index.html` and `curl` showed it from inside the container.
+
+### Expose It with a Proxy Device
+
+From the host, that page isn't reachable yet. The container sits on its own OVN network, so you need to forward a port to it. In LXD, you do that with a [proxy device](https://canonical.com/lxd/docs/latest/reference/devices_proxy/). Exit the container, then run:
+
+```bash
+lxc config device add web-server web-proxy proxy \
+  listen=tcp:0.0.0.0:8080 \
+  connect=tcp:127.0.0.1:80
+```
+
+This listens on port `8080` on all of the host's interfaces and connects to port `80` inside the container. Two things I got wrong live, so you don't have to:
+
+- The connect side wants an IP address. `localhost` didn't work for me, but `127.0.0.1` did.
+- The proxy listens on the cluster member **where the container is running**, not the one you typed the command on. My container was on micro two, so `curl localhost:8080` on micro one got nothing. On micro two, or with micro two's LAN IP and port `8080` in a browser, there was the Nginx page.
+
+`0.0.0.0` means anyone who can reach that node can reach the service, so only expose what you mean to expose.
+
+### Add a Storage Volume
+
+Back to storage. List the volumes:
+
+```bash
+lxc storage volume list
+```
+
+In the `local` pool, each node has two volumes for images and backups. MicroCloud sets that up automatically. The `remote` pool held the `web-server` container and the Ubuntu image it was created from. Add the pool name to filter the list, for example `lxc storage volume list remote`.
+
+To give a container extra storage, create a custom volume on the distributed pool with an optional size, then attach it at a mount point:
+
+```bash
+lxc storage volume create remote appdata size=16GiB
+lxc storage volume attach remote appdata web-server /mnt/data
+```
+
+Inside the container, `/mnt/data` is now there. I created a test file in it to prove it worked. [LXD's storage volume guide](https://canonical.com/lxd/docs/latest/howto/storage_volumes/) covers resizing, snapshots, and block volumes for VMs.
+
+### Check Ceph Replication, Then Pull the Plug
+
+Ceph backs the distributed storage pool the instance lives on, and you can see it replicating across the cluster. Run these on a node, not inside the container like I did the first time:
+
+```bash
+sudo ceph osd pool ls detail
+sudo ceph osd tree
+```
+
+The tree shows the storage spread across all three hosts. Then I tried a failure test. I rebooted micro three and kept running `lxc cluster list`. After a moment it showed as offline with no heartbeat. Once it came back up, the cluster went back to fully operational without me touching anything.
+
+## The Web UI
+
+To reach the web interface, use any member's address on port `8443`, for example `https://192.168.1.11:8443`. `lxc cluster list` shows the URLs. Getting in is a little more involved than you might expect, but that's because it's secure by default:
+
+1. The server uses a self-signed certificate, so your browser warns you. Proceed past it if you know it's your server.
+2. The page asks for a client certificate. Choose to generate one in the UI and download it.
+3. Import that certificate into your browser. The UI has instructions for each major browser. In Firefox, you go to the certificate manager, open **Your Certificates**, and import the file. Mine had no password.
+4. Restart the browser, reload the URL, and select the certificate when prompted.
+5. The UI asks for a trust token and shows the command that generates one. Run it on a cluster member, paste the token in, and click **Connect**. Under the hood this is LXD's [`lxc config trust add`](https://canonical.com/lxd/docs/latest/howto/server_expose/) token flow, and anyone holding that token gets full access, so treat it like a password.
+
+That's a lot more secure than many self-hosted services I've used. If you created the optional initial access link during init, you can use it to sign in once and then set up certificates or OIDC. The [LXD UI docs](https://canonical.com/lxd/docs/latest/howto/access_ui/) cover both methods.
+
+### Instances and Devices
+
+Once you're in, the `web-server` container is there with everything I'd set up in the terminal: the `web-proxy` device, the `appdata` volume, and the root disk. You also get usage graphs for CPU and the root filesystem.
+
+![The Overview tab for the web-server container in the MicroCloud web UI, showing its IP addresses, cluster member ubuntu-micro2, and memory and disk usage](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-web-server-overview.jpg)
+
+The configuration tab is where you make changes:
+
+- **Disk devices.** Attach a new or existing custom volume, or mount a host path. That last part is great for a homelab. If a node has an NFS or SMB share mounted from your NAS, you can pass that folder into a container running your media server stack.
+- **GPU.** When I recorded this, Canonical said GPU passthrough was supported for NVIDIA. Their team hadn't tested Intel specifically, so that's something I want to try. LXD's [GPU device reference](https://canonical.com/lxd/docs/latest/reference/devices_gpu/) has the details.
+- **Proxy.** This shows the same proxy device I created from the CLI, and you can add more here.
+
+![The web-proxy device in the MicroCloud web UI listening on TCP 0.0.0.0 port 8080 and connecting to 127.0.0.1 port 80](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-proxy-device.jpg)
+
+Everything is also available as YAML, which makes it easy to save and export the configuration for your containers.
+
+### Storage, Images, and Profiles
+
+The storage section shows the pools and volumes, including `appdata`. Click a volume to change its size, manage snapshots, and more. You can upload custom ISOs for virtual machines here too, and there's a section for buckets.
+
+**Images** holds the Ubuntu image that was downloaded earlier.
+
+**Profiles** explains why that first `lxc launch` never asked about networking, storage, or resource limits. All of that comes from the `default` profile. MicroCloud configures it to use the OVN network and, when available, the distributed storage pool. You can edit it in the UI or as YAML.
+
+### Example: A Jellyfin Container from the UI
+
+To show a real use case, I made a Jellyfin container. I didn't set up hardware transcoding here; this was just to show how easy it is to get something running.
+
+1. Under **Instances**, create one called `jellyfin` and add a description like "media streaming server".
+2. Browse images. There are plenty of options, including Debian, Gentoo, NixOS, and even Ubuntu Desktop. I used the Ubuntu image I'd already downloaded.
+3. The cluster group was `default`, which is all I had. You can create groups to control which machines get which workloads. I left the cluster member on **any**, so MicroCloud picked one, and kept the default profile.
+4. Instead of clicking through with Next, use the sections on the side. I added a **proxy** device that listens on `0.0.0.0:8096` and connects to `127.0.0.1:8096`. 8096 is Jellyfin's default HTTP port.
+5. I set limits of two CPU cores and 2 GB of RAM, then clicked **Create and start**.
+
+![The Select base image dialog in the MicroCloud web UI listing OpenWrt, Oracle, Rocky Linux, Slackware, and Ubuntu Desktop images](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-select-base-image.jpg)
+
+The same container from the CLI:
+
+```bash
+lxc launch ubuntu:24.04 jellyfin -c limits.cpu=2 -c limits.memory=2GiB
+lxc config device add jellyfin jellyfin-web proxy \
+  listen=tcp:0.0.0.0:8096 \
+  connect=tcp:127.0.0.1:8096
+```
+
+Once it's running, the instance has a **Terminal** tab right in the browser. I made a `movies` directory to select during setup, then installed Jellyfin with its Debian/Ubuntu script. [Jellyfin's docs](https://jellyfin.org/docs/general/installation/linux/) currently recommend downloading the script and checking its checksum before you run it:
+
+```bash
+curl -s https://repo.jellyfin.org/install-debuntu.sh -O && \
+curl -s https://repo.jellyfin.org/install-debuntu.sh.sha256sum -O && \
+sha256sum -c install-debuntu.sh.sha256sum
+sudo bash install-debuntu.sh
+```
+
+When it finished, the Jellyfin service was active. The container was on micro one, so I opened micro one's IP on port `8096`, and there was Jellyfin.
+
+![The Jellyfin setup wizard's welcome screen, reached through the container's proxy device on port 8096](/docs-static/img/2026/11/microcloud-proxmox-alternative/jellyfin-setup-wizard.jpg)
+
+## Final Thoughts: MicroCloud or Proxmox?
+
+Overall, I really enjoy this product. Setup was one interactive command on the first node plus a join on the others, and I ended up with replicated storage and overlay networking across three machines. Everything I did in the terminal was also available in the web UI, and the configuration is all YAML underneath.
+
+Proxmox is much more mature. It also has a big community around it, with things like helper scripts that MicroCloud doesn't really have yet. But if you already have an Ubuntu server, or really any Linux server, in production and you want to start using LXD containers and virtual machines, MicroCloud is a really efficient way to do it. You don't have to rebuild that machine as a dedicated hypervisor first.
+
+There are two things I still want to figure out: hardware acceleration, which shouldn't be too hard, and OVN well enough to really understand the networking. Once I have both, I'd be pretty comfortable with it. My plan after this video was a proper cluster on three ZimaBoard 2 boards, with hardware transcoding and a few VMs.
+
+Right now I have Proxmox on a Minisforum mini PC, and I might just put Ubuntu and MicroCloud on it. I don't have many services left on that box since a lot of my media stuff moved to Unraid and a lot of my proxy stuff moved to my bare-metal Linux server. That server might be a good place for MicroCloud too. I'll find out.
+
+Let me know in the video comments whether you could see yourself using it, or even replacing something like Proxmox with it. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
