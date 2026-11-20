@@ -25,7 +25,7 @@ The last time I did this series, the media server was Plex. With the direction P
 
 Skillshare sponsored the video this article is based on.
 
-The steps below are for [Jellyfin 12.2](https://github.com/jellyfin/jellyfin/releases/tag/v12.2), released October 5, 2026, and [Ubuntu Server 26.04.1 LTS](https://ubuntu.com/download/server). They also follow the current version of my [Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin), which now use a credentials file for the share mount. I recorded the video in May 2025, so a few screens may look different, and I've marked where current advice differs from what I did on camera.
+The steps below are for [Jellyfin 12.4](https://github.com/jellyfin/jellyfin/releases/tag/v12.4), released October 26, 2026, and [Ubuntu Server 26.04.1 LTS](https://ubuntu.com/download/server). 12.3 and 12.4 are bugfix releases, including a .NET update in 12.4. The install steps are the same as 12.2. They also follow the current version of my [Jellyfin notes](https://github.com/TechHutTV/homelab/tree/main/media/jellyfin), which now use a credentials file for the share mount. I recorded the video in May 2025, so a few screens may look different, and I've marked where current advice differs from what I did on camera.
 
 ## What We're Building
 
@@ -400,7 +400,7 @@ The `latest` tag follows new releases, and Jellyfin 12.0 is a much bigger jump t
 According to the [Jellyfin 12.0 announcement](https://jellyfin.org/posts/jellyfin-release-12.0), you must be on 10.10.7 or any 10.11.x release to upgrade. Stop Jellyfin and back up your config folder first, because a backup is the only way back. Remove third-party plugins built for 10.11 because they won't load. Don't stop the server while the first-boot migrations are running. Usernames are now case-insensitive, so two accounts that differ only by capitalization will fail the migration. Expect a slow full library scan afterward.
 </Warning>
 
-For this setup, back up `/docker/jellyfin/config` after `docker compose down`, then run `docker compose pull && docker compose up -d`. LinuxServer.io also publishes version tags if you'd rather pin a release and upgrade deliberately. Back up the configuration before every major update.
+12.3 and 12.4 don't add another migration on top of that. If you're already on 12.0 or newer, a backup and a pull is enough. For this setup, back up `/docker/jellyfin/config` after `docker compose down`, then run `docker compose pull && docker compose up -d`. LinuxServer.io also publishes version tags if you'd rather pin a release and upgrade deliberately. Back up the configuration before every major update.
 
 ## Final Thoughts
 
@@ -426,7 +426,7 @@ In [Part 3: The automated \*arr stack](/ultimate-home-server-part-3-arr-stack), 
 - [Jellyfin networking](https://jellyfin.org/docs/general/post-install/networking/)
 - [Jellyfin storage](https://jellyfin.org/docs/general/administration/storage/)
 - [Jellyfin 12.0 release announcement](https://jellyfin.org/posts/jellyfin-release-12.0)
-- [Jellyfin 12.2 release](https://github.com/jellyfin/jellyfin/releases/tag/v12.2)
+- [Jellyfin 12.4 release](https://github.com/jellyfin/jellyfin/releases/tag/v12.4)
 - [LinuxServer.io Jellyfin image](https://docs.linuxserver.io/images/docker-jellyfin/)
 - [Proxmox VE PCI(e) passthrough](https://pve.proxmox.com/pve-docs/chapter-qm.html#qm_pci_passthrough)
 - [Proxmox VE PCI passthrough wiki](https://pve.proxmox.com/wiki/PCI_Passthrough)
