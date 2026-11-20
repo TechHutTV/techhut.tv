@@ -1,10 +1,10 @@
 export const title = "Glance: My Favorite Home Server Dashboard, Set Up with Docker"
 export const description = "Install Glance with Docker Compose or a Proxmox LXC, then build a home server start page with service monitoring, Pi-hole and Immich stats, feeds, weather, and themes from a few YAML files."
-export const date = "2026-10-11"
+export const date = "2026-12-10"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Proxmox"]
-export const cover = "/docs-static/img/2026/10/glance-home-server-dashboard/cover.jpg"
+export const cover = "/docs-static/img/2026/12/glance-home-server-dashboard/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -40,11 +40,11 @@ Startpage is the one on the cover. On the left is a sidebar with three widgets:
 
 The main column has a search bar and a big Services section, which is the monitor widget. You give it a URL for each service and it tells you whether it's up and how long it took to respond. I had everything green at the time, mostly because I was tidying things up for my home services tour. Search works like you'd expect. I searched for TechHut Docker and it pulled up my Docker guide, which, you know, you should probably check out. The [Docker basics article](/7-docker-basics-for-beginners) is a good starting point if Compose is new to you.
 
-![The Glance Startpage with the search bar and Services monitor in the main column and Pi-hole DNS stats and Immich stats in the sidebar](/docs-static/img/2026/10/glance-home-server-dashboard/startpage-overview.jpg)
+![The Glance Startpage with the search bar and Services monitor in the main column and Pi-hole DNS stats and Immich stats in the sidebar](/docs-static/img/2026/12/glance-home-server-dashboard/startpage-overview.jpg)
 
 The Home tab I barely changed from the default, and it's still really nice: a calendar, weather for my area, Hacker News and Lobsters, an RSS widget with 9to5Linux and OMG! Ubuntu, YouTube channels like Linus Tech Tips, Jeff Geerling, and Fireship, a markets overview, Twitch channels (I don't really watch Twitch, I just left it there to show it off), a couple of subreddits, and new GitHub releases.
 
-![The Glance Home tab with the calendar, RSS feed, and Hacker News widgets](/docs-static/img/2026/10/glance-home-server-dashboard/home-page-feeds.jpg)
+![The Glance Home tab with the calendar, RSS feed, and Hacker News widgets](/docs-static/img/2026/12/glance-home-server-dashboard/home-page-feeds.jpg)
 
 I ran it in a Proxmox LXC created by a helper script, and the whole dashboard came from one `glance.yml` file. I've since published that config in my homelab repo as [glance.yml](https://github.com/TechHutTV/homelab/blob/main/glance.yml), so you can see exactly how both pages are built. Just know it's a snapshot of my setup from the video, so it still uses the older Pi-hole v5 settings. The examples in this article use the current ones.
 
@@ -265,7 +265,7 @@ This is probably the widget you'll use more than any other. Each site has a `tit
 - **`allow-insecure`**: Skips certificate validation, which is handy for self-signed certificates like the Proxmox web UI's.
 - **`icon`**: `di:` pulls from [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons), which is what I use. `si:` (Simple Icons), `sh:` (selfh.st icons), and `mdi:` (Material Design Icons) also work, or you can point at an image in your assets folder.
 
-![The Glance monitor widget listing homelab services like Proxmox, Plex, Immich, and Jellyfin, each with an OK status and response time](/docs-static/img/2026/10/glance-home-server-dashboard/services-monitor-widget.jpg)
+![The Glance monitor widget listing homelab services like Proxmox, Plex, Immich, and Jellyfin, each with an OK status and response time](/docs-static/img/2026/12/glance-home-server-dashboard/services-monitor-widget.jpg)
 
 I have two monitor widgets, one for core services and one for the media stack. There's also `show-failing-only: true`, which only lists services that are down, and `style: compact` for a tighter layout. A small failing-only monitor at the bottom of a page is a neat way to only see something when there's a problem.
 
@@ -295,7 +295,7 @@ The repository widget shows a GitHub repo's latest pull requests, issues, and co
 
 The `home.yml` from the template is basically the Home page from my video: a small column with the calendar, RSS, and Twitch channels; a full column with Hacker News and Lobsters grouped together, YouTube videos, and two subreddits; and a small column with weather, markets, and releases. Swap in your own feeds, channel IDs, subreddits, and repositories.
 
-![The default Home page from the Docker Compose template running in a browser, with London weather, markets, Hacker News, and YouTube videos](/docs-static/img/2026/10/glance-home-server-dashboard/template-home-page.jpg)
+![The default Home page from the Docker Compose template running in a browser, with London weather, markets, Hacker News, and YouTube videos](/docs-static/img/2026/12/glance-home-server-dashboard/template-home-page.jpg)
 
 The weather widget is the first thing to change, because the template points at London:
 
@@ -358,7 +358,7 @@ theme:
 
 Save, refresh, new theme. The colors are just HSL numbers, so you can tune them however you like.
 
-![The Glance Startpage after switching to the Camouflage theme](/docs-static/img/2026/10/glance-home-server-dashboard/camouflage-theme-startpage.jpg)
+![The Glance Startpage after switching to the Camouflage theme](/docs-static/img/2026/12/glance-home-server-dashboard/camouflage-theme-startpage.jpg)
 
 The `presets` part is new since my video. Starting with v0.8.0, any presets you define show up in a theme picker on the page, so you can switch between them without editing the config. Set `disable-picker: true` if you don't want it. The `assets/user.css` file from the template is there for anything the theme settings can't do. Your browser caches it, so do a hard refresh (Ctrl+F5) after changing it.
 
