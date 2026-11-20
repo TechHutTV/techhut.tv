@@ -1,10 +1,10 @@
 export const title = "I'm Done With Plex: Setting Up Jellystat for Jellyfin"
 export const description = "Set up Jellystat, a self-hosted statistics and monitoring app for Jellyfin, with Docker Compose and PostgreSQL, connect it to your server, and explore its sessions, libraries, users, and charts."
-export const date = "2026-10-09"
+export const date = "2026-11-24"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Monitoring", "PLEX"]
-export const cover = "/docs-static/img/2026/10/jellystat-jellyfin-statistics/cover.jpg"
+export const cover = "/docs-static/img/2026/11/jellystat-jellyfin-statistics/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -183,7 +183,7 @@ Next, it wants a Jellyfin URL and an API key. Because Jellystat and Jellyfin are
 http://YOUR_JELLYFIN_IP:8096
 ```
 
-![Step 2 of 2 of Jellystat's first-time setup asking for the Jellyfin URL and API key](/docs-static/img/2026/10/jellystat-jellyfin-statistics/first-time-setup-jellyfin-url.jpg)
+![Step 2 of 2 of Jellystat's first-time setup asking for the Jellyfin URL and API key](/docs-static/img/2026/11/jellystat-jellyfin-statistics/first-time-setup-jellyfin-url.jpg)
 
 To get the API key in Jellyfin:
 
@@ -200,7 +200,7 @@ If everything is right, Jellystat connects and starts its first sync. Depending 
 
 To make sure session tracking was working, I fired up the Jellyfin app on my Xbox Series X, which is apparently one of the platforms where the Jellyfin client works really well. I played a home movie so I wouldn't get anything flagged, and the session showed up in Jellystat almost right away, even while the library sync was still running in the background.
 
-![A Jellystat session card for a home video playing as a Direct Play on the Jellyfin client for Xbox Series X, above the Recently Added row](/docs-static/img/2026/10/jellystat-jellyfin-statistics/session-xbox-direct-play.jpg)
+![A Jellystat session card for a home video playing as a Direct Play on the Jellyfin client for Xbox Series X, above the Recently Added row](/docs-static/img/2026/11/jellystat-jellyfin-statistics/session-xbox-direct-play.jpg)
 
 It started as a direct play. Then I changed the quality on the Xbox to force a transcode, and the session in Jellystat updated to show it transcoding to 1080p. One small gripe, and this is about the Jellyfin client rather than Jellystat: the quality options on these clients are listed by bitrate rather than by resolution. I'd prefer it the other way around. If there's a setting for that, let me know.
 
@@ -212,7 +212,7 @@ With some data coming in, I went through the rest of the interface.
 
 The **Libraries** page shows item counts and total size for each library. My numbers are, frankly, ridiculous: a huge file count, which I suspect includes a lot of subtitle files, and about 15 terabytes of media. My golly.
 
-![The Jellystat Libraries page showing the Music and Shows libraries, with 19,354 files and 15.84 TB in Shows](/docs-static/img/2026/10/jellystat-jellyfin-statistics/libraries-page.jpg)
+![The Jellystat Libraries page showing the Music and Shows libraries, with 19,354 files and 15.84 TB in Shows](/docs-static/img/2026/11/jellystat-jellyfin-statistics/libraries-page.jpg)
 
 ### Users and Activity
 
@@ -239,7 +239,7 @@ With the server connected as a peer, I went to my self-hosted NetBird dashboard 
 3. Under the access settings, I turned on [CrowdSec IP reputation](https://docs.netbird.io/manage/reverse-proxy/authentication) in **Enforce** mode and limited access to visitors from the United States.
 4. Save the service.
 
-![The Access Control tab of NetBird's Add HTTPS Service dialog with CrowdSec IP Reputation set to Enforce and an Allow Only rule for the United States](/docs-static/img/2026/10/jellystat-jellyfin-statistics/netbird-crowdsec-country-rules.jpg)
+![The Access Control tab of NetBird's Add HTTPS Service dialog with CrowdSec IP Reputation set to Enforce and an Allow Only rule for the United States](/docs-static/img/2026/11/jellystat-jellyfin-statistics/netbird-crowdsec-country-rules.jpg)
 
 The CrowdSec option only shows up if your proxy cluster has CrowdSec configured, and country restrictions on a self-hosted proxy need a GeoLite2 database. If any of this is new to you, my [self-hosted NetBird with Pocket ID guide](/self-host-netbird-pocketid) covers setting up NetBird and its reverse proxy from scratch.
 
