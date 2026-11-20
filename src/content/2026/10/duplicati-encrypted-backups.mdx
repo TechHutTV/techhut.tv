@@ -20,7 +20,7 @@ I'll go over how I have it set up, how to install it with Docker or on a desktop
 
 MOVA sponsored the video this article is based on.
 
-The video was published in December 2025. The written installation has been updated for [Duplicati 2.4.0.1](https://github.com/duplicati/duplicati/releases/tag/v2.4.0.1_stable_2026-10-07), the current stable release, published October 7, 2026. Duplicati now enforces a stricter data folder permission check (added in 2.3.1.0), and the 2.4 line adds a new sync (plain copy) mode and saving the job configuration alongside encrypted backups. Duplicati's free cloud dashboard has also changed since recording. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
+The video was published in December 2025. The written installation has been updated for [Duplicati 2.4.1.0](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29), the current stable release, published October 29, 2026. Duplicati now enforces a stricter data folder permission check (added in 2.3.1.0), and the 2.4 line adds a new sync (plain copy) mode and saving the job configuration alongside encrypted backups. 2.4.1.0 also updates the local database format, so read the release notes before you downgrade. The folder-backup steps below are the same. Duplicati's free cloud dashboard has also changed since recording. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
 
 ## What Duplicati Does
 
@@ -52,7 +52,7 @@ I have two cloud backups set up right now, both going to Google Drive and both e
 
 ## Install Duplicati with Docker Compose
 
-This uses the [official `duplicati/duplicati` image](https://hub.docker.com/r/duplicati/duplicati), following the [official Docker guide](https://docs.duplicati.com/platform-specific-guides/using-duplicati-from-docker). I've pinned it to `2.4.0.1`. The `latest` and `stable` tags follow the newest stable release if you'd rather float, and there are also `beta` and `canary` tags. Images are built for amd64, arm64, and 32-bit ARMv7.
+This uses the [official `duplicati/duplicati` image](https://hub.docker.com/r/duplicati/duplicati), following the [official Docker guide](https://docs.duplicati.com/platform-specific-guides/using-duplicati-from-docker). I've pinned it to `2.4.1.0`. The `latest` and `stable` tags follow the newest stable release if you'd rather float, and there are also `beta` and `canary` tags. Images are built for amd64, arm64, and 32-bit ARMv7.
 
 Create a project folder and a `.env` file for the two secrets:
 
@@ -80,7 +80,7 @@ Then create `docker-compose.yml`:
 ```yaml
 services:
   duplicati:
-    image: duplicati/duplicati:2.4.0.1
+    image: duplicati/duplicati:2.4.1.0
     container_name: duplicati
     restart: unless-stopped
     ports:
@@ -133,7 +133,7 @@ A few more notes:
 
 Duplicati doesn't work like a server you install clients for. I expected something like Nextcloud, where one central instance sits on Unraid and lightweight apps on each computer connect to it. That isn't how it works. **Every machine runs its own copy of Duplicati and manages its own backups.**
 
-On a desktop, the normal install is the GUI package. It puts a tray icon (a menu bar icon on macOS) next to your clock and opens the web UI in your browser. Grab it from the [download page](https://duplicati.com/download). Use **Other versions** for alternate packages, or get them from the [GitHub releases](https://github.com/duplicati/duplicati/releases/tag/v2.4.0.1_stable_2026-10-07):
+On a desktop, the normal install is the GUI package. It puts a tray icon (a menu bar icon on macOS) next to your clock and opens the web UI in your browser. Grab it from the [download page](https://duplicati.com/download). Use **Other versions** for alternate packages, or get them from the [GitHub releases](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29):
 
 | Platform | Package | Architectures |
 |---|---|---|
@@ -147,10 +147,10 @@ On Linux, install the package you downloaded with your package manager:
 
 ```bash
 # Debian / Ubuntu
-sudo apt install ./duplicati-2.4.0.1_stable_2026-10-07-linux-x64-gui.deb
+sudo apt install ./duplicati-2.4.1.0_stable_2026-10-29-linux-x64-gui.deb
 
 # Fedora / RHEL
-sudo dnf install ./duplicati-2.4.0.1_stable_2026-10-07-linux-x64-gui.rpm
+sudo dnf install ./duplicati-2.4.1.0_stable_2026-10-29-linux-x64-gui.rpm
 ```
 
 On macOS, open the DMG and drag Duplicati into Applications. Keep in mind that the DMG version doesn't start at login on its own. On Windows, the 2.4 installer now has checkboxes for running Duplicati as a service and turning on HTTPS.
@@ -296,5 +296,5 @@ If you've got some cloud storage you don't trust with your raw files, give Dupli
 - [Pricing](https://duplicati.com/pricing)
 - [Docker Hub: duplicati/duplicati](https://hub.docker.com/r/duplicati/duplicati)
 - [GitHub repository](https://github.com/duplicati/duplicati)
-- [v2.4.0.1 release notes](https://github.com/duplicati/duplicati/releases/tag/v2.4.0.1_stable_2026-10-07)
+- [v2.4.1.0 release notes](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29)
 - [v2.4.0.0 release notes](https://github.com/duplicati/duplicati/releases/tag/v2.4.0.0_stable_2026-09-03)
