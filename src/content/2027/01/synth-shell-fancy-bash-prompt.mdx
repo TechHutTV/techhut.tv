@@ -1,10 +1,10 @@
 export const title = "Fancy Bash Prompt: Customize Your Linux Terminal with synth-shell"
 export const description = "Back up your .bashrc, install synth-shell's prompt with the setup script, get the Powerline font working, and recolor the prompt with 256-color codes. Also covers the greeter, better-ls, aliases, history, and launching fastfetch."
-export const date = "2026-10-17"
+export const date = "2027-01-04"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Terminal", "Customization"]
-export const cover = "/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/cover.jpg"
+export const cover = "/docs-static/img/2027/01/synth-shell-fancy-bash-prompt/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -99,7 +99,7 @@ The script walks you through a few prompts. What I picked:
 | Install alias? | `n` |
 | Install better-history? | `n` |
 
-![The synth-shell setup wizard from the video on elementary OS, installing only synth-shell-prompt for the current user and skipping the greeter, better-ls, alias, and better-history](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/setup-wizard-prompt-only.jpg)
+![The synth-shell setup wizard from the video on elementary OS, installing only synth-shell-prompt for the current user and skipping the greeter, better-ls, alias, and better-history](/docs-static/img/2027/01/synth-shell-fancy-bash-prompt/setup-wizard-prompt-only.jpg)
 
 A user install puts everything in `~/.config/synth-shell/` and hooks it into your `~/.bashrc`, so no root is needed. The system-wide option uses `sudo`, installs the scripts to `/usr/local/bin`, puts the configs in `/etc/synth-shell/`, and hooks into `/etc/bash.bashrc` for everyone.
 
@@ -189,7 +189,7 @@ background_host="214"
 
 In nano, press **Ctrl+O** and **Enter** to save, then **Ctrl+X** to exit. Open a new terminal window and the new colors are there. I kept a second terminal window open while editing so I could check each change.
 
-![The synth-shell-prompt.config file in nano from the video, with background_user set to 130 and background_host set to 214 for the orange theme](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/prompt-config-colors.jpg)
+![The synth-shell-prompt.config file in nano from the video, with background_user set to 130 and background_host set to 214 for the orange theme](/docs-static/img/2027/01/synth-shell-fancy-bash-prompt/prompt-config-colors.jpg)
 
 ### Separators and padding
 
@@ -271,7 +271,7 @@ font_color_input="159"
 
 I didn't add any extra configuration beyond that. The Git section is further down the file, so if you work in Git a lot, you can customize how all of that looks too.
 
-![Brandon's EndeavourOS Konsole from the video with the purple and light purple prompt, neofetch output, and the .bashrc backup command](/docs-static/img/2026/10/synth-shell-fancy-bash-prompt/endeavouros-purple-prompt.jpg)
+![Brandon's EndeavourOS Konsole from the video with the purple and light purple prompt, neofetch output, and the .bashrc backup command](/docs-static/img/2027/01/synth-shell-fancy-bash-prompt/endeavouros-purple-prompt.jpg)
 
 ## Updating or removing synth-shell
 
