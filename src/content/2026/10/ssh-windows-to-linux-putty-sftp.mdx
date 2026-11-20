@@ -10,16 +10,16 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="SNYnOYWoeAw" title="TechHut's SSH from Windows to Linux walkthrough" />
 
-I know a lot of you have to run Windows for one reason or another. Maybe you built a media server out of an old laptop running Linux, and now you want to control it and move files to it from your Windows PC. That's what this guide covers.
+I know a lot of you have to run Windows for one reason or another. Maybe you built a media server out of an old laptop running Linux, and now you want to control it and move files to it from your Windows PC. That's what I'll cover.
 
 There are four ways to do it here, and you don't need all of them:
 
 - **The built-in OpenSSH client** for a terminal session from PowerShell, Command Prompt, or Windows Terminal.
-- **FileZilla** for drag-and-drop file transfers over SFTP. This is the one I actually use for files.
+- **FileZilla** for drag-and-drop file transfers over SFTP. This is the one I use for files.
 - **PuTTY**, a free and open source SSH client that makes saving connections easy.
 - **The `sftp` command** if you'd rather move files from the command line.
 
-The video was published in March 2021, with an Ubuntu 20.04 server on the Linux side. The written steps have been updated for what's current in October 2026: [PuTTY 0.85](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) (released August 16, 2026), [FileZilla Client 3.71.1](https://filezilla-project.org/) (released August 26, 2026), and the OpenSSH client in current Windows 10 and 11. I've also added a section on SSH keys, which the video didn't cover. The hands-on walkthrough and opinions come from the original recording.
+The video was published in March 2021, with an Ubuntu 20.04 server on the Linux side. The steps below are for what's current in October 2026: [PuTTY 0.85](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) (released August 16, 2026), [FileZilla Client 3.71.1](https://filezilla-project.org/) (released August 26, 2026), and the OpenSSH client in current Windows 10 and 11. I've also added a section on SSH keys, which the video didn't cover. The hands-on walkthrough and opinions come from the original recording.
 
 ## What You Need
 
@@ -272,7 +272,7 @@ sudo systemctl restart ssh     # use sshd on Fedora
 
 `KbdInteractiveAuthentication` matters too. It's a separate login method that, according to `man sshd_config`, defaults to `yes`, and it can still prompt for a password even with `PasswordAuthentication no`. `sshd -t` checks the config for errors before you restart.
 
-OpenSSH uses the first value it finds for a setting, and the drop-in files in `/etc/ssh/sshd_config.d/` are read in name order. On Ubuntu, files like `50-cloud-init.conf` can turn passwords back on, and the `01-` prefix makes this file win over them. To confirm what the server is actually using, check the effective config:
+OpenSSH uses the first value it finds for a setting, and the drop-in files in `/etc/ssh/sshd_config.d/` are read in name order. On Ubuntu, files like `50-cloud-init.conf` can turn passwords back on, and the `01-` prefix makes this file win over them. To confirm what the server is using, check the effective config:
 
 ```bash
 sudo sshd -T | grep -Ei 'passwordauthentication|kbdinteractive'
@@ -292,7 +292,7 @@ If your other computer runs Linux, all of this is easier. `ssh` and `sftp` work 
 
 For a Windows PC and a Linux server, this is how I'd do it: the built-in SSH client for quick terminal work and FileZilla for moving files. If I were forced to use Windows, FileZilla is how I'd send files to and pull them from my media server. If you manage a few machines and want saved logins, PuTTY is still a great free option. Just get it from the real site. And if you live in a terminal anyway, `sftp` with `get` and `put` does the job without installing anything.
 
-Whichever you pick, take a few minutes to set up SSH keys. It's the biggest upgrade over what I showed in the video. If you still need a server to connect to, my [old PC or laptop media server guide](/old-pc-laptop-media-server) is a good starting point.
+Whichever you pick, take a few minutes to set up SSH keys. It's the biggest upgrade over what I showed in the video. If you still need a server to connect to, my [old PC or laptop media server guide](/old-pc-laptop-media-server) is a good starting point. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
