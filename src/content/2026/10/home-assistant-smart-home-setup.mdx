@@ -10,7 +10,7 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="wfY_vwv3UQU" title="TechHut's Home Assistant walkthrough" />
 
-I've wanted a good excuse to run [Home Assistant](https://www.home-assistant.io/) for years. Before I moved, I had exactly two smart bulbs, and that didn't seem worth a whole server. The new place is different. I can drill into walls, mount things, and actually build out a smart home, so this was finally the time to do it.
+I've wanted a good excuse to run [Home Assistant](https://www.home-assistant.io/) for years. Before I moved, I had exactly two smart bulbs, and that didn't seem worth a whole server. The new place is different. I can drill into walls, mount things, and build out a smart home, so this was finally the time to do it.
 
 The plan was simple: put Home Assistant on a ZimaBoard, plug in a Zigbee USB dongle, and make a set of motorized shades the first real devices in the system. SmartWings sent me the shades for this video.
 
@@ -116,7 +116,7 @@ sudo efibootmgr --create --disk /dev/<drivename> --part 1 --label "HAOS" \
 
 You don't need a dedicated box. HA OS also ships as a `.qcow2` disk image for KVM and Proxmox, listed on the [alternative installation page](https://www.home-assistant.io/installation/alternative). The minimum is 2 GB of RAM and 2 vCPUs. Since a Zigbee coordinator is USB, you'll pass the dongle through to the VM.
 
-The community [Proxmox VE Helper Scripts](https://community-scripts.org/scripts/haos-vm) automate this, and they're what I've used for HA OS on my own Proxmox server since. I talk more about them in my [AdGuard Home on Proxmox guide](/adguard-home-proxmox-setup). They're not maintained by Home Assistant, so read [`vm/haos-vm.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/vm/haos-vm.sh) before you run it as root. Here's what the current script does:
+The community [Proxmox VE Helper Scripts](https://community-scripts.org/scripts/haos-vm) automate this, and they're what I've used for HA OS on my own Proxmox server since. I talk more about them in my [AdGuard Home on Proxmox guide](/adguard-home-proxmox-setup). They're not maintained by Home Assistant, so read [`vm/haos-vm.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/vm/haos-vm.sh) before you run it as root. The current script does this:
 
 - Downloads the official `haos_ova-<version>.qcow2.xz` image from Home Assistant's GitHub releases
 - Creates a q35 VM with OVMF (UEFI) firmware, 2 cores, 4 GB of RAM, and a 32 GB disk by default
@@ -171,7 +171,7 @@ Placement matters more than I expected. The docs recommend a shielded USB extens
 
 ![Two SmartWings shades paired through ZHA in the video, each renamed and assigned to an area under The device is ready to use](/docs-static/img/2026/10/home-assistant-smart-home-setup/zha-shades-paired.jpg)
 
-Pair mains-powered Zigbee devices before battery ones when you can. Mains-powered devices act as routers and extend the mesh. My first shade came in as "kitchen shade," and then I repeated the process for the other three. One small gripe: there's no save button in the device dialog. I would have liked some confirmation that what I typed actually stuck. It did, and in a new tab all four shades showed up with up, down, and stop controls.
+Pair mains-powered Zigbee devices before battery ones when you can. Mains-powered devices act as routers and extend the mesh. My first shade came in as "kitchen shade," and then I repeated the process for the other three. One small gripe: there's no save button in the device dialog. I would have liked some confirmation that what I typed stuck. It did, and in a new tab all four shades showed up with up, down, and stop controls.
 
 ![The Home Assistant overview from the video with up, stop, and down controls for the kitchen, bedroom, and living room shades next to the Elgato lights](/docs-static/img/2026/10/home-assistant-smart-home-setup/dashboard-shades.jpg)
 
@@ -188,7 +188,7 @@ On HA OS, the [official Zigbee2MQTT app](https://github.com/zigbee2mqtt/hassio-z
 
 SmartWings reached out a long time ago, but I couldn't install anything in my previous home. After the move, I got in touch again and they sent some over to try.
 
-I went with their roller shades: motorized, light filtering, with 70% blackout. You can't see through them, but they still let some light in. I also liked the zebra shades, and the dual shades looked great but were a lot more expensive. I chose ivory, an inside mount (I think it looks much better), and a flat white square cassette. At the time I ordered, the roller shades started at $179. That's not cheap, but if you're already considering motorized shades, it's not outrageous either.
+I went with their roller shades: motorized, light filtering, with 70% blackout. You can't see through them, but they still let some light in. I also liked the zebra shades, and the dual shades looked great but were a lot more expensive. I chose ivory, an inside mount (I think it looks much better), and a flat white square cassette. At the time I ordered, the roller shades started at $179. That's real money, and it's in line with other motorized shades.
 
 Some lessons from ordering and installing:
 
@@ -218,7 +218,7 @@ My wife likes using Alexa for voice commands, so the shades needed to show up th
 | [Alexa Smart Home skill](https://www.home-assistant.io/integrations/alexa.smart_home/) | Free | An AWS Lambda function, an Alexa developer skill, and Home Assistant reachable from the internet over HTTPS on port 443 with a trusted certificate |
 | [Emulated Hue](https://www.home-assistant.io/integrations/emulated_hue/) | Free | YAML config, local network only, devices appear as Hue lights |
 
-When I tried adding the Amazon integration from **Add integration**, it pointed me to Home Assistant Cloud. Honestly, the price isn't bad and I might end up using it. Home Assistant Cloud is run by Nabu Casa, and it helps fund the project. Nabu Casa [plans to rename it Home Assistant Link](https://www.home-assistant.io/blog/2026/10/02/big-tech-ruined-the-cloud-so-were-renaming-ours/) in the 2026.12 release.
+When I tried adding the Amazon integration from **Add integration**, it pointed me to Home Assistant Cloud. The price isn't bad, and I might end up using it. Home Assistant Cloud is run by Nabu Casa, and it helps fund the project. Nabu Casa [plans to rename it Home Assistant Link](https://www.home-assistant.io/blog/2026/10/02/big-tech-ruined-the-cloud-so-were-renaming-ours/) in the 2026.12 release.
 
 I didn't want to pay for it just yet, so I tried the free option first: Emulated Hue.
 
@@ -226,7 +226,7 @@ I didn't want to pay for it just yet, so I tried the free option first: Emulated
 
 Emulated Hue makes Home Assistant pretend to be a Philips Hue bridge. Alexa already knows how to discover and control Hue lights, so anything you expose through the fake bridge shows up as a Hue device without a cloud account. It doesn't replace a real Hue bridge if you own Hue bulbs. The docs also say it doesn't work for new Google Home setups. For Google, use the Google Assistant integration or Home Assistant Cloud instead.
 
-In the most basic sense, it works. I added my shades in the Alexa app, and I can control them. The catch is that a shade isn't a light bulb. Emulated Hue maps a cover's position to brightness, so "set the shades to 50%" works, but a bulb hits 50% instantly while a shade takes a while to get there. Alexa doesn't wait, and she'll tell me the device is malfunctioning when it's actually still moving. One of mine got to 90%, and then I got the malfunction message anyway. It's a hacky but free workaround. That trade-off is why I'm still considering the cloud option.
+In the most basic sense, it works. I added my shades in the Alexa app, and I can control them. The catch is that a shade isn't a light bulb. Emulated Hue maps a cover's position to brightness, so "set the shades to 50%" works, but a bulb hits 50% instantly while a shade takes a while to get there. Alexa doesn't wait, and she'll tell me the device is malfunctioning when it's still moving. One of mine got to 90%, and then I got the malfunction message anyway. It's a hacky but free workaround. That trade-off is why I'm still considering the cloud option.
 
 ### Edit `configuration.yaml`
 
@@ -276,7 +276,7 @@ The emulated bridge doesn't use a login. Home Assistant only answers requests fr
 
 This is a first impression from someone who has run plenty of homelab services but never Home Assistant. Even so, it clicked immediately. The install was easier than the docs make it sound, the Zigbee dongle was picked up without any fiddling, and most of my existing devices were found on their own. My wife can now control the shades through Alexa without me paying for anything, even if Emulated Hue is a bit of a hack for covers.
 
-There's a lot left to do. I still need to customize the dashboards, figure out the light dimmers that came with the house (they're smart but need their own hub), and add cameras now that I can actually install things. Out of every homelab app I run, from Sonarr and Radarr to my security and backup tools, this is the one I can see becoming my absolute favorite and something I use every day.
+There's a lot left to do. I still need to customize the dashboards, figure out the light dimmers that came with the house (they're smart but need their own hub), and add cameras now that I can install things. Out of every homelab app I run, from Sonarr and Radarr to my security and backup tools, this is the one I can see becoming my favorite, and something I use every day.
 
 If you're still deciding whether a home server is worth it in the first place, I wrote up [why I think everyone should have one](/5-reasons-build-home-server). And if you later put Home Assistant behind a reverse proxy, [part 4 of my Ultimate Home Server series](/ultimate-home-server-part-4-ssl-certificates) covers the trusted proxy setting that moved into the UI. With all that, I do hope you have an absolutely beautiful day.
 
