@@ -60,6 +60,16 @@
       "https://api.github.com/repos/advplyr/audiobookshelf"
     ]
   },
+  "bazarr": {
+    "repository": "morpheus65535/bazarr",
+    "label": "Bazarr",
+    "link": "https://github.com/morpheus65535/bazarr",
+    "reason": "Official Bazarr software repository, linked from bazarr.media and the TechHut guide's resources; README and GPL-3.0 LICENSE verified, repository not archived.",
+    "sources": [
+      "https://github.com/morpheus65535/bazarr",
+      "https://www.bazarr.media/"
+    ]
+  },
   "beaver-habit-tracker": {
     "repository": "daya0576/beaverhabits",
     "label": "Beaver Habit Tracker",
@@ -539,6 +549,18 @@
       "https://api.github.com/repos/rmcrackan/Libation"
     ]
   },
+  "lidarr": {
+    "repository": "lidarr/lidarr",
+    "label": "Lidarr",
+    "link": "https://github.com/Lidarr/Lidarr",
+    "reason": "Official music-library manager repository linked by lidarr.audio. The README identifies the covered application, lists supported platforms, and links the GPL-3.0 license. GitHub reports the repository is not archived.",
+    "sources": [
+      "https://lidarr.audio/",
+      "https://github.com/Lidarr/Lidarr#readme",
+      "https://api.github.com/repos/Lidarr/Lidarr",
+      "https://github.com/Lidarr/Lidarr/blob/develop/LICENSE.md"
+    ]
+  },
   "linked": {
     "repository": "lostdesign/linked",
     "label": "Linked",
@@ -715,6 +737,17 @@
     "sources": [
       "https://github.com/networkupstools/nut",
       "https://api.github.com/repos/networkupstools/nut"
+    ]
+  },
+  "nzbget": {
+    "repository": "nzbgetcom/nzbget",
+    "label": "NZBGet",
+    "link": "https://github.com/nzbgetcom/nzbget",
+    "reason": "Maintained NZBGet repository linked from nzbget.com. Its README identifies it as the continuation of the original project formerly maintained by hugbug; the original nzbget/nzbget repository was archived on 2022-11-18 and its last release is v21.1, so its stars are not used.",
+    "sources": [
+      "https://github.com/nzbgetcom/nzbget",
+      "https://nzbget.com/",
+      "https://github.com/nzbget/nzbget"
     ]
   },
   "octoprint": {

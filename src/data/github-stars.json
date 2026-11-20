@@ -137,8 +137,8 @@
     },
     "favonia/cloudflare-ddns": {
       "repository": "favonia/cloudflare-ddns",
-      "stars": 2940,
-      "fetchedAt": "2026-10-18T02:51:45.240Z"
+      "stars": 2981,
+      "fetchedAt": "2026-11-20T17:03:43.576Z"
     },
     "files-community/files": {
       "repository": "files-community/files",
@@ -245,6 +245,11 @@
       "stars": 740,
       "fetchedAt": "2026-09-06T14:22:17.871Z"
     },
+    "lidarr/lidarr": {
+      "repository": "lidarr/lidarr",
+      "stars": 5835,
+      "fetchedAt": "2026-11-20T16:30:50.270Z"
+    },
     "lizardbyte/sunshine": {
       "repository": "lizardbyte/sunshine",
       "stars": 40925,
@@ -289,6 +294,11 @@
       "repository": "moonlight-stream/moonlight-qt",
       "stars": 18549,
       "fetchedAt": "2026-09-06T14:22:02.820Z"
+    },
+    "morpheus65535/bazarr": {
+      "repository": "morpheus65535/bazarr",
+      "stars": 4432,
+      "fetchedAt": "2026-11-20T16:30:54.352Z"
     },
     "mrvladus/errands": {
       "repository": "mrvladus/errands",
@@ -344,6 +354,11 @@
       "repository": "nlnetlabs/unbound",
       "stars": 4855,
       "fetchedAt": "2026-09-06T14:22:20.318Z"
+    },
+    "nzbgetcom/nzbget": {
+      "repository": "nzbgetcom/nzbget",
+      "stars": 795,
+      "fetchedAt": "2026-11-20T16:30:58.769Z"
     },
     "octoprint/octoprint": {
       "repository": "octoprint/octoprint",

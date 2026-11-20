@@ -107,6 +107,27 @@
     }
   },
   {
+    "id": "bazarr",
+    "name": "Bazarr",
+    "category": "Media",
+    "description": "Find and download subtitles for libraries managed by Sonarr and Radarr.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      }
+    ],
+    "icon": "/app-icons/bazarr.png",
+    "iconDark": "/app-icons/bazarr-light.png",
+    "details": {
+      "href": "/apps/bazarr"
+    }
+  },
+  {
     "id": "beaver-habit-tracker",
     "name": "Beaver Habit Tracker",
     "category": "Desktop",
@@ -496,7 +517,10 @@
       "/copyparty-file-server-linux",
       "/dockhand-docker-manager",
       "/proxmox-backup-server-complete-guide",
-      "/bookorbit-self-hosted-library"
+      "/bookorbit-self-hosted-library",
+      "/ultimate-home-server-part-2-jellyfin",
+      "/ultimate-home-server-part-3-arr-stack",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "icon": "/app-icons/docker.png",
     "videos": [
@@ -719,7 +743,9 @@
     "name": "Gluetun",
     "category": "Networking",
     "description": "Route Docker container traffic through a VPN connection.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -839,7 +865,9 @@
     "name": "Home Assistant",
     "category": "Automation",
     "description": "Connect devices and build automations on your own home server.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-4-ssl-certificates"
+    ],
     "videos": [
       {
         "id": "0gNn5oJWsrw",
@@ -908,7 +936,10 @@
     "name": "Jellyfin",
     "category": "Media",
     "description": "Organize and stream your own movies, shows and music.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-2-jellyfin",
+      "/ultimate-home-server-part-4-ssl-certificates"
+    ],
     "videos": [
       {
         "id": "Vwtx_dfYrtA",
@@ -1111,6 +1142,18 @@
     }
   },
   {
+    "id": "lidarr",
+    "name": "Lidarr",
+    "category": "Media",
+    "description": "Organize a music library and connect indexers and download clients for automated imports.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "details": {
+      "href": "/apps/lidarr"
+    }
+  },
+  {
     "id": "linked",
     "name": "Linked",
     "category": "Desktop",
@@ -1287,6 +1330,26 @@
     }
   },
   {
+    "id": "nzbget",
+    "name": "NZBGet",
+    "category": "Media",
+    "description": "Download files from Usenet with a lightweight client that works with Sonarr and Radarr.",
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
+    "videos": [
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
+      }
+    ],
+    "icon": "/app-icons/nzbget.png",
+    "details": {
+      "href": "/apps/nzbget"
+    }
+  },
+  {
     "id": "powertoys",
     "name": "Microsoft PowerToys",
     "category": "Desktop",
@@ -1386,7 +1449,8 @@
       "/split-dns-homelab",
       "/self-host-netbird-pocketid",
       "/fedora-44-post-install-guide",
-      "/fedora-server-guide-cockpit-zfs-podman"
+      "/fedora-server-guide-cockpit-zfs-podman",
+      "/ultimate-home-server-part-4-ssl-certificates"
     ],
     "icon": "/app-icons/netbird.png",
     "videos": [
@@ -1649,7 +1713,9 @@
     "name": "Plausible",
     "category": "Monitoring",
     "description": "View website traffic and referral analytics through a web dashboard.",
-    "coverage": [],
+    "coverage": [
+      "/plausible-privacy-friendly-analytics"
+    ],
     "videos": [
       {
         "id": "P0T6VjTS7_Y",
@@ -1816,12 +1882,19 @@
     "name": "Prowlarr",
     "category": "Media",
     "description": "Manage indexers for a self-hosted media automation stack.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "Uzqf0qlcQlo",
         "title": "my NEW Proxmox Media Server - Full Walkthrough Guide Pt.2 (Jellyfin, Sonarr, Gluetun, and MORE)",
         "published": "2024-10-01"
+      },
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
       }
     ],
     "icon": "/app-icons/prowlarr.png",
@@ -1861,7 +1934,9 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/ultimate-home-server-part-1-proxmox-zfs-samba",
+      "/ultimate-home-server-part-2-jellyfin"
     ],
     "videos": [
       {
@@ -1878,6 +1953,11 @@
         "id": "LuCXHHc2u18",
         "title": "the BEST virtual solution with Proxmox! (Windows and Linux Install)",
         "published": "2021-12-01"
+      },
+      {
+        "id": "Vwtx_dfYrtA",
+        "title": "DITCH Netflix and Disney - the ULTIMATE Home Server Setup - Full Walkthrough Guide Pt.2",
+        "published": "2025-05-12"
       }
     ],
     "icon": "/app-icons/proxmox-ve.png",
@@ -1920,7 +2000,9 @@
     "name": "qBittorrent",
     "category": "Media",
     "description": "Manage torrent downloads from a desktop or self-hosted web interface.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-3-arr-stack"
+    ],
     "videos": [
       {
         "id": "twJDyoj0tDc",
@@ -1939,7 +2021,8 @@
     "category": "Media",
     "description": "Organize and automate a movie library in a self-hosted media stack.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "videos": [
       {
@@ -2019,7 +2102,9 @@
     "name": "Samba",
     "category": "Files & Photos",
     "description": "Share Linux server folders with other computers using SMB.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-1-proxmox-zfs-samba"
+    ],
     "videos": [
       {
         "id": "qmSizZUbCOA",
@@ -2055,7 +2140,8 @@
     "category": "Media",
     "description": "Manage media requests and migrate an existing Overseerr installation.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "icon": "/app-icons/seerr.png",
     "videos": [
@@ -2063,6 +2149,11 @@
         "id": "Kdq4HN3cFmw",
         "title": "You need to DITCH Overseerr and Migrate to Seerr",
         "published": "2026-03-06"
+      },
+      {
+        "id": "twJDyoj0tDc",
+        "title": "the NEW Automated Torrent Media Server - Full Walkthrough Guide Pt. 3 (Gluetun, Sonarr, Radarr)",
+        "published": "2025-05-17"
       }
     ],
     "details": {
@@ -2093,7 +2184,8 @@
     "category": "Media",
     "description": "Organize and automate a TV library in a self-hosted media stack.",
     "coverage": [
-      "/seerr-overseerr-migration"
+      "/seerr-overseerr-migration",
+      "/ultimate-home-server-part-3-arr-stack"
     ],
     "videos": [
       {

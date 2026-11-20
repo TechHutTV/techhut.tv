@@ -1,0 +1,42 @@
+{
+  "summary": "Download files from Usenet with a lightweight client that works with Sonarr and Radarr.",
+  "overview": "NZBGet reads NZB files, which describe where the parts of a post live on Usenet servers, and downloads those articles from the providers you configure. A web interface handles the queue, categories and server settings, while post-processing can verify, repair, unpack and move finished downloads. Sonarr, Radarr and other automation tools can send NZBs to it directly. The maintained NZBGet is the nzbget.com project, which continues the original program after its former repository was archived.",
+  "kind": "Self-hosted",
+  "platforms": [
+    "Linux",
+    "Windows",
+    "macOS",
+    "FreeBSD",
+    "Android",
+    "Docker",
+    "NAS packages"
+  ],
+  "license": {
+    "name": "GPL-2.0-or-later",
+    "type": "Open source",
+    "url": "https://github.com/nzbgetcom/nzbget/blob/develop/COPYING"
+  },
+  "links": [
+    {
+      "label": "Official site",
+      "url": "https://nzbget.com/"
+    },
+    {
+      "label": "GitHub",
+      "url": "https://github.com/nzbgetcom/nzbget"
+    }
+  ],
+  "features": [
+    "Usenet downloads from NZB files",
+    "Web interface and queue management",
+    "Automatic repair and unpacking",
+    "Sonarr and Radarr integration"
+  ],
+  "sources": [
+    "https://nzbget.com/",
+    "https://nzbget.com/documentation/",
+    "https://github.com/nzbgetcom/nzbget#readme",
+    "https://github.com/nzbgetcom/nzbget/blob/develop/COPYING",
+    "https://github.com/nzbget/nzbget"
+  ]
+}
