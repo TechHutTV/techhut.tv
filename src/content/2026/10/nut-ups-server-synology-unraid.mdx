@@ -16,7 +16,7 @@ A UPS (uninterruptible power supply) is basically a big battery that sits betwee
 
 I'll go over the UPS I'm using, how to set up a NUT server on a Linux box, how I use my Synology NAS as the NUT server instead, and how to connect Unraid to it so everything shuts down in the right order.
 
-Tripp Lite (now part of Eaton) sent me the UPS in this article to review, and Linode (part of Akamai) sponsored the video this article is based on.
+Tripp Lite (now part of Eaton) sent me the UPS in this article to review.
 
 The video was published in June 2023. The install script I used then hasn't changed since and doesn't set up network access or shutdowns, so the Linux setup below is a manual configuration for NUT 2.8.x. Upstream NUT is at [v2.8.5](https://github.com/networkupstools/nut/releases/tag/v2.8.5) (April 2026). The Synology steps are checked against DSM 7.4, and the Unraid steps use the actively maintained NUT plugin, which has different labels than the one in the video. My hands-on footage and impressions come from the original recording.
 
