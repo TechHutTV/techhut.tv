@@ -20,9 +20,9 @@ The video was published in March 2023. The written steps have been updated for [
 
 ## What CapRover Does
 
-CapRover's own pitch is that it's for developers who don't want to spend hours setting up build tools, uploading code, sorting out SSL certificates and fiddling with nginx. It handles a lot of that backend heavy lifting. My favorite part is the other use case: it lets people like me spin up self-hosted apps really quickly.
+CapRover's own pitch is that it's for developers who don't want to spend hours setting up build tools, uploading code, sorting out SSL certificates and fiddling with nginx. It handles a lot of that for you. My favorite part is the other use case: it lets people like me spin up self-hosted apps pretty quickly.
 
-Here's what you get:
+You get:
 
 | Feature | What it does |
 |---|---|
@@ -268,7 +268,7 @@ The template asks for versions and credentials. In the video, I typed a throwawa
 | Hostnames | Blank | Extra domains for Nextcloud's trusted domains list. I left it blank. |
 | PHP upload and memory limits | `512M` each | Raise them if you need bigger uploads |
 
-After deploying, it created the volumes and showed some tips for getting better performance out of Nextcloud. If you're going to actually use it, definitely read those and follow them. They cover adding an HSTS header to the nginx config, CalDAV and CardDAV redirects, and a few `occ` commands.
+After deploying, it created the volumes and showed some tips for getting better performance out of Nextcloud. If you're going to use it, do read those and follow them. They cover adding an HSTS header to the nginx config, CalDAV and CardDAV redirects, and a few `occ` commands.
 
 Back in Apps, I could see everything it spun up, including a separate cron container. When I tried to open Nextcloud right away, it didn't work. Because the protocol is set to `https`, this is one of the apps where you **must enable HTTPS before you can even reach it**. Once I did that and refreshed, I could log in.
 
@@ -276,7 +276,7 @@ It ran perfectly fine. This isn't the [Nextcloud All-in-One](/nextcloud-aio-self
 
 ## What's Happening Under the Hood
 
-To see what CapRover is actually doing, jump to your server and list the containers:
+To see what CapRover is doing, jump to your server and list the containers:
 
 ```bash
 sudo docker container ls
@@ -290,7 +290,7 @@ This is why I keep calling it "Docker without Docker." It's all real Docker unde
 
 CapRover isn't only for people like me who kind of know what they're doing. If you really know what you're doing and you're building your own applications, it's still a great tool.
 
-The CapRover repo has a [captain-sample-apps](https://github.com/caprover/caprover/tree/master/captain-sample-apps) folder with ready-to-deploy examples for Node.js, Python, Ruby, Go, ASP.NET, React and more. In the video I downloaded the Node.js one. It's a normal, simple app with one extra file at the root, called `captain-definition`. That file tells CapRover how to build it. Here's the current Node.js example from the [docs](https://caprover.com/docs/captain-definition-file):
+The CapRover repo has a [captain-sample-apps](https://github.com/caprover/caprover/tree/master/captain-sample-apps) folder with ready-to-deploy examples for Node.js, Python, Ruby, Go, ASP.NET, React and more. In the video I downloaded the Node.js one. It's a normal, simple app with one extra file at the root, called `captain-definition`. That file tells CapRover how to build it. The current Node.js example from the [docs](https://caprover.com/docs/captain-definition-file) looks like this:
 
 ```json
 {
@@ -323,9 +323,9 @@ v1.15 also added an experimental way to paste a simple [Docker Compose file](htt
 
 ## My Take
 
-Overall, this is probably one of the better ways to use Docker without having to use Docker. Setup is the only part that takes some thought, and most of that is getting the wildcard DNS record right. After that, deploying an app is a name and a click, and HTTPS is one more click.
+Overall, this is probably one of the better ways to use Docker without having to write the Compose file yourself. Setup is the only part that takes some thought, and most of that is getting the wildcard DNS record right. After that, deploying an app is a name and a click, and HTTPS is one more click.
 
-If you're comfortable with Docker Compose and a reverse proxy, you may not need it. But if you want a few web apps on a cheap VPS with real certificates and very little fuss, or you're a developer who wants a self-hosted Heroku-style setup, CapRover is awesome. Big thanks to the viewer who recommended it. If you're new to containers, my [Docker basics guide](/7-docker-basics-for-beginners) is a good place to start.
+If you're comfortable with Docker Compose and a reverse proxy, you may not need it. If you want a few web apps on a cheap VPS with real certificates and very little fuss, or you're a developer who wants a self-hosted Heroku-style setup, CapRover is awesome. Big thanks to the viewer who recommended it. If you're new to containers, my [Docker basics guide](/7-docker-basics-for-beginners) is a good place to start. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
