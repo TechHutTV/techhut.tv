@@ -1689,7 +1689,8 @@
     "category": "Networking",
     "description": "Run a network-wide DNS filter with a web administration interface.",
     "coverage": [
-      "/split-dns-homelab"
+      "/split-dns-homelab",
+      "/pi-hole-unbound-recursive-dns"
     ],
     "videos": [
       {
@@ -2495,7 +2496,9 @@
     "name": "Unbound",
     "category": "Networking",
     "description": "Run a recursive DNS resolver alongside a local DNS filter.",
-    "coverage": [],
+    "coverage": [
+      "/pi-hole-unbound-recursive-dns"
+    ],
     "videos": [
       {
         "id": "xtMFcVx3cHU",
