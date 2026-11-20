@@ -10,11 +10,11 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="V1-TbY5k0PQ" title="TechHut's Audiobookshelf and Libation walkthrough" />
 
-I finally got tired of Audible. I cancelled my plan, but I still wanted to listen to everything I had bought over the years, and I wanted to stream it from my own server. That's where [Audiobookshelf](https://audiobookshelf.org/) saved the day.
+I finally got tired of Audible. I cancelled my plan, but I still wanted to listen to everything I had bought over the years, and I wanted to stream it from my own server. That's why I set up [Audiobookshelf](https://audiobookshelf.org/).
 
-Audiobookshelf is an open source server built specifically for audiobooks and podcasts. It handles multiple users, series, and chapters, and it pulls in metadata and cover art for you. Probably the most important thing for me is that it has a mobile app to go with it.
+Audiobookshelf is an open source server for audiobooks and podcasts. It handles multiple users, series, and chapters, and it pulls in metadata and cover art for you. The part I care about most is the mobile app.
 
-This guide has two halves. First, I'll back up the audiobooks I purchased with [Libation](https://getlibation.com), so I'm not downloading them from Audible one at a time. Then I'll install Audiobookshelf with Docker Compose, add the books, and go through the features I showed in the video.
+First I'll back up the audiobooks I purchased with [Libation](https://getlibation.com), so I'm not downloading them from Audible one at a time. Then I'll install Audiobookshelf with Docker Compose, add the books, and go through the features I showed in the video.
 
 Linode (part of Akamai) sponsored the video this article is based on.
 
@@ -120,7 +120,7 @@ If you'd rather not keep a desktop app around, Libation also has a [headless Doc
 
 ## Why Not Just Use Plex?
 
-I actually tried this in Plex first. It works, but Plex isn't designed for audiobooks. It's just a normal music library, so the album is the book and the artist is the author. Plex does remember where you left off, so you can make it work. Overall, though, it's a really dirty, not-optimal way to do it.
+I tried this in Plex first. It works, but Plex isn't built for audiobooks. It's a normal music library, so the album is the book and the artist is the author. Plex does remember where you left off, so you can make it work. Overall, though, it's a messy way to listen to books.
 
 I believe Jellyfin and Emby handle audiobooks better, but nothing like what you get from Audiobookshelf. If you do want to go the Plex route, the [Plex Audiobook Guide](https://github.com/seanap/Plex-Audiobook-Guide) I linked in the video covers getting book covers, author images, and proper metadata into Plex.
 
@@ -139,7 +139,7 @@ Audiobookshelf needs four folders on the host:
 | `/metadata` | Covers, cache, and backups. This can live anywhere. |
 | `/config` | The SQLite database. Keep this on the server's local disk. |
 
-In the video I put them under `/home/brandon/media`. Here's the same idea in a dedicated project folder:
+In the video I put them under `/home/brandon/media`. Same idea, in a dedicated project folder:
 
 ```bash
 sudo mkdir -p /srv/audiobookshelf/{audiobooks,podcasts,config,metadata}
@@ -205,7 +205,7 @@ docker compose up -d
 
 ### Remote Access
 
-In the video, I opened the port on a public cloud server and connected over plain HTTP, which was fine for a quick demo. For a server you actually use, don't leave it that way. Your login and listening history go over that connection.
+In the video, I opened the port on a public cloud server and connected over plain HTTP, which was fine for a quick demo. For a server you keep using, don't leave it that way. Your login and listening history go over that connection.
 
 Put it behind a reverse proxy with HTTPS (Audiobookshelf has [reverse proxy examples](https://audiobookshelf.org/docs/category/reverse-proxy/), and I cover certificates in [Ultimate Home Server Part 4](/ultimate-home-server-part-4-ssl-certificates)), or keep it on your LAN and reach it over a VPN like the one in my [NetBird and Pocket ID guide](/self-host-netbird-pocketid).
 
@@ -249,7 +249,7 @@ With the files in place, click to add your first library:
 4. Check the other settings. The **Schedule** tab can run automatic library scans. I left that disabled for now.
 5. Create the library.
 
-One small gotcha I hit in the video: after browsing to the folder, make sure the path actually got added to the library before you click create. I had to go back and grab the folder path the first time.
+One small gotcha I hit in the video: after browsing to the folder, make sure the path got added to the library before you click create. I had to go back and grab the folder path the first time.
 
 ![The Audiobookshelf New Library dialog as shown in the 2023 video, with Books media type, the name Audiobooks, and Audible.com as the metadata provider](/docs-static/img/2026/10/audiobookshelf-self-host-audible-library/abs-new-library.jpg)
 
@@ -283,7 +283,7 @@ It also supports collections and series. I didn't have any series in my test lib
 
 Under **Settings**, you can add more users if you want to give people access to your libraries. I do have to say that giving other people access to books you bought gets into a legal gray area, so I can't really endorse that too much.
 
-You also get stats similar to Plex. **Listening Sessions** shows who listened to what, for how long, and when it was last updated. Mine showed that I'd been listening on my Google Pixel 6. There's also backups, logs, and notifications. All of it is specific to audiobooks, and that's really what I like. You can listen to audiobooks through other media servers, but none of them feel as tightly built around how audiobooks are actually listened to.
+You also get stats similar to Plex. **Listening Sessions** shows who listened to what, for how long, and when it was last updated. Mine showed that I'd been listening on my Google Pixel 6. There's also backups, logs, and notifications. All of it is specific to audiobooks, and that's really what I like. You can listen to audiobooks through other media servers, but none of them are built around how you listen to an audiobook.
 
 ## The Mobile App
 
@@ -296,7 +296,7 @@ Either way, the app connects to your server's address, so it needs to be able to
 
 ## My Take
 
-Audiobookshelf is one of my newest and favorite additions to my home lab. It's free, open source, easy to set up, and fun to play around with. Libation handled the annoying part of getting my purchases off Audible, and Audiobookshelf turned them into something that actually feels like an audiobook app instead of a music library pretending to be one.
+Audiobookshelf is one of my newest favorite additions to my home lab. It's free, open source, and fun to poke around in. Libation handled the annoying part of getting my purchases off Audible, and Audiobookshelf turned them into an audiobook app. Plex felt like a music library.
 
 If you're paying for Audible mostly to listen to books you already own, back them up with Libation and point Audiobookshelf at the folder. Start with a few books, get the folder layout right, and then let the scanner do the rest.
 
