@@ -94,7 +94,7 @@ Reference images in your article:
 
 ### Technical Diagrams
 
-Use diagrams to explain a relationship that readers need to understand, such as how requests reach an application or which disk holds its data. The [Seafile architecture SVG](../public/docs-static/img/2026/09/self-host-seafile-docker-unraid/architecture.svg) is an editable reference for this style.
+Use diagrams to explain a relationship that readers need to understand, such as how requests reach an application or which disk holds its data. The [Seafile architecture SVG](../public/docs-static/img/2026/12/self-host-seafile-docker-unraid/architecture.svg) is an editable reference for this style.
 
 1. Identify the concepts the article teaches. Give request routing, storage placement, and startup dependencies separate labeled panels when they describe different relationships.
 2. Use arrows for actual flows or connections. Label protocols, ports, and direction where useful. A reverse proxy routing requests to an application does not imply that it manages the application's database or filesystem.
@@ -109,7 +109,7 @@ For example, run this from the repository root to regenerate the Seafile cover:
 node - <<'JS'
 const path = require('node:path')
 const sharp = require('sharp')
-const imageDir = 'public/docs-static/img/2026/09/self-host-seafile-docker-unraid'
+const imageDir = 'public/docs-static/img/2026/12/self-host-seafile-docker-unraid'
 
 sharp(path.join(imageDir, 'architecture.svg'))
   .png()

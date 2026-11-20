@@ -1,10 +1,10 @@
 export const title = "Move Nextcloud Files to Seafile from a Network Share"
 export const description = "Copy a Nextcloud folder from an SMB share into Seafile using its Linux client, with the transfer running on your server."
-export const date = "2026-09-11"
+export const date = "2026-12-08"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Linux", "Fedora", "Terminal"]
-export const cover = "/docs-static/img/2026/09/migrate-nextcloud-files-to-seafile/cover.png"
+export const cover = "/docs-static/img/2026/12/migrate-nextcloud-files-to-seafile/cover.png"
 
 After I got Seafile up, I wanted to bring over a Nextcloud folder that was already sitting on an SMB share. My source was `ncdata/__groupfolders/1/files`, and I wanted those contents in a new **Archive** library with the same folder structure.
 
@@ -20,7 +20,7 @@ Run the commands in the **Fedora VM over SSH**. Swap in your NAS address, share 
 
 ## How the files travel
 
-![Files travel from the read-only NAS share through the Seafile client in Fedora, then through NPM and the gateway into a Seafile library on Unraid.](/docs-static/img/2026/09/migrate-nextcloud-files-to-seafile/cover.png)
+![Files travel from the read-only NAS share through the Seafile client in Fedora, then through NPM and the gateway into a Seafile library on Unraid.](/docs-static/img/2026/12/migrate-nextcloud-files-to-seafile/cover.png)
 
 Your laptop or desktop only drives the job over SSH. The files move between the NAS, the VM, and the reverse proxy. If the Seafile hostname points at NPM's LAN address, that traffic stays on the LAN. If you use a CDN or some other external proxy, check the VM's DNS and routing before you start a multi-terabyte transfer.
 
@@ -121,12 +121,12 @@ If you need to change storage during a transfer, stop the client service first a
 
 Write down the source folder's file count and logical size in your NAS or file manager so you can compare when the copy finishes. My source was **10,675 files totaling 4.58 TB**.
 
-For a detailed record of paths, sizes, and modification times, [download the inventory script](/docs-static/files/2026/09/migrate-nextcloud-files-to-seafile/source-inventory.py). Save and run it on the VM:
+For a detailed record of paths, sizes, and modification times, [download the inventory script](/docs-static/files/2026/12/migrate-nextcloud-files-to-seafile/source-inventory.py). Save and run it on the VM:
 
 ```bash
 cd /srv/seafile/migration
 curl -fL -o source-inventory.py \
-  https://techhut.tv/docs-static/files/2026/09/migrate-nextcloud-files-to-seafile/source-inventory.py
+  https://techhut.tv/docs-static/files/2026/12/migrate-nextcloud-files-to-seafile/source-inventory.py
 sudo python3 source-inventory.py
 ```
 
