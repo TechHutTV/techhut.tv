@@ -18,7 +18,7 @@ I recorded the video in May 2023, when GNOME Web 44 was current. The history, my
 
 ## What Changed Since the Video
 
-GNOME Web is very much alive. It ships a new major version with every GNOME release, and it still uses the GTK 4, libadwaita, and WebKitGTK 6.0 stack that landed in version 44. Here's what's different from what I showed in 2023, according to the project's [release notes](https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/NEWS):
+GNOME Web is very much alive. It ships a new major version with every GNOME release, and it still uses the GTK 4, libadwaita, and WebKitGTK 6.0 stack that landed in version 44. What's different from what I showed in 2023, according to the project's [release notes](https://gitlab.gnome.org/GNOME/epiphany/-/blob/main/NEWS):
 
 - **The tab overview showed up.** In the video I was disappointed that Web 44 didn't use libadwaita's new tab overview. Version 45 added it, replacing the old tab list dropdown.
 - **WebExtensions are still experimental.** Support exists, but it is still off by default and hidden behind a setting, and you still install extensions manually from their files. In version 51, Epiphany switched from its own extension code to WebKitGTK's built-in WebExtension support. I cover how to try it below.
@@ -45,7 +45,7 @@ After that, outside of a few big releases, Web was mostly in maintenance mode wh
 
 ## The Development Boom
 
-Then development picked up. Every major release I looked at for the video brought something meaningful. By "game-changing" I don't mean it suddenly beat other browsers. It just started catching up. Here's the run I went through:
+Then development picked up. Every major release I looked at for the video brought something meaningful. By "game-changing" I don't mean it suddenly beat other browsers. It just started catching up. The run I went through:
 
 - **3.36** improved mobile support.
 - **3.38** added Intelligent Tracking Prevention.
@@ -59,11 +59,11 @@ I had dark mode under 41 in the video, but the release notes put system dark sty
 
 ### GNOME 44: GTK 4 and libadwaita
 
-The GTK 4 and libadwaita port brought the new GNOME look to the app, but honestly I couldn't spot many changes beyond the theme. Poking around with the GTK inspector, I could see some new widgets, like `AdwTabBar` for the tabs and the libadwaita-style preferences page. Between 43 and 44, though, the interface differences were pretty minor.
+The GTK 4 and libadwaita port brought the new GNOME look to the app. I couldn't spot many changes beyond the theme. Poking around with the GTK inspector, I could see some new widgets, like `AdwTabBar` for the tabs and the libadwaita-style preferences page. Between 43 and 44, though, the interface differences were pretty minor.
 
 ![The GTK inspector from the video showing GNOME Web 44's widget tree with AdwTabBar selected](/docs-static/img/2026/10/gnome-web-epiphany-browser/gtk-inspector-adwtabbar.jpg)
 
-The bigger change was under the hood. Between patches landing upstream in WebKit and the GTK 4 port, general browsing in Web 44 was so much faster. And get this: YouTube videos actually opened.
+The bigger change was in the engine. Between patches landing upstream in WebKit and the GTK 4 port, general browsing in Web 44 was so much faster. YouTube videos opened.
 
 ## Daily Driving It for a Few Weeks
 
@@ -109,7 +109,7 @@ There are also two development builds. **Epiphany Technology Preview** tracks Ep
 
 For me, the biggest thing GNOME Web has always been missing is extension support. In the video I tested the work-in-progress version, and it was very much beta. It was unstable and didn't always work, but the progress got me excited.
 
-That's still roughly where things stand. In 51.1, extensions are controlled by the `enable-webextensions` key in the `org.gnome.Epiphany.web` schema, which defaults to `false`. The extensions page itself says extensions have to be installed manually from their files. Here's how to turn it on.
+That's still roughly where things stand. In 51.1, extensions are controlled by the `enable-webextensions` key in the `org.gnome.Epiphany.web` schema, which defaults to `false`. The extensions page itself says extensions have to be installed manually from their files. This is how to turn it on.
 
 For a distro package, run this in a terminal (or flip the same key in dconf Editor under `/org/gnome/epiphany/web/`, which is what I showed in the video):
 
@@ -142,9 +142,9 @@ This is still an experimental feature. Many extensions won't work properly, and 
 
 At the time of the video, my answer to "is GNOME Web actually good now?" was no. It was faster than it had ever been and fine for everyday browsing, but the stability problems, WebKit's compatibility gaps, and the lack of extensions kept me from daily driving it. It's also very basic as browsers go.
 
-I was still optimistic. I'm not a fan of how Google effectively controls the browser market through Chromium-based browsers, and while WebKit is behind Blink and Gecko, I think Web could become a genuinely good alternative if development keeps up, especially if Firefox keeps making interesting decisions. For what it's worth, KDE makes plenty of excellent apps, like Krita and Kdenlive, but its web browser isn't one of them either.
+I was still optimistic. I'm not a fan of how Google effectively controls the browser market through Chromium-based browsers, and while WebKit is behind Blink and Gecko, I think Web could become a good alternative if development keeps up, especially if Firefox keeps making interesting decisions. KDE makes plenty of apps I like, like Krita and Kdenlive, but its web browser isn't one of them either.
 
-In the video I guessed Web might be a real option within two or three releases. It has had seven since. It got the tab overview I wanted, plus a lot of polish, but the extensions it needed most are still experimental. If you live in GNOME and want a browser that looks like it belongs there, it's worth trying. Just keep Firefox or Chromium installed for the sites that don't cooperate.
+In the video I guessed Web might be a real option within two or three releases. It has had seven since. It got the tab overview I wanted, plus a lot of polish, but the extensions it needed most are still experimental. If you live in GNOME and want a browser that looks like it belongs there, it's worth trying. Just keep Firefox or Chromium installed for the sites that don't cooperate. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
