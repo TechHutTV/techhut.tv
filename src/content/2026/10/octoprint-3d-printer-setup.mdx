@@ -12,12 +12,12 @@ import {YouTube} from "@/components/YouTube"
 
 My 3D printer doesn't sit anywhere near my server, so it has its own little Raspberry Pi plugged straight into it running [OctoPrint](https://octoprint.org/). OctoPrint gives a plain USB printer a web interface: upload G-code, watch temperatures, jog the axes, view the webcam, record timelapses, and start prints from any browser on your network. That's how a dumb printer becomes a smart one.
 
-I've been running OctoPrint for a while, but I'd also been printing just about everything I could for my homelab lately. So, of course, the Pi running my 3D printer needed a 3D printed server rack. In this guide I'll cover that tiny rack, flashing OctoPi with Raspberry Pi Imager, the first-run wizard, and a tour of what you can actually do once it's connected.
+I've been running OctoPrint for a while, but I'd also been printing just about everything I could for my homelab lately. So, of course, the Pi running my 3D printer needed a 3D printed server rack. I'll cover that tiny rack, flashing OctoPi with Raspberry Pi Imager, the first-run wizard, and what you can do once it's connected.
 
 Brilliant sponsored the video this article is based on.
 
 <Note>
-The written installation has been updated for the current stable OctoPi image, OctoPi 1.1.0 with [OctoPrint 1.11.8](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8), released June 23, 2026. That OctoPrint release includes security fixes, so update older installs. When I recorded the video, Raspberry Pi 5 wasn't supported yet; [OctoPi 1.1.0](https://github.com/guysoft/OctoPi/releases/tag/1.1.0) added Pi 5 support a few days after the video went up. Raspberry Pi Imager has also moved to a new 2.x interface since then. My hands-on impressions come from the recorded walkthrough on a Raspberry Pi 4.
+The install steps below are for the current stable OctoPi image, OctoPi 1.1.0 with [OctoPrint 1.11.8](https://github.com/OctoPrint/OctoPrint/releases/tag/1.11.8), released June 23, 2026. That OctoPrint release includes security fixes, so update older installs. When I recorded the video, Raspberry Pi 5 wasn't supported yet; [OctoPi 1.1.0](https://github.com/guysoft/OctoPi/releases/tag/1.1.0) added Pi 5 support a few days after the video went up. Raspberry Pi Imager has also moved to a new 2.x interface since then. My hands-on impressions come from the recorded walkthrough on a Raspberry Pi 4.
 </Note>
 
 ## The 5-inch Micro Rack
@@ -91,7 +91,7 @@ FRAMERATE=15
 
 ### If You Skip Imager's Customisation
 
-If you flash the image some other way, OctoPi 1.1.0 moved headless Wi-Fi setup to a `wifi.nmconnection` file on the boot partition, according to the [OctoPi README](https://github.com/guysoft/OctoPi). Some older guides, including part of OctoPrint's download page, still mention `octopi-wpa-supplicant.txt`, which OctoPi 1.1.0 dropped. In that case, the system login falls back to the old `pi` / `raspberry` default, so SSH in and change it with `sudo raspi-config` right away. OctoPrint's Pi Support plugin will nag you about a default password too. Honestly, just use Imager's customisation.
+If you flash the image some other way, OctoPi 1.1.0 moved headless Wi-Fi setup to a `wifi.nmconnection` file on the boot partition, according to the [OctoPi README](https://github.com/guysoft/OctoPi). Some older guides, including part of OctoPrint's download page, still mention `octopi-wpa-supplicant.txt`, which OctoPi 1.1.0 dropped. In that case, the system login falls back to the old `pi` / `raspberry` default, so SSH in and change it with `sudo raspi-config` right away. OctoPrint's Pi Support plugin will nag you about a default password too. Just use Imager's customisation.
 
 ## Plug It In and Find It
 
@@ -208,7 +208,7 @@ Each listing has **Details** and **Homepage** links. Check the compatibility inf
 
 To print, click **Print** on a file. My file's start G-code heated the bed first, then kicked on the hotend once the bed was close to temperature, and you can watch both lines climb on the temperature graph.
 
-The gusset print took about 50 minutes. When it finished, the sidebar showed a summary with the print time and file details. The file list also marks it as a successful print, which is handy when you're trying to remember which version of a file actually worked.
+The gusset print took about 50 minutes. When it finished, the sidebar showed a summary with the print time and file details. The file list also marks it as a successful print, which is handy when you're trying to remember which version of a file worked.
 
 ![The OctoPrint sidebar after the gusset print finished, showing a print time of 50:20 and the progress bar at 100%](/docs-static/img/2026/10/octoprint-3d-printer-setup/print-finished.jpg)
 
@@ -232,7 +232,7 @@ OctoPrint 2.0 is in release candidate testing as I write this. Imager's stable O
 
 ## Running OctoPrint in Docker Instead
 
-If you already have a Linux box near the printer, the official [`octoprint/octoprint`](https://github.com/OctoPrint/octoprint-docker) image works on `amd64`, `arm64`, and `arm/v7`. Here's a Compose file based on upstream's example, pinned to the current stable release:
+If you already have a Linux box near the printer, the official [`octoprint/octoprint`](https://github.com/OctoPrint/octoprint-docker) image works on `amd64`, `arm64`, and `arm/v7`. This Compose file is based on upstream's example, pinned to the current stable release:
 
 ```yaml
 services:
@@ -268,7 +268,7 @@ OctoPrint is one of those tools that made me use my 3D printer more. Being able 
 
 The plugin ecosystem is where you can sink a lot of time, so get a few successful prints first and add plugins one at a time. As for the rack, it isn't perfect, but a 3D printed server for my 3D printer makes me happier than it probably should. Just buy real screws.
 
-If you've found some great 5-inch or 10-inch rack models, I'd love to check them out. With all that, I do hope you found this useful. Have a great one.
+If you've found some great 5-inch or 10-inch rack models, I'd love to check them out. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
