@@ -10,19 +10,19 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="xtMFcVx3cHU" title="TechHut's Pi-hole and Unbound walkthrough" />
 
-In this one we're setting up our very own ad blocking server with [Pi-hole](https://pi-hole.net/), and then going a step further by adding [Unbound](https://nlnetlabs.nl/projects/unbound/about/) so Pi-hole does its own recursive DNS. The ad blocking is the fun part. The recursive DNS is the part that adds a real layer of privacy and security, because your lookups stop going through one of the giant public DNS providers.
+In this one we're setting up our very own ad blocking server with [Pi-hole](https://pi-hole.net/), and then going a step further by adding [Unbound](https://nlnetlabs.nl/projects/unbound/about/) so Pi-hole does its own recursive DNS. The ad blocking is the fun part. The recursive DNS is the part that adds privacy and security, because your lookups stop going through one of the giant public DNS providers.
 
 I did this in a Proxmox container, but you can run it on just about anything: a Raspberry Pi you have lying around, a Pi alternative, or a small x86 board like a ZimaBoard.
 
 Linode sponsored the video this article is based on.
 
 <Note>
-I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The written steps below have been updated for [Pi-hole Core v6.5](https://github.com/pi-hole/pi-hole/releases/tag/v6.5), FTL v6.8, and Web v6.6.1, all released October 17, 2026, and for the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
+I recorded the video in August 2022 on Pi-hole v5. Pi-hole v6 (February 2025) changed a lot: the web interface and API now run inside `pihole-FTL` itself, so lighttpd and PHP are gone, settings live in a single `/etc/pihole/pihole.toml` instead of `setupVars.conf`, and several CLI commands changed. The steps below are for [Pi-hole Core v6.5](https://github.com/pi-hole/pi-hole/releases/tag/v6.5), FTL v6.8, and Web v6.6.1, all released October 17, 2026, and for the current [Pi-hole Unbound guide](https://docs.pi-hole.net/guides/dns/unbound/), which has also gained a few steps since then. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## Why Bother With Recursive DNS?
 
-A quick bit of background. DNS is how your devices turn a name like `techhut.tv` into an IP address. Your device asks whatever name server it's configured to use, and that server comes back with the answer.
+DNS is how your devices turn a name like `techhut.tv` into an IP address. Your device asks whatever name server it's configured to use, and that server comes back with the answer.
 
 Most people use their ISP's servers or one of the big public resolvers from Google or Cloudflare. The upside of the big ones is speed. Millions of people are querying them constantly, so almost everything is already in their cache.
 
@@ -52,7 +52,7 @@ If you're on a Raspberry Pi or another machine with Ubuntu or Debian already ins
 
 First, download a template. In Proxmox, select your storage, open **CT Templates**, click **Templates**, and grab an Ubuntu or Debian standard template. I used Ubuntu Server in the video. Today, the Proxmox repository offers Ubuntu 26.04 and 24.04 LTS as well as Debian 13, and Pi-hole's own test suite covers all three.
 
-Then click **Create CT** and work through the wizard. Here's what I used:
+Then click **Create CT** and work through the wizard. What I used:
 
 | Setting | What I chose |
 |---|---|
@@ -330,7 +330,7 @@ Then I loaded up one of the worst offenders for ads I know of, CNN.com. The ad s
 
 ![The Pi-hole v5 dashboard from the video showing 185 of 294 queries blocked after loading CNN.com](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-dashboard-cnn-blocked.jpg)
 
-The **Query Log** is where you can see what's actually going on. It shows each request, which client made it, and whether it was blocked. For the allowed ones, the status shows they were answered by `localhost#5335`, which is our Unbound server. Pi-hole v6 words it as "Forwarded, reply from" followed by the upstream.
+The **Query Log** is where you can see what's going on. It shows each request, which client made it, and whether it was blocked. For the allowed ones, the status shows they were answered by `localhost#5335`, which is our Unbound server. Pi-hole v6 words it as "Forwarded, reply from" followed by the upstream.
 
 ![The Pi-hole v5 query log from the video, with ad domains blocked by gravity and www.facebook.com answered by localhost#5335](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-query-log-localhost-5335.jpg)
 
@@ -368,11 +368,11 @@ I've also set up [AdGuard Home on Proxmox](/adguard-home-proxmox-setup), and bot
 
 ## Final Thoughts
 
-It's incredibly quick and easy to get Pi-hole up and running, and the Unbound part only adds a config file and a setting change. In return, you get ad and tracker blocking for anything you point at it, a query log that shows exactly what your devices are doing, and DNS lookups that don't all funnel through one big provider.
+Pi-hole comes up fast, and the Unbound part only adds a config file and a setting change. In return, you get ad and tracker blocking for anything you point at it, a query log that shows exactly what your devices are doing, and DNS lookups that don't all funnel through one big provider.
 
 The first visit to a new site is a hair slower, but caching takes care of that quickly, and in my testing the second load was already coming from cache.
 
-For my own test instance, I used a throwaway password, which you absolutely should not do. Use something strong, give the box a static address, and then point your router at it once you're happy. With all that, have an absolutely beautiful day.
+For my own test instance, I used a throwaway password, which you absolutely should not do. Use something strong, give the box a static address, and then point your router at it once you're happy. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
