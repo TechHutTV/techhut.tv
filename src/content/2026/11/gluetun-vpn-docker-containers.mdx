@@ -1,10 +1,10 @@
 export const title = "Gluetun: Route Your Docker Containers Through a VPN"
 export const description = "Set up the Gluetun VPN container with WireGuard, route Deluge through it in the same compose stack, attach a container from outside the stack, and verify your containers use the VPN's IP."
-export const date = "2026-10-17"
+export const date = "2026-11-27"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux", "RaspberryPi"]
-export const cover = "/docs-static/img/2026/10/gluetun-vpn-docker-containers/cover.jpg"
+export const cover = "/docs-static/img/2026/11/gluetun-vpn-docker-containers/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -47,7 +47,7 @@ I used the [Raspberry Pi Imager](https://www.raspberrypi.com/software/), which r
 
 Before writing, edit the customization settings. Setting a username and password there makes everything substantially easier. I named mine `dockerpi`, skipped Wi-Fi (a server should be plugged into Ethernet), set my time zone, and enabled SSH under **Services**. You can paste in a public key there if you prefer key authentication.
 
-![Raspberry Pi Imager's OS Customisation dialog with the hostname set to dockerpi and a username and password filled in](/docs-static/img/2026/10/gluetun-vpn-docker-containers/raspberry-pi-imager-os-customisation.jpg)
+![Raspberry Pi Imager's OS Customisation dialog with the hostname set to dockerpi and a username and password filled in](/docs-static/img/2026/11/gluetun-vpn-docker-containers/raspberry-pi-imager-os-customisation.jpg)
 
 Boot the Pi, find its IP address on your router, and SSH in with the credentials you just created. Then update everything:
 
@@ -151,7 +151,7 @@ I was using AirVPN when I recorded, using WireGuard. AirVPN isn't a sponsor. I f
 1. In the **Client Area**, open the **Config Generator**. Choose **Linux**, select **WireGuard**, and pick a server. I picked one in Vancouver. Scroll down and click **Generate**, then open the resulting config file.
 2. Back in the **Client Area**, open **Ports** and add a port. This is the forwarded port your torrent client will listen on.
 
-![AirVPN's Config Generator with Linux selected as the OS and the WireGuard protocol toggled on](/docs-static/img/2026/10/gluetun-vpn-docker-containers/airvpn-config-generator-wireguard.jpg)
+![AirVPN's Config Generator with Linux selected as the OS and the WireGuard protocol toggled on](/docs-static/img/2026/11/gluetun-vpn-docker-containers/airvpn-config-generator-wireguard.jpg)
 
 From the generated file you need three values:
 
@@ -259,7 +259,7 @@ docker run --rm --network=container:gluetun alpine:3.22 sh -c "apk add wget && w
 
 Mine came back as Vancouver, British Columbia, which is not where I am.
 
-![The ipinfo.io test from the video (run on an older Alpine tag) going through Gluetun's network and returning a Vancouver, British Columbia address](/docs-static/img/2026/10/gluetun-vpn-docker-containers/gluetun-ipinfo-test-vancouver.jpg)
+![The ipinfo.io test from the video (run on an older Alpine tag) going through Gluetun's network and returning a Vancouver, British Columbia address](/docs-static/img/2026/11/gluetun-vpn-docker-containers/gluetun-ipinfo-test-vancouver.jpg)
 
 Then test from inside the actual torrent client. Jump into Deluge's shell and run the same request:
 
@@ -284,7 +284,7 @@ Then go through a few preferences:
 | **Network > Incoming Port** | Uncheck **Use Random Port** and enter your forwarded port |
 | **Plugins** | Enable **Label** (the \*arr apps use it later) |
 
-![Deluge's Downloads preferences with the incomplete, completed, and torrent-file folders set under /data/downloads/deluge](/docs-static/img/2026/10/gluetun-vpn-docker-containers/deluge-preferences-download-folders.jpg)
+![Deluge's Downloads preferences with the incomplete, completed, and torrent-file folders set under /data/downloads/deluge](/docs-static/img/2026/11/gluetun-vpn-docker-containers/deluge-preferences-download-folders.jpg)
 
 Apply it, and play with the rest of the settings as you see fit. To test, I went to Linux Tracker, grabbed a heavily seeded torrent, and added it through **Add > URL**. It was rocking and rolling right away.
 
@@ -343,7 +343,7 @@ docker run -d \
 
 In Portainer it shows up under **Containers**, not part of any stack. Open `https://YOUR_PI_IP:3001`, accept the self-signed certificate warning, and log in. Then visit any "what is my IP" site. Mine showed Vancouver, British Columbia again.
 
-![The LinuxServer Firefox container on Gluetun's network reporting a Vancouver, British Columbia public IP on What's My IP](/docs-static/img/2026/10/gluetun-vpn-docker-containers/firefox-whats-my-ip-vancouver.jpg)
+![The LinuxServer Firefox container on Gluetun's network reporting a Vancouver, British Columbia public IP on What's My IP](/docs-static/img/2026/11/gluetun-vpn-docker-containers/firefox-whats-my-ip-vancouver.jpg)
 
 So now I have one VPN connection shared by a torrent client in the same compose file and a Firefox container outside of it.
 
