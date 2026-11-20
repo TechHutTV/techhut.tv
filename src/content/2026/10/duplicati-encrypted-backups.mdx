@@ -18,8 +18,6 @@ If you open my Duplicati folder in Google Drive, you'll find a folder for my Imm
 
 I'll go over how I have it set up, how to install it with Docker or on a desktop, how a backup and a restore work, and the couple of things I don't love about it.
 
-MOVA sponsored the video this article is based on.
-
 The video was published in December 2025. The written installation has been updated for [Duplicati 2.4.1.0](https://github.com/duplicati/duplicati/releases/tag/v2.4.1.0_stable_2026-10-29), the current stable release, published October 29, 2026. Duplicati now enforces a stricter data folder permission check (added in 2.3.1.0), and the 2.4 line adds a new sync (plain copy) mode and saving the job configuration alongside encrypted backups. 2.4.1.0 also updates the local database format, so read the release notes before you downgrade. The folder-backup steps below are the same. Duplicati's free cloud dashboard has also changed since recording. My hands-on impressions come from the recorded walkthrough, and I've called out the changes where they matter.
 
 ## What Duplicati Does
