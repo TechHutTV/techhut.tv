@@ -1,10 +1,10 @@
 export const title = "You Can Now Self-Host UniFi: UniFi OS Server on a Raspberry Pi 5"
 export const description = "Install Ubiquiti's free UniFi OS Server on a Raspberry Pi 5 running Ubuntu, then adopt UniFi switches and access points and create a Wi-Fi network without a Dream Machine or Cloud Gateway."
-export const date = "2026-10-09"
+export const date = "2026-12-20"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab", "Linux", "RaspberryPi", "Podman"]
-export const cover = "/docs-static/img/2026/10/self-host-unifi-os-server/cover.jpg"
+export const cover = "/docs-static/img/2026/12/self-host-unifi-os-server/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -98,7 +98,7 @@ uname -m
 
 `aarch64` means you want the **Linux (arm64)** build, which is what you'll use on a Pi 5. `x86_64` means you want **Linux (x64)**, which is what you'd use on an Intel or AMD mini PC.
 
-![The UniFi OS Server download page as shown in the video, listing 4.3.6 builds for Linux x64 and arm64, macOS, and Windows](/docs-static/img/2026/10/self-host-unifi-os-server/download-page-linux-builds.jpg)
+![The UniFi OS Server download page as shown in the video, listing 4.3.6 builds for Linux x64 and arm64, macOS, and Windows](/docs-static/img/2026/12/self-host-unifi-os-server/download-page-linux-builds.jpg)
 
 In the video, I went to the [UniFi OS Server download page](https://ui.com/download/software/unifi-os-server), right-clicked the Linux ARM64 download, and copied the link. That's still the official method, and it's the best way to make sure you have the newest release. As of this writing, these are the 5.1.42 links from that page:
 
@@ -148,7 +148,7 @@ The first-run wizard is short:
 3. Create a local admin password. It enforces password strength, and my first attempt was rejected, so make it a properly strong one.
 4. Accept Ubiquiti's terms and click **Finish**.
 
-![The Skip Account Setup dialog in the UniFi OS Server wizard comparing features with and without a UI Account](/docs-static/img/2026/10/self-host-unifi-os-server/skip-account-setup.jpg)
+![The Skip Account Setup dialog in the UniFi OS Server wizard comparing features with and without a UI Account](/docs-static/img/2026/12/self-host-unifi-os-server/skip-account-setup.jpg)
 
 Once setup completes, you land on the dashboard. It looks like UniFi. If you're coming from something else, that's probably pretty exciting. At this point, UniFi OS is running on a Raspberry Pi.
 
@@ -203,7 +203,7 @@ Plan B was a U7 Pro access point, and this one worked. I had factory reset it fi
 
 After it finished booting, it appeared on the Devices page with **Click to adopt**. Another device showed up in the list for some reason too, but the white LED told me which one I'd just plugged in. Click adopt, give it a minute while it shows as getting ready, and it's now managed by the Pi.
 
-![The UniFi Devices page on UniFi OS Server showing a U7 Pro XG access point with a Click to Adopt status](/docs-static/img/2026/10/self-host-unifi-os-server/devices-click-to-adopt.jpg)
+![The UniFi Devices page on UniFi OS Server showing a U7 Pro XG access point with a Click to Adopt status](/docs-static/img/2026/12/self-host-unifi-os-server/devices-click-to-adopt.jpg)
 
 If nothing appears, here's what Ubiquiti's [device adoption guide](https://help.ui.com/hc/en-us/articles/360012622613-UniFi-Device-Adoption) recommends:
 
@@ -222,7 +222,7 @@ While the AP was getting ready, I looked around the settings. Most of the settin
 
 To create a Wi-Fi network, go to **Wi-Fi**, create a new network, give it a name (I used "Uni Pi"), and set a password. I left everything else on auto. Once the access point finished adopting and was up to date, the network appeared on my laptop. I joined it, and I had internet access.
 
-![Creating the UniPi Wi-Fi network in UniFi Network, with Broadcasting APs set to All and Advanced set to Auto](/docs-static/img/2026/10/self-host-unifi-os-server/create-wifi-network.jpg)
+![Creating the UniPi Wi-Fi network in UniFi Network, with Broadcasting APs set to All and Advanced set to Auto](/docs-static/img/2026/12/self-host-unifi-os-server/create-wifi-network.jpg)
 
 The connection dropped for a second when I switched networks. I have mixed UniFi networks at home, so IP addressing gets a little weird, but it reconnected on its own. The topology view showed the U7 Pro, and Client Devices showed my laptop connected through it. Really, that's it.
 
