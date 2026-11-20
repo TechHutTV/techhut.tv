@@ -1,10 +1,10 @@
 export const title = "Docker Made Easy with Yacht: Template-Based Container Management"
 export const description = "Install Yacht, a web UI for Docker built around templates and one-click deployments, then add a template library, deploy your first container, and find your way around images, volumes, networks, and settings."
-export const date = "2026-10-17"
+export const date = "2026-12-13"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/yacht-docker-management/cover.jpg"
+export const cover = "/docs-static/img/2026/12/yacht-docker-management/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -134,7 +134,7 @@ Open `http://YOUR_SERVER_IP:8000` and sign in with the email and password you se
 
 The first thing you land on is the dashboard with your current containers. On a fresh install there's only one: Yacht itself. The UI is honestly beautiful, and each container shows its CPU and memory usage. On my base install, Yacht was using about 80 MB of RAM.
 
-![The Yacht dashboard in the video's 2021 alpha UI, showing the yacht container card with its CPU and memory usage](/docs-static/img/2026/10/yacht-docker-management/dashboard-yacht-container.jpg)
+![The Yacht dashboard in the video's 2021 alpha UI, showing the yacht container card with its CPU and memory usage](/docs-static/img/2026/12/yacht-docker-management/dashboard-yacht-container.jpg)
 
 The sidebar has applications, templates, projects, resources, and settings. The current version also adds a **Containers** list and a host selector in the top bar for managing more than one Docker host (more on that at the end).
 
@@ -150,7 +150,7 @@ https://raw.githubusercontent.com/SelfhostedPro/selfhosted_templates/master/Temp
 
 That list still loads and has a bit over a hundred apps, from Jellyfin and Sonarr to Vaultwarden and Pi-hole. It hasn't been updated since 2023, though, so treat the image names and paths in it as a starting point and check each app's own docs for anything that's moved. Hit **Submit**, then click the template to see everything it offers for a one-click deploy.
 
-![Heimdall, Homer, and HTPC Manager cards from the SelfhostedPro template list in the video, each with View and Deploy buttons](/docs-static/img/2026/10/yacht-docker-management/selfhostedpro-template-apps.jpg)
+![Heimdall, Homer, and HTPC Manager cards from the SelfhostedPro template list in the video, each with View and Deploy buttons](/docs-static/img/2026/12/yacht-docker-management/selfhostedpro-template-apps.jpg)
 
 ## Deploying Your First Container
 
@@ -166,7 +166,7 @@ Click **Deploy** and Yacht walks you through a form:
 
 The volumes step is what I like most. If you look at Homer's Docker Hub page, there's a bit of setup work that makes it slightly difficult if you're just getting into Docker and want to fire something up and play with it. Yacht organizes all your volumes automatically, which is fantastic. Some apps will still need you to set things up yourself. Jellyfin is a good example, since you'll want to point it at your media directories.
 
-![The Volumes step of the Deploy homer form in the video, with !config/Homer paths on the host mapped to /www/assets and /www/config.yml in the container](/docs-static/img/2026/10/yacht-docker-management/deploy-homer-volumes.jpg)
+![The Volumes step of the Deploy homer form in the video, with !config/Homer paths on the host mapped to /www/assets and /www/config.yml in the container](/docs-static/img/2026/12/yacht-docker-management/deploy-homer-volumes.jpg)
 
 <Note>
 Homer's own README now mounts a single folder at `/www/assets` and keeps `config.yml` inside it, while the old template still lists a separate `/www/config.yml` mount. If Homer doesn't pick up your config, edit the volumes to match [Homer's current Docker instructions](https://github.com/bastienwirtz/homer).
@@ -188,7 +188,7 @@ Under **Resources** you can see everything Docker is holding onto.
 
 Template variables are the thing to set up early. Templates use placeholders that start with an exclamation point, and Yacht swaps them for real paths when you deploy. For example, `!config` becomes `/yacht/AppData/Config` and `!movies` becomes `/yacht/Media/Movies` by default. If you run something like Jellyfin and keep your movies somewhere else, change `!movies` here (or add your own variable) and every template that uses it lands in the right place.
 
-![The Template Variables tab of Yacht's settings in the video, mapping !config, !data, !media, !downloads, and !music to folders under /yacht](/docs-static/img/2026/10/yacht-docker-management/settings-template-variables.jpg)
+![The Template Variables tab of Yacht's settings in the video, mapping !config, !data, !media, !downloads, and !music to folders under /yacht](/docs-static/img/2026/12/yacht-docker-management/settings-template-variables.jpg)
 
 ## What's New Since the Video
 
