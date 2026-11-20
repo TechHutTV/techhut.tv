@@ -1,10 +1,10 @@
 export const title = "Pi-hole in Home Assistant: A Bubble Card Dashboard with Disable Timers"
 export const description = "Connect Pi-hole v6 to Home Assistant with an app password, then build a Bubble Card control with 5, 30, and 60 minute disable buttons and Mini Graph Card stats, with the YAML updated for current releases."
-export const date = "2026-10-17"
+export const date = "2026-12-18"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Self-Host", "Homelab"]
-export const cover = "/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/cover.jpg"
+export const cover = "/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -14,7 +14,7 @@ This is a quick one. I'll show you how to get [Pi-hole](https://pi-hole.net/) in
 
 The card has a big status icon that's green when Pi-hole is actively blocking and dark red when it isn't. Next to it are three buttons that turn blocking off for 5, 30, or 60 minutes. Under that sit three small graphs: total queries, blocked queries, and the percentage blocked.
 
-![The Pi-hole card on my Home Assistant dashboard with blocking off, a dark red status icon, the 5m, 30m, and 60m buttons, and the Queries, Blocked, and Difference graphs, as shown in the video](/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/pi-hole-card-blocking-off.jpg)
+![The Pi-hole card on my Home Assistant dashboard with blocking off, a dark red status icon, the 5m, 30m, and 60m buttons, and the Queries, Blocked, and Difference graphs, as shown in the video](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/pi-hole-card-blocking-off.jpg)
 
 Those buttons are the whole reason I made this. Everybody in my house uses Home Assistant, and every once in a while someone tells me the internet's not working. They're trying to open a site that refuses to load with an ad blocker, or they're researching something for a paper and need a news site. Now they open the app, tap a timer, and they're good to go. No admin login, and blocking turns itself back on.
 
@@ -90,13 +90,13 @@ That's fine if you just want numbers on a screen. I wanted something nicer, thou
 
 The top half of my card is [Bubble Card](https://github.com/Clooos/Bubble-Card). If you've never used it, it's a collection of cards from HACS with a ton of customization options. I'm also using it for the lights and shades in my house, including some preset buttons for the shades that are very similar to what I did here.
 
-![Bubble Card shade controls on my dashboard with Close, 15, 50, and 75 preset sub-buttons above up, stop, and down buttons, as shown in the video](/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/bubble-card-shades-presets.jpg)
+![Bubble Card shade controls on my dashboard with Close, 15, 50, and 75 preset sub-buttons above up, stop, and down buttons, as shown in the video](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/bubble-card-shades-presets.jpg)
 
 To install it, open **HACS**, search for **Bubble Card**, and click **Download**. Then edit your dashboard and add a card by searching for "Bubble Card." The README lists Home Assistant 2023.9.0 as the lowest supported version.
 
 Bubble Card has a graphical editor, which is really nice, but you'll still end up in the code editor for something like this.
 
-![The Bubble Card visual editor in the video with a Button card, the State button type, and switch.pi_hole selected, next to a preview of the card](/docs-static/img/2026/10/pi-hole-home-assistant-bubble-card/bubble-card-editor-state-button.jpg)
+![The Bubble Card visual editor in the video with a Button card, the State button type, and switch.pi_hole selected, next to a preview of the card](/docs-static/img/2026/12/pi-hole-home-assistant-bubble-card/bubble-card-editor-state-button.jpg)
 
 My config, updated for the current Bubble Card release:
 
