@@ -1,10 +1,10 @@
 export const title = "Pi-hole with Unbound: Network Ad Blocking and Your Own Recursive DNS"
 export const description = "Install Pi-hole v6 in a Proxmox container, then add Unbound as a local recursive resolver so your DNS lookups go straight to the authoritative servers instead of Google or Cloudflare."
-export const date = "2026-10-17"
+export const date = "2026-12-15"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/cover.jpg"
+export const cover = "/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -113,7 +113,7 @@ It runs some system checks and then walks you through a few screens:
 
 If you remember the video, it also asked whether to install the web admin interface and its PHP modules. Those questions are gone in v6, because the web interface is built into `pihole-FTL` now.
 
-![The Pi-hole installer's Upstream DNS Provider screen with Google highlighted, as shown in the video](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/installer-upstream-dns-provider.jpg)
+![The Pi-hole installer's Upstream DNS Provider screen with Google highlighted, as shown in the video](/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/installer-upstream-dns-provider.jpg)
 
 When it finishes, you get the server's IP address, the dashboard URL, which looks like `http://192.168.0.71/admin`, and a random password.
 
@@ -273,7 +273,7 @@ dig pi-hole.net @127.0.0.1 -p 5335
 
 You should get a `NOERROR` status and an IP address back. The first query might take a moment, but repeating it should be fast.
 
-![A dig query to Unbound on 127.0.0.1 port 5335 returning NOERROR and an IP address for pi-hole.net, from the original video](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/unbound-dig-test-noerror.jpg)
+![A dig query to Unbound on 127.0.0.1 port 5335 returning NOERROR and an IP address for pi-hole.net, from the original video](/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/unbound-dig-test-noerror.jpg)
 
 Then confirm DNSSEC validation is working:
 
@@ -299,7 +299,7 @@ Back in the Pi-hole web interface, go to **Settings > DNS**. Under **Upstream DN
 
 3. Make sure nothing else is left in that list, then click **Save & Apply** at the bottom of the page.
 
-![The older Pi-hole v5 DNS settings page from the video, with every upstream provider unticked and 127.0.0.1#5335 entered as a custom IPv4 server](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-upstream-dns-custom-unbound.jpg)
+![The older Pi-hole v5 DNS settings page from the video, with every upstream provider unticked and 127.0.0.1#5335 entered as a custom IPv4 server](/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/v5-upstream-dns-custom-unbound.jpg)
 
 If you'd rather do it from the terminal, v6 lets you set any option with `pihole-FTL --config`. This replaces the upstream list with just Unbound:
 
@@ -326,11 +326,11 @@ I was on Wi-Fi, so I opened my Wi-Fi connection's settings, went to the **IPv4**
 
 Then I loaded up one of the worst offenders for ads I know of, CNN.com. The ad spaces just didn't fill in. Back in Pi-hole, the dashboard already showed 185 blocked queries from that one visit.
 
-![The Pi-hole v5 dashboard from the video showing 185 of 294 queries blocked after loading CNN.com](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-dashboard-cnn-blocked.jpg)
+![The Pi-hole v5 dashboard from the video showing 185 of 294 queries blocked after loading CNN.com](/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/v5-dashboard-cnn-blocked.jpg)
 
 The **Query Log** is where you can see what's going on. It shows each request, which client made it, and whether it was blocked. For the allowed ones, the status shows they were answered by `localhost#5335`, which is our Unbound server. Pi-hole v6 words it as "Forwarded, reply from" followed by the upstream.
 
-![The Pi-hole v5 query log from the video, with ad domains blocked by gravity and www.facebook.com answered by localhost#5335](/docs-static/img/2026/10/pi-hole-unbound-recursive-dns/v5-query-log-localhost-5335.jpg)
+![The Pi-hole v5 query log from the video, with ad domains blocked by gravity and www.facebook.com answered by localhost#5335](/docs-static/img/2026/12/pi-hole-unbound-recursive-dns/v5-query-log-localhost-5335.jpg)
 
 Then I refreshed and clicked through to another page on the site. In the query log, a lot of those same domains now showed as cached (v6 labels them "Served from cache"). The address was already stored locally, so the second lookup was much quicker than the first.
 
