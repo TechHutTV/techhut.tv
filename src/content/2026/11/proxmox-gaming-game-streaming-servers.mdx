@@ -1,10 +1,10 @@
 export const title = "Proxmox Gaming Server: GPU Passthrough, Sunshine and Moonlight Streaming, and AMP Game Servers"
 export const description = "Turn one Proxmox box into a gaming server: host Minecraft and CS2 servers with AMP in an LXC, then pass a GPU through to a Nobara VM and stream games anywhere with Sunshine and Moonlight."
-export const date = "2026-10-11"
+export const date = "2026-11-22"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Proxmox", "Virtualization", "Homelab", "Self-Host", "Linux"]
-export const cover = "/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/cover.jpg"
+export const cover = "/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -123,7 +123,7 @@ The panel on port 8080 is plain HTTP and controls servers that run code. Keep it
 
 The main page lists your instances. Click **Create Instance**, and you'll see just how many games AMP supports. I got briefly distracted by the option to spin up an old-school Call of Duty: World at War server, but I stayed focused and picked **Minecraft Java**.
 
-![AMP's Create new instance dialog with the application list open and Minecraft Java Edition highlighted](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/amp-create-instance-minecraft.jpg)
+![AMP's Create new instance dialog with the application list open and Minecraft Java Edition highlighted](/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/amp-create-instance-minecraft.jpg)
 
 You can tick options to update and start it after creation and to start it on boot, then click **Create Instance**. When it's configured, it pauses waiting for user input: you need to **accept the Minecraft EULA**. Once you accept, the server starts. The console shows it preparing the spawn area, and you're good to go.
 
@@ -279,7 +279,7 @@ Power the VM off, then in Proxmox:
 4. On q35, tick **PCI-Express** as well.
 5. Leave **Primary GPU** unchecked for now.
 
-![The Proxmox PCI Device dialog in the video with Raw Device 0000:05:00.0 (the RX 580) selected, All Functions checked, and Primary GPU unchecked](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/proxmox-pci-device-rx580.jpg)
+![The Proxmox PCI Device dialog in the video with Raw Device 0000:05:00.0 (the RX 580) selected, All Functions checked, and Primary GPU unchecked](/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/proxmox-pci-device-rx580.jpg)
 
 I left Primary GPU off so I could keep using the noVNC console while setting everything up. Once the setup is done, you can enable it. Just know that, per the Proxmox docs, the VM's virtual display setting is then ignored and the web console can't show the card's output. Moonlight becomes your screen. A headless card generally also needs a monitor or an HDMI/DisplayPort dummy plug attached to give the desktop something to drive.
 
@@ -328,7 +328,7 @@ You'll get a privacy warning, because Sunshine uses a self-signed certificate. T
 
 From here you've got the **Applications** list (upstream's Linux defaults include Desktop and Steam Big Picture entries), **Configuration**, **Troubleshooting**, and the **PIN** page we need next.
 
-![The Applications page in Sunshine's web UI listing Desktop, Low Res Desktop, and Steam Big Picture](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/sunshine-applications.jpg)
+![The Applications page in Sunshine's web UI listing Desktop, Low Res Desktop, and Steam Big Picture](/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/sunshine-applications.jpg)
 
 By default, the web UI only accepts connections from your LAN (`origin_web_ui_allowed = lan`). Leave it that way.
 
@@ -351,7 +351,7 @@ To make this feel like a game console, Sunshine and Steam should start on their 
 
 `-gamepadui` launches Steam straight into the controller-friendly Big Picture interface. I rebooted the VM, Moonlight lost the connection for a moment, and when I reconnected I was greeted by Big Picture. That's exactly what I wanted, no matter which device I'm connecting from.
 
-![Steam Big Picture streamed over Moonlight from the Nobara VM, with Skyrim, Counter-Strike 2, and Cyberpunk under Recent Games](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/steam-big-picture-moonlight.jpg)
+![Steam Big Picture streamed over Moonlight from the Nobara VM, with Skyrim, Counter-Strike 2, and Cyberpunk under Recent Games](/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/steam-big-picture-moonlight.jpg)
 
 Upstream Sunshine packages also ship a systemd user service, so you can use that instead of a startup entry:
 
@@ -395,7 +395,7 @@ Then, the payoff: connecting the streamed game to the game server.
 
 That dropped me into my own private CS2 server full of bots, hosted in an LXC, played in a VM, and streamed to my Mac, all on the same Proxmox box. I still couldn't beat the bots. Back in AMP, I could see all the activity in the instance console.
 
-![Counter-Strike 2 streamed from the Nobara VM, connected to the AMP-hosted server with bots on the map](/docs-static/img/2026/10/proxmox-gaming-game-streaming-servers/cs2-own-server-bots.jpg)
+![Counter-Strike 2 streamed from the Nobara VM, connected to the AMP-hosted server with bots on the map](/docs-static/img/2026/11/proxmox-gaming-game-streaming-servers/cs2-own-server-bots.jpg)
 
 ## Final Thoughts
 
