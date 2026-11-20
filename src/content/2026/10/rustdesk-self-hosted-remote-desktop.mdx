@@ -10,19 +10,19 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="utSOC6BFd3A" title="TechHut's RustDesk walkthrough" />
 
-If you're looking for something to replace TeamViewer or AnyDesk, [RustDesk](https://rustdesk.com/) is arguably the best option out there. It works the same way: punch in a device's ID and password, and you're controlling that desktop as if you were sitting in front of it.
+If you're looking for something to replace TeamViewer or AnyDesk, [RustDesk](https://rustdesk.com/) is the option I'd start with. It works the same way: punch in a device's ID and password, and you're controlling that desktop as if you were sitting in front of it.
 
-For my machines, I already have access to virtual machines through the VNC console built into Proxmox. That works, but I don't want to dig through the Proxmox web UI every time. I want a native client that opens straight into the desktop. Out of the box, RustDesk clients use the project's public servers to find each other. In this guide we're setting up our own ID and relay server instead, so connections between machines in my house don't depend on someone else's infrastructure.
+For my machines, I already have access to virtual machines through the VNC console built into Proxmox. That works, but I don't want to dig through the Proxmox web UI every time. I want a native client that opens straight into the desktop. Out of the box, RustDesk clients use the project's public servers to find each other. We're setting up our own ID and relay server instead, so connections between machines in my house don't depend on someone else's infrastructure.
 
 It also fits nicely with the rest of my network. I have a NetBird routing peer at home, so as long as my NetBird client is connected, this setup works from just about anywhere.
 
 Opera sponsored the video this article is based on.
 
 <Note>
-The written installation has been updated for [RustDesk Server 1.1.16](https://github.com/rustdesk/rustdesk-server/releases/tag/1.1.16), released July 20, 2026, and [RustDesk client 1.5.0](https://github.com/rustdesk/rustdesk/releases/tag/1.5.0), released September 30, 2026. Server 1.1.16 includes a security fix for UDP reflection and amplification abuse. In the video I used the Proxmox community helper script, which at the time installed a community fork of the server. The script now pulls the official build, but I've made upstream's Docker method the primary install here and kept my helper-script path as the second option. My hands-on impressions come from the recorded walkthrough.
+The install steps below are for [RustDesk Server 1.1.16](https://github.com/rustdesk/rustdesk-server/releases/tag/1.1.16), released July 20, 2026, and [RustDesk client 1.5.0](https://github.com/rustdesk/rustdesk/releases/tag/1.5.0), released September 30, 2026. Server 1.1.16 includes a security fix for UDP reflection and amplification abuse. In the video I used the Proxmox community helper script, which at the time installed a community fork of the server. The script now pulls the official build, but I've made upstream's Docker method the primary install here and kept my helper-script path as the second option. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
-## What You're Actually Self-Hosting
+## What you're self-hosting
 
 The open-source RustDesk server is two programs, and it helps to know which does what before you open any ports. The [self-hosting overview](https://rustdesk.com/docs/en/self-host/) describes them like this:
 
@@ -298,9 +298,9 @@ Run `sudo docker compose up -d` afterward. If relayed connections start failing 
 
 RustDesk does what I want from a TeamViewer or AnyDesk replacement. The client is native, it runs on basically everything, and it doesn't feel like a stripped-down free version. Setting up my own ID and relay server took only a few minutes. After that, it was just a matter of pasting the address and key into each client.
 
-What I like most is that the free self-hosted server is a complete setup, not a trial. There's no web UI unless you pay for Pro or add a third-party panel, but for a homelab I don't need one. I set a permanent password on the machines I manage, keep everything behind NetBird, and it just works.
+The part I like is that the free self-hosted server is a complete setup, not a trial. There's no web UI unless you pay for Pro or add a third-party panel, but for a homelab I don't need one. I set a permanent password on the machines I manage, keep everything behind NetBird, and it just works.
 
-If you're starting fresh, use the official Docker Compose install. If you already live in Proxmox and want the helper script, go for it. It now installs the official server, and I'd skip the optional web panel. With all that, I do hope this was helpful, and I hope you have an absolutely beautiful day.
+If you're starting fresh, use the official Docker Compose install. If you already live in Proxmox and want the helper script, go for it. It now installs the official server, and I'd skip the optional web panel. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
