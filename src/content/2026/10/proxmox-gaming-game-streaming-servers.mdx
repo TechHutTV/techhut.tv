@@ -10,11 +10,11 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="hAqGEUt9V_M" title="TechHut's Proxmox gaming server walkthrough" />
 
-Let's turn a Proxmox server into the ultimate gaming server. And I mean that two ways: a server that **hosts game servers** for things like Minecraft and Counter-Strike 2, and a machine that **plays the games itself** and streams them to whatever device I happen to be sitting at. Then, for the fun part, the streamed game connects back to the game server running on the same box.
+Let's turn a Proxmox server into a gaming server. And I mean that two ways: a server that **hosts game servers** for things like Minecraft and Counter-Strike 2, and a machine that **plays the games itself** and streams them to whatever device I happen to be sitting at. Then, for the fun part, the streamed game connects back to the game server running on the same box.
 
 CubeCoders sponsored the video this article is based on, and its AMP panel is what I use for the game servers.
 
-Here's the plan, and how this guide is laid out:
+The plan:
 
 | Part | What runs where | Tools |
 |---|---|---|
@@ -26,21 +26,21 @@ Here's the plan, and how this guide is laid out:
 Each part stands on its own. If you only want game servers, stop after part 1. If you only want a streaming VM, skip straight to part 2.
 
 <Note>
-I recorded the video on Proxmox VE 9.0. The written steps have been checked against current upstream releases: [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (May 21, 2026), [Sunshine v2026.914.233613](https://github.com/LizardByte/Sunshine/releases/tag/v2026.914.233613) (September 15, 2026), [Moonlight PC v6.2.0](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0) (October 4, 2026), and Nobara 44. AMP's install script has also changed since the video and now offers containerised instances differently, which I cover below. My hands-on impressions come from the recorded walkthrough.
+I recorded the video on Proxmox VE 9.0. The steps below are checked against current upstream releases: [Proxmox VE 9.2](https://pve.proxmox.com/wiki/Roadmap) (May 21, 2026), [Sunshine v2026.914.233613](https://github.com/LizardByte/Sunshine/releases/tag/v2026.914.233613) (September 15, 2026), [Moonlight PC v6.2.0](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0) (October 4, 2026), and Nobara 44. AMP's install script has also changed since the video and now offers containerised instances differently, which I cover below. My hands-on impressions come from the recorded walkthrough.
 </Note>
 
 ## My Hardware and Layout
 
 Everything runs on one Proxmox host. The game streaming VM gets an **AMD Radeon RX 580** passed through to it, so the VM uses that card directly as if it were bare metal. AMP lives in its own LXC container next to it.
 
-Here's how I sized things:
+How I sized things:
 
 | Guest | Type | CPU | RAM | Storage |
 |---|---|---|---|---|
 | `amp` | LXC container | 4 cores | 8 GB + 2 GB swap | Just under 100 GB |
 | `gaming` (ID 200) | VM | 8 cores | 8 GB | 256 GB on NVMe, plus a second disk on my ZFS pool |
 
-Size these for what you actually plan to do and what you actually have. My main use for AMP is Minecraft, which is very RAM hungry, so that's why the container got 8 GB.
+Size these for what you plan to do and what you have. My main use for AMP is Minecraft, which is very RAM hungry, so that's why the container got 8 GB.
 
 If you're starting from a bare machine, my [Proxmox and ZFS home server guide](/ultimate-home-server-part-1-proxmox-zfs-samba) covers the Proxmox install and ZFS pool I'm building on here.
 
@@ -144,7 +144,7 @@ Just to show it's not a Minecraft-only panel, I created a second instance for **
 
 ## Part 2: GPU Passthrough on the Proxmox Host
 
-Now for the meat and potatoes: the streaming VM. Before creating it, the host has to be ready to hand a whole GPU to a VM. I did these steps before recording. Here's the current procedure from the [Proxmox PCI(e) passthrough docs](https://pve.proxmox.com/wiki/PCI(e)_Passthrough).
+Now for the meat and potatoes: the streaming VM. Before creating it, the host has to be ready to hand a whole GPU to a VM. I did these steps before recording. The current procedure from the [Proxmox PCI(e) passthrough docs](https://pve.proxmox.com/wiki/PCI(e)_Passthrough):
 
 Do note that once a device is passed through, the host and every other VM lose access to it.
 
@@ -371,7 +371,7 @@ These are Sunshine's default ports, worked out from the port offsets in [its sou
 | 47989 | TCP | HTTP |
 | 47990 | TCP | Web UI (keep LAN-only) |
 | 48010 | TCP | RTSP |
-| 47998–48000 | UDP | Video, control, audio |
+| 47998-48000 | UDP | Video, control, audio |
 
 They all shift together if you change Sunshine's base `port` setting, and Moonlight's [setup guide](https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide) also lists UDP 48002 and 48010 for manual forwarding. On your LAN it just works. For playing away from home, that guide covers port forwarding and Sunshine's UPnP option, but I'd rather use a mesh VPN like Tailscale, ZeroTier, or [NetBird](/self-host-netbird-pocketid) than expose anything. Either way, pair on the home network first.
 
