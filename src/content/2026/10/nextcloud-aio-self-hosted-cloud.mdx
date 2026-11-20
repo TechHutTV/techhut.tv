@@ -10,11 +10,11 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="DFUmfHqQWyg" title="TechHut's Nextcloud AIO walkthrough" />
 
-I've been running [Nextcloud](https://nextcloud.com/) for years, and it's still the thing I point people to when they ask how to get off Google Workspace or Microsoft 365. At its simplest it's a Dropbox replacement: put your files on it, open them, edit them, share them. But it keeps going. Collaborative editing for documents, spreadsheets, and presentations, calendar and contacts, a mail client, Talk for video calls, Deck for kanban boards (I use that one a lot), and an app store full of extras. All of it is modular, so you can turn off whatever you don't want.
+I've been running [Nextcloud](https://nextcloud.com/) for years, and it's still the thing I point people to when they ask how to get off Google Workspace or Microsoft 365. The simple version is a Dropbox replacement: put your files on it, open them, edit them, share them. It keeps going from there. Collaborative editing for documents, spreadsheets, and presentations, calendar and contacts, a mail client, Talk for video calls, Deck for kanban boards (I use that one a lot), and an app store full of extras. All of it is modular, so you can turn off whatever you don't want.
 
-The easiest way to run all of that is Nextcloud All-in-One (AIO). We're doing the full setup here: Docker Compose, Nginx Proxy Manager, a real domain with a wildcard certificate, a tour of the apps worth turning on, and how to upgrade to the latest Hub release.
+The easiest way to run all of that is Nextcloud All-in-One (AIO). The setup covers Docker Compose, Nginx Proxy Manager, a real domain with a wildcard certificate, the apps worth turning on, and how to upgrade to the latest Hub release.
 
-The written install has been updated for [AIO v14.2.0](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0), released September 21, 2026. That release ships Nextcloud 34 (Hub 26 Spring), and new instances can install [Nextcloud Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/) (Nextcloud 35) directly. A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
+The install steps below are for [AIO v14.2.0](https://github.com/nextcloud/all-in-one/releases/tag/v14.2.0), released September 21, 2026. That release ships Nextcloud 34 (Hub 26 Spring), and new instances can install [Nextcloud Hub 26 Summer](https://nextcloud.com/blog/nextcloud-hub26-summer/) (Nextcloud 35) directly. A few things changed since I recorded the walkthrough in May 2025, and I've called those out as we go. My hands-on impressions come from the videos.
 
 Both videos had sponsor segments (Brilliant in the setup guide, Brevo in the Hub 26 video). Neither company is involved with Nextcloud, and I've left those segments out.
 
@@ -154,7 +154,7 @@ volumes:
     name: nextcloud_aio_mastercontainer # Do not change
 ```
 
-The official [AIO compose.yaml](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml) is worth reading even if you copy mine. Every variable there links to documentation explaining what it does. Here's what I'm setting and why:
+The official [AIO compose.yaml](https://github.com/nextcloud/all-in-one/blob/main/compose.yaml) is worth reading even if you copy mine. Every variable there links to documentation explaining what it does. What I'm setting and why:
 
 - **Nginx Proxy Manager on host networking.** This makes proxying both local containers and services on other machines easy. It takes ports 80, 81, and 443 on the host directly, so no `ports:` mappings are needed.
 - **Port 8080 only.** The official file also publishes 80 and 8443, which you can drop behind a reverse proxy.
@@ -169,7 +169,7 @@ The official [AIO compose.yaml](https://github.com/nextcloud/all-in-one/blob/mai
 My compose file in the video had a few settings AIO has since changed, so I've updated them here:
 
 - **`AIO_COMMUNITY_CONTAINERS` was removed.** In the video I added the Local AI and Memories community containers with this variable. They're now managed from a section at the bottom of the AIO interface, and the mastercontainer warns you if the old variable is still set.
-- **`NEXTCLOUD_ENABLE_DRI_DEVICE` is deprecated.** For Intel Quick Sync and other `/dev/dri` hardware acceleration, uncomment `devices: ["/dev/dri"]` instead, and AIO enables it automatically. Only do this if `/dev/dri` actually exists on the host, or the mastercontainer won't start.
+- **`NEXTCLOUD_ENABLE_DRI_DEVICE` is deprecated.** For Intel Quick Sync and other `/dev/dri` hardware acceleration, uncomment `devices: ["/dev/dri"]` instead, and AIO enables it automatically. Only do this if `/dev/dri` exists on the host, or the mastercontainer won't start.
 - **`NC_TRUSTED_PROXIES` isn't an AIO setting.** I had it commented out in my file. If you need a trusted proxy, use the `occ` command below.
 
 Start it up:
@@ -356,7 +356,7 @@ For what came after, see Nextcloud's [Hub 26 Summer announcement](https://nextcl
 
 Nextcloud is a big application, and it runs better on better hardware. But AIO removes most of the pain of setting it up, and the recent performance work has made it much nicer to use. Once the domain and proxy are working, you have files, office, calendar, contacts, mail, Talk, and Deck on hardware you own. Nobody else is analyzing your data or training models on it, and you know exactly where your files are. A lot of us already have hard drives sitting around, so why pay Google every month for storage?
 
-There's a lot I didn't get to here: the AI features, the Memories and Local AI community containers I want to test properly, and more host mounts. If you want something lighter that's focused on files, I also compared [OpenCloud against Nextcloud](/self-host-opencloud-docker-compose). For the full groupware suite, though, Nextcloud is still what I run. With all that, I do hope you found this helpful. Have a great one.
+There's a lot I didn't get to here: the AI features, the Memories and Local AI community containers I want to test properly, and more host mounts. If you want something lighter that's focused on files, I also compared [OpenCloud against Nextcloud](/self-host-opencloud-docker-compose). For the full groupware suite, though, Nextcloud is still what I run. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
