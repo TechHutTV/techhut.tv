@@ -1,10 +1,10 @@
 export const title = "MicroCloud: A Proxmox Alternative You Can Run on Ubuntu"
 export const description = "Set up Canonical's MicroCloud on Ubuntu with LXD, MicroCeph, and MicroOVN, build a three-node cluster, and manage containers from the CLI and web UI. Plus how it compares to Proxmox."
-export const date = "2026-10-11"
+export const date = "2026-11-29"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Homelab", "Self-Host", "Linux", "Proxmox", "Virtualization"]
-export const cover = "/docs-static/img/2026/10/microcloud-proxmox-alternative/cover.jpg"
+export const cover = "/docs-static/img/2026/11/microcloud-proxmox-alternative/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -156,7 +156,7 @@ After the services start, it walks you through a series of prompts. The menus us
 12. **DNS for the distributed network.** I kept the default.
 13. **Dedicated underlay network.** That's a bit beyond my skill set at the moment, so I skipped it. It needs an extra interface on each node.
 
-![The microcloud init prompt for the OVN uplink with the br0 bridge selected on all three cluster members](/docs-static/img/2026/10/microcloud-proxmox-alternative/microcloud-init-ovn-uplink.jpg)
+![The microcloud init prompt for the OVN uplink with the br0 bridge selected on all three cluster members](/docs-static/img/2026/11/microcloud-proxmox-alternative/microcloud-init-ovn-uplink.jpg)
 
 The current docs also describe an optional prompt to create an initial UI access link. It's an admin link that's valid for one day and lets you sign into the web UI right away. Then you can set up permanent authentication. I didn't have that prompt in the video and used the certificate method shown later.
 
@@ -281,7 +281,7 @@ That's a lot more secure than many self-hosted services I've used. If you create
 
 Once you're in, the `web-server` container is there with everything I'd set up in the terminal: the `web-proxy` device, the `appdata` volume, and the root disk. You also get usage graphs for CPU and the root filesystem.
 
-![The Overview tab for the web-server container in the MicroCloud web UI, showing its IP addresses, cluster member ubuntu-micro2, and memory and disk usage](/docs-static/img/2026/10/microcloud-proxmox-alternative/lxd-ui-web-server-overview.jpg)
+![The Overview tab for the web-server container in the MicroCloud web UI, showing its IP addresses, cluster member ubuntu-micro2, and memory and disk usage](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-web-server-overview.jpg)
 
 The configuration tab is where you make changes:
 
@@ -289,7 +289,7 @@ The configuration tab is where you make changes:
 - **GPU.** When I recorded this, Canonical said GPU passthrough was supported for NVIDIA. Their team hadn't tested Intel specifically, so that's something I want to try. LXD's [GPU device reference](https://canonical.com/lxd/docs/latest/reference/devices_gpu/) has the details.
 - **Proxy.** This shows the same proxy device I created from the CLI, and you can add more here.
 
-![The web-proxy device in the MicroCloud web UI listening on TCP 0.0.0.0 port 8080 and connecting to 127.0.0.1 port 80](/docs-static/img/2026/10/microcloud-proxmox-alternative/lxd-ui-proxy-device.jpg)
+![The web-proxy device in the MicroCloud web UI listening on TCP 0.0.0.0 port 8080 and connecting to 127.0.0.1 port 80](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-proxy-device.jpg)
 
 Everything is also available as YAML, which makes it easy to save and export the configuration for your containers.
 
@@ -311,7 +311,7 @@ To show a real use case, I made a Jellyfin container. I didn't set up hardware t
 4. Instead of clicking through with Next, use the sections on the side. I added a **proxy** device that listens on `0.0.0.0:8096` and connects to `127.0.0.1:8096`. 8096 is Jellyfin's default HTTP port.
 5. I set limits of two CPU cores and 2 GB of RAM, then clicked **Create and start**.
 
-![The Select base image dialog in the MicroCloud web UI listing OpenWrt, Oracle, Rocky Linux, Slackware, and Ubuntu Desktop images](/docs-static/img/2026/10/microcloud-proxmox-alternative/lxd-ui-select-base-image.jpg)
+![The Select base image dialog in the MicroCloud web UI listing OpenWrt, Oracle, Rocky Linux, Slackware, and Ubuntu Desktop images](/docs-static/img/2026/11/microcloud-proxmox-alternative/lxd-ui-select-base-image.jpg)
 
 The same container from the CLI:
 
@@ -333,7 +333,7 @@ sudo bash install-debuntu.sh
 
 When it finished, the Jellyfin service was active. The container was on micro one, so I opened micro one's IP on port `8096`, and there was Jellyfin.
 
-![The Jellyfin setup wizard's welcome screen, reached through the container's proxy device on port 8096](/docs-static/img/2026/10/microcloud-proxmox-alternative/jellyfin-setup-wizard.jpg)
+![The Jellyfin setup wizard's welcome screen, reached through the container's proxy device on port 8096](/docs-static/img/2026/11/microcloud-proxmox-alternative/jellyfin-setup-wizard.jpg)
 
 ## Final Thoughts: MicroCloud or Proxmox?
 
