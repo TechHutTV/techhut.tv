@@ -1,10 +1,10 @@
 export const title = "Zerobyte: The Best Home Server Backup App I've Used"
 export const description = "Set up Zerobyte, a Restic-powered backup web UI, with Docker Compose. Back up an SMB share to a local repository, add an encrypted Google Drive copy through rclone, and restore files when you need them."
-export const date = "2026-10-11"
+export const date = "2026-12-01"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/zerobyte-home-server-backups/cover.jpg"
+export const cover = "/docs-static/img/2026/12/zerobyte-home-server-backups/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -149,7 +149,7 @@ You'll need the share set up on your NAS first. The current SMB form also has gu
 
 Under **Repositories**, create a new one, choose **Local**, and give it a name. By default, Zerobyte uses `/var/lib/zerobyte/repositories`. On my machine, that would put it on the small boot drive, so I clicked **Change** and picked `/data`, the spinning-drive folder I mounted in the compose file.
 
-![The Zerobyte Create Repository form with the Local backend, Auto (fast) compression, and the repository directory set to /data](/docs-static/img/2026/10/zerobyte-home-server-backups/create-local-repository.jpg)
+![The Zerobyte Create Repository form with the Local backend, Auto (fast) compression, and the repository directory set to /data](/docs-static/img/2026/12/zerobyte-home-server-backups/create-local-repository.jpg)
 
 If you change the location, make sure the directory is mounted from the host. Otherwise the repository can disappear when the container is recreated.
 
@@ -165,7 +165,7 @@ Under **Backups**, create a backup job:
 4. Choose the backup paths. For Immich, I only selected the `library` folder because that's the raw data, and it's neatly organized.
 5. Set the retention policy. I used the suggested example: **7** daily, **4** weekly, and **6** monthly snapshots.
 
-![The Backup paths picker in a new Zerobyte backup job with only the Immich library folder selected](/docs-static/img/2026/10/zerobyte-home-server-backups/backup-job-paths-library.jpg)
+![The Backup paths picker in a new Zerobyte backup job with only the Immich library folder selected](/docs-static/img/2026/12/zerobyte-home-server-backups/backup-job-paths-library.jpg)
 
 There are plenty of other options, including exclude patterns and custom Restic parameters. Click **Create**, and the job shows as enabled.
 
@@ -266,7 +266,7 @@ If Google's OAuth token stops working later, refresh it on the host with `rclone
 
 After a refresh, choose **rclone** as the repository type, and the `gdrive` remote is right there. You can browse the remote from the form, too. I could see the folder Duplicati was using, so I created a new `ZeroByte` folder and selected it. I named the repository Google Drive and created it, and after a few seconds it said the repository was successfully created.
 
-![The Zerobyte Create Repository form with the rclone backend, the gdrive remote selected, and the path set to zerobyte](/docs-static/img/2026/10/zerobyte-home-server-backups/rclone-google-drive-repository.jpg)
+![The Zerobyte Create Repository form with the rclone backend, the gdrive remote selected, and the path set to zerobyte](/docs-static/img/2026/12/zerobyte-home-server-backups/rclone-google-drive-repository.jpg)
 
 Then I made a second backup job for the Immich library, this time pointing at the Google Drive repository. It was also daily, but scheduled a bit later than the local job, with the same 7/4/6 retention. I clicked **Backup now**, opened the `ZeroByte` folder in Google Drive, and it was filling up with Restic's encrypted repository files. It worked.
 
@@ -278,14 +278,14 @@ Zerobyte's docs warn that consumer cloud services such as Google Drive and Dropb
 
 Under **Backups**, I could see both jobs: the local one and the offsite one. I opened the local job because its first backup had finished, then clicked a snapshot. That opens a file browser, so you can see exactly what's in the snapshot before restoring anything.
 
-![The Zerobyte Backups page with the immich local backup job going to the local repository and the immich offsite job going to google-drive](/docs-static/img/2026/10/zerobyte-home-server-backups/backup-jobs-local-and-offsite.jpg)
+![The Zerobyte Backups page with the immich local backup job going to the local repository and the immich offsite job going to google-drive](/docs-static/img/2026/12/zerobyte-home-server-backups/backup-jobs-local-and-offsite.jpg)
 
 To restore, select what you want. I went into `library`, then my `admin` user folder, and picked a single picture. Then choose where it should go:
 
 - **Original location** puts it back where it came from.
 - **Custom location** restores it somewhere else.
 
-![The Zerobyte Restore Snapshot page with Original location and Custom location options, the overwrite mode, and the snapshot's library folder](/docs-static/img/2026/10/zerobyte-home-server-backups/restore-snapshot.jpg)
+![The Zerobyte Restore Snapshot page with Original location and Custom location options, the overwrite mode, and the snapshot's library folder](/docs-static/img/2026/12/zerobyte-home-server-backups/restore-snapshot.jpg)
 
 According to the [restore guide](https://zerobyte.app/docs/guides/restoring), the current version also lets you choose an overwrite mode: always, only if the content changed, only if the snapshot is newer, or never. There's also a **Download** option for grabbing one item without restoring it onto a share.
 
@@ -307,7 +307,7 @@ If you use the generic webhook, Gotify, a self-hosted ntfy server, or a custom S
 
 At the bottom of a backup job, there's a **Mirror repositories** section, and this is really cool. After each successful backup, Zerobyte copies the new snapshot to any repositories you add as mirrors.
 
-![A Zerobyte backup job's Notifications section with Slack event toggles above the Mirror Repositories section and its Add mirror button](/docs-static/img/2026/10/zerobyte-home-server-backups/notifications-and-mirror-repositories.jpg)
+![A Zerobyte backup job's Notifications section with Slack event toggles above the Mirror Repositories section and its Add mirror button](/docs-static/img/2026/12/zerobyte-home-server-backups/notifications-and-mirror-repositories.jpg)
 
 That changes how I'd set this up. I made two jobs, one local and one offsite, but I don't really need both. One job could write to the local repository and mirror each snapshot to Google Drive. I didn't notice mirrors when I first played with Zerobyte, so I'm going to rethink my setup.
 
