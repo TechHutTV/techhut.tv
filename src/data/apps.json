@@ -1838,7 +1838,8 @@
     "description": "Host and manage virtual machines, containers and server storage.",
     "coverage": [
       "/proxmox-backup-server-complete-guide",
-      "/monitor-home-server-grafana-prometheus-influxdb"
+      "/monitor-home-server-grafana-prometheus-influxdb",
+      "/ultimate-home-server-part-1-proxmox-zfs-samba"
     ],
     "videos": [
       {
@@ -1996,7 +1997,9 @@
     "name": "Samba",
     "category": "Files & Photos",
     "description": "Share Linux server folders with other computers using SMB.",
-    "coverage": [],
+    "coverage": [
+      "/ultimate-home-server-part-1-proxmox-zfs-samba"
+    ],
     "videos": [
       {
         "id": "qmSizZUbCOA",
