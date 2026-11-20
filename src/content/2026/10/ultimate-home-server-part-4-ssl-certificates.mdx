@@ -26,7 +26,7 @@ There are two setups here:
 - A **public domain** for the handful of things I want reachable from the internet (a test page and Jellyfin here), using [Nginx Proxy Manager](https://nginxproxymanager.com/), [Cloudflare](https://www.cloudflare.com/), and a dynamic DNS container.
 - A **local domain** for everything else. It gets real certificates too, but it only resolves to an address inside my network, so it's useless unless you're at home or connected through a VPN-style tool.
 
-I recorded this video in 2024 for my earlier Proxmox series (it was Part 3 back then) and later listed it as Part 4 of this 2025 series, so a few names, IPs, and container layouts differ from Parts 1-3. The concepts carry over directly. Twingate sponsored the video, and I used it at the end for remote access to the local domain.
+I recorded this video in 2024 for my earlier Proxmox series (it was Part 3 back then) and later listed it as Part 4 of this 2025 series, so a few names, IPs, and container layouts differ from Parts 1-3. The concepts carry over directly. I used Twingate at the end for remote access to the local domain.
 
 The steps below are for [Nginx Proxy Manager v2.16.0](https://github.com/NginxProxyManager/nginx-proxy-manager/releases/tag/v2.16.0), released September 24, 2026, and [cloudflare-ddns](https://github.com/favonia/cloudflare-ddns) 1.17.1. The biggest visible change since the video is the first login, which I cover below. Everything I describe *doing* comes from the recorded walkthrough. My companion notes and compose file are in the [proxy folder of my homelab repo](https://github.com/TechHutTV/homelab/tree/main/proxy).
 
@@ -300,7 +300,7 @@ Keep the apps behind those hostnames protected by their own logins too. A valid 
 
 The concept is the same with any tool: run a connector or routing peer on your LAN and allow remote devices to reach the Nginx Proxy Manager IP through it. Public DNS already resolves `*.example.net` to that IP, so every local hostname works as soon as the route exists.
 
-In the video I used Twingate, the sponsor. I deployed its connector in Docker next to the proxy stack and created a resource for the proxy IP with an alias for the local domain. With the device off my home network, `proxmox.example.net` loaded with a valid certificate.
+In the video I used Twingate. I deployed its connector in Docker next to the proxy stack and created a resource for the proxy IP with an alias for the local domain. With the device off my home network, `proxmox.example.net` loaded with a valid certificate.
 
 My [repo](https://github.com/TechHutTV/homelab/tree/main/proxy) now uses [NetBird](https://netbird.io/) instead, and in full disclosure, I work for NetBird. There it's a routing peer on the LAN (the repo compose file includes a NetBird client container), a [Network](https://docs.netbird.io/manage/networks) with a `/32` resource for the proxy IP, and an access policy for your group. I cover self-hosting NetBird in [this guide](/self-host-netbird-pocketid). Tailscale or plain WireGuard work the same way. If you use the access list above, include that tool's subnet, or the routing peer's LAN IP if it masquerades traffic.
 
