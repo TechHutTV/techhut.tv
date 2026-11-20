@@ -1,10 +1,10 @@
 export const title = "Beszel: Simple, Lightweight Monitoring for Your Home Servers"
 export const description = "Set up Beszel, a lightweight self-hosted monitoring hub with per-machine agents, on Proxmox, Docker, or bare-metal Linux, then tour its system and container charts, GPU stats, and alerts."
-export const date = "2026-10-11"
+export const date = "2026-12-23"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Monitoring", "Homelab", "Self-Host", "Docker", "Proxmox", "Linux"]
-export const cover = "/docs-static/img/2026/10/beszel-home-server-monitoring/cover.jpg"
+export const cover = "/docs-static/img/2026/12/beszel-home-server-monitoring/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -137,7 +137,7 @@ Don't forward port `8090` straight to the internet. Keep the hub on your LAN or 
 
 On a fresh hub you'll see "No systems found." Click **Add System** in the top right. Pick Docker or Binary, give the system a name, and enter the machine's IP address. I named mine servarr and gave it that VM's address.
 
-![The Beszel Add New System dialog on the Docker tab with the name Servarr, host 10.0.0.200, and the default port 45876](/docs-static/img/2026/10/beszel-home-server-monitoring/add-new-system-dialog.jpg)
+![The Beszel Add New System dialog on the Docker tab with the name Servarr, host 10.0.0.200, and the default port 45876](/docs-static/img/2026/12/beszel-home-server-monitoring/add-new-system-dialog.jpg)
 
 The dialog shows the hub's **Public Key** and a **Token**, and it can copy a ready-made Docker Compose file, `docker run` command, or install command with those values already filled in. I copied the `docker run` version and pasted it into the VM's shell.
 
@@ -217,13 +217,13 @@ Systems registered this way are named after the machine's hostname unless you se
 
 With two systems in, the main table already tells you a lot: CPU, memory, and disk usage at a glance, plus network traffic and the agent version for each machine. Each row has a menu to pause monitoring, edit the system, or copy its hostname, and clicking a system opens its full page.
 
-![The Beszel All Systems table with Proxmox and Servarr rows showing CPU, memory, disk, and GPU usage](/docs-static/img/2026/10/beszel-home-server-monitoring/all-systems-table.jpg)
+![The Beszel All Systems table with Proxmox and Servarr rows showing CPU, memory, disk, and GPU usage](/docs-static/img/2026/12/beszel-home-server-monitoring/all-systems-table.jpg)
 
 ### System Pages and Container Stats
 
 The system page is where Beszel really shines. For servarr I had CPU, memory, and disk usage charts for the VM, and since the agent can see Docker, it breaks CPU and memory down by container too. Everything running on that VM showed up as its own colored band, and I could filter the charts by container name.
 
-![The Beszel system page for Servarr with CPU and memory charts next to per-container Docker CPU and memory usage](/docs-static/img/2026/10/beszel-home-server-monitoring/servarr-system-charts.jpg)
+![The Beszel system page for Servarr with CPU and memory charts next to per-container Docker CPU and memory usage](/docs-static/img/2026/12/beszel-home-server-monitoring/servarr-system-charts.jpg)
 
 That immediately paid off. qBittorrent was using quite a bit more memory than the rest, which is now on my list to look into. Getting that kind of breakdown without building a single dashboard is exactly what I was after.
 
@@ -296,7 +296,7 @@ This is what I set up for servarr in the video:
 
 I set memory higher than the others because there's ZFS on this machine, so I only want to hear about it when usage gets really high. Each threshold also has a duration in minutes, so a quick spike doesn't page you.
 
-![Beszel alert settings for Servarr with CPU usage set to 80% and memory usage set to 95%, each for 10 minutes](/docs-static/img/2026/10/beszel-home-server-monitoring/servarr-alert-thresholds.jpg)
+![Beszel alert settings for Servarr with CPU usage set to 80% and memory usage set to 95%, each for 10 minutes](/docs-static/img/2026/12/beszel-home-server-monitoring/servarr-alert-thresholds.jpg)
 
 Current releases offer a lot more alert types than I used: status (system down), disk, bandwidth, load average, CPU I/O wait and steal time, GPU, battery, network monitor packet loss, container health, and failed systemd services. The README also lists notifications on S.M.A.R.T. drive failures.
 
