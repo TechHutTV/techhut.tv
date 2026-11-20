@@ -18,9 +18,9 @@ Spoiler: it can. I put UniFi OS Server on a Raspberry Pi 5, adopted an access po
 
 Akiflow sponsored the video this article is based on.
 
-The written installation has been updated for [UniFi OS Server 5.1.42](https://community.ui.com/releases/UniFi-OS-Server-5-1-42/509f4de9-8fe4-4718-abad-1bb6990dedcc), released September 10, 2026. Since I recorded the video, Ubiquiti has raised the minimum Podman version, added automatic Let's Encrypt certificates, and added automatic migration from the legacy Network Server on Linux. The install flow is still the same download, `chmod`, and run. My hands-on impressions come from the recorded walkthrough.
+The install steps below are for [UniFi OS Server 5.1.42](https://community.ui.com/releases/UniFi-OS-Server-5-1-42/509f4de9-8fe4-4718-abad-1bb6990dedcc), released September 10, 2026. Since I recorded the video, Ubiquiti has raised the minimum Podman version, added automatic Let's Encrypt certificates, and added automatic migration from the legacy Network Server on Linux. The install flow is still the same download, `chmod`, and run. My hands-on impressions come from the recorded walkthrough.
 
-## What UniFi OS Server Actually Is
+## What UniFi OS Server is
 
 UniFi OS Server is Ubiquiti's current way to self-host UniFi. It replaces the older self-hosted **UniFi Network Server** (often called the UniFi Network Application or "controller"), which Ubiquiti's help center now labels as legacy.
 
@@ -65,7 +65,7 @@ There are also Windows and macOS installers. On Windows, the installer sets up W
 My setup is a Raspberry Pi 5 with 8 GB of RAM and a PoE HAT, so I can power it with a single Ethernet cable, which is really nice. It's running Ubuntu. I'm not going to cover flashing Ubuntu onto the Pi here. As of this writing, Canonical's [Raspberry Pi downloads](https://ubuntu.com/download/raspberry-pi) offer Ubuntu 26.04.1 LTS for the Pi 5 as a 64-bit ARM image. Ubuntu 24.04 also meets Ubiquiti's minimum.
 
 <Note>
-**About ARM64:** Ubiquiti's hardware requirements still list an x86-64 processor. However, the official download page has a Linux ARM64 build for every release, including 5.1.42, and an ARM64 build is what I installed on the Pi in the video. It worked well for me, but x86-64 is the platform Ubiquiti's requirements actually describe. Use a 64-bit OS either way; there's no 32-bit build.
+**About ARM64:** Ubiquiti's hardware requirements still list an x86-64 processor. However, the official download page has a Linux ARM64 build for every release, including 5.1.42, and an ARM64 build is what I installed on the Pi in the video. It worked well for me, but x86-64 is the platform Ubiquiti's requirements describe. Use a 64-bit OS either way; there's no 32-bit build.
 </Note>
 
 ## Installing UniFi OS Server on Linux
@@ -189,7 +189,7 @@ sudo ufw allow 10001/udp
 sudo ufw allow 3478/udp
 ```
 
-Only open the optional ports for features you actually use. Also, don't port-forward the admin interface to the internet. For remote access, Site Manager or a VPN is the much safer route.
+Only open the optional ports for features you use. Also, don't port-forward the admin interface to the internet. For remote access, Site Manager or a VPN is the much safer route.
 
 ## Adopting Devices
 
@@ -197,7 +197,7 @@ With the server running, the UniFi Devices page was empty, so it was time to plu
 
 ### The Facebook Marketplace Fail
 
-I really wanted to adopt that little outdoor switch. I'd never actually tested it, and when I connected it with PoE in, it was an absolute catastrophe. It wasn't working. That's the risk with used gear: sometimes the risk-to-reward ratio isn't there. Hopefully there's something I can do with it, but it was not going to be in this video.
+I really wanted to adopt that little outdoor switch. I'd never tested it, and when I connected it with PoE in, it was an absolute catastrophe. It wasn't working. That's the risk with used gear: sometimes the risk-to-reward ratio isn't there. Hopefully there's something I can do with it, but it was not going to be in this video.
 
 ### Adopting an Access Point
 
@@ -246,9 +246,9 @@ There's one VM-specific gotcha from Ubiquiti: don't clone a UniFi OS Server VM u
 
 ## Final Thoughts
 
-I'm really happy Ubiquiti is doing this. It makes UniFi much more accessible to people who want to self-host, especially if you can find cheap UniFi gear that actually works. The whole process was basically: install Podman, download one file, run it, and adopt an access point. It ran great on a Raspberry Pi 5.
+I'm really happy Ubiquiti is doing this. It makes UniFi much more accessible to people who want to self-host, especially if you can find cheap UniFi gear that works. The whole process was basically: install Podman, download one file, run it, and adopt an access point. It ran great on a Raspberry Pi 5.
 
-There are some limits. Self-hosting covers the Network side, not Protect or Talk. You need a UXG gateway rather than a Cloud Gateway if you want UniFi routing, and ARM64 doesn't appear in Ubiquiti's written requirements yet. Even so, if you already have a homelab and some marketplace UniFi gear, this is a really easy way to manage it all without buying another console. Just maybe test that outdoor switch before you pay for it. With all that, I do hope you found this useful. Have a great one.
+There are some limits. Self-hosting covers the Network side, not Protect or Talk. You need a UXG gateway rather than a Cloud Gateway if you want UniFi routing, and ARM64 doesn't appear in Ubiquiti's written requirements yet. Even so, if you already have a homelab and some marketplace UniFi gear, this is a really easy way to manage it all without buying another console. Just maybe test that outdoor switch before you pay for it. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
