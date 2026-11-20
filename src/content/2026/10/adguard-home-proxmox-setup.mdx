@@ -10,11 +10,11 @@ import {YouTube} from "@/components/YouTube"
 
 <YouTube videoId="YqaDnnREqI8" title="TechHut's AdGuard Home on Proxmox walkthrough" />
 
-Nobody likes ads, and I'm not talking about a browser extension here. In the video I actually had my browser ad blocker paused, because the blocking was already happening one level down. [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome) is a DNS server you run yourself. Devices on your network ask it to look up domain names, and when a domain is associated with ads or tracking, it simply doesn't give back a real answer.
+In the video I had my browser ad blocker paused, because the blocking was already happening one level down. [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome) is a DNS server you run yourself. Devices on your network ask it to look up domain names, and when a domain is on an ad or tracking list, it doesn't give back a real answer.
 
-The other big name here is [Pi-hole](https://pi-hole.net/), and I've done a [separate Proxmox video on that one](https://www.youtube.com/watch?v=xtMFcVx3cHU) too. They're both great, they both work well, and they're both open source. For this one, though, we're setting up AdGuard Home in a Proxmox LXC container, and with a helper script that part takes just a few minutes.
+The other big name here is [Pi-hole](https://pi-hole.net/), and I've done a [separate Proxmox video on that one](https://www.youtube.com/watch?v=xtMFcVx3cHU) too. Both are open source, and both work well. For this one, we're setting up AdGuard Home in a Proxmox LXC container, and with a helper script that part takes just a few minutes.
 
-To give you an idea of how much traffic this sees: I'd set up my instance the day before recording, and it had already handled about 34,000 DNS queries, roughly 2,800 of which it blocked. That's every device on my home network, not just my computer.
+I'd set up my instance the day before recording, and it had already handled about 34,000 DNS queries, roughly 2,800 of which it blocked. That's every device on my home network.
 
 <Note>
 I recorded the video in May 2024 using tteck's Proxmox VE Helper Scripts, which created a Debian 12 container. Those scripts are now maintained as the [community-scripts project](https://github.com/community-scripts/ProxmoxVE), and the written steps below have been updated for the current script (Debian 13 or Alpine) and for [AdGuard Home v0.107.79](https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.107.79), released August 18, 2026. I've also added the official installer and Docker so you aren't dependent on a third-party script. My hands-on impressions come from the recorded walkthrough.
@@ -30,7 +30,7 @@ It does have a limit, and the AdGuard team is upfront about it in the [README](h
 
 ## AdGuard Home vs Pi-hole
 
-Both are solid choices, and I'm not going to tell you one is wrong. Here's where they differ today:
+Both are solid choices. They differ in a few practical places:
 
 | | AdGuard Home | Pi-hole |
 |---|---|---|
@@ -54,7 +54,7 @@ These are AdGuard Home's defaults, confirmed against the [current source](https:
 |---|---|---|
 | `3000` | TCP | The first-run setup wizard |
 | `80` | TCP | The admin dashboard after setup (the wizard's default) |
-| `53` | TCP/UDP | Plain DNS, the port your devices actually use |
+| `53` | TCP/UDP | Plain DNS, the port your devices use |
 | `443` | TCP/UDP | HTTPS dashboard and DNS-over-HTTPS, once encryption is configured |
 | `853` | TCP | DNS-over-TLS |
 | `853` | UDP | DNS-over-QUIC |
@@ -66,13 +66,13 @@ The one that trips people up is `3000`. It's only for the setup wizard. Once you
 
 If you don't have Proxmox yet, my [Proxmox install video](https://www.youtube.com/watch?v=LuCXHHc2u18) covers it, and installing it is about as involved as installing any other Linux distribution. If you're still deciding on a server in the first place, [here's why I think everyone should have one](/5-reasons-build-home-server).
 
-The [Proxmox VE Helper Scripts](https://community-scripts.org/) make spinning up services on Proxmox really easy. I already used them for Home Assistant OS, Plex, and Emby on my own server. They're organized by category, and AdGuard Home is under **Adblock & DNS**, next to Pi-hole and a few others.
+The [Proxmox VE Helper Scripts](https://community-scripts.org/) make spinning up services on Proxmox pretty simple. I already used them for Home Assistant OS, Plex, and Emby on my own server. They're organized by category, and AdGuard Home is under **Adblock & DNS**, next to Pi-hole and a few others.
 
 When I made the video, these were tteck's scripts. The project has since become [community-scripts/ProxmoxVE](https://github.com/community-scripts/ProxmoxVE), an MIT-licensed community project built on tteck's original work. It's not maintained by AdGuard, so the same advice I gave in the video applies: any time you run an automated script as root, know what it's going to do. Every script is on GitHub, and it's worth a quick look before you paste anything.
 
-### What the Script Actually Installs
+### What the script installs
 
-I read through the current [`ct/adguard.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/ct/adguard.sh) and [`install/adguard-install.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/install/adguard-install.sh). Here's what they do:
+I read through the current [`ct/adguard.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/ct/adguard.sh) and [`install/adguard-install.sh`](https://github.com/community-scripts/ProxmoxVE/blob/main/install/adguard-install.sh). They do this:
 
 - Creates an **unprivileged LXC** with your choice of **Debian 13** or **Alpine 3.24**. The video used Debian 12, which was current at the time.
 - Updates the container's packages.
@@ -148,7 +148,7 @@ The script also takes `-u` to uninstall and `-r` to reinstall. The [getting star
 
 ## Option 3: Docker
 
-If you already have a Docker host, the official image is `adguard/adguardhome`. Here's a Compose file pinned to the current release:
+If you already have a Docker host, the official image is `adguard/adguardhome`. This Compose file is pinned to the current release:
 
 ```yaml
 services:
@@ -188,7 +188,7 @@ After that, the dashboard lives at `http://YOUR_SERVER_IP/`, or whatever port yo
 
 ## A Tour of the Dashboard
 
-The dashboard gives you a lot of information at a glance:
+The dashboard is where I look first:
 
 - **General statistics:** total queries, how many were blocked by filters, and blocked malware/phishing and adult sites if you turn those services on.
 - **Top clients:** which IP addresses on your network are making the most requests. On a network-wide setup, there are a lot of them.
@@ -205,7 +205,7 @@ AdGuard Home doesn't answer everything itself. Anything it doesn't block gets fo
 
 ![Top queried and blocked domains plus upstream stats on my main instance, where Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1](/docs-static/img/2026/10/adguard-home-proxmox-setup/top-domains-and-upstreams.jpg)
 
-On my main instance, the default upstream's average response time was significantly higher than Cloudflare's, so in the video I switched to Cloudflare. Go to **Settings > DNS settings > Upstream DNS servers** and add the servers you want, one per line. You can use whatever provider you prefer. The [known DNS providers list](https://adguard-dns.io/kb/general/dns-providers/) has the exact addresses. These are the encrypted versions for Cloudflare:
+On my main instance, Quad9's DoH upstream averaged 347 ms against 33 ms for 1.1.1.1, so in the video I switched to Cloudflare. Go to **Settings > DNS settings > Upstream DNS servers** and add the servers you want, one per line. You can use whatever provider you prefer. The [known DNS providers list](https://adguard-dns.io/kb/general/dns-providers/) has the exact addresses. These are the encrypted versions for Cloudflare:
 
 ```text
 https://cloudflare-dns.com/dns-query
@@ -224,7 +224,7 @@ Hit **Test upstreams** to make sure they respond, then **Apply**. The same page 
 
 ## The Rest of the Settings
 
-There's a lot here, and I'd recommend clicking through it and reading the [configuration docs](https://adguard-dns.io/kb/adguard-home/configuration/). The highlights:
+There's a lot here, and I do recommend clicking through it and reading the [configuration docs](https://adguard-dns.io/kb/adguard-home/configuration/). The highlights:
 
 - **General settings:** toggles for AdGuard's browsing security web service, its parental control web service, and **Use Safe Search**, plus how long to keep statistics and query logs.
 - **Filters:** your DNS blocklists and allowlists, **Blocked services** for one-click blocking of specific platforms, **DNS rewrites** for local names, and **Custom filtering rules**.
@@ -271,11 +271,11 @@ If you deliberately run a public instance for your own devices, AdGuard's [secur
 
 ## Final Thoughts
 
-AdGuard Home barely uses any resources. My container sat at around 35 MB of RAM, so on Proxmox it fits perfectly in a tiny unprivileged container. And once it's set on the router, every device on the network gets filtered without installing anything on them, with a dashboard that shows exactly what's being blocked and who's asking for it.
+AdGuard Home barely uses any resources. My container sat at around 35 MB of RAM, so on Proxmox it fits in a tiny unprivileged container. Once it's set on the router, every device on the network gets filtered without installing anything on them, and the dashboard shows what's being blocked and who's asking for it.
 
-The helper script made the install painfully easy, and I'd still recommend those scripts if you run Proxmox. They save a lot of time on manual installs. Just give the script a quick read first, like any script you run as root, and know that the official installer or Docker image gets you the exact same AdGuard Home if you'd rather skip it.
+The helper script made the install pretty simple, and I do recommend those scripts if you run Proxmox. They save a lot of time compared with a manual install. Give the script a quick read first, like any script you run as root. The official installer and the Docker image get you the same AdGuard Home if you'd rather skip the script.
 
-If you're already happy on Pi-hole, there's no urgent reason to switch; both are great. If you're starting fresh, or you want encrypted upstreams and per-client controls without adding more pieces, AdGuard Home is a really nice place to start. With all that, I do hope you found this useful. Have a great one.
+If you're already happy on Pi-hole, I wouldn't switch just to switch. If you're starting fresh, or you want encrypted upstreams and per-client controls without adding more pieces, AdGuard Home is a nice place to start. With all that, I do hope you found this useful. Have a great one.
 
 ## Official References
 
