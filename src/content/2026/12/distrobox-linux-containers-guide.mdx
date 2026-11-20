@@ -1,10 +1,10 @@
 export const title = "Distrobox: Run Any Linux Distro's Apps on Your Current Distro"
 export const description = "Use Distrobox and rootless Podman to run Arch, Debian, Fedora, Ubuntu, and other distros as integrated containers, install AUR and GUI apps, and export them to your desktop."
-export const date = "2026-10-11"
+export const date = "2026-12-29"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Distros", "Podman", "Arch"]
-export const cover = "/docs-static/img/2026/10/distrobox-linux-containers-guide/cover.jpg"
+export const cover = "/docs-static/img/2026/12/distrobox-linux-containers-guide/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -196,7 +196,7 @@ pamac-manager
 
 This is one of the most mind-blowing parts of Distrobox. Because this is a container, not a VM, the Pamac window just opens on my desktop like it's running on the host. No remote display, no VM window, no weird scaling.
 
-![The Pamac software manager from the Arch container open as a normal window on the Fedora GNOME desktop](/docs-static/img/2026/10/distrobox-linux-containers-guide/pamac-from-arch-container.jpg)
+![The Pamac software manager from the Arch container open as a normal window on the Fedora GNOME desktop](/docs-static/img/2026/12/distrobox-linux-containers-guide/pamac-from-arch-container.jpg)
 
 ## Your Home Folder Is Shared
 
@@ -209,11 +209,11 @@ pcmanfm
 
 When you browse your home folder, it looks just like your normal system, because it is. But when you go into the root filesystem, say `/bin`, you're looking at the Arch container's files instead. If you need the host's root filesystem from inside the container, Distrobox makes it available under `/run/host`.
 
-![PCManFM running in the aur container and showing the Arch container's /bin directory](/docs-static/img/2026/10/distrobox-linux-containers-guide/pcmanfm-container-bin.jpg)
+![PCManFM running in the aur container and showing the Arch container's /bin directory](/docs-static/img/2026/12/distrobox-linux-containers-guide/pcmanfm-container-bin.jpg)
 
 It also shares your dconf settings, which is where desktops like GNOME store a lot of their configuration. When I switched my GTK theme on the host to a dark variant, the app in the container switched with it.
 
-![PCManFM from the Arch container browsing the shared /home/brandon folder with the host's dark GTK theme applied](/docs-static/img/2026/10/distrobox-linux-containers-guide/pcmanfm-home-dark-theme.jpg)
+![PCManFM from the Arch container browsing the shared /home/brandon folder with the host's dark GTK theme applied](/docs-static/img/2026/12/distrobox-linux-containers-guide/pcmanfm-home-dark-theme.jpg)
 
 One gotcha: for a GTK theme to carry over, the theme has to live in your home folder, like `~/.themes` or `~/.local/share/themes`. A theme installed system-wide in `/usr/share/themes` on the host, or from a host package, isn't visible to the container.
 
@@ -229,7 +229,7 @@ distrobox-export --app pamac-manager
 
 Now Pamac shows up in the app launcher with the rest of my apps, and clicking it starts it from the Arch container. Under the hood, the [export docs](https://distrobox.it/usage/distrobox-export/) say it copies the app's `.desktop` file and icons into your home folder and adds the `distrobox-enter` command needed to launch it. The `--app` value can be the executable name, part of the launcher name, or the absolute path to a `.desktop` file.
 
-![The GNOME app grid with the Aur container launcher and the exported Add/Remove Software (on aur) entry for Pamac](/docs-static/img/2026/10/distrobox-linux-containers-guide/exported-app-launcher.jpg)
+![The GNOME app grid with the Aur container launcher and the exported Add/Remove Software (on aur) entry for Pamac](/docs-static/img/2026/12/distrobox-linux-containers-guide/exported-app-launcher.jpg)
 
 CLI tools work too. `--bin` creates a small wrapper script on the host, in `~/.local/bin` by default:
 
