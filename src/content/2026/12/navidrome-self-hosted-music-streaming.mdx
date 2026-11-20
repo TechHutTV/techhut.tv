@@ -1,10 +1,10 @@
 export const title = "Ditch Spotify: Self-Host Your Music Streaming with Navidrome"
 export const description = "Set up Navidrome with Docker Compose on an Ubuntu server, load in the music you already own, fix tags and permissions, and stream your library to your phone with a Subsonic client like Substreamer."
-export const date = "2026-10-17"
+export const date = "2026-12-02"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux"]
-export const cover = "/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/cover.jpg"
+export const cover = "/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -33,7 +33,7 @@ It's GPL-3.0 licensed and [developed on GitHub](https://github.com/navidrome/nav
 
 If you want a feel for it before installing anything, there's a [public demo](https://www.navidrome.org/demo/) at `demo.navidrome.org` (user `demo`, password `demo`). This was one of my favorite things on their site. It has a loaded library, so you can see what a full collection looks like: titles, quality, ratings, playlists, downloads, and album info. Everything is sleek and modern, and it honestly looks shockingly similar to Spotify.
 
-![An album page in the Navidrome demo with star ratings, track quality badges, and the Play Next, Add to Playlist, and Download buttons, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/demo-album-page.jpg)
+![An album page in the Navidrome demo with star ratings, track quality badges, and the Play Next, Add to Playlist, and Download buttons, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/demo-album-page.jpg)
 
 ## What You Need
 
@@ -180,7 +180,7 @@ In the video I used `docker container ls -a`, which works too. Navidrome's [gett
 
 Now open `http://your-server-ip:4533` in a browser. On first launch, Navidrome asks you to create an admin user. I named mine brandon and gave it a decent password. Do this right away, because whoever reaches the page first gets to be the admin.
 
-![The Navidrome first-launch screen asking to create an admin user with a username and password, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/create-admin-user.jpg)
+![The Navidrome first-launch screen asking to create an admin user with a username and password, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/create-admin-user.jpg)
 
 ## Ports, Firewalls, and HTTPS
 
@@ -205,7 +205,7 @@ A fresh instance has no albums, so there's not much to do yet. I moved my ripped
 
 This is where I ran into permission problems. I uploaded a lot of the files as root, so new album folders were owned by root, and I had to go back and fix the permissions afterward. In FileZilla, I selected everything, opened **File permissions**, and set it all to `755`. After that it worked fine.
 
-![FileZilla's Change file attributes dialog set to 755 for the album folders in the remote music directory, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/filezilla-file-permissions.jpg)
+![FileZilla's Change file attributes dialog set to 755 for the album folders in the remote music directory, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/filezilla-file-permissions.jpg)
 
 The easier route is to upload as your regular user from the start, so the files are owned by the same UID that Navidrome runs as. If you already have root-owned files, fix them from the terminal:
 
@@ -222,7 +222,7 @@ New files get picked up automatically. The file watcher triggers a scan a few se
 
 After an hour or two of playing around, I had some music in there: Tom Petty's Wildflowers, some Tim McGraw, Kanye West, and Metallica. I was slowly learning that getting it to look as good as I wanted would take some work. Some albums were missing their art, and the albums and artists lists were full of featured artists. I really only had four artists, but it was pulling in every feature as its own entry. Some of the Tom Petty albums also needed to be credited to Tom Petty and the Heartbreakers to group properly.
 
-![The Navidrome Artists list cluttered with featured artists like Jay-Z & Kanye West and Big Sean as separate entries, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/artists-list-features.jpg)
+![The Navidrome Artists list cluttered with featured artists like Jay-Z & Kanye West and Big Sean as separate entries, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/artists-list-features.jpg)
 
 At the time I blamed my naming schemes and figured I had to clean up the folder names. Navidrome's [tagging guidelines](https://www.navidrome.org/docs/usage/library/tagging/) explain what's going on: it organizes your library **entirely** from the metadata tags in your files. Folder names don't matter. So the fixes are:
 
@@ -234,7 +234,7 @@ I also noticed there was no way to edit any of this inside Navidrome, and that's
 
 Once things are tagged correctly, it all clicks. When I opened Tim McGraw, all of his albums were there and loaded completely fine, and everything sounded and played great.
 
-![Tim McGraw's discography in Navidrome with cover art showing for every album, as shown in the video](/docs-static/img/2026/10/navidrome-self-hosted-music-streaming/tim-mcgraw-albums.jpg)
+![Tim McGraw's discography in Navidrome with cover art showing for every album, as shown in the video](/docs-static/img/2026/12/navidrome-self-hosted-music-streaming/tim-mcgraw-albums.jpg)
 
 ## Streaming from Your Phone
 
