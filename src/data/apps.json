@@ -2084,7 +2084,9 @@
     "name": "RustDesk",
     "category": "Desktop",
     "description": "Connect to remote desktops using a client and self-hosted relay server.",
-    "coverage": [],
+    "coverage": [
+      "/rustdesk-self-hosted-remote-desktop"
+    ],
     "videos": [
       {
         "id": "utSOC6BFd3A",

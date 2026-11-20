@@ -1,0 +1,301 @@
+export const title = "RustDesk: Self-Host Your Own TeamViewer and AnyDesk Alternative"
+export const description = "Run your own RustDesk ID and relay server with Docker Compose or a Proxmox helper script, connect Linux and Windows clients with your server key, and lock down unattended access."
+export const date = "2026-12-21"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Self-Host", "Homelab", "Docker", "Proxmox", "Linux", "Windows"]
+export const cover = "/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="utSOC6BFd3A" title="TechHut's RustDesk walkthrough" />
+
+If you're looking for something to replace TeamViewer or AnyDesk, [RustDesk](https://rustdesk.com/) is the option I'd start with. It works the same way: punch in a device's ID and password, and you're controlling that desktop as if you were sitting in front of it.
+
+For my machines, I already have access to virtual machines through the VNC console built into Proxmox. That works, but I don't want to dig through the Proxmox web UI every time. I want a native client that opens straight into the desktop. Out of the box, RustDesk clients use the project's public servers to find each other. We're setting up our own ID and relay server instead, so connections between machines in my house don't depend on someone else's infrastructure.
+
+It also fits nicely with the rest of my network. I have a NetBird routing peer at home, so as long as my NetBird client is connected, this setup works from just about anywhere.
+
+<Note>
+The install steps below are for [RustDesk Server 1.1.16](https://github.com/rustdesk/rustdesk-server/releases/tag/1.1.16), released July 20, 2026, and [RustDesk client 1.5.3](https://github.com/rustdesk/rustdesk/releases/tag/1.5.3), released November 9, 2026. 1.5.3 is a client fix release. The server install below stays on 1.1.16, which is still the current server release. Server 1.1.16 includes a security fix for UDP reflection and amplification abuse. In the video I used the Proxmox community helper script, which at the time installed a community fork of the server. The script now pulls the official build, but I've made upstream's Docker method the primary install here and kept my helper-script path as the second option. My hands-on impressions come from the recorded walkthrough.
+</Note>
+
+## What you're self-hosting
+
+The open-source RustDesk server is two programs, and it helps to know which does what before you open any ports. The [self-hosting overview](https://rustdesk.com/docs/en/self-host/) describes them like this:
+
+- **hbbs** is the ID, rendezvous, and signaling server. Every running client checks in with it so others can find its current address. When you connect from computer A to computer B, hbbs tries to get the two talking to each other directly with NAT hole punching.
+- **hbbr** is the relay server. If hole punching fails, the session traffic goes through hbbr instead.
+
+According to the docs, hole punching works most of the time, so the relay often isn't used at all. When it is, though, all of your screen and input data goes through it. That's the main reason I like having my own relay. If hole punching fails between two machines in the same building, I don't want that session going out to someone else's server and back.
+
+![RustDesk's diagram of the hbbs signaling server and hbbr relay server, showing a direct hole-punched connection and the relay fallback](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/hbbs-hbbr-diagram.jpg)
+
+These are the ports involved:
+
+| Port | Service | Used for | Needed for the free server? |
+|---|---|---|---|
+| TCP 21114 | hbbs | HTTP API and web console | No, Pro only |
+| TCP 21115 | hbbs | NAT type test | Yes |
+| TCP 21116 | hbbs | Hole punching and connections | Yes |
+| UDP 21116 | hbbs | ID registration and heartbeat | Yes |
+| TCP 21117 | hbbr | Relay | Yes |
+| TCP 21118 | hbbs | WebSocket (web client) | Only for the web client |
+| TCP 21119 | hbbr | WebSocket (web client) | Only for the web client |
+
+The docs list TCP 21115 to 21117 plus UDP 21116 as the minimum. Many examples open the full 21114 to 21119 range, but you don't need 21114 for the open-source server or 21118 and 21119 if you aren't using the web client. RustDesk warns that hbbs and hbbr trust forwarded-IP headers on those WebSocket ports, so keep them closed unless you're putting a reverse proxy in front of them.
+
+Hardware requirements are tiny. The [installation docs](https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/install/) say a basic cloud server or a Raspberry Pi is enough. Relay traffic ranges from about 30 KB/s to 3 MB/s depending on resolution and how much changes on screen.
+
+## Free vs. Pro
+
+On the [pricing page](https://rustdesk.com/pricing/), the self-hosted **Free** plan is $0 a month. That's what we're setting up: the open-source hbbs and hbbr with community support. The Pro plans start at $11.88 a month, billed annually, and add things like a web console, address book, audit log, 2FA, access control, and centralized settings. Higher tiers add OIDC, LDAP, and the custom client generator.
+
+You'd go Pro for business features, a proper web UI for managing devices, or simply to support the project. For a homelab, the free server does what I need. The [client](https://github.com/rustdesk/rustdesk/blob/master/LICENCE) and the [open-source server](https://github.com/rustdesk/rustdesk-server/blob/master/LICENSE) are both licensed under AGPL-3.0.
+
+## Pick an Install Path
+
+RustDesk's docs list three ways to install the open-source server: Docker, which they recommend; a third-party install script that sets up systemd services; and Debian packages. I'm covering two:
+
+1. **Docker Compose**, upstream's recommended method. It runs the official images, and updating is just a tag change. Use this for anything new, and especially for a server reachable from the internet.
+2. **The Proxmox community helper script**, which is what I used in the video. It's quick to set up in an LXC container. It now installs the official server, with an optional third-party web admin panel. I'll explain that in its section.
+
+Either way, you'll end up with the same thing to give your clients: an address and a public key.
+
+## Option 1: Docker Compose (Recommended)
+
+You need a Linux host with Docker and the Compose plugin. A Proxmox VM works well for this. Upstream's compose file uses host networking, which only works on Linux. It lets hbbs see clients' real IP addresses instead of the container's.
+
+Create a project directory:
+
+```bash
+sudo mkdir -p /srv/rustdesk-server
+cd /srv/rustdesk-server
+```
+
+Create `compose.yml`. This is the [official compose file](https://rustdesk.com/docs/en/self-host/rustdesk-server-oss/docker/) with the image pinned to `1.1.16` instead of `latest`:
+
+```yaml
+services:
+  hbbs:
+    container_name: hbbs
+    image: rustdesk/rustdesk-server:1.1.16
+    command: hbbs
+    volumes:
+      - ./data:/root
+    network_mode: "host"
+    depends_on:
+      - hbbr
+    restart: unless-stopped
+
+  hbbr:
+    container_name: hbbr
+    image: rustdesk/rustdesk-server:1.1.16
+    command: hbbr
+    volumes:
+      - ./data:/root
+    network_mode: "host"
+    restart: unless-stopped
+```
+
+Both containers share `./data`, which is how they use the same key pair. Start the stack and confirm both containers are up:
+
+```bash
+sudo docker compose up -d
+sudo docker compose ps
+```
+
+### Grab the Public Key
+
+On first start, hbbs generates a key pair in its working directory. In this setup, that's `./data` on the host, mounted at `/root` in the container:
+
+- `id_ed25519` is the **private** key. Keep it private and back it up.
+- `id_ed25519.pub` is the **public** key you paste into every client.
+
+The `.pub` file doesn't end with a newline, so add an `echo` to keep your prompt from running into the key:
+
+```bash
+sudo cat /srv/rustdesk-server/data/id_ed25519.pub; echo
+```
+
+hbbs also logs the key when it starts, so `sudo docker compose logs hbbs | grep Key` works too. The official image doesn't include a shell, so read the file from the host rather than trying to `docker exec` into the container.
+
+### Open the Firewall
+
+With host networking, normal host firewall rules apply directly. I'd only open these ports to your LAN. With UFW, replace the example subnet with your own:
+
+```bash
+sudo ufw allow from 192.168.1.0/24 to any port 21115:21117 proto tcp
+sudo ufw allow from 192.168.1.0/24 to any port 21116 proto udp
+```
+
+On firewalld:
+
+```bash
+sudo firewall-cmd --permanent --add-port=21115-21117/tcp
+sudo firewall-cmd --permanent --add-port=21116/udp
+sudo firewall-cmd --reload
+```
+
+Those firewalld rules apply to your default zone. If you want to limit them to a subnet, use a rich rule or a dedicated zone.
+
+### Updating
+
+Check the [release notes](https://github.com/rustdesk/rustdesk-server/releases), change the tag on both services, then pull and recreate:
+
+```bash
+cd /srv/rustdesk-server
+sudo docker compose pull
+sudo docker compose up -d
+```
+
+The key pair stays in `./data` between updates, so clients don't need to be reconfigured.
+
+## Option 2: The Proxmox Helper Script (What I Used)
+
+In the video, I used the [community-scripts RustDesk Server script](https://community-scripts.org/scripts/rustdeskserver). It creates an LXC container and installs everything as systemd services. That's handy if you already have a Proxmox node and don't want to bother with Docker. It's similar to RustDesk's own systemd install option.
+
+<Note>
+When I recorded the video, the script installed the [lejianwen/rustdesk-server](https://github.com/lejianwen/rustdesk-server) fork plus [lejianwen/rustdesk-api](https://github.com/lejianwen/rustdesk-api), a third-party web admin and API on port 21114. The fork stopped getting releases after September 2025, so it never picked up upstream 1.1.15 or 1.1.16, including the July 2026 fix for UDP reflection and amplification abuse. In October 2026 the script [switched to the official `rustdesk/rustdesk-server` releases](https://github.com/community-scripts/ProxmoxVE/commit/192834716e) and made the web panel an opt-in prompt. If you set up a container with the old script, check which build you're running, or rebuild it.
+</Note>
+
+### Run the Script
+
+Open the shell on your Proxmox **node**, not inside a container, and run:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/rustdeskserver.sh)"
+```
+
+Since the video, the script has started by asking whether you want Debian 13 or Alpine. Pick **Debian**; the paths and service names below are for that version.
+
+I went into the advanced settings to give it a bit more room than the defaults:
+
+| Setting | Script default | What I used |
+|---|---|---|
+| Container type | Unprivileged | Unprivileged |
+| Root password | Not set | Set one |
+| Hostname | `rustdesk-server` | `rustdesk-server` |
+| Disk | 2 GB | 4 GB |
+| CPU cores | 1 | 2 |
+| RAM | 512 MB | 1 GB |
+| Network bridge | `vmbr0` | `vmbr0` |
+
+I kept the remaining options at their defaults and let the container build. The defaults are probably enough, given RustDesk's own hardware guidance, but I gave it a little more room anyway.
+
+![The Proxmox helper script's settings summary for the RustDesk LXC with a 4 GB disk, 2 CPU cores, and 1024 MiB of RAM](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/helper-script-advanced-settings.jpg)
+
+The install now asks whether you want to add the RustDesk API web UI. It defaults to **No**, and the prompt itself notes the project has been unmaintained since September 2025. The RustDesk clients don't need it, so I'd skip it. When the script finishes, it also prints a `:21114/_admin/` URL, which only matters if you said yes. The server address and public key are saved to `~/rustdesk.creds` inside the container.
+
+### Check the Services and Read the Key
+
+Open the new container's console, log in as root, and check that both services are running:
+
+```bash
+systemctl status rustdesk-hbbs rustdesk-hbbr
+```
+
+The Debian packages use `/var/lib/rustdesk-server` as the working directory, so that's where the SQLite database and key pair end up:
+
+```bash
+ls /var/lib/rustdesk-server
+cat /var/lib/rustdesk-server/id_ed25519.pub; echo
+```
+
+That's the same `id_ed25519.pub` as the Docker install, just in a different location. The `echo` puts the key on its own line so it's easier to copy.
+
+### About the Web Admin on Port 21114
+
+I didn't use the rustdesk-api panel in the video. If you opted into it, the script now sets a random 16-character password for the `admin` user and saves it in `~/rustdesk.creds`. You can change it with:
+
+```bash
+cd /var/lib/rustdesk-api
+rustdesk-api reset-admin-pwd 'REPLACE_WITH_A_STRONG_PASSWORD'
+```
+
+On a container built with the older script, the panel was installed and started automatically. If you aren't going to use it, stop it:
+
+```bash
+systemctl disable --now rustdesk-api
+```
+
+The panel's README lists forced login (`MUST_LOGIN`) as off by default, and the clients in this guide never get an API Server address, so the ID and relay services don't rely on the panel. Either way, don't expose port 21114 beyond your LAN. The community-scripts [configuration discussion](https://github.com/community-scripts/ProxmoxVE/discussions/2388) covers the panel and its quirks if you do want to use it.
+
+### Updating
+
+Community-scripts containers come with an `update` command that you run from the container's console. Back up the container first. Since the server now comes from the official releases, you can also compare `dpkg -l | grep rustdesk` against the [latest release](https://github.com/rustdesk/rustdesk-server/releases) to confirm you're current.
+
+## Point the Clients at Your Server
+
+Now for the client side. Download RustDesk from the [official releases](https://github.com/rustdesk/rustdesk/releases) for each machine. It's cross-platform in the real sense: Windows, macOS, Linux packages including Flatpak and AppImage, Android, iOS, and a web client. iOS can control other devices but can't be controlled itself.
+
+A fresh client says something like "Ready, for faster connection, please set up your own server" at the bottom. That's the notice we're getting rid of. Open **Settings > Network**, click **Unlock Network Settings**, and open **ID/Relay Server**. The [client configuration docs](https://rustdesk.com/docs/en/self-host/client-configuration/) explain the fields:
+
+| Field | What to enter | Required? |
+|---|---|---|
+| ID Server | The server's LAN IP or hostname, for example `192.168.1.50`. You can add `:21116`, but it's optional. | Yes |
+| Relay Server | Leave blank. The client uses the same host on port 21117. Fill it in only if hbbr is on a different host. | No |
+| API Server | Leave blank. This is for RustDesk Server Pro. | No |
+| Key | The contents of `id_ed25519.pub` from your server | Yes |
+
+This `Key` is the server's public key, not a Pro license key. In the video, I entered only the ID Server and Key fields, using the LAN IP of the container I'd just created. After clicking OK, the client said it was successful. Back on the home screen, the status just said **Ready**, without the public-server notice.
+
+![The ID/Relay server dialog in RustDesk's Network settings with the ID server set to the container's LAN IP](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/id-relay-server-settings.jpg)
+
+I set up my Fedora desktop first, then installed the Windows client on a Windows VM in Proxmox and entered the same settings there. Typing the key by hand inside a VM console isn't much fun, and I copied it over to double-check. The client also has **Export Server Config** and **Import Server Config** buttons in the same Network settings, which lets you copy the configuration from one client to another instead of typing it.
+
+## Making the First Connection
+
+On the Windows client, the **Discover** tab picked up my Fedora desktop on its own. It also showed my Mac as unavailable because it was offline. Discovery didn't work the other way, though: my Linux client didn't see the Windows machine. I'm not sure if that's a Linux client issue, but it didn't really matter. I typed the Windows machine's ID into the connection box and clicked **Connect**.
+
+From there, you can authenticate in two ways. The Windows machine popped up a prompt where someone on that side could accept the connection, including an option to accept and elevate. Since I was controlling it remotely, I used the **one-time password** shown on the Windows client's home screen instead. That worked, and I had control right away.
+
+It felt pretty snappy for Windows, though Windows is never going to feel as snappy as I'd like. The session toolbar has more options than I covered:
+
+- **Control actions** for file transfer, viewing the remote camera, and more.
+- **Display settings** for scaling. I set it to **Scale adaptive** so the remote desktop fills the window. **Scale custom** lets you set the size yourself.
+- **Image quality**. Since I was on the same network, I switched to **Good** for a sharper picture.
+- **Codec**, if you want to change it.
+- **Recording**, which is a nice one to have.
+
+## Set a Permanent Password
+
+The one-time password works for a quick session, but it changes. If the machine reboots or you're not in front of it to read the new password, you can lose access. For machines you manage, set a permanent password on the machine you want to control.
+
+I closed the session and returned to the Windows VM through Proxmox. In RustDesk, I went to **Settings > Security**, clicked **Unlock Security Settings**, and used **Set permanent password**. My first password was weaker than I wanted, so I made it stronger before clicking OK. After that, I could connect with that password even after a reboot.
+
+![The Set password dialog under Security in the RustDesk client on the Windows VM, with its digit, uppercase, lowercase, and length checks](/docs-static/img/2026/12/rustdesk-self-hosted-remote-desktop/set-permanent-password.jpg)
+
+The same section has password modes for one-time only, permanent only, or both. A permanent password is effectively unattended access to that machine, so make it long and unique and keep it in a password manager.
+
+## Locking It Down
+
+A few things are worth doing beyond what I showed in the video.
+
+**Always set the Key on every client.** It's the server's public key, used to establish an encrypted connection to your server. Since server 1.1.11, `hbbs` uses its generated key by default and requires clients to have the matching key. Older guides added `-k _` to do this, and the [1.1.11-1 release notes](https://github.com/rustdesk/rustdesk-server/releases/tag/1.1.11-1) say the default changed so you no longer need it. Running `hbbs -k ""` would turn that check off, so don't. If a client has the wrong key or no key, its connections through your server fail with a key error.
+
+**The relay doesn't check the key by default.** The same 1.1.11-1 release reverted that default for `hbbr` for backward compatibility. Looking at the 1.1.16 source, `hbbr` only rejects relay requests with the wrong key if you start it with `-k _` or set a `KEY`. On the Docker install, you can change the relay's command so it loads the same key pair from the shared `./data` directory:
+
+```yaml
+  hbbr:
+    # ...rest of the service unchanged
+    command: hbbr -k _
+```
+
+Run `sudo docker compose up -d` afterward. If relayed connections start failing with a key error, check that every client has the current key from `id_ed25519.pub`.
+
+**Protect the private key.** Anyone with `id_ed25519` can pose as your server. If you delete both key files and restart, hbbs generates a new pair, and every client will need the new public key.
+
+**Don't expose it publicly unless you mean to.** For a homelab, there's no need to forward these ports to the internet. I reach mine through a [NetBird](https://netbird.io/) routing peer. When my NetBird client is connected, the server's LAN IP is reachable from anywhere, so the client configuration doesn't change. My [NetBird and Pocket ID guide](/self-host-netbird-pocketid) walks through self-hosting the whole thing. If you do expose RustDesk directly, use the official Docker build, open only the ports in the table above, and keep up with releases.
+
+**Using a domain on your LAN?** If clients use a public hostname for the server but sit behind the same router, you can hit NAT loopback problems. RustDesk has a [page on fixing them](https://rustdesk.com/docs/en/self-host/nat-loopback-issues/) with local DNS or hosts-file entries.
+
+**Consider turning off LAN discovery on sensitive machines.** Discovery is convenient, but **Settings > Security** has **Deny LAN discovery** if you don't want a machine announcing itself on the network.
+
+## Final Thoughts
+
+RustDesk does what I want from a TeamViewer or AnyDesk replacement. The client is native, it runs on basically everything, and it doesn't feel like a stripped-down free version. Setting up my own ID and relay server took only a few minutes. After that, it was just a matter of pasting the address and key into each client.
+
+The part I like is that the free self-hosted server is a complete setup, not a trial. There's no web UI unless you pay for Pro or add a third-party panel, but for a homelab I don't need one. I set a permanent password on the machines I manage, keep everything behind NetBird, and it just works.
+
+If you're starting fresh, use the official Docker Compose install. If you already live in Proxmox and want the helper script, go for it. It now installs the official server, and I'd skip the optional web panel. With all that, I do hope you have an absolutely beautiful day.
