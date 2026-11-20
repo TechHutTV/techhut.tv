@@ -12,15 +12,15 @@ import {YouTube} from "@/components/YouTube"
 
 It was December, so naturally it was time for Christmas lights. A company called XMCOSY sent over a pile of their smart lights, and my first instinct was to say no. Then I did a little research and found out there was a decent chance I could get them working in Home Assistant without going through the cloud, which is a hard requirement for my setup. So I said yes, and then I spent a very late night figuring it out.
 
-The end result: static colors, brightness, color temperature, and the app's animated scenes, plus my own custom scenes, all running from Home Assistant over my local network. In this guide I'll go over the lights and their app, why Tuya devices need a cloud account at all, and the full LocalTuya setup, including how to pull scene strings out of the Tuya developer platform.
+I ended up with static colors, brightness, color temperature, and the app's animated scenes, plus my own custom scenes, all running from Home Assistant over my local network. I'll go over the lights and their app, why Tuya devices need a cloud account at all, and the full LocalTuya setup, including how to pull scene strings out of the Tuya developer platform.
 
 XMCOSY sent me the lights in this article for free. They didn't pay me for the video, but there's still bias there, so keep that in mind.
 
-The video was published in December 2024. The written steps have been updated for [hass-localtuya 2026.7.0](https://github.com/xZetsubou/hass-localtuya/releases/tag/2026.7.0), released July 17, 2026, and for the current HACS and Tuya Developer Platform docs. Since recording, the fork I used has been renamed from `xZetsubou/localtuya` to `xZetsubou/hass-localtuya`, it now requires Home Assistant 2025.1.0 or newer, and Tuya's current guide lists a different set of API services for new projects than the wizard showed me. My hands-on impressions and screenshots come from the original recording, and I've called out the changes where they matter.
+The video was published in December 2024. The steps below use [hass-localtuya 2026.7.0](https://github.com/xZetsubou/hass-localtuya/releases/tag/2026.7.0), released July 17, 2026, and the current HACS and Tuya Developer Platform docs. Since recording, the fork I used has been renamed from `xZetsubou/localtuya` to `xZetsubou/hass-localtuya`, it now requires Home Assistant 2025.1.0 or newer, and Tuya's current guide lists a different set of API services for new projects than the wizard showed me. My hands-on impressions and screenshots come from the original recording, and I've called out the changes where they matter.
 
 ## The XMCOSY Lights
 
-The star of the show is the **Smart RGBCW Acrylic String Lights**. They have that faceted, kind of Christmasy look, and I got two packs to run across the front of my house. The cords are thick, the acrylic feels nice, and as far as I can tell they're decent quality. I believe you can daisy chain them, too.
+The main lights are the **Smart RGBCW Acrylic String Lights**. They have that faceted, kind of Christmasy look, and I got two packs to run across the front of my house. The cords are thick, the acrylic feels nice, and as far as I can tell they're decent quality. I believe you can daisy chain them, too.
 
 They also sent a pack of globe-style string lights and a two-pack of smart wall lights. I didn't set the wall lights up for this one because I didn't feel like doing electrical work that day.
 
@@ -60,7 +60,7 @@ If you don't care about the cloud, the official integration is the easy path. Th
 
 I found a couple of guides for these exact lights, including [one I was really hoping would work](https://thehelpfulidiot.com/integrating-xmcosy-outdoor-string-lights-with-home-assistant-locally). It's a good read and might work if you have older lights, but it didn't work with mine. The original LocalTuya didn't either. What finally worked was **xZetsubou's fork**, which had the newer protocol support these lights needed. My lights reported protocol `3.5`, which the fork supports and the original's README doesn't list. It took me a while to figure that out, and if I'd known it from the start this video would have been out a lot sooner.
 
-As of October 2026, both projects are still alive, but at very different speeds. The original's last release was [v5.2.5](https://github.com/rospogrigio/localtuya/releases/tag/v5.2.5) in January 2026, a small config flow fix, and it has more than 1,400 open issues. The fork shipped [2026.7.0](https://github.com/xZetsubou/hass-localtuya/releases/tag/2026.7.0) in July, which includes a fix for protocol 3.5 reconnects, and it was still getting commits in late September. This guide is written for the fork.
+As of October 2026, both projects are still alive, but at very different speeds. The original's last release was [v5.2.5](https://github.com/rospogrigio/localtuya/releases/tag/v5.2.5) in January 2026, a small config flow fix, and it has more than 1,400 open issues. The fork shipped [2026.7.0](https://github.com/xZetsubou/hass-localtuya/releases/tag/2026.7.0) in July, which includes a fix for protocol 3.5 reconnects, and it was still getting commits in late September. I'm using the fork.
 
 <Note>
 Both projects install as the same `localtuya` integration, so you can't run them side by side. If you already have the original installed from HACS, remove it before installing the fork.
@@ -161,11 +161,11 @@ Before adding devices, close the Tuya and Smart Life apps on your phone. The for
 2. Your discovered devices are listed by name. Pick one and submit. Mine all showed up.
 3. On **Configure device connectivity**, the device name, IP address, device ID, local key, and protocol version are filled in for you. My lights showed protocol `3.5`. In most cases you don't need to change anything here.
 
-If a device doesn't show up and the cloud credentials are right, the most common cause is that discovery can't see it, usually because it's on a different subnet. You can pick **Add device manually** from the dropdown and fill in the fields yourself. Manual configuration does work, but it's not great, so get discovery working if you can.
+If a device doesn't show up and the cloud credentials are right, the most common cause is that discovery can't see it, usually because it's on a different subnet. You can pick **Add device manually** from the dropdown and fill in the fields yourself. Manual configuration works. Discovery is the easier path, so get that working if you can.
 
 ### Finding Device Info Yourself
 
-If you do need to configure manually, or just want to see what a device reports, here's where everything lives on the Tuya platform:
+If you do need to configure manually, or just want to see what a device reports, this is where everything lives on the Tuya platform:
 
 - **Device ID:** your project's **Devices** > **All Devices** list.
 - **Local key:** open **Cloud** > **API Explorer**, pick your project, go to the device management APIs, and run **Query Device Details in Bulk** with the device ID. The `local_key` is in the response.
@@ -252,7 +252,7 @@ I did this with a premade one from the app's mood section called Planet Journey,
 
 Your own designs work the same way. I made a DIY scene in the app that alternates red, white, and blue, saved it as a July 4th scene, activated it, grabbed the string from the logs, and added it as `July 4`. It showed up in the Effect list and worked perfectly.
 
-If you want to dig into what these strings actually contain, they're Base64. My notes link Tuya's [lighting instruction set docs](https://developer.tuya.com/en/docs/iot/dj?id=K9i5ql3v98hn3) as a starting point for decoding them.
+If you want to dig into what these strings contain, they're Base64. My notes link Tuya's [lighting instruction set docs](https://developer.tuya.com/en/docs/iot/dj?id=K9i5ql3v98hn3) as a starting point for decoding them.
 
 ## Final Thoughts
 
