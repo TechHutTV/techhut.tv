@@ -1,10 +1,10 @@
 export const title = "Ventoy: Make One Multiboot USB for Linux, Windows, and More"
 export const description = "Install Ventoy on a USB drive from Windows or Linux, drag ISO files onto it, and boot any of them from a single menu, with Secure Boot, persistence, and updates covered."
-export const date = "2026-10-15"
+export const date = "2026-12-27"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Linux", "Windows", "Distros"]
-export const cover = "/docs-static/img/2026/10/ventoy-multiboot-usb/cover.jpg"
+export const cover = "/docs-static/img/2026/12/ventoy-multiboot-usb/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -104,7 +104,7 @@ sudo bash VentoyWeb.sh
 
 It prints a local address. Open `http://127.0.0.1:24680` in your browser, plug in your USB if you haven't, and hit the refresh button next to the device list. My 64 GB Kingston DataTraveler showed up, I clicked **Install**, and confirmed the two warnings. It only took a few seconds.
 
-![The Ventoy WebUI from the video with a 64 GB Kingston DataTraveler selected and the Install button, showing Ventoy 1.0.49 in package](/docs-static/img/2026/10/ventoy-multiboot-usb/ventoy-webui-install.jpg)
+![The Ventoy WebUI from the video with a 64 GB Kingston DataTraveler selected and the Install button, showing Ventoy 1.0.49 in package](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-webui-install.jpg)
 
 The WebUI only listens on localhost by default. You can bind it elsewhere with `-H` and `-P` for a headless box, but anyone who can reach that page can format disks, so stop it with Ctrl+C when you're done.
 
@@ -154,7 +154,7 @@ Ventoy works the same either way. Per the [MBR vs GPT page](https://www.ventoy.n
 
 This is the whole point. Once Ventoy is installed, the **Ventoy** partition shows up as a regular removable drive. Copy your ISOs onto it. In the video, I took my folder of images (EndeavourOS, Fedora, openSUSE, Pop!_OS, siduction, Solus, Zorin, a Manjaro Cutefish build, an Ubuntu Server ISO, and Windows 10) and just copied and pasted them in Dolphin. That was about 25 GB, so it took a little while.
 
-![Dolphin in the video showing the Ventoy removable drive with EndeavourOS, Fedora, and Manjaro Cutefish ISOs copied onto it](/docs-static/img/2026/10/ventoy-multiboot-usb/dolphin-ventoy-drive-isos.jpg)
+![Dolphin in the video showing the Ventoy removable drive with EndeavourOS, Fedora, and Manjaro Cutefish ISOs copied onto it](/docs-static/img/2026/12/ventoy-multiboot-usb/dolphin-ventoy-drive-isos.jpg)
 
 Two things I really like here:
 
@@ -165,11 +165,11 @@ Two things I really like here:
 
 I tested it on a ThinkPad. Plug in the drive, power on, and open the one-time boot menu. On my ThinkPad that was F12, but yours may use a different key. Then select the USB drive.
 
-![The Ventoy boot menu on a ThinkPad from the video, listing ten ISOs including EndeavourOS, Fedora 34, Pop!_OS, and Windows 10](/docs-static/img/2026/10/ventoy-multiboot-usb/ventoy-boot-menu-isos.jpg)
+![The Ventoy boot menu on a ThinkPad from the video, listing ten ISOs including EndeavourOS, Fedora 34, Pop!_OS, and Windows 10](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-boot-menu-isos.jpg)
 
 There's my menu with all ten images. I picked Manjaro Cutefish and chose the open source drivers, and it booted right into the live desktop. Then I rebooted, picked the Windows 10 ISO, and landed in Windows Setup. I didn't install it, but it was ready to go.
 
-![Windows 10 Setup booted from the Windows ISO on the Ventoy drive, as shown in the video](/docs-static/img/2026/10/ventoy-multiboot-usb/windows-setup-from-ventoy.jpg)
+![Windows 10 Setup booted from the Windows ISO on the Ventoy drive, as shown in the video](/docs-static/img/2026/12/ventoy-multiboot-usb/windows-setup-from-ventoy.jpg)
 
 One difference from the video: current versions open a small **secondary boot menu** when you press Enter on an image, with normal, GRUB2, WIMBOOT, and other modes. Use normal mode first and only try the others if it doesn't boot. `VTOY_SECONDARY_BOOT_MENU` turns that menu off.
 
@@ -182,7 +182,7 @@ The hotkey bar along the bottom has a few worth knowing:
 - **F4** is **Localboot**, which boots the machine's installed OS.
 - **F5** opens **Tools**: keyboard layout, resolution and display settings, a ventoy.json checker, and in newer versions **Temporary Control Settings** for one-boot tweaks.
 
-![The Ventoy F5 Tools menu from the video with Keyboard Layouts, Resolution Configuration, Screen Display Mode, and the ventoy.json check](/docs-static/img/2026/10/ventoy-multiboot-usb/ventoy-f5-tools-menu.jpg)
+![The Ventoy F5 Tools menu from the video with Keyboard Layouts, Resolution Configuration, Screen Display Mode, and the ventoy.json check](/docs-static/img/2026/12/ventoy-multiboot-usb/ventoy-f5-tools-menu.jpg)
 
 New in 1.1.18, the Ventoy partition is also mountable from most mainstream Linux live sessions out of the box. If it doesn't show up, the [Linux remount page](https://www.ventoy.net/en/doc_linux_remount.html) explains how to mount `/dev/mapper/VentoyPart` by hand.
 
