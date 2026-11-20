@@ -1,0 +1,159 @@
+export const title = "KDE Connect for iPhone: Connect Your iPhone to Linux"
+export const description = "Pair an iPhone with a Linux desktop using KDE Connect on Plasma or GSConnect on GNOME, open the right firewall ports, and see what the iOS app can and can't do compared to Android."
+export const date = "2027-01-12"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Linux", "Mobile", "KDE", "Gnome"]
+export const cover = "/docs-static/img/2027/01/kde-connect-iphone-linux/cover.jpg"
+
+import {YouTube} from "@/components/YouTube"
+
+<YouTube videoId="d4ghirmM1Ys" title="TechHut's KDE Connect for iPhone walkthrough" />
+
+Getting an iPhone to play nicely with a Linux desktop has always been kind of a pain. On Android, [KDE Connect](https://kdeconnect.kde.org/) has handled this for years, but iPhone users were mostly left out. When KDE released an iOS version, I borrowed my fiancée's iPhone (with permission, and only temporarily) to see how well it works.
+
+The video was published in November 2021, when the iOS app was a beta you could only get through Apple's TestFlight. That's no longer the case. KDE Connect is now a free app on the [App Store](https://apps.apple.com/app/kde-connect/id1580245991), published by KDE e.V. The steps below use version 0.5.7 of the iOS app (released October 9, 2026) and the current GSConnect and KDE Connect desktop releases. The hands-on impressions come from the original recording.
+
+## What KDE Connect Does
+
+KDE Connect links your phone and computer over your local network. Once they're paired, they can send files, links, and clipboard text back and forth, and your phone can act as a trackpad, keyboard, or presentation remote. Everything goes over TLS between your own devices, with no cloud account involved.
+
+There are two desktop implementations you'll run into on Linux:
+
+- **KDE Connect** itself, developed mainly for Plasma but usable on other desktops.
+- **[GSConnect](https://extensions.gnome.org/extension/1319/gsconnect/)**, a GNOME Shell extension that speaks the same protocol and integrates into GNOME's system menu and Nautilus.
+
+Either one pairs with the same KDE Connect app on your phone.
+
+## What Works on iPhone (and What Doesn't)
+
+This is the part worth knowing before you start. iOS doesn't let apps read other apps' notifications or stay running in the background, so the iPhone app is a smaller tool than the Android one. That's Apple's sandbox, not a lack of effort from the developers. This is how it compares, based on the [KDE UserBase iOS notes](https://userbase.kde.org/KDEConnect), the [iOS app README](https://invent.kde.org/network/kdeconnect-ios), and the plugins in the iOS source code:
+
+| Feature | Android | iPhone |
+|---|---|---|
+| Send files and links to the computer | Yes | Yes, from inside the app |
+| Receive files from the computer | Yes | Yes |
+| Shared clipboard | Yes | Limited: tap **Push local clipboard** in the app to send it |
+| Remote input (trackpad and keyboard) | Yes | Phone to computer only |
+| Run commands on the computer | Yes | Phone to computer only |
+| Presentation remote | Yes | Phone to computer only |
+| Battery level on the desktop | Yes | Yes |
+| Ring my phone and ping | Yes | Yes, while the app is open |
+| Notification sync | Yes | No |
+| SMS from the desktop | Yes | No |
+| Browse the phone's files from the desktop | Yes | No |
+| Media controls, contacts, call notifications | Yes | No |
+| Stay connected in the background | Yes | No |
+
+The background limit is the big one. The README describes the app being unresponsive in the background as "more or less intended" on iOS. In practice, open KDE Connect on the iPhone and keep it on screen while you transfer files or use any feature.
+
+## Install on Linux
+
+### KDE Plasma
+
+Most Plasma distributions include KDE Connect out of the box. Look for **KDE Connect** in System Settings or the system tray. If it's missing, install it from your distribution:
+
+```bash
+# Arch
+sudo pacman -S kdeconnect
+
+# Fedora
+sudo dnf install kde-connect
+
+# Debian / Ubuntu
+sudo apt install kdeconnect
+```
+
+KDE Connect also runs on other desktops, but because it's built mainly for Plasma, some features may be missing or rough elsewhere.
+
+### GNOME
+
+My test machine in the video was an Arch install running GNOME 41, so I used GSConnect instead. Install it from [extensions.gnome.org](https://extensions.gnome.org/extension/1319/gsconnect/) or with the Extension Manager app, then make sure it's enabled. The current release supports GNOME Shell 46 through 51. It needs the `openssl` binary to generate its certificate, which almost every distro already has.
+
+<Warning>
+Don't install the KDE Connect desktop app alongside GSConnect. The [GSConnect installation guide](https://github.com/GSConnect/gnome-shell-extension-gsconnect/wiki/Installation) says GSConnect won't work if KDE Connect is installed. Pick one per computer.
+</Warning>
+
+For **Send to Mobile Device** in Nautilus's right-click menu, GSConnect also wants the Nautilus Python bindings: `python-nautilus` on Arch, `nautilus-python` on Fedora, or `python3-nautilus` and `gir1.2-nautilus-4.0` on Debian and Ubuntu. Once it's running, a **Mobile Devices** entry shows up in GNOME's system menu. Mine said no devices were available until I paired the phone.
+
+## Open the Firewall Ports
+
+If you run a firewall (firewalld on Fedora and openSUSE, or ufw on Ubuntu if you've turned it on), it needs to allow KDE Connect's ports: **1714 to 1764, TCP and UDP**. A blocked range is the most common reason devices don't see each other.
+
+With ufw:
+
+```bash
+sudo ufw allow 1714:1764/udp
+sudo ufw allow 1714:1764/tcp
+sudo ufw reload
+```
+
+With firewalld, use the built-in `kdeconnect` service. Swap `home` for whatever zone your network connection uses:
+
+```bash
+sudo firewall-cmd --permanent --zone=home --add-service=kdeconnect
+sudo firewall-cmd --reload
+```
+
+KDE's docs suggest a trusted zone like `home` and warn against opening this on the `public` zone. That's good advice. Anything on the same network can try to talk to these ports, so keep it to networks you trust. The [UserBase troubleshooting section](https://userbase.kde.org/KDEConnect) has the iptables version too.
+
+## Install the iPhone App
+
+Get [KDE Connect from the App Store](https://apps.apple.com/app/kde-connect/id1580245991). The current listing needs iOS or iPadOS 15.0 or later. It also runs on Macs with macOS 13 or later. The [TestFlight beta](https://testflight.apple.com/join/vxCluwBF) I used in the video still exists if you want pre-release builds, but most people should just use the App Store version.
+
+The first time you open it, iOS asks to let KDE Connect find devices on your local network. Allow it. If you tap **Don't Allow**, nothing will show up, and you'll have to turn it back on under **Settings > Privacy & Security > Local Network**.
+
+## Pair Your iPhone
+
+Both devices need to be on the same network.
+
+1. Open KDE Connect on the iPhone. It lists connected devices and discoverable devices.
+2. Use the button at the top to refresh discovery. In the video, my Arch machine showed up as **TechHut**, which is its hostname.
+3. Tap your computer to send a pairing request.
+4. Accept the request on the desktop. If both sides show a verification key, check that they match first.
+
+That's it. The app told me pairing was successful and gave me a dialog button that said "Nice," which I fully approve of.
+
+![The 2021 TestFlight beta of KDE Connect in the video showing Pairing Complete with techhut, next to the GSConnect extension page on the desktop](/docs-static/img/2027/01/kde-connect-iphone-linux/iphone-pairing-complete.jpg)
+
+If your computer doesn't appear, check the firewall, make sure both devices really are on the same network (guest Wi-Fi and client isolation will break discovery), and make sure the iOS app has Local Network permission. On Plasma, you can see what the desktop can find with:
+
+```bash
+kdeconnect-cli -l
+```
+
+## Using It: The Tour From the Video
+
+After pairing, the iOS app gave me four actions: **Push local clipboard**, **Send files**, **Run command**, and **Remote input**.
+
+### Remote input
+
+I tried remote input first. Move a finger on the phone screen and the cursor moves on the computer, like a trackpad. I was hoping for multi-touch, but no luck there. A menu at the top gives you single click, right click, middle click, and a sensitivity slider. Newer versions also have a remote keyboard with modifier keys.
+
+### Sending files from iPhone to Linux
+
+For me, this is the most important feature when you connect an iPhone to Linux. I picked a photo in the app, tapped it, and the transfer finished right away. On the desktop I could open the folder and there were the images I'd sent. Plasma saves incoming files to your Downloads folder by default, and you can change that in the plugin settings.
+
+Large transfers used to be shaky in the early builds. Later releases fixed crashes with big files, added a progress display, and kept improving transfers, which is what 0.5.7's release notes mention.
+
+### Battery and ring
+
+On the desktop side, GSConnect showed my phone's battery level along with options to ring the phone, share files, and open the phone's settings. Plasma's widget looks a bit different but has the same features. Ring worked. My screen was already on, so the phone just said it had been found. Since iOS suspends the app in the background, expect ring to work only while KDE Connect is open.
+
+![The iPhone app's action list from the 2021 beta in the video beside GNOME's system menu, where GSConnect shows the iPhone at 50% battery with Ring and Share](/docs-static/img/2027/01/kde-connect-iphone-linux/iphone-actions-gsconnect-battery-menu.jpg)
+
+### Sending files from Linux to iPhone
+
+This is where the 2021 beta tripped. When I tried to send an EndeavourOS wallpaper from GNOME to the iPhone, the app closed. I sent the crash report through TestFlight, because when a beta crashes, the developers want to hear about it.
+
+The current app supports this. Files you send from the computer land in a **KDE Connect** folder you can open in the Files app, and there are settings to save photos and videos straight to your Photos library instead. Links you share open on the phone, and shared text goes to the clipboard.
+
+<Note>
+Run Command needs some setup on the computer first. Define the commands in the device's Run Command settings in KDE Connect, or under the device's Commands settings in GSConnect, and they'll show up on the phone. Something like locking the screen is a good first one.
+</Note>
+
+## My Take
+
+Even as a beta, most features worked fine, and the one I care about, sending stuff from the phone to the computer, worked perfectly. The crash going the other way was the only real problem I hit, and the current app handles that direction now. The iPhone version can't do notification sync, SMS, or a background connection. Those aren't possible on iOS. If you want to get photos and files off an iPhone and onto Linux without a cable or a cloud service, KDE Connect does that well.
+
+If you're on Android, back in my [2021 Linux apps roundup](/10-best-linux-applications-must-have-software) I called KDE Connect the app everyone wanted without knowing it. That still stands. With all that, I do hope you have an absolutely beautiful day.
