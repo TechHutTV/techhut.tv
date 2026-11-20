@@ -12,11 +12,11 @@ import {YouTube} from "@/components/YouTube"
 
 AppImages are one of the ways Linux apps get packaged as a single, self-contained file. If you're coming from Windows, the closest comparison is a portable EXE: you download one file, mark it executable, and run it. Nothing gets installed in the traditional sense. The catch is that finding them usually means hunting through each project's release page.
 
-[AppImage Pool](https://github.com/prateekmedia/appimagepool) fixes that part. It's a simple, open source client for [AppImageHub](https://appimage.github.io/), so you get a store-like window with categories, search, and a download button. I tried it out in the video, and this article covers how to set it up and what it's like to use.
+[AppImage Pool](https://github.com/prateekmedia/appimagepool) fixes that part. It's a simple, open source client for [AppImageHub](https://appimage.github.io/), so you get a store-like window with categories, search, and a download button. I tried it out in the video, and I'll cover how to set it up and what it's like to use.
 
 Linode sponsored the video this article is based on.
 
-The video was published in December 2021, when Flathub was shipping AppImage Pool 4.9.0. The written install steps have been updated for [AppImage Pool 5.1.0](https://github.com/prateekmedia/appimagepool/releases/tag/5.1.0), which is still the latest release (February 27, 2023). The biggest change since the recording is that AppImage Pool can now add downloaded apps to your app menu itself, which I had to do by hand in the video. The screenshots and hands-on impressions come from the original recording.
+The video was published in December 2021, when Flathub was shipping AppImage Pool 4.9.0. The install steps below are for [AppImage Pool 5.1.0](https://github.com/prateekmedia/appimagepool/releases/tag/5.1.0), which is still the latest release (February 27, 2023). The biggest change since the recording is that AppImage Pool can now add downloaded apps to your app menu itself, which I had to do by hand in the video. The screenshots and hands-on impressions come from the original recording.
 
 ## Is AppImage Pool Still Maintained?
 
@@ -32,7 +32,7 @@ If you're not sure how AppImages compare to the other formats, my [Flatpak vs Sn
 
 ## What AppImage Pool Does
 
-Here's the feature list from the project:
+The feature list from the project:
 
 | Feature | Details |
 |---|---|
@@ -44,7 +44,7 @@ Here's the feature list from the project:
 | License | GPL-3.0 |
 | Platform | Linux, x86_64 only |
 
-It helps to know what AppImageHub actually is. Per its [README](https://github.com/AppImage/appimage.github.io), it's a crowd-sourced directory that links to each author's download page. It doesn't host or distribute the files, and it only checks that an AppImage follows basic conventions and starts on the oldest supported Ubuntu LTS. That isn't a security review. AppImageHub says it plainly: only run apps from authors you trust.
+It helps to know what AppImageHub is. Per its [README](https://github.com/AppImage/appimage.github.io), it's a crowd-sourced directory that links to each author's download page. It doesn't host or distribute the files, and it only checks that an AppImage follows basic conventions and starts on the oldest supported Ubuntu LTS. That isn't a security review. AppImageHub says it plainly: only run apps from authors you trust.
 
 ## Installing AppImage Pool
 
@@ -179,7 +179,7 @@ A hand-written entry doesn't clean up after itself. If you delete or rename the 
 
 AppImage Pool is a nice little application. You could download all of this through your web browser, but I like having a graphical tool on my system where I can quickly grab whatever app I need, and being able to pick a specific version is exactly why I use AppImages in the first place.
 
-Today it's in a better spot than when I recorded, since it can handle menu integration itself. It's also clearly in maintenance mode, so if you hit integration bugs, pair it with Gear Lever and use AppImage Pool just for browsing and downloads. And keep in mind that AppImageHub is a directory, not a vetted store. Stick to apps from developers you trust.
+Today it's in a better spot than when I recorded, since it can handle menu integration itself. It's also clearly in maintenance mode, so if you hit integration bugs, pair it with Gear Lever and use AppImage Pool just for browsing and downloads. And keep in mind that AppImageHub is a directory, not a vetted store. Stick to apps from developers you trust. With all that, I do hope you have an absolutely beautiful day.
 
 ## Official References
 
