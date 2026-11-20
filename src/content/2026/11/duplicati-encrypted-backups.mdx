@@ -1,10 +1,10 @@
 export const title = "Duplicati: Easy, Fully Encrypted Open Source Backups"
 export const description = "Set up Duplicati with Docker or a desktop installer, send encrypted and incremental backups to Google Drive or any other destination, and restore files when you need them."
-export const date = "2026-10-09"
+export const date = "2026-11-30"
 export const authors = ["Brandon Hopkins"]
 export const categories = ["Guides"]
 export const tags = ["Docker", "Self-Host", "Homelab", "Linux", "Windows", "Mac"]
-export const cover = "/docs-static/img/2026/10/duplicati-encrypted-backups/cover.jpg"
+export const cover = "/docs-static/img/2026/11/duplicati-encrypted-backups/cover.jpg"
 
 import {YouTube} from "@/components/YouTube"
 
@@ -14,7 +14,7 @@ I have the misfortune of paying for Google Workspace. I need it for business, an
 
 If you open my Duplicati folder in Google Drive, you'll find a folder for my Immich backup and another for my Nextcloud backup. Inside those, it's just a pile of encrypted, compressed chunks of about 50 MB each. No photos, no file names, nothing useful to anyone without the passphrase. The best part is that getting to this point was really easy.
 
-![The duplicati/immich folder in Google Drive filled with encrypted dblock volumes of about 49 MB each](/docs-static/img/2026/10/duplicati-encrypted-backups/google-drive-encrypted-chunks.jpg)
+![The duplicati/immich folder in Google Drive filled with encrypted dblock volumes of about 49 MB each](/docs-static/img/2026/11/duplicati-encrypted-backups/google-drive-encrypted-chunks.jpg)
 
 I'll go over how I have it set up, how to install it with Docker or on a desktop, how a backup and a restore work, and the couple of things I don't love about it.
 
@@ -46,7 +46,7 @@ My main instance runs on Unraid in Docker. The container setup is pretty simple:
 
 I have two cloud backups set up right now, both going to Google Drive and both encrypted: Immich, which is all of my photos, and Nextcloud, which holds the files and documents that don't fit into my media shares. They're the stuff I'd be really upset to lose.
 
-![The Duplicati home page listing the Immich and Nextcloud backups to Google Drive with their sizes and version counts](/docs-static/img/2026/10/duplicati-encrypted-backups/duplicati-home-backups.jpg)
+![The Duplicati home page listing the Immich and Nextcloud backups to Google Drive with their sizes and version counts](/docs-static/img/2026/11/duplicati-encrypted-backups/duplicati-home-backups.jpg)
 
 ## Install Duplicati with Docker Compose
 
@@ -167,7 +167,7 @@ Give the backup a name, like "Immich Backup." Then pick the encryption method an
 
 For me, this is Google Drive. You click the **AuthID** link, sign in with Google, and it fills in the token for you. You don't need to create API keys or a Google Cloud project, which is nice. I set the path to `duplicati/immich`.
 
-![The Backup destination step in Duplicati with Google Drive selected and the folder path set to duplicati/immich](/docs-static/img/2026/10/duplicati-encrypted-backups/google-drive-destination.jpg)
+![The Backup destination step in Duplicati with Google Drive selected and the folder path set to duplicati/immich](/docs-static/img/2026/11/duplicati-encrypted-backups/google-drive-destination.jpg)
 
 Hit **Test destination** before continuing. When I set up my MacBook backup it got a little weird on the first try, and then offered to create the missing folder on the second. That's normal.
 
@@ -197,7 +197,7 @@ For retention, I use **Smart backup retention**. It's the policy `1W:1D,4W:1W,12
 - One per week for the last four weeks
 - One per month for the last twelve months
 
-![The Options step in Duplicati with a 50 MB remote volume size and Smart backup retention selected](/docs-static/img/2026/10/duplicati-encrypted-backups/options-smart-retention.jpg)
+![The Options step in Duplicati with a 50 MB remote volume size and Smart backup retention selected](/docs-static/img/2026/11/duplicati-encrypted-backups/options-smart-retention.jpg)
 
 That seems pretty good to me. There's also a pile of [advanced options](https://docs.duplicati.com/configuration-and-management/retention-settings) if you want to get really nitty-gritty. Hit **Submit** and you're done.
 
@@ -209,7 +209,7 @@ There's a **Use old UI** link in the sidebar if you want the classic interface b
 
 In the restore view for my Nextcloud backup, the latest version was 263 GB, and one from a couple of days earlier was 262 GB. Duplicati didn't upload another full 260-odd gigabytes for that new version. It only sent the changed blocks, so daily backups don't eat up a crazy amount of space.
 
-![The restore version dropdown for the Nextcloud backup showing versions of 263.27 GB and 262.24 GB](/docs-static/img/2026/10/duplicati-encrypted-backups/restore-version-list.jpg)
+![The restore version dropdown for the Nextcloud backup showing versions of 263.27 GB and 262.24 GB](/docs-static/img/2026/11/duplicati-encrypted-backups/restore-version-list.jpg)
 
 ## Restoring Files
 
@@ -223,7 +223,7 @@ A backup you can't restore is just wasted storage, so here's how it works.
 
 This part takes a minute, since Duplicati has to pull the volumes from the cloud, decrypt them, and rebuild the files. The live log shows a `get` for each volume it downloads, along with when it finishes. Once it was done, I browsed to the appdata share and there was the file, and it opened fine.
 
-![The restore log in Duplicati showing Backend event Get entries as encrypted dblock volumes are downloaded](/docs-static/img/2026/10/duplicati-encrypted-backups/restore-log-get-events.jpg)
+![The restore log in Duplicati showing Backend event Get entries as encrypted dblock volumes are downloaded](/docs-static/img/2026/11/duplicati-encrypted-backups/restore-log-get-events.jpg)
 
 By default, file permissions aren't restored, since the original users and groups might not exist on the machine you're restoring to.
 
