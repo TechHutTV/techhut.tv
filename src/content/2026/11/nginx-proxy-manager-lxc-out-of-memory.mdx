@@ -1,0 +1,225 @@
+export const title = "Why My Nginx Proxy Manager LXC Kept Going Down"
+export const description = "Large Immich uploads filled a RAM-backed temporary directory and triggered OOM kills in my Proxmox LXC. Here's how I traced the failure and moved upload buffering to disk."
+export const date = "2026-11-22"
+export const authors = ["Brandon Hopkins"]
+export const categories = ["Guides"]
+export const tags = ["Homelab", "Self-Host", "Proxmox", "Linux"]
+export const cover = "/docs-static/img/2026/11/nginx-proxy-manager-lxc-out-of-memory/cover.jpg"
+
+My Nginx Proxy Manager instance kept taking every domain behind it offline. Restarting the container brought everything back, so that had become my temporary fix. The next time it failed, I checked the logs before restarting it again.
+
+Linux was killing processes because the container had exhausted its memory. The interesting part was where that memory went: Nginx was buffering incoming uploads into `/tmp`, and `/tmp` was a RAM-backed filesystem. Large uploads could consume the memory the proxy needed to keep running.
+
+This was an NPM installation in a Proxmox LXC created with a community helper script. The container had 2 GB of RAM, 512 MB of swap, and a 16 GB disk with about 12 GB free. The host had plenty of available memory, but the container still had its own limit.
+
+I'm using example domains, addresses, and container ID `120` throughout this walkthrough. Replace them with your own. These commands apply to the native OpenResty/systemd layout I found in this LXC; a Docker deployment has a different service layout.
+
+## What was down
+
+On the Proxmox host, I checked the container and its limits:
+
+```bash
+pct list
+pct config 120
+```
+
+The container was running. Inside it, the Node backend for NPM was also running, but OpenResty, the service handling the actual proxy traffic, had failed. That explains why all of the domains went down together.
+
+From the Proxmox shell, enter the container:
+
+```bash
+pct enter 120
+```
+
+Then check the services and listening ports:
+
+```bash
+systemctl status npm openresty --no-pager -l
+systemctl --failed --no-pager
+ss -lntp
+```
+
+The important lines in the service output were:
+
+```text
+openresty.service - The OpenResty Application Platform
+Active: failed (Result: oom-kill)
+Mem peak: 1.9G (swap: 512M)
+```
+
+Only the NPM backend was listening on port 3000. The proxy listeners on ports 80, 81, and 443 were gone. NPM's backend and OpenResty are separate services in this installation, so seeing `npm.service` running was only part of the picture.
+
+## Following the memory trail
+
+The host kernel logs had the evidence of what happened before the services died. Run this on the Proxmox host, outside the container:
+
+```bash
+journalctl -k --since "7 days ago" --no-pager \
+  | grep -Ei 'oom|out of memory|killed process'
+```
+
+There were repeated container memory failures over several days, killing both Node and Nginx processes. The kernel identified the memory cgroup for the affected LXC. It was enforcing the container's allocation even though the host had free RAM.
+
+At one of the failures, the memory accounting included these values:
+
+```text
+memory: usage 2097152kB, limit 2097152kB
+swap: usage 524188kB, limit 524288kB
+anon 69865472
+file 2056179712
+shmem 2056019968
+```
+
+The first two lines show the container hitting its 2 GB RAM limit and nearly all of its 512 MB swap allowance. The `shmem` value was roughly 1.9 GiB. That was a much better clue than the name of whichever process the kernel happened to kill.
+
+The kernel's [cgroup memory documentation](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html#memory-interface-files) describes `shmem` as swap-backed filesystem data, including tmpfs. It is included in the `file` accounting, so don't add those two numbers together.
+
+Inside the container, I checked the temporary filesystem and Nginx configuration:
+
+```bash
+findmnt /tmp
+df -h /tmp /
+grep -n 'client_body_temp_path' /usr/local/openresty/nginx/conf/nginx.conf
+```
+
+The relevant results were:
+
+```text
+TARGET SOURCE FSTYPE
+/tmp   tmpfs  tmpfs
+```
+
+```nginx
+client_body_temp_path /tmp/nginx/body 1 2;
+```
+
+Nginx uses [`client_body_temp_path`](https://nginx.org/en/docs/http/ngx_http_core_module.html#client_body_temp_path) for temporary files holding incoming request bodies. In my setup, that put upload data on tmpfs.
+
+According to the [kernel's tmpfs documentation](https://www.kernel.org/doc/html/latest/filesystems/tmpfs.html), tmpfs keeps files in virtual memory and can use swap. Giving a temporary directory a filesystem path doesn't make it disk storage. Also, the large capacity reported by `df` for `/tmp` didn't give this LXC permission to exceed its memory limit.
+
+## Immich uploads were the likely trigger
+
+The proxy error logs showed incoming Immich uploads being buffered into that exact directory. To look for the same behavior inside your container:
+
+```bash
+grep -h 'a client request body is buffered' /data/logs/*error.log | tail -20
+```
+
+An anonymized example of the warning looked like this:
+
+```text
+a client request body is buffered to a temporary file /tmp/nginx/body/6/03/0000000036,
+server: photos.example.com, request: "POST /api/assets HTTP/2.0"
+```
+
+There was an upload warning shortly before the final burst of OOM kills. Combined with the enormous tmpfs/shared-memory usage, that made upload buffering the likely cause of the memory pressure. The logs confirmed the OOM failures; they didn't identify the exact upload size or prove that one particular file caused each outage.
+
+By the time I inspected the failed service, memory use had dropped and the temporary upload directory was empty. That made the historical kernel logs especially useful. Current memory usage alone would have missed what happened earlier.
+
+The restart workaround also makes sense here. Restarting released the resources associated with those requests and brought OpenResty back. The same buffering configuration was still waiting for the next large upload.
+
+## Moving upload buffering to disk
+
+I kept the existing buffering behavior and changed where its temporary files went. Inside the container, first confirm the active configuration path:
+
+```bash
+/usr/local/openresty/nginx/sbin/nginx -t
+```
+
+Mine reported `/usr/local/openresty/nginx/conf/nginx.conf`. Do note that this installation also had another `nginx.conf` at a different path. Editing the file Nginx actually loads matters.
+
+With that path confirmed, back it up and create a disk-backed directory:
+
+```bash
+conf=/usr/local/openresty/nginx/conf/nginx.conf
+cp -a "$conf" "$conf.before-upload-buffer-fix-$(date +%Y%m%d-%H%M%S)"
+install -d -m 0700 /var/lib/nginx/body
+findmnt -T /var/lib/nginx/body
+df -h /var/lib/nginx/body
+```
+
+Check that the destination is on the container's disk, with enough space for your uploads. In this installation the Nginx workers could write to the directory created above. If your workers run under a different account, give that account ownership of the directory before continuing; don't make it world writable.
+
+Change the existing directive from:
+
+```nginx
+client_body_temp_path /tmp/nginx/body 1 2;
+```
+
+To:
+
+```nginx
+client_body_temp_path /var/lib/nginx/body 1 2;
+```
+
+You can edit that line manually, or use this replacement after checking that your file contains the original path:
+
+```bash
+sed -i 's@/tmp/nginx/body@/var/lib/nginx/body@g' "$conf"
+grep -n 'client_body_temp_path' "$conf"
+/usr/local/openresty/nginx/sbin/nginx -t
+```
+
+Stop and correct any configuration errors before starting or restarting the service. Changing the existing directive also avoids adding a duplicate at the same configuration level.
+
+The container's disk had enough free space for this change. Disk buffering still needs capacity monitoring, especially with concurrent uploads. It also uses filesystem cache, but the backing storage gives Linux somewhere to write the data instead of keeping the upload entirely in tmpfs and swap.
+
+## Making OpenResty recover automatically
+
+There was a second problem: `openresty.service` had no restart policy. Once it failed, it stayed down. The NPM backend already had `Restart=on-failure`, which is why it could recover while every proxied site remained unreachable.
+
+I added a systemd drop-in inside the container:
+
+```bash
+install -d -m 0755 /etc/systemd/system/openresty.service.d
+cat > /etc/systemd/system/openresty.service.d/recovery.conf <<'EOF'
+[Service]
+Restart=on-failure
+RestartSec=5s
+EOF
+
+systemctl daemon-reload
+systemctl restart openresty
+```
+
+[Systemd documents `Restart=on-failure`](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html#Restart=) for automatic recovery from service failures, including OOM failures. The five-second delay avoids immediate retries. Normal systemd start limits still apply.
+
+This helps the proxy recover if it fails again. Moving upload buffering off tmpfs addresses the memory pressure I found; restarting the service alone would have left that behavior in place.
+
+## Checking that everything came back
+
+Inside the container, verify both services, the restart policy, and the effective buffering path:
+
+```bash
+systemctl is-active openresty npm
+systemctl show openresty -p Restart -p RestartUSec
+ss -lntp
+/usr/local/openresty/nginx/sbin/nginx -T 2>&1 \
+  | grep 'client_body_temp_path'
+free -h
+```
+
+Both services were active, and ports 80, 81, and 443 were listening again. OpenResty was using about 25 MB at that point, with container memory use around 96 MiB.
+
+From a separate machine, you can test a domain directly against the proxy while preserving its hostname and certificate validation:
+
+```bash
+curl --connect-timeout 5 --max-time 15 \
+  --resolve proxy.example.com:443:192.0.2.20 \
+  -o /dev/null -sS -w 'HTTP %{http_code}\n' \
+  https://proxy.example.com/
+```
+
+Replace both the example domain and documentation IP with your own. Repeat without `--resolve` to test your normal DNS path. A login redirect or authentication response may be expected for some apps; check the response your service should return.
+
+After the change, the NPM interface, Immich, OpenCloud, and the library service all returned HTTP 200. The NPM interface also passed normal DNS resolution and TLS certificate validation from the test machine. That verified recovery on the LAN; I hadn't established long-term stability under another large upload or tested every external access path.
+
+For the next large upload, I'd watch container memory and disk use together:
+
+```bash
+watch -n 2 'free -h; df -h /var/lib/nginx/body; du -sh /var/lib/nginx/body'
+```
+
+Helper-script updates may replace the main Nginx configuration, so recheck `client_body_temp_path` after updating. I kept a backup of the original file and used a separate systemd drop-in for the recovery policy.
+
+If you're setting up domains and certificates for the first time, my [SSL certificates on everything guide](/ultimate-home-server-part-4-ssl-certificates) covers the broader proxy setup. If your existing LXC keeps falling over, save those kernel logs before the next restart. They showed exactly why my otherwise-running container had stopped serving every site behind it.

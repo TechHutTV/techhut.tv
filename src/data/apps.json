@@ -1542,7 +1542,8 @@
     "description": "Manage reverse proxies and HTTPS certificates through a web interface.",
     "coverage": [
       "/split-dns-homelab",
-      "/ultimate-home-server-part-4-ssl-certificates"
+      "/ultimate-home-server-part-4-ssl-certificates",
+      "/nginx-proxy-manager-lxc-out-of-memory"
     ],
     "videos": [
       {
@@ -1936,7 +1937,8 @@
       "/proxmox-backup-server-complete-guide",
       "/monitor-home-server-grafana-prometheus-influxdb",
       "/ultimate-home-server-part-1-proxmox-zfs-samba",
-      "/ultimate-home-server-part-2-jellyfin"
+      "/ultimate-home-server-part-2-jellyfin",
+      "/nginx-proxy-manager-lxc-out-of-memory"
     ],
     "videos": [
       {
