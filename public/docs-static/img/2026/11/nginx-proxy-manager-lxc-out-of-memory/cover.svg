@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#0b1420"/>
+  <g font-family="DejaVu Sans, sans-serif">
+    <rect x="88" y="84" width="8" height="36" rx="4" fill="#79e4b9"/>
+    <text x="116" y="112" font-size="27" letter-spacing="4" fill="#79e4b9">PROXMOX / LXC TROUBLESHOOTING</text>
+    <text x="88" y="217" font-size="67" font-weight="bold" fill="#f5f8fc">Why my reverse proxy</text>
+    <text x="88" y="300" font-size="67" font-weight="bold" fill="#f5f8fc">kept going down</text>
+    <text x="88" y="370" font-size="29" fill="#a8b9ce">Nginx Proxy Manager · upload buffering · memory limits</text>
+    <rect x="88" y="436" width="1424" height="160" rx="20" fill="#1e2433" stroke="#633944" stroke-width="2"/>
+    <text x="124" y="485" font-size="22" font-weight="bold" fill="#ff9eaa">BEFORE</text>
+    <text x="124" y="550" font-size="34" fill="#f5f8fc">Upload</text>
+    <path d="M 290 538 H 370 m -15 -10 15 10 -15 10" fill="none" stroke="#a8b9ce" stroke-width="3"/>
+    <text x="410" y="550" font-size="34" fill="#f5f8fc">/tmp on RAM</text>
+    <path d="M 685 538 H 765 m -15 -10 15 10 -15 10" fill="none" stroke="#a8b9ce" stroke-width="3"/>
+    <text x="805" y="550" font-size="34" fill="#ff9eaa">Memory exhausted</text>
+    <path d="M 1160 538 H 1240 m -15 -10 15 10 -15 10" fill="none" stroke="#a8b9ce" stroke-width="3"/>
+    <text x="1280" y="550" font-size="34" fill="#ff9eaa">Offline</text>
+    <rect x="88" y="624" width="1424" height="160" rx="20" fill="#142b2c" stroke="#326451" stroke-width="2"/>
+    <text x="124" y="673" font-size="22" font-weight="bold" fill="#79e4b9">THE FIX</text>
+    <text x="124" y="738" font-size="34" fill="#f5f8fc">Buffer uploads on disk</text>
+    <text x="660" y="738" font-size="34" fill="#79e4b9">+</text>
+    <text x="750" y="738" font-size="34" fill="#f5f8fc">Automatic service recovery</text>
+    <text x="88" y="850" font-size="22" letter-spacing="3" fill="#a8b9ce">TECHHUT.TV</text>
+  </g>
+</svg>
